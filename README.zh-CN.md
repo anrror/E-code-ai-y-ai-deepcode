@@ -25,6 +25,7 @@
 6. [设计取舍评价](#6-设计取舍评价)
 7. [常用命令速查](#7-常用命令速查)
 8. [文档索引](#8-文档索引)
+9. [子代理编排（本仓库扩展）](#9-子代理编排本仓库扩展)
 
 ---
 
@@ -494,7 +495,56 @@ TUI 内常用斜杠命令：`/model`、`/effort`、`/context 64k`、`/goal <obje
 
 ---
 
-## 9. 许可证
+## 9. 子代理编排（本仓库扩展）
+
+> 这一节描述本仓库在上游 2.3.1 基础上新增的能力，不在 HKUDS/DeepCode 的官方文档中。
+
+### 9.1 按类别路由模型
+
+`spawn_agent` 的 `category` 会把子代理放到指定的模型与连接上，而不是继承父会话：
+
+```jsonc
+{
+  "agents": {
+    "categories": {
+      "fast": { "model": "deepseek-flash",  "connection": "my-ds" },
+      "hard": { "model": "deepseek-v4-pro", "connection": "my-ds" }
+    }
+  }
+}
+```
+
+两个字段都必填，拼错的键会被 schema 拒绝——半个目标会让解析器从 `agents.implementation` 借另一半，那通常不是你要的 provider。
+
+优先级：显式 `model` / `connection_id` > `category` > 父会话 profile。只覆盖一半时，另一半从父 profile 继承。
+
+### 9.2 依赖顺序
+
+```text
+spawn_agent(name="scan",   task="...", category="fast")
+spawn_agent(name="design", task="...", category="hard")
+spawn_agent(name="merge",  task="...", depends_on=["scan", "design"])
+```
+
+- 依赖未满足时子代理处于 `queued`，不占并发槽；
+- 依赖失败、被取消，或隔离合并没落地时，下游变为 `blocked`，并通过结果邮箱告诉父代理是哪个依赖、为什么；
+- 重试失败的依赖会生成新的 id，并把 `blocked` 的下游自动重定向到新尝试；隔离合并冲突则要先手工解决冲突，再重发下游；
+- Turn 结束时 `queued` 的任务会一起取消，不会留下幽灵任务；
+- 队列有上限（默认是并发上限的 2 倍），声明速度超过消费速度的图会直接报错。
+
+### 9.3 成本归因
+
+每个子代理的 LLM 调用都会带上 `agent_path`（`<category>:<id>`，主循环为 `parent`），`llm.jsonl` 与汇总里的 `by_agent_path` 可以直接回答「这个便宜类别到底省了多少」，而不是靠估算。
+
+### 9.4 限制
+
+- 路由只对 `backend="native"` 生效；`codex` / `claude-code` 后端会拒绝路由参数，而不是静默忽略。
+- 依赖只能引用**已经 spawn** 的 id；不支持前向引用（因此也不可能成环）。
+- Goal 完成声明沿用上游的防活锁机制：连续 3 次软拒绝后仍会放行。所以「有子代理在跑」不是绝对禁止完成，而是先提示你 `wait_agent`。
+
+---
+
+## 10. 许可证
 
 MIT License，Copyright © 2025 Data Intelligence Lab at The University of Hong Kong。详见 [LICENSE](LICENSE)。
 
