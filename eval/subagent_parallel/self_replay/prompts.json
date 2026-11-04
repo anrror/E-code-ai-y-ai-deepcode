@@ -1,0 +1,4 @@
+{
+  "serial": "Read TASKS.md and implement all three features yourself, in this repository. Do not edit anything under tests/. Run `python -m pytest -q tests/test_subagent_model_routing.py tests/test_subagent_dependencies.py tests/test_agent_path_attribution.py tests/test_spawn_agent.py` until it passes, then report what you changed.",
+  "parallel": "Read TASKS.md. Delegate one feature per sub-agent; do not implement anything yourself. Call spawn_agent(name=\"feature-1\", task=\"Implement feature 1 from TASKS.md. Read TASKS.md and tests/test_subagent_model_routing.py and tests/test_routing_categories.py first. Do not edit tests/.\", isolate=true), then the same for feature-2 and feature-3. After all three are spawned, call wait_agent until every one reports. Then run `python -m pytest -q tests/test_subagent_model_routing.py tests/test_subagent_dependencies.py tests/test_agent_path_attribution.py tests/test_spawn_agent.py` and report the result."
+}

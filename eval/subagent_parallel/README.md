@@ -18,8 +18,13 @@ invests in graph-level orchestration:
 - **Arms** — same model, same fixture, same five tasks:
   - `serial`: one agent implements all five itself.
   - `parallel`: the agent must call `spawn_agent(..., isolate=true)` once per
-    task and then `wait_agent` until all report. A run with fewer than five
-    `spawn_agent` calls is marked invalid and excluded from the medians.
+    task and then `wait_agent` until all report. A run with fewer than
+    `--min-spawns` (default 5) calls is marked invalid and excluded from the
+    medians.
+- **Tokens** — summed from the process LLM ledger (`~/.deepcode/logs/llm.jsonl`)
+  inside the run window. This is the only source that includes sub-agent calls;
+  the per-session event stream sees the parent only. Run the experiment on an
+  otherwise idle machine, or unrelated sessions land in the window.
 - **Isolation** — every run copies the fixture to `.runs/<stamp>/`, runs
   `git init` there, and executes `deepcode exec --access full-access --trust`.
   The repository's own working tree is never touched.
@@ -35,10 +40,17 @@ invests in graph-level orchestration:
 
 # the gate: 3 repetitions per arm
 .venv\Scripts\python.exe eval\subagent_parallel\run_experiment.py --reps 3
+
+# the same gate on the repository's own kernel work (see self_replay/)
+.venv\Scripts\python.exe eval\subagent_parallel\self_replay\prepare.py \
+  --out eval\subagent_parallel\.runs\self-replay\base
+.venv\Scripts\python.exe eval\subagent_parallel\run_experiment.py \
+  --fixture eval\subagent_parallel\.runs\self-replay\base --min-spawns 3 \
+  --prompts eval\subagent_parallel\self_replay\prompts.json --reps 1
 ```
 
-Artifacts land in `eval/subagent_parallel/.runs/<stamp>/` (`report.json`,
-`report.md`, per-run `events.ndjson` and `stderr.log`).
+Results so far: [`RESULTS.md`](RESULTS.md) for the fixture,
+[`self_replay/RESULTS.md`](self_replay/RESULTS.md) for the real workload.
 
 ## Decision rules (pre-registered)
 
@@ -46,7 +58,7 @@ Artifacts land in `eval/subagent_parallel/.runs/<stamp>/` (`report.json`,
 |---|---|
 | Wall-clock speedup (median serial / median parallel) | ≥ 1.30× |
 | Pass rate | parallel not worse than serial by > 10 percentage points |
-| Delegation validity | ≥ 5 `spawn_agent` calls per parallel run |
+| Delegation validity | ≥ `--min-spawns` per parallel run (5 by default, 3 for the self-replay) |
 
 Both gates must pass to justify building graph-level orchestration on top of
 this. Otherwise the project stops at category routing + post-merge verification.
