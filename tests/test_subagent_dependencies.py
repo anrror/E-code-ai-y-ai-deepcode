@@ -217,3 +217,92 @@ def test_unclean_merge_blocks_dependents(monkeypatch, tmp_path):
     assert second_status == "blocked"
     assert "merge" in second_result.lower()
     assert started == ("first",)
+
+class _FlakyControl(AgentControl):
+    """Fails the first time, succeeds after ``fail`` is cleared."""
+
+    def __init__(self, workspace, **kwargs) -> None:
+        super().__init__(workspace, **kwargs)
+        self.fail = True
+
+    async def _run_subagent(self, sub, workspace):
+        if self.fail:
+            raise RuntimeError("boom")
+        return f"done {sub.id}"
+
+
+def test_retrying_a_failed_dependency_revives_blocked_dependents(tmp_path):
+    async def scenario():
+        ctrl = _FlakyControl(str(tmp_path))
+        first = ctrl.spawn("first", name="first", isolate=False)
+        second = ctrl.spawn(
+            "second", name="second", isolate=False, depends_on=[first]
+        )
+        await _spin(12)
+        assert ctrl.get(second).status == "blocked"
+
+        ctrl.fail = False
+        retried = ctrl.spawn("first, take two", name="first", isolate=False)
+        await _spin(12)
+        # Read before loop shutdown: a native child parks idle and would be
+        # rewritten to "cancelled" when asyncio.run() tears pending tasks down.
+        return (
+            retried,
+            ctrl.get(second).deps,
+            ctrl.get(retried).status,
+            ctrl.get(second).status,
+        )
+
+    retried, dependent_deps, retried_status, dependent_status = asyncio.run(scenario())
+
+    assert retried != "first", "the failed attempt stays visible as evidence"
+    assert dependent_deps == (retried,), "the dependent follows the retry"
+    assert retried_status in {"running", "idle"}
+    assert dependent_status in {"queued", "running", "idle"}
+
+
+def test_send_message_is_refused_while_dependents_wait(tmp_path):
+    async def scenario():
+        ctrl = _GateControl(str(tmp_path))
+        first = ctrl.spawn("first", name="first", isolate=False)
+        held = ctrl.spawn("held", name="held", isolate=False)
+        ctrl.spawn(
+            "second",
+            name="second",
+            isolate=False,
+            depends_on=[first, held],
+        )
+        await _spin()
+        ctrl.release(first)
+        await _spin(12)
+
+        blocked = ctrl.get("second")
+        assert blocked.status == "queued"
+        assert ctrl.get(first).status == "idle"
+
+        reply = ctrl.send_message(first, "start something else")
+        return reply, ctrl.get(first).status, blocked.status
+
+    reply, first_status, dependent_status = asyncio.run(scenario())
+
+    assert reply.startswith("Error:")
+    assert "depend" in reply.lower()
+    assert first_status == "idle"
+    assert dependent_status == "queued"
+
+
+def test_queued_work_is_bounded(tmp_path):
+    async def scenario():
+        ctrl = _GateControl(str(tmp_path), max_threads=1)
+        root = ctrl.spawn("root", name="root", isolate=False)
+        await _spin()
+        ctrl.spawn("q1", name="q1", isolate=False, depends_on=[root])
+        ctrl.spawn("q2", name="q2", isolate=False, depends_on=[root])
+        with pytest.raises(AgentLimitError) as excinfo:
+            ctrl.spawn("q3", name="q3", isolate=False, depends_on=[root])
+        await ctrl.cancel_running()
+        return str(excinfo.value)
+
+    message = asyncio.run(scenario())
+
+    assert "wait" in message.lower()

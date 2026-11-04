@@ -184,6 +184,10 @@ class AgentControl:
         transcript_sink: Any | None = None,
         project_trusted: bool = False,
         project_hook_approval: Any | None = None,
+        # How many dependency-ordered children may wait without running. A
+        # graph that is declared faster than it drains is a memory leak and an
+        # O(n^2) pump, so the queue is bounded like the fan-out.
+        max_queued: int | None = None,
         # Routing targets: category name -> (model, connection_id). Empty keeps
         # the old single-model behaviour exactly.
         categories: Mapping[str, tuple[str | None, str | None]] | None = None,
@@ -197,6 +201,9 @@ class AgentControl:
         self._model = model
         self._execution_profile = execution_profile
         self._max_threads = max(1, max_threads)
+        self._max_queued = max(
+            1, max_queued if max_queued is not None else self._max_threads * 2
+        )
         self._permission_mode = permission_mode
         self._execution_security_profile = execution_security_profile
         self._approval_callback = approval_callback
@@ -275,9 +282,12 @@ class AgentControl:
         return f"interrupt requested for {agent_id}"
 
     def send_message(self, agent_id: str, message: str) -> str:
-        """Queue a message to a RUNNING sub-agent; it is injected into that
-        sub-agent's turn at its next step. Only works while it is still running
-        (a finished sub-agent cannot receive one)."""
+        """Queue a message to a running or parked-idle sub-agent.
+
+        A running child receives it at its next step; a parked one resumes with
+        it as the next turn's input. A child that is running but not parked
+        (external backend, or already finished) cannot take one.
+        """
         sub = self._agents.get(agent_id)
         if sub is None:
             return f"no such agent: {agent_id}"
@@ -291,6 +301,18 @@ class AgentControl:
             )
         if not message.strip():
             return "Error: message is empty."
+        waiting = [
+            other
+            for other in self._agents.values()
+            if sub.id in other.deps and other.status in (_QUEUED, _RUNNING)
+        ]
+        if waiting:
+            return (
+                f"Error: {agent_id} still has dependent task(s) waiting "
+                f"({', '.join(other.id for other in waiting)}); waking it now "
+                "would run its next turn concurrently with them. Wait for them "
+                "first."
+            )
         if sub.idle:
             # A parked child resumes with the message as its next turn's
             # input, on top of its accumulated conversation.
@@ -452,11 +474,12 @@ class AgentControl:
         # subtask may be retried.
         key = _slug(name) if name else " ".join(task.split()).lower()
         for existing in self._agents.values():
-            # A failed or cancelled subtask may be retried; anything else (done,
-            # idle, running, queued, blocked) is already handled.
+            # A failed, cancelled or blocked subtask may be retried; anything
+            # else (done, idle, running, queued) is already handled.
             if existing.dedup_key == key and existing.status not in (
                 _FAILED,
                 _CANCELLED,
+                _BLOCKED,
             ):
                 verb = "is already handling" if existing.running else "already handled"
                 tail = (
@@ -472,8 +495,28 @@ class AgentControl:
                 f"at most {self._max_threads} sub-agents can run at once; call "
                 "wait_agent to collect a finished one before spawning more"
             )
+        if deps:
+            queued = sum(
+                1 for existing in self._agents.values() if existing.status == _QUEUED
+            )
+            if queued >= self._max_queued:
+                raise AgentLimitError(
+                    f"at most {self._max_queued} sub-agents can wait on "
+                    "dependencies at once; call wait_agent to collect finished "
+                    "work before spawning more"
+                )
         self._seq += 1
         base = _slug(name) if name else f"agent-{self._seq}"
+        # A retry keeps the failed attempt visible (its transcript is evidence)
+        # but redirects dependents that were pinned to it, otherwise they stay
+        # blocked on a dead id forever.
+        previous = self._agents.get(base)
+        retry_of = (
+            previous.id
+            if previous is not None
+            and previous.status in (_FAILED, _CANCELLED, _BLOCKED)
+            else None
+        )
         agent_id = base if base not in self._agents else f"{base}-{self._seq}"
         sub = SubAgent(
             id=agent_id,
@@ -492,6 +535,8 @@ class AgentControl:
             dedup_key=key,
         )
         self._agents[agent_id] = sub
+        if retry_of is not None:
+            self._redirect_blocked_dependents(retry_of, agent_id)
         if not deps:
             sub.handle = asyncio.ensure_future(self._run(sub))
         else:
@@ -507,6 +552,15 @@ class AgentControl:
             for sub in self._agents.values()
             if sub.status in (_RUNNING, _QUEUED)
         )
+
+    def _redirect_blocked_dependents(self, old_id: str, new_id: str) -> None:
+        """Point children blocked on a retried dependency at the new attempt."""
+        for sub in self._agents.values():
+            if sub.status != _BLOCKED or old_id not in sub.deps:
+                continue
+            sub.deps = tuple(new_id if dep == old_id else dep for dep in sub.deps)
+            sub.status = _QUEUED
+            sub.result = ""
 
     def _pump(self) -> None:
         """Start every queued child whose dependencies are satisfied.
@@ -554,7 +608,8 @@ class AgentControl:
                         "blocked: dependency "
                         + ", ".join(unclean)
                         + " finished but its isolated changes did not merge "
-                        "(conflict or blocked merge); reconcile it, then retry"
+                        "(conflict or blocked merge); reconcile the conflict, "
+                        "then re-spawn this dependent"
                     )
                     self._post(sub.id, _format_result_message(sub))
                     sub.settled.set()
