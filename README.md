@@ -144,6 +144,15 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 
 ## What's new
 
+- **2026-11-04** — Delegated work you can steer and measure: a sub-agent can
+  run on a different model through a routing category
+  (`agents.categories`), wait for other sub-agents with `depends_on`, and
+  every model call is attributed to the category and agent that made it. The
+  change ships with a measurement gate, and the honest result is that
+  delegation is not free: three parallel agents were 3.2× slower than doing
+  five short tasks yourself, and 1.25× slower on a real long task. DeepCode
+  therefore keeps category routing and ordering, and does not add a graph
+  scheduler ([measurements](eval/subagent_parallel/README.md)).
 - **2026-11-02** — Goals you can trust to finish: the agent proposes a
   checklist, and once you confirm it DeepCode runs those commands itself
   before it accepts "complete"; an optional independent reviewer checks every
@@ -419,8 +428,9 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   catalog and OAuth sign-in. `deepcode mcp serve` exposes DeepCode itself as an
   MCP server. [MCP guide](docs/integrations/MCP.md)
 - **Agent presets and sub-agents.** Presets set a persona and narrow the tool
-  set. Sub-agents can work in separate Git worktrees.
-  [Configuration](docs/guide/configuration.md#agent-presets)
+  set. Sub-agents can work in separate Git worktrees, run on a model chosen by
+  routing category, and wait on each other with `depends_on`.
+  [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
 - **Automations.** Run a saved instruction on a schedule with the same
   agent, permissions and history.
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)

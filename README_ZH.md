@@ -143,6 +143,10 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 
 ## 最近更新
 
+- **2026-11-04** — 子代理可以按路由类别换模型、用 `depends_on` 互相等待，每一次模型
+  调用都会归因到具体类别与代理。这次改动同时带了一套测量门禁，结论如实：委派不是白
+  拿的——五个短任务并行比自己做慢 3.2 倍，真实长任务上慢约 1.25 倍。因此保留类别
+  路由与依赖排序，不新增图形调度器（[测量结果](eval/subagent_parallel/README.md)）。
 - **2026-11-02** — Goal 的"完成"更可信：智能体会提出检查清单，你确认后，
   DeepCode 在接受"完成"之前会自己运行这些命令；可在设置里打开独立审查，逐条核对
   每项需求，每次验收结果都显示在 Goal 卡片上。Goal 可以设时间上限；卡住或原地
@@ -380,7 +384,8 @@ Windows 工具链和排错见 [Desktop 指南](desktop/README.md)。
   登录。`deepcode mcp serve` 把 DeepCode 本身作为 MCP 服务器提供。
   [MCP guide](docs/integrations/MCP.md)
 - **Agent 预设与子代理。** 预设设定角色并收窄可用工具。子代理可以在独立的 Git
-  worktree 里工作。[Configuration](docs/guide/configuration.md#agent-presets)
+  worktree 里工作，可按路由类别选择模型，并用 `depends_on` 互相等待。
+  [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
 - **自动化。** 按计划运行保存好的指令，使用同样的 Agent、权限和历史记录。
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)
 - **语音输入。** Desktop 和 Web 的输入框可选开启听写。

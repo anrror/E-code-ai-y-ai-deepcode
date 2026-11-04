@@ -43,6 +43,7 @@ kept in `~/.deepcode/credentials.json`, not in `deepcode_config.json`.
 | `agents.defaults.reasoningEffort` | a level the model supports | Default reasoning effort. |
 | `agents.defaults.defaultPreset` | preset id | Agent preset for new Sessions. |
 | `agents.defaults.microcompact` | `true` / `false` (`false`) | When a long Session nears its context limit, replace stale tool results with a short placeholder (keeping paths to saved output) before asking the model for a summary. |
+| `agents.categories` | object (`{}`) | Named model routes for `spawn_agent(category=...)`. Each entry needs `model` and `connection`. See [Sub-agent routing and ordering](#sub-agent-routing-and-ordering). |
 | `goal.completionVerifier` | `"off"` / `"rule"` / `"reviewer"` (`"off"`) | With `"rule"`, a claim that a Goal is complete is turned back while the latest check failed or no work was done. `"reviewer"` adds an independent review: a second agent reads the changes and re-runs the checks before the Goal is recorded complete. A Goal's confirmed checks run in every mode. Also in Desktop under **Settings → General → Goal completion checks**. See [Goals](goals-and-headless.md#check-completion-claims). |
 | `goal.maxRejections` | integer ≥ 1 (`3`) | After this many rejected completion claims in a row with no file changes in between, the Goal is marked blocked (and after 10 rejected claims in all). |
 | `providers.egress` | object | Limits which hosts receive model requests; see below. |
@@ -127,6 +128,62 @@ Pick a preset with `/preset` in the TUI or the preset picker in Desktop and
 Web. A preset is fixed when the Session is created; editing the file later
 does not change existing Sessions. Presets do not change the access preset or
 the model route.
+
+## Sub-agent routing and ordering
+
+Two delegation controls live in the config file: which model a sub-agent runs
+on, and what it must wait for.
+
+```json
+{
+  "agents": {
+    "categories": {
+      "fast": { "model": "deepseek-chat", "connection": "deepseek" },
+      "review": { "model": "claude-sonnet-4-5", "connection": "anthropic" }
+    }
+  }
+}
+```
+
+Both `model` and `connection` are required — a category is a complete route,
+not half of one. Unknown keys are rejected when the config loads. The agent
+picks one when it delegates:
+
+```text
+spawn_agent(name="parser", task="...", category="fast")
+spawn_agent(name="review", task="...", category="review",
+            depends_on=["parser"])
+```
+
+- **Unknown category** fails the spawn. It never falls back to the parent's
+  model, which would silently spend the wrong budget.
+- **Explicit `model` / `connection_id`** override the category's halves, so
+  `category="fast", model="deepseek-reasoner"` keeps the fast connection and
+  changes only the model. Omitting both inherits the parent Turn's route —
+  not `agents.defaults`, which can be a different model.
+- **External backends** (`codex`, `claude-code`) reject routing options: they
+  run their own product configuration.
+- **`depends_on`** takes ids of sub-agents that are already spawned. The
+  dependent stays `queued` until every dependency has a result, then starts
+  automatically. A failed, cancelled or unmerged dependency marks it
+  `blocked` and tells the agent why; retrying the failed dependency re-queues
+  the whole chain, and a dependent the agent already replaced is not revived.
+- **Isolation and ordering together**: an isolated sub-agent merges its
+  worktree when a turn finishes. If a turn is interrupted, its changes are
+  still in the worktree, so dependents wait for its next turn to merge
+  instead of starting on a stale workspace.
+
+Every model call a sub-agent makes is labelled with `agent_path` in
+`~/.deepcode/logs/llm.jsonl` — `category:agent-id`, or `inherit:agent-id` /
+`explicit:agent-id` when no category was used. The `llmops` summary groups
+tokens by that label (`by_agent_path`), so cost can be attributed to the
+route that spent it.
+
+Why there is no scheduler on top of this: the [measurement
+gate](../../eval/subagent_parallel/README.md) compares serial work against
+three parallel sub-agents. Parallel delegation is 3.2× slower on short tasks
+and about 1.25× slower on a real long task, so the ordering primitives are
+kept and a graph scheduler is not built.
 
 ## Environment variables
 
