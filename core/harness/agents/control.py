@@ -25,6 +25,7 @@ from __future__ import annotations
 import asyncio
 import re
 import uuid
+from collections.abc import Callable, Mapping
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING, Any
 
@@ -56,6 +57,19 @@ _RUNNING = "running"
 _IDLE = "idle"
 _DONE = "done"
 _FAILED = "failed"
+# A dependency-ordered child waits here without a task handle. It is *not*
+# counted against max_threads until it actually starts, so a fan-out graph can
+# be declared in one step without bumping into the fan-out limit.
+_QUEUED = "queued"
+# A dependency failed or was cancelled before this child could start. Blocked is
+# deliberately distinct from failed: the child did no work, so it is not the
+# child's error, and the parent is told which dependency broke it.
+_BLOCKED = "blocked"
+_CANCELLED = "cancelled"
+_TERMINAL = frozenset({_DONE, _FAILED, _CANCELLED})
+# A dependency is satisfied once the child has produced a result — for a
+# conversational native child that is "idle after its first turn", not "exited".
+_SATISFIED = frozenset({_DONE, _IDLE})
 
 
 class AgentLimitError(RuntimeError):
@@ -64,6 +78,15 @@ class AgentLimitError(RuntimeError):
 
 class DuplicateAgentError(AgentLimitError):
     """A sub-agent is already running this exact task (a re-spawn is redundant)."""
+
+
+class UnknownCategoryError(AgentLimitError):
+    """A spawn named a routing category the session does not define.
+
+    Subclasses :class:`AgentLimitError` on purpose: the delegation tools already
+    translate that type into a model-facing error string, and a silently ignored
+    category would put the child on the wrong (usually more expensive) model.
+    """
 
 
 # Sub-agent execution backends. "native" builds an in-process AgentSession;
@@ -88,6 +111,18 @@ class SubAgent:
     persona: str | None = None
     tool_names: tuple[str, ...] | None = None
     output_schema: dict | None = field(default=None, repr=False)
+    # Routing target resolved at spawn time (None = inherit the parent's).
+    # ``category`` is kept for the transcript; model/connection are the
+    # effective overrides the child profile is built from.
+    category: str | None = None
+    model: str | None = None
+    connection_id: str | None = None
+    # Ids of sub-agents that must reach a satisfied state before this one runs.
+    deps: tuple[str, ...] = ()
+    # False when this child ran isolated and its changes did NOT land in the
+    # base worktree (conflict/blocked). A dependent must not start on a
+    # workspace that is missing its predecessor's changes.
+    merge_ok: bool = True
     status: str = _RUNNING
     result: str = ""
     seed_history: list = field(default_factory=list, repr=False)
@@ -149,6 +184,14 @@ class AgentControl:
         transcript_sink: Any | None = None,
         project_trusted: bool = False,
         project_hook_approval: Any | None = None,
+        # Routing targets: category name -> (model, connection_id). Empty keeps
+        # the old single-model behaviour exactly.
+        categories: Mapping[str, tuple[str | None, str | None]] | None = None,
+        # Builds the child's immutable ExecutionProfile from a (model,
+        # connection_id) override. Required for routing: a bare model name is
+        # ignored by build_agent_session whenever a profile is present, so the
+        # whole profile (context window, max output, provider) must be rebuilt.
+        model_resolver: Callable[..., ExecutionProfile] | None = None,
     ) -> None:
         self._workspace = workspace
         self._model = model
@@ -168,6 +211,8 @@ class AgentControl:
         self._project_trusted = project_trusted
         # Sub-agents run the parent's project hooks under the same approval.
         self._project_hook_approval = project_hook_approval
+        self._categories = dict(categories or {})
+        self._model_resolver = model_resolver
         self._local_runtime_id = f"local-agent-runtime-{uuid.uuid4().hex}"
         self._agents: dict[str, SubAgent] = {}
         self._seq = 0
@@ -205,6 +250,13 @@ class AgentControl:
         sub = self._agents.get(agent_id)
         if sub is None:
             return f"no such agent: {agent_id}"
+        if sub.status == _QUEUED:
+            sub.status = _CANCELLED
+            sub.result = "cancelled before start"
+            self._post(sub.id, _format_result_message(sub))
+            sub.settled.set()
+            self._pump()
+            return f"{agent_id} was queued and has been cancelled"
         if sub.idle:
             return (
                 f"{agent_id} is already idle — send_message to give it a new direction"
@@ -289,6 +341,10 @@ class AgentControl:
         persona: str | None = None,
         tools: list[str] | tuple[str, ...] | None = None,
         output_schema: dict | None = None,
+        category: str | None = None,
+        model: str | None = None,
+        connection_id: str | None = None,
+        depends_on: list[str] | tuple[str, ...] | None = None,
     ) -> str:
         """Start a sub-agent in the background and return its id (non-blocking).
 
@@ -324,6 +380,9 @@ class AgentControl:
                     ("persona", persona),
                     ("tools", tools),
                     ("output_schema", output_schema),
+                    ("category", category),
+                    ("model", model),
+                    ("connection_id", connection_id),
                 )
                 if value is not None
             ]
@@ -357,13 +416,48 @@ class AgentControl:
                 output_schema = validate_output_schema(output_schema)
             except SchemaError as exc:
                 raise AgentLimitError(str(exc)) from exc
+        # Routing is resolved here, at the boundary, so a bad category fails the
+        # caller instead of silently running the child on the parent's model.
+        category_model: str | None = None
+        category_connection: str | None = None
+        if category is not None:
+            target = self._categories.get(category)
+            if target is None:
+                available = ", ".join(sorted(self._categories)) or "none configured"
+                raise UnknownCategoryError(
+                    f"unknown routing category {category!r} — available: {available}"
+                )
+            category_model, category_connection = target
+        routed_model = model or category_model
+        routed_connection = connection_id or category_connection
+        # Dependencies are validated now, not when the graph reaches them: a
+        # typo in a dependency id would otherwise surface as a silent block.
+        deps: tuple[str, ...] = ()
+        if depends_on:
+            normalized = tuple(
+                str(dep).strip() for dep in depends_on if str(dep).strip()
+            )
+            unknown_deps = [dep for dep in normalized if dep not in self._agents]
+            if unknown_deps:
+                available = ", ".join(sorted(self._agents)) or "none spawned yet"
+                raise AgentLimitError(
+                    "unknown dependency id(s) "
+                    f"{', '.join(unknown_deps)} — dependencies must already be "
+                    f"spawned; available: {available}"
+                )
+            deps = normalized
         # Dedup against any prior subtask with this key that is still running OR
         # already succeeded — re-spawning finished work is the exact waste a real
         # model produced (it re-spawned modules it had already built). A FAILED
         # subtask may be retried.
         key = _slug(name) if name else " ".join(task.split()).lower()
         for existing in self._agents.values():
-            if existing.dedup_key == key and existing.status != _FAILED:
+            # A failed or cancelled subtask may be retried; anything else (done,
+            # idle, running, queued, blocked) is already handled.
+            if existing.dedup_key == key and existing.status not in (
+                _FAILED,
+                _CANCELLED,
+            ):
                 verb = "is already handling" if existing.running else "already handled"
                 tail = (
                     "its result will come back on its own; call wait_agent"
@@ -373,7 +467,7 @@ class AgentControl:
                 raise DuplicateAgentError(
                     f"{existing.id} {verb} this subtask — {tail}."
                 )
-        if self.active_count() >= self._max_threads:
+        if not deps and self.active_count() >= self._max_threads:
             raise AgentLimitError(
                 f"at most {self._max_threads} sub-agents can run at once; call "
                 "wait_agent to collect a finished one before spawning more"
@@ -389,12 +483,88 @@ class AgentControl:
             persona=(persona or "").strip() or None,
             tool_names=tool_names,
             output_schema=output_schema,
+            category=category,
+            model=routed_model,
+            connection_id=routed_connection,
+            deps=deps,
+            status=_QUEUED if deps else _RUNNING,
             seed_history=self._fork_history(fork_turns),
             dedup_key=key,
         )
         self._agents[agent_id] = sub
-        sub.handle = asyncio.ensure_future(self._run(sub))
+        if not deps:
+            sub.handle = asyncio.ensure_future(self._run(sub))
+        else:
+            # Start immediately if the dependencies already finished, otherwise
+            # park until its turn comes.
+            self._pump()
         return agent_id
+
+    def busy_ids(self) -> tuple[str, ...]:
+        """Ids that are running or waiting on a dependency (not terminal)."""
+        return tuple(
+            sub.id
+            for sub in self._agents.values()
+            if sub.status in (_RUNNING, _QUEUED)
+        )
+
+    def _pump(self) -> None:
+        """Start every queued child whose dependencies are satisfied.
+
+        Called after a spawn, after a child settles, and after cancellation.
+        Scheduling stays inside the existing session loop — no new thread, no
+        second semaphore: the running count is still bounded by ``max_threads``.
+        """
+        progressed = True
+        while progressed:
+            progressed = False
+            for sub in list(self._agents.values()):
+                if sub.status != _QUEUED:
+                    continue
+                dependency_states = [self._agents[dep].status for dep in sub.deps]
+                satisfied = all(state in _SATISFIED for state in dependency_states)
+                if not satisfied:
+                    broken = [
+                        dep
+                        for dep, state in zip(sub.deps, dependency_states, strict=True)
+                        if state in _TERMINAL or state == _BLOCKED
+                    ]
+                    if broken:
+                        sub.status = _BLOCKED
+                        sub.result = (
+                            "blocked: dependency "
+                            + ", ".join(f"{dep} ({self._agents[dep].status})" for dep in broken)
+                            + "; the dependent task never started"
+                        )
+                        self._post(sub.id, _format_result_message(sub))
+                        sub.settled.set()
+                        progressed = True
+                    continue
+                # A predecessor whose isolated merge did not land leaves the
+                # base without its changes; starting now would build on stale
+                # state and silently lose work.
+                unclean = [
+                    dep
+                    for dep, state in zip(sub.deps, dependency_states, strict=True)
+                    if state in _SATISFIED and not self._agents[dep].merge_ok
+                ]
+                if unclean:
+                    sub.status = _BLOCKED
+                    sub.result = (
+                        "blocked: dependency "
+                        + ", ".join(unclean)
+                        + " finished but its isolated changes did not merge "
+                        "(conflict or blocked merge); reconcile it, then retry"
+                    )
+                    self._post(sub.id, _format_result_message(sub))
+                    sub.settled.set()
+                    progressed = True
+                    continue
+                if self.active_count() >= self._max_threads:
+                    continue
+                sub.status = _RUNNING
+                sub.handle = asyncio.ensure_future(self._run(sub))
+                progressed = True
 
     def _fork_history(self, fork_turns: str | int) -> list:
         """The filtered slice of parent history a forked sub-agent inherits."""
@@ -444,6 +614,8 @@ class AgentControl:
             if sub.status not in (_RUNNING, _IDLE):
                 self._post(sub.id, _format_result_message(sub))
             sub.settled.set()  # release anyone awaiting this child
+            # A terminal child frees a slot and may unblock its dependents.
+            self._pump()
 
     async def _converse(self, sub: SubAgent) -> None:
         """A native child's whole life: turns alternating with idle parking.
@@ -491,6 +663,7 @@ class AgentControl:
                     if worktree is not None:
                         async with self._git_lock:
                             merge = worktree.merge(sub.id)
+                            sub.merge_ok = merge.clean
                         result = self._describe_merge(merge, result)
                     sub.completed_turns += 1
                     sub.result = result
@@ -498,6 +671,8 @@ class AgentControl:
                     sub.turn_task = None
                 sub.status = _IDLE
                 sub.settled.set()
+                # The first completed turn is what a dependent waits for.
+                self._pump()
                 self._post(sub.id, _format_result_message(sub))
                 if sub.seed_history:
                     # Refresh the transcript now that the turn's status is
@@ -543,6 +718,7 @@ class AgentControl:
             summary = await self._run_task_in(sub, tree)
             async with self._git_lock:
                 merge = wt.merge(sub.id)
+                sub.merge_ok = merge.clean
         finally:
             async with self._git_lock:
                 wt.cleanup(sub.id)
@@ -595,11 +771,40 @@ class AgentControl:
             def tool_filter(names: tuple[str, ...]) -> tuple[str, ...]:
                 return tuple(n for n in names if n in allowed)
 
+        child_profile = self._execution_profile
+        if child_profile is not None and (sub.model or sub.connection_id):
+            if self._model_resolver is None:
+                raise RuntimeError(
+                    "sub-agent model routing needs a model resolver; this "
+                    "session was built without one"
+                )
+            # Rebuild the whole profile, not just its model id: context window,
+            # max output and provider all belong to the routed model, and the
+            # compaction gate reads them.
+            child_profile = self._model_resolver(
+                # Omitted fields inherit the PARENT profile, not the global
+                # implementation phase: resolve_selection() falls back to
+                # agents.implementation.*, which is a different model when the
+                # parent Turn pinned its own.
+                connection_id=sub.connection_id or child_profile.connection_id,
+                model=sub.model or child_profile.model_id,
+                reasoning_effort=child_profile.reasoning_effort,
+                phase="implementation",
+            )
         session, _model, _engine = build_agent_session(
             workspace=workspace,
-            model=self._model,
+            model=(
+                child_profile.model_id
+                if child_profile is not None
+                else (sub.model or self._model)
+            ),
+            connection_id=(
+                child_profile.connection_id
+                if child_profile is not None
+                else sub.connection_id
+            ),
             system_prompt="\n\n".join(prompt_sections),
-            execution_profile=self._execution_profile,
+            execution_profile=child_profile,
             allow_spawn=False,  # depth cap: sub-agents cannot spawn again
             injection_callback=self._make_inbox_drainer(sub),
             agent_context=(sub.id, "subagent"),  # fires SubagentStart/Stop hooks
@@ -616,6 +821,11 @@ class AgentControl:
             extra_tools=extra_tools,
             tool_filter=tool_filter,
         )
+        # Label every LLM call this child makes so cost reporting can attribute
+        # it to a routing category instead of guessing from the model name.
+        from core.observability.context import pop_agent_path, set_agent_path
+
+        path_token = set_agent_path(f"{sub.category or 'inherit'}:{sub.id}")
         try:
             if sub.seed_history:
                 # fork_turns seed on the first turn; on follow-up turns this
@@ -644,6 +854,7 @@ class AgentControl:
         finally:
             self._dump_transcript(sub, session)
             await session.aclose()
+            pop_agent_path(path_token)
 
     def _dump_transcript(self, sub: SubAgent, session: Any) -> None:
         """Report the child's full conversation to the host's transcript sink.
@@ -729,6 +940,13 @@ class AgentControl:
         if self._mailbox:
             return "One or more sub-agents have results waiting."
         if self.active_count() == 0:
+            queued = sum(1 for sub in self._agents.values() if sub.status == _QUEUED)
+            blocked = sum(1 for sub in self._agents.values() if sub.status == _BLOCKED)
+            if queued or blocked:
+                return (
+                    f"No sub-agent is running: {queued} queued, {blocked} blocked "
+                    "by a failed or cancelled dependency."
+                )
             return "No sub-agents are running."
         self._activity.clear()
         # Re-check after clearing: a result posted in the check→clear window set
@@ -782,8 +1000,18 @@ class AgentControl:
         child cleanup runs while the resulting ``CancelledError`` unwinds.  The
         parent therefore joins each task so no sub-agent can keep using tools,
         network access, or its worktree after the Turn becomes terminal.
+
+        Queued children have no task handle, so they are terminated here
+        explicitly — otherwise a Turn teardown would silently leave them alive
+        in the graph and a later spawn could start them.
         """
 
+        for sub in self._agents.values():
+            if sub.status == _QUEUED:
+                sub.status = _CANCELLED
+                sub.result = "cancelled before start"
+                self._post(sub.id, _format_result_message(sub))
+                sub.settled.set()
         handles = tuple(
             sub.handle
             for sub in self._agents.values()

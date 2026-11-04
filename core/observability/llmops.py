@@ -58,6 +58,9 @@ class LLMCallSummary:
     latency_ms: dict[str, int | None]
     status: dict[str, int]
     by_model: dict[str, dict[str, Any]] = field(default_factory=dict)
+    # Cost per agent path ("<category>:<agent id>", "parent" when unset), so a
+    # routing decision can be judged instead of asserted.
+    by_agent_path: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return {
@@ -72,6 +75,7 @@ class LLMCallSummary:
             "latency_ms": self.latency_ms,
             "status": self.status,
             "by_model": self.by_model,
+            "by_agent_path": self.by_agent_path,
         }
 
 
@@ -104,6 +108,7 @@ def summarize_llm_calls(records: Iterable[dict[str, Any]]) -> LLMCallSummary:
     latencies: list[int] = []
     status: dict[str, int] = {}
     buckets: dict[str, _ModelBucket] = {}
+    path_buckets: dict[str, _ModelBucket] = {}
     price_cache: dict[str, tuple[float | None, float | None]] = {}
 
     for record in records:
@@ -144,6 +149,24 @@ def summarize_llm_calls(records: Iterable[dict[str, Any]]) -> LLMCallSummary:
         state = str(record.get("status") or "unknown")
         status[state] = status.get(state, 0) + 1
 
+        # Same arithmetic, different key: cost per agent path. Unset means the
+        # main loop, which is the one bucket that must always be comparable.
+        agent_path = str(record.get("agent_path") or "parent")
+        path_bucket = path_buckets.setdefault(agent_path, _ModelBucket())
+        path_bucket.calls += 1
+        path_bucket.prompt_tokens += prompt
+        path_bucket.completion_tokens += completion
+        path_bucket.cached_tokens += cached
+        if price_in is None or price_out is None:
+            path_bucket.unpriced_calls += 1
+            path_bucket.usd = None
+        else:
+            path_cost = (
+                prompt / 1_000_000 * price_in + completion / 1_000_000 * price_out
+            )
+            if path_bucket.usd is not None:
+                path_bucket.usd += path_cost
+
     latency: dict[str, int | None] = {
         "samples": len(latencies),
         "p50": int(statistics.median(latencies)) if latencies else None,
@@ -161,6 +184,17 @@ def summarize_llm_calls(records: Iterable[dict[str, Any]]) -> LLMCallSummary:
         }
         for name, b in sorted(buckets.items())
     }
+    by_agent_path = {
+        name: {
+            "calls": b.calls,
+            "prompt_tokens": b.prompt_tokens,
+            "completion_tokens": b.completion_tokens,
+            "cached_tokens": b.cached_tokens,
+            "usd": None if b.usd is None else round(b.usd, 6),
+            "unpriced_calls": b.unpriced_calls,
+        }
+        for name, b in sorted(path_buckets.items())
+    }
     return LLMCallSummary(
         calls=calls,
         prompt_tokens=prompt_total,
@@ -171,6 +205,7 @@ def summarize_llm_calls(records: Iterable[dict[str, Any]]) -> LLMCallSummary:
         latency_ms=latency,
         status=status,
         by_model=by_model,
+        by_agent_path=by_agent_path,
     )
 
 

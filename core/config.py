@@ -138,6 +138,12 @@ class AgentsConfig(_Base):
     defaults: AgentDefaults = Field(default_factory=AgentDefaults)
     planning: AgentPhase = Field(default_factory=AgentPhase)
     implementation: AgentPhase = Field(default_factory=AgentPhase)
+    # Named routing targets for delegated work: ``spawn_agent(category=...)``
+    # resolves its child ExecutionProfile from this table. Every entry must set
+    # BOTH ``model`` and ``connection`` — a partial entry would silently borrow
+    # the missing half from ``agents.implementation``. Empty means every
+    # sub-agent inherits the parent's profile.
+    categories: dict[str, AgentPhase] = Field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)

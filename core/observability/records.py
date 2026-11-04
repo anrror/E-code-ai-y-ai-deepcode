@@ -150,6 +150,9 @@ class LLMLogRecord:
     # rewrite past the 2000-char preview cap still changes the fingerprint.
     response_sha256: str | None = None
     tool_calls_sha256: str | None = None
+    # Which agent produced the call: "<category>:<agent id>" for delegated
+    # work, unset for the main loop. Cost summaries group on it.
+    agent_path: str | None = None
     # Chain link: ``prev_hash`` is the previous entry's ``entry_hash`` in the
     # same file ("" for the first entry); ``entry_hash`` is this entry's digest.
     prev_hash: str | None = None
@@ -178,6 +181,7 @@ class LLMLogRecord:
         request_nonce: str | None = None,
         response_sha256: str | None = None,
         tool_calls_sha256: str | None = None,
+        agent_path: str | None = None,
         prev_hash: str | None = None,
         entry_hash: str | None = None,
     ) -> LLMLogRecord:
@@ -206,6 +210,7 @@ class LLMLogRecord:
             request_nonce=request_nonce,
             response_sha256=response_sha256,
             tool_calls_sha256=tool_calls_sha256,
+            agent_path=agent_path,
             prev_hash=prev_hash,
             entry_hash=entry_hash,
         )

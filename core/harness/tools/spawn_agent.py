@@ -93,6 +93,33 @@ def _parse_fork_turns(value: Any) -> str | int:
                 "use this when you need structured data back, not prose. "
                 "Native backend only.",
             },
+            "category": {
+                "type": "string",
+                "description": "Optional routing category (configured in "
+                "agents.categories) that picks the model and connection this "
+                "sub-agent runs on — e.g. a cheap category for mechanical work, "
+                "a strong one for hard reasoning. Omit to inherit yours. An "
+                "unknown name is an error, never a silent fallback.",
+            },
+            "model": {
+                "type": "string",
+                "description": "Optional explicit model id for this sub-agent; "
+                "overrides the category's model but keeps its connection.",
+            },
+            "connection_id": {
+                "type": "string",
+                "description": "Optional explicit provider connection id for "
+                "this sub-agent; overrides the category's connection.",
+            },
+            "depends_on": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Optional ids of sub-agents that must finish "
+                "before this one starts (fan-out/fan-in ordering). The "
+                "dependent waits as 'queued' and starts automatically once "
+                "every dependency has a result; if a dependency fails it "
+                "becomes 'blocked' and you are told why.",
+            },
         },
         "required": ["name", "task"],
     }
@@ -154,6 +181,21 @@ class SpawnAgentTool(Tool):
         output_schema = kwargs.get("output_schema")
         if output_schema is not None and not isinstance(output_schema, dict):
             return "Error: 'output_schema' must be a JSON object."
+        category = kwargs.get("category")
+        if category is not None and not isinstance(category, str):
+            return "Error: 'category' must be a string."
+        category = (category or "").strip() or None
+        model = kwargs.get("model")
+        if model is not None and not isinstance(model, str):
+            return "Error: 'model' must be a string."
+        model = (model or "").strip() or None
+        connection_id = kwargs.get("connection_id")
+        if connection_id is not None and not isinstance(connection_id, str):
+            return "Error: 'connection_id' must be a string."
+        connection_id = (connection_id or "").strip() or None
+        depends_on = kwargs.get("depends_on")
+        if depends_on is not None and not isinstance(depends_on, (list, tuple)):
+            return "Error: 'depends_on' must be an array of sub-agent ids."
         try:
             agent_id = self._control.spawn(
                 task,
@@ -164,6 +206,10 @@ class SpawnAgentTool(Tool):
                 persona=str(persona) if persona is not None else None,
                 tools=tools,
                 output_schema=output_schema,
+                category=category,
+                model=model,
+                connection_id=connection_id,
+                depends_on=depends_on,
             )
         except AgentLimitError as exc:
             return f"Error: {exc}"

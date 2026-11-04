@@ -43,7 +43,11 @@ from typing import TYPE_CHECKING, Any, TextIO
 
 from loguru import logger as _loguru_logger
 
-from core.observability.context import current_session_id, current_task_id
+from core.observability.context import (
+    current_agent_path,
+    current_session_id,
+    current_task_id,
+)
 from core.observability.records import (
     LLMLogRecord,
     MCPLogRecord,
@@ -336,6 +340,7 @@ def log_llm_call(
         request_nonce=request_nonce,
         response_sha256=response_sha256,
         tool_calls_sha256=tool_calls_sha256,
+        agent_path=current_agent_path(),
     )
     _append_llm_record(_resolve_channel_path(record.task_id, "llm.jsonl"), record)
 

@@ -334,3 +334,28 @@ def test_a_used_up_time_limit_stops_the_turn_counting_this_turns_time(
     assert router.remaining_tokens() == 0
     # The token budget still counts while time is left.
     assert _budget_router(_timed_view(600, 0, tokens=50)).remaining_tokens() == 50
+
+@pytest.mark.asyncio
+async def test_held_completion_claims_escape_after_the_budget() -> None:
+    """The anti-livelock escape must survive: three soft refusals, then the
+    fourth claim is recorded. A hard gate that always raises would strand every
+    Goal with a stuck sub-agent."""
+
+    from core.agent_runtime.goal_runtime import MAX_HELD_CLAIMS
+
+    runtime = GoalRuntimeRouter()
+    handler = FakeGoalHandler()
+    runtime.configure(handler)
+    runtime.activate(_context())
+    runtime.configure_running_work(lambda: 1)
+
+    for _ in range(MAX_HELD_CLAIMS):
+        result = await runtime.request(status="complete", reason="done")
+        assert result["updated"] is False
+        assert "still running" in result["note"]
+        assert handler.requests == []
+
+    final = await runtime.request(status="complete", reason="done")
+
+    assert final["status"] == "complete"
+    assert len(handler.requests) == 1

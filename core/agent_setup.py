@@ -388,6 +388,34 @@ def _completion_verifier(
     )
 
 
+def build_routing_categories(
+    agents_cfg: Any,
+) -> dict[str, tuple[str, str]]:
+    """Return ``category -> (model, connection)`` for delegated routing.
+
+    A category is a complete routing target. A partial one is rejected at
+    startup instead of silently mixing halves: ``resolve_selection`` fills a
+    missing model/connection from ``agents.implementation.*``, which may be a
+    different provider than the category intended.
+    """
+
+    from core.config import ConfigError
+
+    table = getattr(agents_cfg, "categories", None) or {}
+    routing: dict[str, tuple[str, str]] = {}
+    for name, cfg in table.items():
+        model = getattr(cfg, "model", None)
+        connection = getattr(cfg, "connection", None)
+        if not model or not connection:
+            raise ConfigError(
+                f"agents.categories.{name} must set both 'model' and "
+                "'connection' — a partial category would silently borrow the "
+                "other half from agents.implementation"
+            )
+        routing[name] = (str(model), str(connection))
+    return routing
+
+
 def build_agent_session(
     *,
     workspace: str,
@@ -544,6 +572,13 @@ def build_agent_session(
     if allow_spawn:
         from core.harness.agents import AgentControl
 
+        # Delegation routing: category -> (model, connection). A project layer
+        # may only *select* an existing user connection (see
+        # ``_project_runtime_layer``), so this table cannot invent credentials.
+        routing_categories = build_routing_categories(
+            getattr(active_runtime.config, "agents", None)
+        )
+
         control = AgentControl(
             workspace,
             resolved_model,
@@ -558,6 +593,8 @@ def build_agent_session(
             transcript_sink=subagent_transcript_sink,
             project_trusted=project_trusted,
             project_hook_approval=project_hook_approval,
+            categories=routing_categories,
+            model_resolver=resolver,
         )
 
     # External-command hooks (C3): discover Claude-Code-compatible hooks.json in
@@ -713,7 +750,7 @@ def build_agent_session(
         goal_cfg = getattr(active_runtime.config, "goal", None)
         mode = goal_cfg.completion_verifier if goal_cfg is not None else "off"
         goal_runtime.configure_running_work(
-            control.active_count if control is not None else None
+            (lambda: len(control.busy_ids())) if control is not None else None
         )
         goal_runtime.configure_completion_verifier(
             _completion_verifier(

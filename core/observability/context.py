@@ -24,6 +24,12 @@ _task_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
 _session_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
     "deepcode_session_id", default=None
 )
+# Which agent produced a call: "parent" for the main session, or
+# "<category>:<agent id>" for delegated work. Cost reporting groups on this so
+# "the cheap category paid for itself" is a measurement, not a claim.
+_agent_path_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
+    "deepcode_agent_path", default=None
+)
 
 
 def bind_task(task_id: str | None) -> contextvars.Token:
@@ -59,6 +65,30 @@ def current_session_id() -> str | None:
     return _session_id_var.get()
 
 
+def set_agent_path(agent_path: str | None) -> contextvars.Token:
+    """Bind the current async context to the agent producing these calls."""
+    return _agent_path_var.set(agent_path)
+
+
+def pop_agent_path(token: contextvars.Token) -> None:
+    _agent_path_var.reset(token)
+
+
+def current_agent_path() -> str | None:
+    """Return the active agent path (``None`` for the unlabelled main loop)."""
+    return _agent_path_var.get()
+
+
+@contextmanager
+def agent_path_scope(agent_path: str | None) -> Iterator[None]:
+    """Label every LLM call made inside the block with ``agent_path``."""
+    token = set_agent_path(agent_path)
+    try:
+        yield
+    finally:
+        pop_agent_path(token)
+
+
 @contextmanager
 def task_scope(task_id: str | None, session_id: str | None = None) -> Iterator[None]:
     """Context manager that binds task_id (and optionally session_id).
@@ -76,11 +106,15 @@ def task_scope(task_id: str | None, session_id: str | None = None) -> Iterator[N
 
 
 __all__ = [
+    "agent_path_scope",
     "bind_task",
+    "current_agent_path",
     "current_session_id",
     "current_task_id",
+    "pop_agent_path",
     "pop_session",
     "pop_task",
+    "set_agent_path",
     "set_session",
     "task_scope",
 ]

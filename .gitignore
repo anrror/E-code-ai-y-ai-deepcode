@@ -99,3 +99,7 @@ credentials.json
 .env.*
 !.env.example
 !*.env.example
+
+# Local agent session state (tooling, not project code)
+.ai/
+.omo/
