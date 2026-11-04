@@ -134,16 +134,29 @@ class AgentPhase(_Base):
     reasoning_effort: str | None = None
 
 
+class AgentCategory(_Base):
+    """One delegated-routing target for ``spawn_agent(category=...)``.
+
+    Both halves are required. A partial target would silently borrow the
+    missing half from ``agents.implementation`` — a different model or a
+    provider the caller did not choose. Unknown keys are rejected too, so a
+    misspelled field cannot look like it took effect.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    model: str
+    connection: str
+
+
 class AgentsConfig(_Base):
     defaults: AgentDefaults = Field(default_factory=AgentDefaults)
     planning: AgentPhase = Field(default_factory=AgentPhase)
     implementation: AgentPhase = Field(default_factory=AgentPhase)
     # Named routing targets for delegated work: ``spawn_agent(category=...)``
-    # resolves its child ExecutionProfile from this table. Every entry must set
-    # BOTH ``model`` and ``connection`` — a partial entry would silently borrow
-    # the missing half from ``agents.implementation``. Empty means every
+    # resolves its child ExecutionProfile from this table. Empty means every
     # sub-agent inherits the parent's profile.
-    categories: dict[str, AgentPhase] = Field(default_factory=dict)
+    categories: dict[str, AgentCategory] = Field(default_factory=dict)
 
 
 @dataclass(frozen=True, slots=True)

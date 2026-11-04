@@ -393,27 +393,12 @@ def build_routing_categories(
 ) -> dict[str, tuple[str, str]]:
     """Return ``category -> (model, connection)`` for delegated routing.
 
-    A category is a complete routing target. A partial one is rejected at
-    startup instead of silently mixing halves: ``resolve_selection`` fills a
-    missing model/connection from ``agents.implementation.*``, which may be a
-    different provider than the category intended.
+    ``AgentCategory`` already requires both halves and rejects unknown keys, so
+    this is a plain projection rather than a second validation layer.
     """
 
-    from core.config import ConfigError
-
     table = getattr(agents_cfg, "categories", None) or {}
-    routing: dict[str, tuple[str, str]] = {}
-    for name, cfg in table.items():
-        model = getattr(cfg, "model", None)
-        connection = getattr(cfg, "connection", None)
-        if not model or not connection:
-            raise ConfigError(
-                f"agents.categories.{name} must set both 'model' and "
-                "'connection' — a partial category would silently borrow the "
-                "other half from agents.implementation"
-            )
-        routing[name] = (str(model), str(connection))
-    return routing
+    return {name: (cfg.model, cfg.connection) for name, cfg in table.items()}
 
 
 def build_agent_session(
