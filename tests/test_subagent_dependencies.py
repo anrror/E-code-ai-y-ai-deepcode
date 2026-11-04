@@ -306,3 +306,47 @@ def test_queued_work_is_bounded(tmp_path):
     message = asyncio.run(scenario())
 
     assert "wait" in message.lower()
+
+def test_a_raising_mailbox_does_not_kill_the_child(tmp_path):
+    def sink(_message):
+        raise RuntimeError("mailbox down")
+
+    async def scenario():
+        ctrl = _FailControl(
+            str(tmp_path),
+            runtime_input_sink=sink,
+            active_turn_id_provider=lambda: "turn-1",
+        )
+        first = ctrl.spawn("first", name="first", isolate=False)
+        await _spin(12)
+        return ctrl.get(first).status, ctrl.get(first).result
+
+    status, result = asyncio.run(scenario())
+
+    assert status == "failed"
+    assert "boom" in result
+    assert "mailbox down" not in result
+
+
+def test_cancel_skips_the_turn_mailbox(tmp_path):
+    calls = []
+
+    def sink(message):
+        calls.append(message)
+        return True
+
+    async def scenario():
+        ctrl = _GateControl(
+            str(tmp_path),
+            runtime_input_sink=sink,
+            active_turn_id_provider=lambda: "turn-1",
+        )
+        first = ctrl.spawn("first", name="first", isolate=False)
+        ctrl.spawn("second", name="second", isolate=False, depends_on=[first])
+        await _spin()
+        await ctrl.cancel_running()
+
+    asyncio.run(scenario())
+
+    # Teardown has no Turn to inject into; the canonical note sink is the path.
+    assert calls == []

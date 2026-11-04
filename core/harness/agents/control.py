@@ -204,6 +204,10 @@ class AgentControl:
         self._max_queued = max(
             1, max_queued if max_queued is not None else self._max_threads * 2
         )
+        # True while a Turn teardown is cancelling children. Result delivery
+        # must not touch the Turn mailbox then: there is no Turn to inject into,
+        # and its reserve() can wait while a mailbox is starting.
+        self._cancelling = False
         self._permission_mode = permission_mode
         self._execution_security_profile = execution_security_profile
         self._approval_callback = approval_callback
@@ -943,26 +947,38 @@ class AgentControl:
     # -- mailbox ---------------------------------------------------------------
 
     def _post(self, agent_id: str, message: str) -> None:
+        """Publish a child result without letting delivery kill the child.
+
+        During teardown the Turn mailbox is skipped: there is no Turn to inject
+        into, and its ``reserve`` may wait while a mailbox starts. The canonical
+        note sink still receives the message.
+        """
         self._mailbox_sequence += 1
         message_id = f"subagent:{agent_id}:{self._mailbox_sequence}"
-        target_turn_id = (
-            self._active_turn_id_provider()
-            if self._active_turn_id_provider is not None
-            else None
-        )
+        target_turn_id = None
+        if self._active_turn_id_provider is not None:
+            try:
+                target_turn_id = self._active_turn_id_provider()
+            except Exception:  # noqa: BLE001 - delivery must not die here
+                logger.exception("could not read the active Turn for {}", agent_id)
         if self._runtime_input_sink is not None:
             delivered = False
-            if target_turn_id:
-                delivered = bool(
-                    self._runtime_input_sink(
-                        SubagentMessage(
-                            message_id=message_id,
-                            target_turn_id=target_turn_id,
-                            agent_id=agent_id,
-                            payload=message,
+            if target_turn_id and not self._cancelling:
+                try:
+                    delivered = bool(
+                        self._runtime_input_sink(
+                            SubagentMessage(
+                                message_id=message_id,
+                                target_turn_id=target_turn_id,
+                                agent_id=agent_id,
+                                payload=message,
+                            )
                         )
                     )
-                )
+                except Exception:  # noqa: BLE001 - delivery must not die here
+                    logger.exception(
+                        "sub-agent result could not be injected: {}", agent_id
+                    )
             if not delivered and self._context_note_sink is not None:
                 # The result lost the active-Turn race (the Turn closed before
                 # the sub-agent finished, or the mailbox refused it). Append
@@ -1061,22 +1077,26 @@ class AgentControl:
         in the graph and a later spawn could start them.
         """
 
-        for sub in self._agents.values():
-            if sub.status == _QUEUED:
-                sub.status = _CANCELLED
-                sub.result = "cancelled before start"
-                self._post(sub.id, _format_result_message(sub))
-                sub.settled.set()
-        handles = tuple(
-            sub.handle
-            for sub in self._agents.values()
-            if sub.handle is not None and not sub.handle.done()
-        )
-        for handle in handles:
-            # A second cancel while the child is unwinding would interrupt its
-            # AgentSession.aclose() finally block. One cancellation request is
-            # sufficient; all callers still join the same task below.
-            if handle.cancelling() == 0:
-                handle.cancel()
-        if handles:
-            await asyncio.gather(*handles, return_exceptions=True)
+        self._cancelling = True
+        try:
+            for sub in self._agents.values():
+                if sub.status == _QUEUED:
+                    sub.status = _CANCELLED
+                    sub.result = "cancelled before start"
+                    self._post(sub.id, _format_result_message(sub))
+                    sub.settled.set()
+            handles = tuple(
+                sub.handle
+                for sub in self._agents.values()
+                if sub.handle is not None and not sub.handle.done()
+            )
+            for handle in handles:
+                # A second cancel while the child is unwinding would interrupt
+                # its AgentSession.aclose() finally block. One cancellation
+                # request is sufficient; all callers still join below.
+                if handle.cancelling() == 0:
+                    handle.cancel()
+            if handles:
+                await asyncio.gather(*handles, return_exceptions=True)
+        finally:
+            self._cancelling = False
