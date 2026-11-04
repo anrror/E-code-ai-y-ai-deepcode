@@ -123,6 +123,10 @@ class SubAgent:
     # base worktree (conflict/blocked). A dependent must not start on a
     # workspace that is missing its predecessor's changes.
     merge_ok: bool = True
+    # An isolated child whose turn was interrupted has changes in its worktree
+    # that are NOT in the base yet. Dependents must wait for the next turn to
+    # merge them instead of starting on a workspace that lacks them.
+    merge_pending: bool = False
     status: str = _RUNNING
     result: str = ""
     seed_history: list = field(default_factory=list, repr=False)
@@ -316,6 +320,11 @@ class AgentControl:
                 f"({', '.join(other.id for other in waiting)}); waking it now "
                 "would run its next turn concurrently with them. Wait for them "
                 "first."
+            )
+        if sub.status == _QUEUED:
+            return (
+                f"{agent_id} has not started yet — it is waiting on its "
+                "dependencies and will run once they finish"
             )
         if sub.idle:
             # A parked child resumes with the message as its next turn's
@@ -515,12 +524,20 @@ class AgentControl:
         # but redirects dependents that were pinned to it, otherwise they stay
         # blocked on a dead id forever.
         previous = self._agents.get(base)
-        retry_of = (
-            previous.id
-            if previous is not None
-            and previous.status in (_FAILED, _CANCELLED, _BLOCKED)
-            else None
-        )
+        if previous is None or previous.status not in (_FAILED, _CANCELLED, _BLOCKED):
+            # A retry may be addressed by name even when the failed attempt got
+            # a suffixed id, and an unnamed retry has no id-stable base at all:
+            # match the previous attempt by the same dedup key.
+            previous = next(
+                (
+                    existing
+                    for existing in self._agents.values()
+                    if existing.dedup_key == key
+                    and existing.status in (_FAILED, _CANCELLED, _BLOCKED)
+                ),
+                None,
+            )
+        retry_of = previous.id if previous is not None else None
         agent_id = base if base not in self._agents else f"{base}-{self._seq}"
         sub = SubAgent(
             id=agent_id,
@@ -558,13 +575,37 @@ class AgentControl:
         )
 
     def _redirect_blocked_dependents(self, old_id: str, new_id: str) -> None:
-        """Point children blocked on a retried dependency at the new attempt."""
-        for sub in self._agents.values():
-            if sub.status != _BLOCKED or old_id not in sub.deps:
-                continue
-            sub.deps = tuple(new_id if dep == old_id else dep for dep in sub.deps)
-            sub.status = _QUEUED
-            sub.result = ""
+        """Point children blocked on a retried dependency at the new attempt.
+
+        Cascades: a child revived here may itself have blocked children (a
+        chain ``a -> b -> c``), and leaving them blocked would strand the graph
+        even though the root recovered.
+        """
+        revived = {old_id}
+        changed = True
+        while changed:
+            changed = False
+            for sub in self._agents.values():
+                if sub.status != _BLOCKED:
+                    continue
+                if not any(dep in revived for dep in sub.deps):
+                    continue
+                # The parent may already have re-spawned this dependent after
+                # the blocked notice (same name → same key). Reviving the old
+                # copy too would run the work twice.
+                if any(
+                    other is not sub
+                    and other.dedup_key == sub.dedup_key
+                    and other.status not in (_BLOCKED, _FAILED, _CANCELLED)
+                    for other in self._agents.values()
+                ):
+                    continue
+                sub.deps = tuple(new_id if dep == old_id else dep for dep in sub.deps)
+                sub.status = _QUEUED
+                sub.result = ""
+                sub.settled = asyncio.Event()  # the blocked notice was already sent
+                revived.add(sub.id)
+                changed = True
 
     def _pump(self) -> None:
         """Start every queued child whose dependencies are satisfied.
@@ -581,6 +622,10 @@ class AgentControl:
                     continue
                 dependency_states = [self._agents[dep].status for dep in sub.deps]
                 satisfied = all(state in _SATISFIED for state in dependency_states)
+                pending_merge = any(
+                    state in _SATISFIED and self._agents[dep].merge_pending
+                    for dep, state in zip(sub.deps, dependency_states, strict=True)
+                )
                 if not satisfied:
                     broken = [
                         dep
@@ -597,6 +642,11 @@ class AgentControl:
                         self._post(sub.id, _format_result_message(sub))
                         sub.settled.set()
                         progressed = True
+                    continue
+                if pending_merge:
+                    # The dependency parked idle mid-turn without merging. Its
+                    # worktree changes are not in the base yet, so starting now
+                    # would build on stale state. Wait for its next turn.
                     continue
                 # A predecessor whose isolated merge did not land leaves the
                 # base without its changes; starting now would build on stale
@@ -642,7 +692,12 @@ class AgentControl:
         ]
         if fork_turns == "all":
             return kept
-        n = int(fork_turns)
+        try:
+            n = int(fork_turns)
+        except (TypeError, ValueError) as exc:
+            raise AgentLimitError(
+                "fork_turns must be 'none', 'all', or a positive integer"
+            ) from exc
         boundaries = [i for i, m in enumerate(kept) if m.get("role") == "user"]
         if n <= 0 or len(boundaries) <= n:
             return kept
@@ -714,6 +769,11 @@ class AgentControl:
                     current = asyncio.current_task()
                     if current is not None and current.cancelling() > 0:
                         raise  # the parent tore the whole child down
+                    if worktree is not None:
+                        # This turn never reached its merge: whatever it wrote
+                        # is still only in the worktree. Dependents must wait
+                        # for the next turn instead of starting on the base.
+                        sub.merge_pending = True
                     sub.result = (
                         "(turn interrupted; the sub-agent is parked idle with "
                         "its conversation intact — send_message to redirect it)"
@@ -723,6 +783,7 @@ class AgentControl:
                         async with self._git_lock:
                             merge = worktree.merge(sub.id)
                             sub.merge_ok = merge.clean
+                            sub.merge_pending = False
                         result = self._describe_merge(merge, result)
                     sub.completed_turns += 1
                     sub.result = result
@@ -884,7 +945,10 @@ class AgentControl:
         # it to a routing category instead of guessing from the model name.
         from core.observability.context import pop_agent_path, set_agent_path
 
-        path_token = set_agent_path(f"{sub.category or 'inherit'}:{sub.id}")
+        label = sub.category or (
+            "explicit" if (sub.model or sub.connection_id) else "inherit"
+        )
+        path_token = set_agent_path(f"{label}:{sub.id}")
         try:
             if sub.seed_history:
                 # fork_turns seed on the first turn; on follow-up turns this

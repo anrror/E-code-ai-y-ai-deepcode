@@ -350,3 +350,130 @@ def test_cancel_skips_the_turn_mailbox(tmp_path):
 
     # Teardown has no Turn to inject into; the canonical note sink is the path.
     assert calls == []
+
+class _FlakyOnceControl(AgentControl):
+    """The first ``flaky`` task attempt fails; later attempts succeed."""
+
+    def __init__(self, workspace, **kwargs) -> None:
+        super().__init__(workspace, **kwargs)
+        self.failed_once = False
+
+    async def _run_subagent(self, sub, workspace):
+        if sub.task.startswith("flaky") and not self.failed_once:
+            self.failed_once = True
+            raise RuntimeError("first attempt fails")
+        return f"done {sub.id}"
+
+
+class _HoldTurnControl(AgentControl):
+    """Each turn blocks until it is interrupted or its task is cancelled."""
+
+    async def _run_subagent(self, sub, workspace):
+        await asyncio.Event().wait()
+
+
+class _FakeWorktree:
+    """Stands in for WorktreeManager: no git, but merge/cleanup are recorded."""
+
+    def __init__(self, root) -> None:
+        self.worktrees_root = Path(root) / ".fake-worktrees"
+        self.merged: list[str] = []
+        self.cleaned: list[str] = []
+
+    def ensure_base(self) -> None:
+        pass
+
+    def create(self, agent_id: str) -> str:
+        path = self.worktrees_root / agent_id
+        path.mkdir(parents=True, exist_ok=True)
+        return str(path)
+
+    def merge(self, agent_id: str):
+        from types import SimpleNamespace
+
+        self.merged.append(agent_id)
+        return SimpleNamespace(clean=True, conflicts=(), detail="")
+
+    def cleanup(self, agent_id: str) -> None:
+        self.cleaned.append(agent_id)
+
+
+def test_retrying_a_root_revives_the_whole_blocked_chain(tmp_path):
+    async def scenario():
+        ctrl = _FlakyOnceControl(str(tmp_path))
+        first = ctrl.spawn("flaky work", name="first", isolate=False)
+        second = ctrl.spawn(
+            "second work", name="second", isolate=False, depends_on=[first]
+        )
+        third = ctrl.spawn(
+            "third work", name="third", isolate=False, depends_on=[second]
+        )
+        await _spin(16)
+
+        assert ctrl.get(first).status == "failed"
+        assert ctrl.get(second).status == "blocked"
+        assert ctrl.get(third).status == "blocked"
+
+        retry = ctrl.spawn("flaky work again", name="first", isolate=False)
+        await _spin(80)
+        return (
+            ctrl.get(retry).status,
+            ctrl.get(second).status,
+            ctrl.get(third).status,
+        )
+
+    assert asyncio.run(scenario()) == ("idle", "idle", "idle")
+
+
+def test_interrupting_an_isolated_child_keeps_dependents_waiting(
+    tmp_path, monkeypatch
+):
+    import core.team.worktree as worktree_module
+
+    monkeypatch.setattr(worktree_module, "WorktreeManager", _FakeWorktree)
+
+    async def scenario():
+        ctrl = _HoldTurnControl(str(tmp_path))
+        first = ctrl.spawn("slow work", name="slow")
+        await _spin(6)
+        ctrl.interrupt(first)
+        await _spin(6)
+        dependent = ctrl.spawn(
+            "after work", name="after", isolate=False, depends_on=[first]
+        )
+        await _spin(6)
+        sub = ctrl.get(first)
+        return sub.status, sub.merge_pending, ctrl.get(dependent).status
+
+    status, merge_pending, dependent = asyncio.run(scenario())
+
+    # The interrupted turn never merged, so its predecessor changes are not in
+    # the base: a dependent must wait, not start on a stale workspace.
+    assert status == "idle"
+    assert merge_pending is True
+    assert dependent == "queued"
+
+def test_retry_does_not_revive_a_dependent_the_parent_already_replaced(tmp_path):
+    async def scenario():
+        ctrl = _FlakyOnceControl(str(tmp_path))
+        first = ctrl.spawn("flaky work", name="first", isolate=False)
+        second = ctrl.spawn(
+            "second work", name="second", isolate=False, depends_on=[first]
+        )
+        await _spin(16)
+        assert ctrl.get(second).status == "blocked"
+
+        # The parent reacts to the blocked notice by re-doing the work itself.
+        replacement = ctrl.spawn("second work", name="second", isolate=False)
+        await _spin(8)
+        assert ctrl.get(replacement).status in ("running", "idle")
+
+        retry = ctrl.spawn("flaky work again", name="first", isolate=False)
+        await _spin(80)
+        return ctrl.get(second).status, ctrl.get(replacement).status, ctrl.get(retry).status
+
+    original, replacement, retry = asyncio.run(scenario())
+
+    assert original == "blocked"  # superseded, not revived into duplicate work
+    assert replacement == "idle"
+    assert retry == "idle"
