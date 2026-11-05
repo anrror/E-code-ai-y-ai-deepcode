@@ -40,6 +40,14 @@ def build_parser() -> argparse.ArgumentParser:
         help="start/connect to the service and open its browser client (accepts web options)",
     )
     parser.add_argument(
+        "--embedded",
+        action="store_true",
+        help=(
+            "run the App Server in this process instead of attaching to the "
+            "shared service; the process ends with its stdio parent"
+        ),
+    )
+    parser.add_argument(
         "--managed-config",
         type=Path,
         help="read a private supervisor launch configuration",
@@ -94,7 +102,7 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
     source, protocol_sink = isolate_protocol_streams()
-    if shared_service:
+    if shared_service and not args.embedded:
         from app_server.service_state import ServiceFiles
         from app_server.stdio_relay import serve_relay
         from core.persistence.database import default_database_path

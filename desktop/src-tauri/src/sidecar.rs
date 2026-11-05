@@ -154,6 +154,16 @@ impl RpcBridge {
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
+        // The App Server is a console-subsystem binary. Without this flag
+        // Windows gives it its own console window and a second taskbar entry,
+        // which looks like a separate application (it is only a worker).
+        #[cfg(windows)]
+        {
+            use std::os::windows::process::CommandExt;
+
+            const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+            command.creation_flags(CREATE_NO_WINDOW);
+        }
         if let Some(current_dir) = &launch.current_dir {
             command.current_dir(current_dir);
         }
@@ -501,6 +511,11 @@ impl RpcBridge {
 
     fn force_kill(&self) {
         if let Some(mut process) = self.lock_process().take() {
+            // The embedded App Server may have spawned helper processes
+            // (--run-script for sandboxing and code mode). Killing only the
+            // direct child would leave them holding the workspace.
+            #[cfg(windows)]
+            kill_process_tree(process.child.id());
             let _ = process.child.kill();
             let _ = process.child.wait();
         }
@@ -657,7 +672,11 @@ fn source_virtualenv_launch(repository: &Path) -> Option<LaunchSpec> {
     };
     virtualenv_python.is_file().then(|| LaunchSpec {
         program: virtualenv_python,
-        args: [vec!["-m".into(), "app_server".into()], database_args()].concat(),
+        args: [
+            vec!["-m".into(), "app_server".into(), "--embedded".into()],
+            database_args(),
+        ]
+        .concat(),
         current_dir: Some(repository.to_path_buf()),
         source: "source virtualenv".into(),
     })
@@ -666,7 +685,7 @@ fn source_virtualenv_launch(repository: &Path) -> Option<LaunchSpec> {
 fn binary_launch(program: PathBuf, source: &str) -> LaunchSpec {
     LaunchSpec {
         program,
-        args: database_args(),
+        args: [vec!["--embedded".into()], database_args()].concat(),
         current_dir: None,
         source: source.into(),
     }
@@ -682,6 +701,22 @@ fn database_args() -> Vec<String> {
             ]
         })
         .unwrap_or_default()
+}
+
+/// Windows keeps grandchild processes alive when only the direct child dies.
+/// The App Server runs helper scripts, so tear the whole tree down.
+#[cfg(windows)]
+fn kill_process_tree(pid: u32) {
+    use std::os::windows::process::CommandExt;
+
+    const CREATE_NO_WINDOW: u32 = 0x0800_0000;
+    let _ = Command::new("taskkill")
+        .args(["/PID", &pid.to_string(), "/T", "/F"])
+        .stdin(Stdio::null())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .creation_flags(CREATE_NO_WINDOW)
+        .status();
 }
 
 /// How long to wait for `method`, from the budgets the service sent in its

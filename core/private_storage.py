@@ -137,8 +137,12 @@ def _run_icacls(executable: str, path: Path, *arguments: str) -> bool:
     return bool(succeeded and succeeded[0])
 
 
-def _restrict_windows_acl(path: Path) -> None:
+def _restrict_windows_acl(path: Path, *, recursive: bool = False) -> None:
     """Restrict ``path`` to the current user, failing safe.
+
+    ``recursive`` applies the same three operations to the whole tree in one
+    pass.  Callers use it only after proving the tree contains no links, so a
+    junction cannot pull an outside directory into the rewrite.
 
     The current user is granted full control **before** inherited access
     entries are stripped.  If the grant fails (service account, transient
@@ -151,17 +155,22 @@ def _restrict_windows_acl(path: Path) -> None:
     executable = _windows_icacls()
     if identity is None or executable is None:
         return
-    grant = f"{identity}:{'(OI)(CI)' if path.is_dir() else ''}F"
-    if not _run_icacls(executable, path, "/grant:r", grant):
+    tree = ("/T",) if recursive else ()
+    # A recursive pass visits every entry, so plain F is enough there; an
+    # inheritance flag on a file ACE is rejected, and would leave that file
+    # with no ACE once /inheritance:r runs.
+    rights = "F" if recursive else ("(OI)(CI)F" if path.is_dir() else "F")
+    grant = f"{identity}:{rights}"
+    if not _run_icacls(executable, path, "/grant:r", grant, *tree):
         # Fail safe: keep the inherited ACLs; the path stays accessible.
         return
-    if not _run_icacls(executable, path, "/inheritance:r"):
+    if not _run_icacls(executable, path, "/inheritance:r", *tree):
         # Strip failed: the path is merely less restricted, still usable.
         return
     # ``/inheritance:r`` removes inherited ACEs but deliberately leaves
     # explicit entries alone. Remove the broad built-in principals as a final
     # best-effort step so hardening also repairs legacy explicit grants.
-    _run_icacls(executable, path, "/remove", *_WINDOWS_BROAD_ACCESS_SIDS)
+    _run_icacls(executable, path, "/remove", *_WINDOWS_BROAD_ACCESS_SIDS, *tree)
 
 
 def _open_private_descriptor(target: Path, flags: int) -> tuple[int, bool]:
@@ -296,6 +305,14 @@ def harden_private_tree(root: Path | str) -> Path:
     if _is_directory_link(base):
         raise UnsafePrivateFileError("private storage root must not be a link")
 
+    # One recursive icacls pass instead of three processes per entry: a real
+    # tree holds hundreds of files, and spawning icacls 450+ times made every
+    # launch take over a minute. Only take this path when the walk proves
+    # there is no link icacls could follow out of the tree.
+    if os.name == "nt" and not _tree_contains_links(base):
+        _restrict_windows_acl(base, recursive=True)
+        return base
+
     for current, directories, files in os.walk(base, followlinks=False):
         current_path = Path(current)
         _chmod(current_path, PRIVATE_DIRECTORY_MODE, force=True)
@@ -320,6 +337,18 @@ def _is_directory_link(path: Path) -> bool:
     except OSError:
         # An unreadable/replaced entry is unsafe to traverse.
         return True
+
+
+def _tree_contains_links(base: Path) -> bool:
+    """True when any entry could point outside the tree (conservative)."""
+
+    for current, directories, files in os.walk(base, followlinks=False):
+        current_path = Path(current)
+        for name in (*directories, *files):
+            child = current_path / name
+            if _is_directory_link(child) or child.is_symlink():
+                return True
+    return False
 
 
 def _chmod(path: Path, mode: int, *, force: bool = False) -> None:

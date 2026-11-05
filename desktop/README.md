@@ -98,7 +98,13 @@ deepcode desktop
 
 The first launch prepares missing Desktop resources. Later launches reuse them.
 Keep this development terminal open while Desktop is running. Closing the
-window or pressing Ctrl+C closes the client; the shared service remains running.
+window or pressing Ctrl+C closes the client and the App Server it started.
+
+Desktop does not attach to the shared background service. It launches the App
+Server (`deepcode-app-server --embedded`) as a child process, talks to it over
+stdio, and on exit asks it to shut down and then kills the remaining process
+tree. `deepcode service status` therefore reports nothing new after a Desktop
+launch, and no App Server process outlives the window.
 
 ### macOS and Linux
 
@@ -282,11 +288,13 @@ the next explicit page with stable ID deduplication. Live notifications refresh
 the first page; an overflow warning also resets the visible pages safely rather
 than presenting a partial cache as complete.
 
-The shared background service owns interval scheduling and its scheduler
-leadership lease. Schedules continue after Desktop, TUI, and Web close, provided
-the service and computer remain running. Agent and Workflow Turns still obey
-execution capacity and workspace fences, preventing concurrent mutations of the
-same canonical checkout. Inspect the service with `deepcode service status`;
+While Desktop is open, its embedded App Server owns interval scheduling and
+the scheduler leadership lease. Because Desktop stops that server with the
+window, schedules continue after Desktop closes only when the shared service
+(started by the TUI or Web client) is running. Agent and Workflow Turns still
+obey execution capacity and workspace fences, preventing concurrent mutations
+of the same canonical checkout. Inspect the shared service with
+`deepcode service status`;
 see [Automations](../docs/guide/goals-and-headless.md#persistent-interval-automations)
 for manual runs and pausing future submissions.
 

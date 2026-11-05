@@ -266,9 +266,11 @@ you finish real software engineering work more reliably.
   working across turns, checking its results, until it reports the Goal
   complete or blocked, and a completion claim is checked before it counts.
   You can add requirements, edit the Goal, pause or stop it while it runs.
-- **Keeps running when you close the client.** Turns run in a local
-  background service, not in the window you started them from. Close the TUI,
-  reopen the session in the browser, and answer the pending approval there.
+- **Keeps running when you close the client.** TUI and Web work runs in a
+  local background service, not in the window you started it from. Close the
+  TUI, reopen the session in the browser, and answer the pending approval
+  there. Desktop is deliberately different: it runs its own App Server inside
+  the app and stops it when the window closes.
 - **One session, four clients.** The TUI, Desktop, Web and `deepcode exec`
   read and write the same projects, sessions, models, Skills and permissions.
 - **You decide what it may do.** A folder must be trusted before the agent
@@ -371,9 +373,14 @@ the [Desktop guide](desktop/README.md).
 
 ### The background service
 
-Starting any client starts the service if it is not running. Closing a client
-leaves accepted work running; pending approvals wait for you, and the computer
-must stay awake.
+The TUI, Web, and headless commands start the shared service if it is not
+running. Closing those clients leaves accepted work running; pending approvals
+wait for you, and the computer must stay awake.
+
+Desktop does not use that shared process. It runs its own App Server as a child
+of the app and stops the whole process tree when the window closes, so closing
+Desktop also stops interval Automations it was running. Start the shared
+service if you need them to continue.
 
 | Task | Command |
 |---|---|
