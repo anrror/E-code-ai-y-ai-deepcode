@@ -212,6 +212,19 @@ export function App({ runtime }: { runtime: ClientRuntime }) {
             }
           })();
         }}
+        onRemoveProject={(projectId) => {
+          const project = state.projects.find((item) => item.id === projectId);
+          const name = project?.displayName ?? projectId;
+          const confirmed = window.confirm(
+            t(
+              "sidebar.removeProjectConfirm",
+              "Remove {{name}} from DeepCode? Its Sessions are deleted from DeepCode; the folder itself is not touched.",
+              { name },
+            ),
+          );
+          if (!confirmed) return;
+          void controller.removeProject(projectId);
+        }}
         onCreateThread={() => {
           closeNavigation();
           void (async () => {

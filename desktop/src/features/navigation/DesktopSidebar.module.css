@@ -189,6 +189,38 @@
   margin-bottom: 4px;
 }
 
+.projectRow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.projectRow .projectButton {
+  min-width: 0;
+  flex: 1;
+}
+
+.projectRemove {
+  display: grid;
+  width: 26px;
+  height: 26px;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-xs);
+  color: var(--text-tertiary);
+  opacity: 0.55;
+}
+
+.projectRow:hover .projectRemove,
+.projectRemove:focus-visible {
+  opacity: 1;
+}
+
+.projectRemove:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
 .projectButton {
   display: grid;
   width: 100%;

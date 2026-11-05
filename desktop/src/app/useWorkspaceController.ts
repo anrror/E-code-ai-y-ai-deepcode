@@ -84,6 +84,7 @@ export interface WorkspaceController {
   selectedThread: Thread | null;
   openProject(): Promise<void>;
   selectProject(projectId: string): Promise<void>;
+  removeProject(projectId: string): Promise<void>;
   trustProject(): Promise<void>;
   createThread(mode?: ThreadMode, title?: string): Promise<Thread | undefined>;
   forkThread(): Promise<void>;
@@ -437,6 +438,36 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
         await loadSettings(projectId);
       }),
     [loadSettings, loadThreads, withBusy],
+  );
+
+  const removeProject = useCallback(
+    (projectId: string) =>
+      withBusy(async () => {
+        await runtime.request("project/remove", { projectId });
+        const result = await runtime.request("project/list", { limit: 500 });
+        const removingSelected = state.selectedProjectId === projectId;
+        const nextId = removingSelected
+          ? (result.projects[0]?.id ?? null)
+          : state.selectedProjectId;
+        dispatch({
+          type: "projects",
+          projects: result.projects,
+          selectedProjectId: nextId,
+        });
+        if (!removingSelected) return;
+        selectedThreadRef.current = null;
+        eventStreamRef.current?.stop();
+        if (nextId) {
+          localStorage.setItem(PROJECT_KEY, nextId);
+          await loadThreads(nextId);
+          await loadSettings(nextId);
+        } else {
+          localStorage.removeItem(PROJECT_KEY);
+          localStorage.removeItem(THREAD_KEY);
+          dispatch({ type: "threads", threads: [], selectedThreadId: null });
+        }
+      }),
+    [loadSettings, loadThreads, runtime, state.selectedProjectId, withBusy],
   );
 
   const selectedProject =
@@ -1074,6 +1105,7 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
       selectedThread,
       openProject,
       selectProject,
+      removeProject,
       trustProject,
       createThread,
       forkThread,
@@ -1119,6 +1151,7 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
       openProject,
       pickContextFiles,
       pickWorkflowFile,
+      removeProject,
       respondToApproval,
       respondToWorkflow,
       restartRuntime,

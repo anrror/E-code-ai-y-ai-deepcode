@@ -187,6 +187,9 @@ const ZH_CN: Record<string, string> = {
   "sidebar.label": "项目与会话",
   "sidebar.destinations": "DeepCode 导航",
   "sidebar.openProject": "打开项目文件夹",
+  "sidebar.removeProject": "移除项目",
+  "sidebar.removeProjectConfirm":
+    "从 DeepCode 移除 {{name}}？该项目的会话会一并删除，磁盘上的文件夹不受影响。",
   "sidebar.sessionHistory": "会话历史",
   "sidebar.projectUntrusted": "项目未受信任",
   "sidebar.closeNavigation": "关闭导航",

@@ -11,6 +11,7 @@ import {
   Settings,
   ShieldAlert,
   Sparkles,
+  Trash2,
   WandSparkles,
   X,
 } from "lucide-react";
@@ -53,6 +54,7 @@ interface DesktopSidebarProps {
   onQueryChange(query: string): void;
   onOpenProject(): void;
   onSelectProject(projectId: string): void;
+  onRemoveProject(projectId: string): void;
   onCreateThread(): void;
   onSelectThread(threadId: string): void;
   onRenameThread(threadId: string, title: string): Promise<void>;
@@ -102,6 +104,7 @@ export function DesktopSidebar({
   onQueryChange,
   onOpenProject,
   onSelectProject,
+  onRemoveProject,
   onCreateThread,
   onSelectThread,
   onRenameThread,
@@ -365,9 +368,10 @@ export function DesktopSidebar({
               Boolean(normalizedQuery) || disclosure.isExpanded(group.key);
             return (
               <section className={styles.projectGroup} key={group.key}>
-                <button
-                  type="button"
-                  className={styles.projectButton}
+                <div className={styles.projectRow}>
+                  <button
+                    type="button"
+                    className={styles.projectButton}
                   data-active={group.active}
                   data-static={!project || undefined}
                   aria-expanded={expanded}
@@ -404,7 +408,20 @@ export function DesktopSidebar({
                       aria-label={t("sidebar.projectUntrusted", "Project not trusted")}
                     />
                   ) : null}
-                </button>
+                  </button>
+
+                  {project ? (
+                    <button
+                      type="button"
+                      className={styles.projectRemove}
+                      aria-label={t("sidebar.removeProject", "Remove project")}
+                      title={t("sidebar.removeProject", "Remove project")}
+                      onClick={() => onRemoveProject(project.id)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  ) : null}
+                </div>
 
                 <ProjectSessions
                   id={`project-sessions-${group.key}`}
