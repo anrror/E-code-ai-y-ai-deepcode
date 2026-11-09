@@ -24,6 +24,12 @@ line's knowledge into a project is how two sources of truth start.
 Red lines (`type: redline`) belong at the organization level and can never be
 overridden by a narrower scope.
 
+Every layer is optional. A missing directory, a layer directory without
+`entity.yaml`, or a `parent` pointing at a layer you have not configured yet
+simply ends the chain there: the configured layers still contribute, and the
+unconfigured one contributes nothing. You can start with a task-level
+`AGENTS.md` and add the org layer later without touching the task.
+
 ## Products are assets, not a seventh layer
 
 A company usually owns **PaaS products**; a line owns several **standard

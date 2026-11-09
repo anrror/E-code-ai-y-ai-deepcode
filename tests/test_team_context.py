@@ -512,3 +512,79 @@ def test_a_project_references_company_and_line_products(tmp_path: Path) -> None:
     )
     hits = service.search("lead schema", scope="task://LEAD-1234")
     assert [row["id"] for row in hits] == ["K-std"]
+
+def test_unconfigured_layers_are_skipped_and_end_the_chain(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    task_dir = workspace / ".deepcode/team/task/LEAD-1"
+    task_dir.mkdir(parents=True)
+    (task_dir / "entity.yaml").write_text(
+        yaml.safe_dump(
+            {"name": "Task", "parent": "version://v9", "workspace": str(workspace)},
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+    (task_dir / "AGENTS.md").write_text("Task rule", encoding="utf-8")
+    (task_dir / "knowledge.yaml").write_text(
+        yaml.safe_dump(
+            [
+                {
+                    "id": "K1",
+                    "scope": "task://LEAD-1",
+                    "type": "lesson",
+                    "statement": "local rule",
+                    "status": "reviewed",
+                }
+            ],
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+
+    # version://v9 is not configured: loading must not fail, the chain just stops.
+    catalog = load_catalog(workspace, home=tmp_path / "home")
+    result = assemble(catalog, task="task://LEAD-1")
+    assert [entity.id for entity in result.chain] == ["task://LEAD-1"]
+    assert "Task rule" in result.text
+    assert "local rule" in result.text
+
+
+def test_a_configured_layer_without_a_parent_still_contributes(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    version_dir = workspace / ".deepcode/team/version/v9"
+    version_dir.mkdir(parents=True)
+    (version_dir / "entity.yaml").write_text(
+        yaml.safe_dump({"name": "v9"}, allow_unicode=True), encoding="utf-8"
+    )
+    (version_dir / "knowledge.yaml").write_text(
+        yaml.safe_dump(
+            [
+                {
+                    "id": "K9",
+                    "scope": "version://v9",
+                    "type": "convention",
+                    "statement": "v9 contract",
+                    "status": "reviewed",
+                }
+            ],
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+    task_dir = workspace / ".deepcode/team/task/LEAD-2"
+    task_dir.mkdir(parents=True)
+    (task_dir / "entity.yaml").write_text(
+        yaml.safe_dump(
+            {"name": "Task 2", "parent": "version://v9", "workspace": str(workspace)},
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+
+    catalog = load_catalog(workspace, home=tmp_path / "home")
+    result = assemble(catalog, task="task://LEAD-2")
+    assert [entity.id for entity in result.chain] == [
+        "task://LEAD-2",
+        "version://v9",
+    ]
+    assert "v9 contract" in result.text

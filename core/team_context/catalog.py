@@ -270,9 +270,9 @@ def _validate(catalog: Catalog) -> None:
             continue
         parent = catalog.entities.get(entity.parent)
         if parent is None:
-            raise TeamContextError(
-                f"entity {entity.id} references missing parent {entity.parent}"
-            )
+            # Every layer is optional: an unconfigured parent simply ends the
+            # chain, so a task can be configured before its version exists.
+            continue
         expected = PARENT_KINDS.get(entity.kind)
         if expected is not None and parent.kind not in expected:
             raise TeamContextError(
@@ -294,7 +294,10 @@ def _validate(catalog: Catalog) -> None:
             if current.parent in seen:
                 raise TeamContextError(f"cycle in entity parents at {current.parent}")
             seen.add(current.parent)
-            current = catalog.entities[current.parent]
+            parent = catalog.entities.get(current.parent)
+            if parent is None:
+                break
+            current = parent
     for entry in catalog.knowledge.values():
         if entry.scope not in catalog.entities:
             raise TeamContextError(
