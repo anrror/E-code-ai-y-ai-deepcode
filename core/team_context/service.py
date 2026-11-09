@@ -10,7 +10,12 @@ from typing import Any
 
 import yaml
 
-from core.team_context.assembler import DEFAULT_MAX_CHARS, assemble, resolve_chain
+from core.team_context.assembler import (
+    DEFAULT_MAX_CHARS,
+    assemble,
+    referenced_entities,
+    resolve_chain,
+)
 from core.team_context.catalog import (
     CATALOG_RELATIVE,
     Catalog,
@@ -52,6 +57,7 @@ class TeamContextService:
         return {
             "task": result.task,
             "chain": [entity.id for entity in result.chain],
+            "referenced": [entity.id for entity in result.referenced],
             "entryCount": len(result.entries),
             "externalExcluded": result.external_excluded,
             "blockedOverrides": list(result.blocked_overrides),
@@ -71,7 +77,11 @@ class TeamContextService:
         needle = query.strip().casefold()
         allowed: set[str] | None = None
         if scope:
-            allowed = {entity.id for entity in resolve_chain(catalog, scope)}
+            chain = resolve_chain(catalog, scope)
+            allowed = {entity.id for entity in chain}
+            allowed.update(
+                entity.id for entity in referenced_entities(catalog, chain)
+            )
         rows = []
         for entry in catalog.knowledge.values():
             if entry.status == "deprecated":

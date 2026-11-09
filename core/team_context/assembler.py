@@ -8,7 +8,10 @@ Precedence follows the design document:
 3. reviewed entries outrank drafts, which outrank external references;
 4. external batches are labelled ``external`` and never presented as team
    facts unless the caller explicitly includes them;
-5. the rendered block is capped, dropping the weakest entries first.
+5. referenced products (a company PaaS product, a line's standard or
+   historical product) contribute their design/codebase pointers and knowledge
+   **after** the chain: a reference informs, it never overrides the project;
+6. the rendered block is capped, dropping the weakest entries first.
 """
 
 from __future__ import annotations
@@ -19,7 +22,15 @@ from dataclasses import dataclass
 from core.team_context.catalog import Catalog
 from core.team_context.models import KnowledgeEntry, TeamEntity
 
-SCOPE_RANK = {"task": 0, "version": 1, "batch": 2, "project": 3, "line": 4, "org": 5}
+SCOPE_RANK = {
+    "task": 0,
+    "version": 1,
+    "batch": 2,
+    "project": 3,
+    "line": 4,
+    "org": 5,
+    "product": 6,
+}
 _STATUS_RANK = {"reviewed": 0, "draft": 1}
 _CONFIDENCE_RANK = {"high": 0, "medium": 1, "low": 2}
 DEFAULT_MAX_CHARS = 6000
@@ -31,6 +42,7 @@ class AssembledContext:
     chain: tuple[TeamEntity, ...]
     entries: tuple[KnowledgeEntry, ...]
     text: str
+    referenced: tuple[TeamEntity, ...] = ()
     external_excluded: int = 0
     blocked_overrides: tuple[str, ...] = ()
     truncated: bool = False
@@ -51,7 +63,28 @@ def resolve_chain(catalog: Catalog, start_id: str | None) -> tuple[TeamEntity, .
     return tuple(chain)
 
 
-def _scope_rank(entry: KnowledgeEntry, catalog: Catalog, chain: Sequence[TeamEntity]) -> int:
+def referenced_entities(
+    catalog: Catalog, chain: Sequence[TeamEntity]
+) -> tuple[TeamEntity, ...]:
+    """Products (or other capabilities) the chain cites, one hop out.
+
+    ``references`` is deliberately not transitive: a product references what it
+    needs, and an outside capability is not silently pulled in through a second
+    hop.
+    """
+
+    seen = {entity.id for entity in chain}
+    result: list[TeamEntity] = []
+    for entity in chain:
+        for reference in entity.references:
+            target = catalog.entities.get(reference)
+            if target is not None and target.id not in seen:
+                seen.add(target.id)
+                result.append(target)
+    return tuple(result)
+
+
+def _scope_rank(entry: KnowledgeEntry, catalog: Catalog) -> int:
     entity = catalog.entities.get(entry.scope)
     return SCOPE_RANK.get(entity.kind if entity else "", 9)
 
@@ -59,10 +92,13 @@ def _scope_rank(entry: KnowledgeEntry, catalog: Catalog, chain: Sequence[TeamEnt
 def _ordered_entries(
     catalog: Catalog,
     chain: Sequence[TeamEntity],
+    referenced: Sequence[TeamEntity],
     *,
     include_external: bool,
 ) -> tuple[list[KnowledgeEntry], int, tuple[str, ...]]:
-    scopes = [entity.id for entity in chain]
+    chain_ids = {entity.id for entity in chain}
+    referenced_ids = {entity.id for entity in referenced}
+    scopes = chain_ids | referenced_ids
     if not scopes:
         return [], 0, ()
     candidates = [
@@ -80,7 +116,6 @@ def _ordered_entries(
         if entry.id in superseded and entry.type != "redline":
             continue
         if entry.supersedes in redline_ids and entry.type != "redline":
-            # A narrower scope tried to override an organization red line.
             blocked.append(entry.id)
             continue
         kept.append(entry)
@@ -92,7 +127,8 @@ def _ordered_entries(
     kept.sort(
         key=lambda entry: (
             0 if entry.type == "redline" else 1,
-            _scope_rank(entry, catalog, chain),
+            0 if entry.scope in chain_ids else 1,
+            _scope_rank(entry, catalog),
             _STATUS_RANK.get(entry.status, 2),
             1 if _is_external(entry, catalog) else 0,
             _CONFIDENCE_RANK.get(entry.confidence, 3),
@@ -109,12 +145,25 @@ def _is_external(entry: KnowledgeEntry, catalog: Catalog) -> bool:
     return bool(entity and entity.external)
 
 
-def _label(entry: KnowledgeEntry, catalog: Catalog) -> str:
+def _is_historical(entity: TeamEntity | None) -> bool:
+    return bool(entity and entity.archived)
+
+
+def _label(
+    entry: KnowledgeEntry,
+    catalog: Catalog,
+    referenced_ids: set[str],
+) -> str:
+    entity = catalog.entities.get(entry.scope)
     tags: list[str] = []
     if entry.type == "redline":
         tags.append("red line")
     if entry.status == "draft":
         tags.append("draft")
+    if entry.scope in referenced_ids:
+        tags.append(f"referenced: {entry.scope}")
+    if _is_historical(entity):
+        tags.append("historical")
     if _is_external(entry, catalog):
         tags.append(f"external: {entry.source}, unverified")
     prefix = f"[{', '.join(tags)}] " if tags else ""
@@ -127,6 +176,7 @@ def _label(entry: KnowledgeEntry, catalog: Catalog) -> str:
 def _render(
     task: str | None,
     chain: Sequence[TeamEntity],
+    referenced: Sequence[TeamEntity],
     entries: Sequence[KnowledgeEntry],
     catalog: Catalog,
     instructions: Sequence[tuple[str, str]],
@@ -135,9 +185,32 @@ def _render(
 ) -> tuple[str, bool]:
     header = (
         f'<team-context task="{task or "unbound"}" '
-        f'chain="{" > ".join(entity.id for entity in chain)}">'
+        f'chain="{" > ".join(entity.id for entity in chain)}"'
     )
+    if referenced:
+        header += f' referenced="{" ".join(entity.id for entity in referenced)}"'
+    header += ">"
     footer = "</team-context>"
+    body: list[str] = []
+    used = len(header) + len(footer)
+    truncated = False
+
+    def append(text: str) -> bool:
+        nonlocal used, truncated
+        if used + len(text) + 1 > max_chars:
+            truncated = True
+            return False
+        body.append(text)
+        used += len(text) + 1
+        return True
+
+    if instructions:
+        append("layer instructions (a nearer layer is read later and wins):")
+        for entity_id, text in instructions:
+            if not append(f"--- {entity_id} ---\n{text}"):
+                break
+
+    referenced_ids = {entity.id for entity in referenced}
     groups: list[tuple[str, list[KnowledgeEntry]]] = [
         ("red lines (organization, never overridden):", []),
         ("team facts (reviewed):", []),
@@ -153,39 +226,35 @@ def _render(
             groups[2][1].append(entry)
         else:
             groups[1][1].append(entry)
-    body: list[str] = []
-    used = len(header) + len(footer)
-    truncated = False
-    if instructions:
-        title = "layer instructions (a nearer layer is read later and wins):"
-        body.append(title)
-        used += len(title) + 1
-        for entity_id, text in instructions:
-            block = f"--- {entity_id} ---\n{text}"
-            if used + len(block) + 1 > max_chars:
-                truncated = True
-                break
-            body.append(block)
-            used += len(block) + 1
     for title, group in groups:
         if truncated:
             break
         if not group:
             continue
-        section = [title]
-        used += len(title) + 1
-        for entry in group:
-            line = _label(entry, catalog)
-            if used + len(line) + 1 > max_chars:
-                truncated = True
-                break
-            section.append(line)
-            used += len(line) + 1
-        body.extend(section)
-        if truncated:
+        if not append(title):
             break
-    text = "\n".join([header, *body, footer])
-    return text, truncated
+        for entry in group:
+            if not append(_label(entry, catalog, referenced_ids)):
+                break
+
+    pointers = [
+        entity
+        for entity in referenced
+        if entity.designs or entity.codebases
+    ]
+    if pointers and not truncated:
+        append("referenced products (design and codebase pointers):")
+        for entity in pointers:
+            tag = " [historical]" if entity.archived else ""
+            parts = [f"{entity.id}{tag}"]
+            if entity.codebases:
+                parts.append("codebases: " + ", ".join(entity.codebases))
+            if entity.designs:
+                parts.append("designs: " + ", ".join(entity.designs))
+            if not append("- " + " | ".join(parts)):
+                break
+
+    return "\n".join([header, *body, footer]), truncated
 
 
 def assemble(
@@ -199,25 +268,33 @@ def assemble(
 
     start = task or catalog.bind
     chain = resolve_chain(catalog, start)
+    referenced = referenced_entities(catalog, chain)
     entries, excluded, blocked = _ordered_entries(
-        catalog, chain, include_external=include_external
+        catalog, chain, referenced, include_external=include_external
     )
     # Far first, near last: the nearest layer's instructions are the last word,
     # matching "a nearer rule wins" without discarding the wider context.
-    instruction_blocks = tuple(
+    # Referenced product instructions come after the chain, labelled.
+    blocks = [
         (entity.id, catalog.instructions[entity.id])
         for entity in reversed(chain)
         if entity.id in catalog.instructions
+    ]
+    blocks.extend(
+        (f"referenced: {entity.id}", catalog.instructions[entity.id])
+        for entity in referenced
+        if entity.id in catalog.instructions
     )
     text, truncated = _render(
-        start, chain, entries, catalog, instruction_blocks, max_chars=max_chars
+        start, chain, referenced, entries, catalog, blocks, max_chars=max_chars
     )
     included = tuple(
-        entry for entry in entries if _label(entry, catalog) and entry.statement in text
+        entry for entry in entries if entry.statement and entry.statement in text
     )
     return AssembledContext(
         task=start,
         chain=chain,
+        referenced=referenced,
         entries=included,
         text=text,
         external_excluded=excluded,

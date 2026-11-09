@@ -24,6 +24,45 @@ line's knowledge into a project is how two sources of truth start.
 Red lines (`type: redline`) belong at the organization level and can never be
 overridden by a narrower scope.
 
+## Products are assets, not a seventh layer
+
+A company usually owns **PaaS products**; a line owns several **standard
+products** plus **historical products** whose designs and codebases still
+matter. Those are assets, not management layers: making a product a parent would
+force every project to inherit from one product. A product is owned by the org
+or by a line, and a project **references** the products it builds on:
+
+```yaml
+# .deepcode/team/product/paas/entity.yaml
+name: PaaS
+parent: org://auto-sub
+codebases: ["https://git/paas"]
+designs: ["docs/paas/design.md"]
+```
+
+```yaml
+# .deepcode/team/product/legacy-crm/entity.yaml
+name: Legacy CRM
+parent: line://auto-outsourcing
+archived: true            # historical: searchable, labelled, never the standard
+codebases: ["https://git/legacy-crm"]
+designs: ["docs/legacy/design.md"]
+```
+
+```yaml
+# .deepcode/team/project/changan/entity.yaml
+name: Changan Lead Center
+parent: line://auto-outsourcing
+references: [product://paas, product://std-crm, product://legacy-crm]
+```
+
+A referenced product contributes its instructions, design knowledge, and
+codebase/design pointers **after** the project's own chain: it informs, it never
+overrides. `search` follows references one hop, so a task finds the PaaS
+convention or the historical design without the graph growing transitively.
+`archived: true` keeps a historical product searchable and referenceable while
+marking every line `[historical]`; it never counts as the current standard.
+
 ## Every layer is its own directory
 
 ```text

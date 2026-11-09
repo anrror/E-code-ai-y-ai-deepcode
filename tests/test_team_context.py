@@ -380,3 +380,135 @@ def test_each_layer_is_configured_by_its_own_directory(tmp_path: Path) -> None:
     assert Path(added["path"]) == team / "task/LEAD-1234/knowledge.yaml"
     promoted = service.promote(added["entry"]["id"])
     assert promoted["status"] == "reviewed"
+
+def test_a_project_references_company_and_line_products(tmp_path: Path) -> None:
+    entities = [
+        TeamEntity(id="org://auto-sub", kind="org", name="Auto Sub"),
+        TeamEntity(
+            id="line://auto-outsourcing",
+            kind="line",
+            name="Outsourcing",
+            parent="org://auto-sub",
+        ),
+        TeamEntity(
+            id="product://paas",
+            kind="product",
+            name="PaaS",
+            parent="org://auto-sub",
+            codebases=("https://git/paas",),
+            designs=("docs/paas/design.md",),
+        ),
+        TeamEntity(
+            id="product://std-crm",
+            kind="product",
+            name="Standard CRM",
+            parent="line://auto-outsourcing",
+            codebases=("https://git/std-crm",),
+        ),
+        TeamEntity(
+            id="product://legacy-crm",
+            kind="product",
+            name="Legacy CRM",
+            parent="line://auto-outsourcing",
+            archived=True,
+            codebases=("https://git/legacy-crm",),
+            designs=("docs/legacy/design.md",),
+        ),
+        TeamEntity(
+            id="project://changan",
+            kind="project",
+            name="Changan",
+            parent="line://auto-outsourcing",
+            references=(
+                "product://paas",
+                "product://std-crm",
+                "product://legacy-crm",
+            ),
+        ),
+        TeamEntity(
+            id="batch://phase-1",
+            kind="batch",
+            name="Phase 1",
+            parent="project://changan",
+        ),
+        TeamEntity(
+            id="version://v1.2.0",
+            kind="version",
+            name="v1.2.0",
+            parent="batch://phase-1",
+        ),
+        TeamEntity(
+            id="task://LEAD-1234",
+            kind="task",
+            name="Task",
+            parent="version://v1.2.0",
+        ),
+    ]
+    knowledge = [
+        KnowledgeEntry(
+            id="K-org",
+            scope="org://auto-sub",
+            type="redline",
+            statement="Never commit keys",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-proj",
+            scope="project://changan",
+            type="decision",
+            statement="Use PostgreSQL",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-paas",
+            scope="product://paas",
+            type="convention",
+            statement="PaaS calls go through the gateway",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-std",
+            scope="product://std-crm",
+            type="design",
+            statement="Standard CRM uses the shared lead schema",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-legacy",
+            scope="product://legacy-crm",
+            type="design",
+            statement="Legacy CRM stored leads in XML",
+            status="reviewed",
+        ),
+    ]
+    catalog = Catalog(
+        entities={entity.id: entity for entity in entities},
+        knowledge={entry.id: entry for entry in knowledge},
+    )
+
+    result = assemble(catalog, task="task://LEAD-1234")
+    text = result.text
+    assert (
+        'referenced="product://paas product://std-crm product://legacy-crm"'
+        in text
+    )
+    assert "[referenced: product://std-crm]" in text
+    assert "PaaS calls go through the gateway" in text
+    # A referenced product informs; the project's own chain comes first.
+    assert text.index("Use PostgreSQL") < text.index(
+        "Standard CRM uses the shared lead schema"
+    )
+    assert "- product://legacy-crm [historical]" in text
+    assert "codebases: https://git/legacy-crm" in text
+    assert "designs: docs/legacy/design.md" in text
+    assert [entity.id for entity in result.referenced] == [
+        "product://paas",
+        "product://std-crm",
+        "product://legacy-crm",
+    ]
+
+    service = TeamContextService(
+        _workspace_with_catalog(tmp_path, catalog), home=tmp_path / "home"
+    )
+    hits = service.search("lead schema", scope="task://LEAD-1234")
+    assert [row["id"] for row in hits] == ["K-std"]

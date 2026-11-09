@@ -49,17 +49,22 @@ CATALOG_RELATIVE = TEAM_RELATIVE / "catalog.yaml"
 LAYER_DIRECTORIES = {
     "org": ("company", "org"),
     "line": ("line",),
+    "product": ("product",),
     "project": ("project",),
     "batch": ("batch",),
     "version": ("version",),
     "task": ("task",),
 }
-PARENT_KIND: dict[str, str] = {
-    "line": "org",
-    "project": "line",
-    "batch": "project",
-    "version": "batch",
-    "task": "version",
+# A product is an asset node, so it may be owned by the organization (a PaaS
+# product) or by a line (a standard product). Projects reference it rather than
+# inheriting from it.
+PARENT_KINDS: dict[str, tuple[str, ...]] = {
+    "line": ("org",),
+    "product": ("org", "line"),
+    "project": ("line",),
+    "batch": ("project",),
+    "version": ("batch",),
+    "task": ("version",),
 }
 
 
@@ -193,18 +198,16 @@ def _read_layer(kind: str, directory: Path) -> Catalog:
             raise TeamContextError(f"{entity_file} must contain a mapping")
         raw = loaded
     declared_kind = str(raw.get("kind") or kind)
-    entity = TeamEntity(
-        id=str(raw.get("id") or f"{kind}://{slug}"),
-        kind=KIND_ALIASES.get(declared_kind, declared_kind),
-        name=str(raw.get("name") or slug),
-        parent=(str(raw["parent"]).strip() if raw.get("parent") else None),
-        external=bool(raw.get("external", False)),
-        workspace=(str(raw["workspace"]).strip() if raw.get("workspace") else None),
-    )
-    if entity.kind != kind:
+    declared_kind = KIND_ALIASES.get(declared_kind, declared_kind)
+    if declared_kind != kind:
         raise TeamContextError(
-            f"{directory} declares kind {entity.kind} but sits under {kind}/"
+            f"{directory} declares kind {declared_kind} but sits under {kind}/"
         )
+    meta = dict(raw)
+    meta["kind"] = kind
+    meta.setdefault("id", f"{kind}://{slug}")
+    meta.setdefault("name", slug)
+    entity = TeamEntity.from_mapping(meta)
     knowledge: dict[str, KnowledgeEntry] = {}
     files = [directory / "knowledge.yaml"]
     files.extend(sorted((directory / "knowledge").glob("*.yaml")))
@@ -270,12 +273,20 @@ def _validate(catalog: Catalog) -> None:
             raise TeamContextError(
                 f"entity {entity.id} references missing parent {entity.parent}"
             )
-        expected = PARENT_KIND.get(entity.kind)
-        if expected is not None and parent.kind != expected:
+        expected = PARENT_KINDS.get(entity.kind)
+        if expected is not None and parent.kind not in expected:
             raise TeamContextError(
-                f"{entity.kind} {entity.id} must sit under a {expected}, "
+                f"{entity.kind} {entity.id} must sit under one of {expected}, "
                 f"but {parent.id} is a {parent.kind}"
             )
+    for entity in catalog.entities.values():
+        for reference in entity.references:
+            if reference == entity.id:
+                raise TeamContextError(f"{entity.id} cannot reference itself")
+            if reference not in catalog.entities:
+                raise TeamContextError(
+                    f"{entity.id} references missing entity {reference}"
+                )
     for entity in catalog.entities.values():
         seen = {entity.id}
         current = entity

@@ -5,8 +5,16 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-ENTITY_KINDS = ("org", "line", "project", "batch", "version", "task")
-KNOWLEDGE_TYPES = ("redline", "decision", "convention", "domain", "lesson", "external")
+ENTITY_KINDS = ("org", "line", "product", "project", "batch", "version", "task")
+KNOWLEDGE_TYPES = (
+    "redline",
+    "decision",
+    "convention",
+    "domain",
+    "design",
+    "lesson",
+    "external",
+)
 CONFIDENCE_LEVELS = ("high", "medium", "low")
 REVIEW_STATES = ("draft", "reviewed", "deprecated")
 # Old names kept for the document's wording (company is the org layer).
@@ -17,9 +25,26 @@ class TeamContextError(ValueError):
     """A catalog or entry violates the six-layer rules."""
 
 
+def _string_tuple(value: Any) -> tuple[str, ...]:
+    if value is None:
+        return ()
+    if isinstance(value, str):
+        return (value.strip(),) if value.strip() else ()
+    if isinstance(value, (list, tuple)):
+        return tuple(str(item).strip() for item in value if str(item).strip())
+    raise TeamContextError("expected a string or a list of strings")
+
+
 @dataclass(frozen=True, slots=True)
 class TeamEntity:
-    """One node of the six-layer organization model."""
+    """One node of the six-layer organization model.
+
+    ``product`` is an asset node, not a seventh management layer: an organization
+    owns PaaS products, a line owns its standard products, and a project
+    *references* them instead of inheriting from them. A referenced product
+    contributes design and codebase pointers plus its own knowledge, but never
+    overrides the project's chain.
+    """
 
     id: str
     kind: str
@@ -27,6 +52,15 @@ class TeamEntity:
     parent: str | None = None
     external: bool = False
     workspace: str | None = None
+    # Multi-reference: projects cite products (and other capabilities) without
+    # copying them, so a product stays single-owned.
+    references: tuple[str, ...] = ()
+    # Pointers, not content: the agent opens them through its normal tools.
+    designs: tuple[str, ...] = ()
+    codebases: tuple[str, ...] = ()
+    # A historical product stays searchable and referenceable, but is labelled
+    # historical and never counts as the current standard.
+    archived: bool = False
 
     def __post_init__(self) -> None:
         if self.kind not in ENTITY_KINDS:
@@ -56,6 +90,10 @@ class TeamEntity:
                 parent=(str(raw["parent"]).strip() if raw.get("parent") else None),
                 external=bool(raw.get("external", False)),
                 workspace=(str(raw["workspace"]).strip() if raw.get("workspace") else None),
+                references=_string_tuple(raw.get("references")),
+                designs=_string_tuple(raw.get("designs")),
+                codebases=_string_tuple(raw.get("codebases")),
+                archived=bool(raw.get("archived", False)),
             )
         except KeyError as exc:
             raise TeamContextError(f"entity is missing {exc.args[0]!r}") from exc
@@ -68,6 +106,14 @@ class TeamEntity:
             data["external"] = True
         if self.workspace:
             data["workspace"] = self.workspace
+        if self.references:
+            data["references"] = list(self.references)
+        if self.designs:
+            data["designs"] = list(self.designs)
+        if self.codebases:
+            data["codebases"] = list(self.codebases)
+        if self.archived:
+            data["archived"] = True
         return data
 
 
