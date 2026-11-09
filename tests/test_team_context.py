@@ -1,0 +1,319 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+import yaml
+
+from core.team_context import (
+    Catalog,
+    KnowledgeEntry,
+    TeamContextError,
+    TeamContextService,
+    TeamEntity,
+    assemble,
+    load_catalog,
+    resolve_chain,
+    save_catalog,
+    team_context_preamble,
+)
+
+
+def _catalog() -> Catalog:
+    entities = [
+        TeamEntity(id="org://auto-sub", kind="org", name="Auto Sub"),
+        TeamEntity(
+            id="line://auto-outsourcing",
+            kind="line",
+            name="Outsourcing",
+            parent="org://auto-sub",
+        ),
+        TeamEntity(
+            id="project://changan-lead-center",
+            kind="project",
+            name="Lead Center",
+            parent="line://auto-outsourcing",
+        ),
+        TeamEntity(
+            id="batch://phase-1",
+            kind="batch",
+            name="Phase 1",
+            parent="project://changan-lead-center",
+        ),
+        TeamEntity(
+            id="batch://phase-2-external",
+            kind="batch",
+            name="Phase 2 (external)",
+            parent="project://changan-lead-center",
+            external=True,
+        ),
+        TeamEntity(
+            id="version://v1.2.0",
+            kind="version",
+            name="v1.2.0",
+            parent="batch://phase-1",
+        ),
+        TeamEntity(
+            id="task://LEAD-1234",
+            kind="task",
+            name="Task",
+            parent="version://v1.2.0",
+        ),
+    ]
+    knowledge = [
+        KnowledgeEntry(
+            id="K-org-red",
+            scope="org://auto-sub",
+            type="redline",
+            statement="Never commit production keys",
+            status="reviewed",
+            confidence="high",
+            owner="platform",
+        ),
+        KnowledgeEntry(
+            id="K-line",
+            scope="line://auto-outsourcing",
+            type="convention",
+            statement="Use the shared logging facade",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-project",
+            scope="project://changan-lead-center",
+            type="decision",
+            statement="Lead Center uses PostgreSQL",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-task",
+            scope="task://LEAD-1234",
+            type="lesson",
+            statement="The importer retries twice",
+            status="draft",
+        ),
+        KnowledgeEntry(
+            id="K-ext",
+            scope="batch://phase-2-external",
+            type="external",
+            statement="Phase 2 added a GraphQL endpoint",
+            source="external-phase-2",
+            status="reviewed",
+        ),
+        KnowledgeEntry(
+            id="K-deprecated",
+            scope="project://changan-lead-center",
+            type="decision",
+            statement="Old decision",
+            status="deprecated",
+        ),
+    ]
+    return Catalog(
+        entities={entity.id: entity for entity in entities},
+        knowledge={entry.id: entry for entry in knowledge},
+        bind="task://LEAD-1234",
+    )
+
+
+def _workspace_with_catalog(tmp_path: Path, catalog: Catalog) -> Path:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    save_catalog(workspace, catalog, home=tmp_path / "home")
+    return workspace
+
+
+def test_the_chain_runs_from_task_to_org() -> None:
+    chain = resolve_chain(_catalog(), "task://LEAD-1234")
+    assert [entity.kind for entity in chain] == [
+        "task",
+        "version",
+        "batch",
+        "project",
+        "line",
+        "org",
+    ]
+
+
+def test_assembly_labels_scopes_and_orders_red_lines_first() -> None:
+    result = assemble(_catalog(), task="task://LEAD-1234")
+    assert "red lines" in result.text
+    assert result.text.index("Never commit production keys") < result.text.index(
+        "Use the shared logging facade"
+    )
+    assert "[draft]" in result.text
+    assert "Old decision" not in result.text
+
+
+def test_external_references_are_labelled_and_can_be_excluded() -> None:
+    included = assemble(_catalog(), task="batch://phase-2-external")
+    assert "GraphQL" in included.text
+    assert "external: external-phase-2, unverified" in included.text
+
+    excluded = assemble(
+        _catalog(), task="batch://phase-2-external", include_external=False
+    )
+    assert "GraphQL" not in excluded.text
+    assert excluded.external_excluded == 1
+
+
+def test_a_narrow_scope_cannot_override_an_org_red_line() -> None:
+    catalog = _catalog()
+    override = KnowledgeEntry(
+        id="K-rogue",
+        scope="task://LEAD-1234",
+        type="convention",
+        statement="Keys may live in the repo",
+        status="reviewed",
+        supersedes="K-org-red",
+    )
+    catalog = Catalog(
+        entities=catalog.entities,
+        knowledge={**catalog.knowledge, override.id: override},
+        bind=catalog.bind,
+    )
+    result = assemble(catalog, task="task://LEAD-1234")
+    assert "Keys may live in the repo" not in result.text
+    assert "Never commit production keys" in result.text
+    assert result.blocked_overrides == ("K-rogue",)
+
+
+def test_the_budget_truncates_the_weakest_entries() -> None:
+    result = assemble(_catalog(), task="task://LEAD-1234", max_chars=260)
+    assert result.truncated is True
+    assert "red lines" in result.text
+    assert len(result.text) <= 400
+
+
+def test_catalog_round_trip_and_workspace_binding(tmp_path: Path) -> None:
+    catalog = _catalog()
+    workspace = _workspace_with_catalog(tmp_path, catalog)
+    loaded = load_catalog(workspace, home=tmp_path / "home")
+    assert loaded.bind == "task://LEAD-1234"
+    assert loaded.entities.keys() == catalog.entities.keys()
+    raw = yaml.safe_load(
+        (workspace / ".deepcode/team/catalog.yaml").read_text(encoding="utf-8")
+    )
+    assert raw["bind"] == "task://LEAD-1234"
+    assert raw["knowledge"][0]["scope"] == "org://auto-sub"
+
+
+def test_global_catalog_merges_under_the_workspace_layer(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    global_path = home / ".deepcode/team/catalog.yaml"
+    global_path.parent.mkdir(parents=True)
+    global_path.write_text(
+        yaml.safe_dump(
+            {
+                "entities": [
+                    {"id": "org://auto-sub", "kind": "org", "name": "Auto Sub"}
+                ],
+                "knowledge": [
+                    {
+                        "id": "K-global",
+                        "scope": "org://auto-sub",
+                        "type": "redline",
+                        "statement": "Company red line",
+                        "status": "reviewed",
+                    }
+                ],
+            },
+            allow_unicode=True,
+        ),
+        encoding="utf-8",
+    )
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    save_catalog(
+        workspace,
+        Catalog(
+            entities=_catalog().entities,
+            knowledge={
+                key: value
+                for key, value in _catalog().knowledge.items()
+                if key != "K-org-red"
+            },
+            bind="task://LEAD-1234",
+        ),
+        home=home,
+    )
+    loaded = load_catalog(workspace, home=home)
+    assert "K-global" in loaded.knowledge
+    assert "K-org-red" not in loaded.knowledge
+    assert "Company red line" in assemble(loaded, task="task://LEAD-1234").text
+
+
+def test_unknown_scope_and_wrong_parent_kind_are_rejected(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    entities = {
+        "org://auto-sub": TeamEntity(id="org://auto-sub", kind="org", name="org"),
+        "task://x": TeamEntity(
+            id="task://x", kind="task", name="x", parent="org://auto-sub"
+        ),
+    }
+    with pytest.raises(TeamContextError):
+        save_catalog(tmp_path, Catalog(entities=entities), home=home)
+
+    catalog = _catalog()
+    orphan = KnowledgeEntry(
+        id="K-orphan",
+        scope="project://does-not-exist",
+        type="lesson",
+        statement="orphan",
+    )
+    with pytest.raises(TeamContextError):
+        save_catalog(
+            tmp_path,
+            Catalog(
+                entities=catalog.entities,
+                knowledge={**catalog.knowledge, orphan.id: orphan},
+                bind=catalog.bind,
+            ),
+            home=home,
+        )
+
+
+def test_service_searches_within_a_scope_and_records_drafts(tmp_path: Path) -> None:
+    workspace = _workspace_with_catalog(tmp_path, _catalog())
+    service = TeamContextService(workspace, home=tmp_path / "home")
+
+    hits = service.search("logging", scope="task://LEAD-1234")
+    assert [row["id"] for row in hits] == ["K-line"]
+
+    without_external = service.search("GraphQL", include_external=False)
+    assert without_external == []
+
+    added = service.add(
+        scope="project://changan-lead-center",
+        type="lesson",
+        statement="The legacy importer ignores BOM headers",
+        rationale="observed twice",
+    )
+    entry = added["entry"]
+    assert entry["status"] == "draft"
+    reloaded = load_catalog(workspace, home=tmp_path / "home")
+    assert reloaded.knowledge[entry["id"]].status == "draft"
+
+    promoted = service.promote(entry["id"], owner="tech-lead")
+    assert promoted["status"] == "reviewed"
+    assert load_catalog(workspace, home=tmp_path / "home").knowledge[
+        entry["id"]
+    ].owner == "tech-lead"
+
+
+def test_prompt_preamble_is_empty_without_a_binding(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    assert team_context_preamble(workspace, home=tmp_path / "home") == ""
+
+    save_catalog(workspace, _catalog(), home=tmp_path / "home")
+    preamble = team_context_preamble(workspace, home=tmp_path / "home")
+    assert preamble.startswith('<team-context task="task://LEAD-1234"')
+    assert "Never commit production keys" in preamble
+    assert "team_context tool" in preamble
+
+
+def test_a_malformed_catalog_does_not_break_prompt_assembly(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    path = workspace / ".deepcode/team/catalog.yaml"
+    path.parent.mkdir(parents=True)
+    path.write_text("entities: [", encoding="utf-8")
+    assert team_context_preamble(workspace, home=tmp_path / "home") == ""

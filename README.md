@@ -438,6 +438,11 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   set. Sub-agents can work in separate Git worktrees, run on a model chosen by
   routing category, and wait on each other with `depends_on`.
   [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
+- **Team context.** A six-layer ownership chain (org → line → project → batch →
+  version → task) with a reviewed knowledge catalog: organization red lines
+  cannot be overridden, external batches stay labelled as unverified, and every
+  Turn assembles the same context from `.deepcode/team/catalog.yaml`.
+  [Team context](docs/guide/team-context.md)
 - **Automations.** Run a saved instruction on a schedule with the same
   agent, permissions and history.
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)
@@ -500,6 +505,7 @@ vulnerability, see [SECURITY.md](SECURITY.md).
 | Scripts, CI and administration | [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md) |
 | MCP servers | [MCP guide](docs/integrations/MCP.md) |
 | Background service | [Local background service](docs/SERVICE_RUNTIME.md) |
+| Team context | [Team context](docs/guide/team-context.md) |
 | Upgrades and backups | [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md) |
 | Desktop from source | [Desktop guide](desktop/README.md) |
 | Paper2Code | [Paper2Code](docs/paper2code.md) |

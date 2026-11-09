@@ -17,8 +17,8 @@ about.
 from __future__ import annotations
 
 import inspect
-from collections.abc import Awaitable, Callable
 import os
+from collections.abc import Awaitable, Callable
 from pathlib import Path
 from typing import Any
 
@@ -537,6 +537,7 @@ def build_agent_session(
     from core.harness.collaboration import collaboration_preamble
     from core.harness.memory import system_preamble
     from core.skills.runtime import SkillRuntime
+    from core.team_context.prompt import team_context_preamble
 
     if skill_runtime is None:
         skill_runtime = SkillRuntime(workspace)
@@ -545,6 +546,7 @@ def build_agent_session(
             engine.mode, unattended=bool(security_posture["unattended"])
         ),
         system_preamble(workspace),
+        team_context_preamble(workspace),
     ]
     addendum = "\n\n".join(a for a in addenda if a)
     full_system_prompt = f"{system_prompt}\n\n{addendum}" if addendum else system_prompt

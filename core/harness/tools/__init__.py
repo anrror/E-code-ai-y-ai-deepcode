@@ -41,8 +41,8 @@ __all__ = [
     "NotFoundError",
     "PatchError",
     "ReadTool",
-    "WriteTool",
     "WebFetchTool",
+    "WriteTool",
     "default_coding_tools",
     "parse_patch",
     "replace",
@@ -102,6 +102,7 @@ def default_coding_tools(
         SpawnAgentTool,
         WaitAgentTool,
     )
+    from core.harness.tools.team_context import TeamContextTool
     from core.harness.tools.user_input import RequestUserInputTool
 
     registry = ToolRegistry()
@@ -112,6 +113,8 @@ def default_coding_tools(
             ReadTool(workspace),
             GrepTool(workspace),
             GlobTool(workspace),
+            # Reading team context is safe; `add` is refused in this mode.
+            TeamContextTool(workspace, allow_write=False),
         ]
         if fences_writes():
             read_only_tools.append(BashTool(workspace, read_only_workspace=True))
@@ -153,6 +156,7 @@ def default_coding_tools(
         MemoryTool(workspace),
         UpdatePlanTool(),  # the agent's self-driven TODO plan
         WebFetchTool(),
+        TeamContextTool(workspace),
     ]
     # Standalone fallback is workspace-hermetic (no ambient ~/.claude scan);
     # build_agent_session passes the full project+user set via `skills`.

@@ -391,6 +391,10 @@ Desktop 不使用这个共享进程。它把自己的 App Server 作为子进程
 - **Agent 预设与子代理。** 预设设定角色并收窄可用工具。子代理可以在独立的 Git
   worktree 里工作，可按路由类别选择模型，并用 `depends_on` 互相等待。
   [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
+- **团队上下文。** 六层归属链（公司 → 产线 → 项目 → 批次 → 版本 → 任务）配一份
+  经过评审的知识目录：公司级红线不可被覆盖，外部批次始终标注「未验证」，每个回合
+  都从 `.deepcode/team/catalog.yaml` 装配同一份上下文。
+  [团队上下文](docs/guide/team-context.md)
 - **自动化。** 按计划运行保存好的指令，使用同样的 Agent、权限和历史记录。
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)
 - **语音输入。** Desktop 和 Web 的输入框可选开启听写。
@@ -444,6 +448,7 @@ vLLM。**Custom** 连接可以指向任何支持 OpenAI Chat Completions、OpenA
 | 脚本、CI 与管理命令 | [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md) |
 | MCP 服务器 | [MCP guide](docs/integrations/MCP.md) |
 | 后台服务 | [Local background service](docs/SERVICE_RUNTIME.md) |
+| 团队上下文 | [团队上下文](docs/guide/team-context.md) |
 | 升级与备份 | [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md) |
 | 从源码运行 Desktop | [Desktop 指南](desktop/README.md) |
 | Paper2Code | [Paper2Code](docs/paper2code.zh-CN.md) |
