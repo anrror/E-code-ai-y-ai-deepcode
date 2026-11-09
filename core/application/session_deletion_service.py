@@ -6,7 +6,7 @@ import logging
 import sqlite3
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Protocol
 
 from core.application.errors import (
     ApplicationError,
@@ -27,6 +27,19 @@ from core.sessions.store import SessionDeletionGuard
 logger = logging.getLogger(__name__)
 DeletionCallback = Callable[[str], None]
 ProjectionCallback = Callable[[str], object]
+
+
+class WorktreeCleaner(Protocol):
+    """The part of :class:`WorktreeService` deletion needs."""
+
+    def remove(
+        self,
+        thread_id: str,
+        *,
+        disposition: str,
+        force: bool = False,
+        delete_branch: bool = False,
+    ) -> object: ...
 
 
 @dataclass(frozen=True, slots=True)
@@ -52,12 +65,14 @@ class SessionDeletionService:
         *,
         ensure_projection: ProjectionCallback | None = None,
         on_deleted: DeletionCallback | None = None,
+        worktrees: WorktreeCleaner | None = None,
     ) -> None:
         self.database = database
         self.sessions = sessions
         self.goals = goals
         self._ensure_projection = ensure_projection
         self._on_deleted = on_deleted
+        self.worktrees = worktrees
 
     def delete(self, thread_id: str) -> SessionDeletionResult:
         activity = self.sessions.acquire_deletion_lease(thread_id)
@@ -79,6 +94,7 @@ class SessionDeletionService:
                 },
             )
         with activity:
+            self._release_worktree(thread_id)
             self._project_canonical_session(thread_id)
             with self.sessions.deletion_guard(thread_id) as guarded:
                 result = self._delete_guarded(thread_id, guarded)
@@ -228,6 +244,30 @@ class SessionDeletionService:
                 }
             )
         return blockers
+
+    def _release_worktree(self, thread_id: str) -> None:
+        """Clean the app-managed worktree so deletion is one action.
+
+        A managed worktree is app state, not user data: deleting a forked
+        Session should not require finding a separate worktree command. When
+        cleanup refuses (uncommitted changes, an open terminal), the Session is
+        left attached and ``_blockers`` reports why.
+        """
+
+        if self.worktrees is None:
+            return
+        with self.database.read() as connection:
+            thread = ThreadRepository(connection).get(thread_id)
+        if thread is None or thread.worktree_path is None:
+            return
+        # A stale or foreign path is not ours to touch; the blocker below
+        # reports it instead of a git error from an unreachable repository.
+        if not Path(thread.worktree_path).exists():
+            return
+        try:
+            self.worktrees.remove(thread_id, disposition="clean")
+        except ApplicationError as exc:
+            logger.info("kept the worktree of %s: %s", thread_id, exc)
 
     def _notify_deleted(self, thread_id: str) -> None:
         if self._on_deleted is None:

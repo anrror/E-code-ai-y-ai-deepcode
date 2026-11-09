@@ -254,3 +254,51 @@ def test_cleanup_failure_keeps_tombstone_for_next_startup(tmp_path: Path) -> Non
         assert _row_count(recovered, "threads", thread_id) == 0
     finally:
         recovered.close()
+
+def test_deleting_a_forked_session_cleans_its_managed_worktree(tmp_path: Path) -> None:
+    import subprocess
+
+    workspace = tmp_path / "repo"
+    workspace.mkdir()
+    subprocess.run(
+        ["git", "init", "-b", "main"], cwd=workspace, check=True, capture_output=True
+    )
+    (workspace / "README.md").write_text("seed\n", encoding="utf-8")
+    subprocess.run(
+        ["git", "add", "."], cwd=workspace, check=True, capture_output=True
+    )
+    subprocess.run(
+        [
+            "git",
+            "-c",
+            "user.name=test",
+            "-c",
+            "user.email=test@example.com",
+            "commit",
+            "-m",
+            "seed",
+        ],
+        cwd=workspace,
+        check=True,
+        capture_output=True,
+    )
+    sessions = SessionStore(tmp_path / "sessions")
+    application = DeepCodeApplication.open(
+        tmp_path / "state.sqlite3", session_store=sessions
+    )
+    try:
+        project = application.projects.add(
+            str(workspace), trust_state=TrustState.TRUSTED
+        )
+        thread = application.threads.start(project.id, title="Forked")
+        created = application.worktrees.create(thread.id)
+        worktree = Path(created.path)
+        assert worktree.is_dir()
+
+        application.deletions.delete(thread.id)
+
+        assert not worktree.exists()
+        with application.database.read() as connection:
+            assert ThreadRepository(connection).get(thread.id) is None
+    finally:
+        application.close()

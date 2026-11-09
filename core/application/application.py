@@ -196,6 +196,7 @@ class DeepCodeApplication:
             self.thread_goal_store,
             ensure_projection=self.threads.read,
             on_deleted=self._on_session_deleted,
+            worktrees=self.worktrees,
         )
         self.automations = AutomationService(
             database,
