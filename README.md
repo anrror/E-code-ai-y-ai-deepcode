@@ -441,8 +441,9 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
 - **Team context.** A six-layer ownership chain (org → line → project → batch →
   version → task) with a reviewed knowledge catalog: organization red lines
   cannot be overridden, external batches stay labelled as unverified, and every
-  Turn assembles the same context from `.deepcode/team/catalog.yaml`.
-  [Team context](docs/guide/team-context.md)
+  Turn assembles the same context from per-layer directories
+  (`.deepcode/team/<layer>/<slug>/` with `entity.yaml`, `knowledge.yaml`, and
+  `AGENTS.md`). [Team context](docs/guide/team-context.md)
 - **Automations.** Run a saved instruction on a schedule with the same
   agent, permissions and history.
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)

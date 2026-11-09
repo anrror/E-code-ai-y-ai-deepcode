@@ -2,15 +2,19 @@
 
 from __future__ import annotations
 
+import os
 import uuid
 from dataclasses import replace
 from pathlib import Path
 from typing import Any
 
+import yaml
+
 from core.team_context.assembler import DEFAULT_MAX_CHARS, assemble, resolve_chain
 from core.team_context.catalog import (
     CATALOG_RELATIVE,
     Catalog,
+    append_knowledge,
     load_catalog,
     save_catalog,
 )
@@ -23,7 +27,6 @@ from core.team_context.models import (
 
 class TeamContextService:
     """File-backed team context for one workspace."""
-
     def __init__(self, workspace: str | Path, home: str | Path | None = None) -> None:
         self.workspace = Path(workspace)
         self.home = Path(home) if home is not None else None
@@ -133,6 +136,10 @@ class TeamContextService:
             supersedes=supersedes,
         )
         workspace_layer = self._workspace_layer()
+        directory = catalog.directories.get(scope)
+        if directory is not None and _is_within(directory, self.workspace):
+            path = append_knowledge(directory, entry)
+            return {"entry": entry.to_mapping(), "path": str(path)}
         saved = save_catalog(
             self.workspace,
             replace(
@@ -146,15 +153,37 @@ class TeamContextService:
     def promote(self, entry_id: str, *, owner: str = "") -> dict[str, Any]:
         """Mark a draft as reviewed; governance stays an explicit act."""
 
+        catalog = self.catalog()
+        current = catalog.knowledge.get(entry_id)
+        if current is None:
+            raise TeamContextError(f"unknown knowledge entry {entry_id}")
+        directory = catalog.directories.get(current.scope)
+        if directory is not None and _is_within(directory, self.workspace):
+            path = directory / "knowledge.yaml"
+            raw = yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else []
+            items = [raw] if isinstance(raw, dict) else (raw or [])
+            if not isinstance(items, list):
+                raise TeamContextError(f"{path} must contain a list of entries")
+            for item in items:
+                if isinstance(item, dict) and str(item.get("id")) == entry_id:
+                    item["status"] = "reviewed"
+                    if owner:
+                        item["owner"] = owner
+                    _write_yaml(path, items)
+                    updated = replace(
+                        current, status="reviewed", owner=owner or current.owner
+                    )
+                    return updated.to_mapping()
+            raise TeamContextError(
+                f"{entry_id} is not in {path}; promote it where it is owned"
+            )
         workspace_layer = self._workspace_layer()
         entry = workspace_layer.knowledge.get(entry_id)
         if entry is None:
             raise TeamContextError(
                 f"{entry_id} is not in {CATALOG_RELATIVE}; promote it where it is owned"
             )
-        updated = replace(
-            entry, status="reviewed", owner=owner or entry.owner
-        )
+        updated = replace(entry, status="reviewed", owner=owner or entry.owner)
         save_catalog(
             self.workspace,
             replace(
@@ -172,3 +201,20 @@ class TeamContextService:
         from core.team_context.catalog import _read_catalog  # local: private helper
 
         return _read_catalog(path)
+
+
+def _is_within(directory: Path, root: Path) -> bool:
+    try:
+        directory.resolve().relative_to(root.resolve())
+    except ValueError:
+        return False
+    return True
+
+
+def _write_yaml(path: Path, payload: Any) -> None:
+    temporary = path.with_suffix(path.suffix + ".tmp")
+    temporary.write_text(
+        yaml.safe_dump(payload, allow_unicode=True, sort_keys=False),
+        encoding="utf-8",
+    )
+    os.replace(temporary, path)

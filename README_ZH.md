@@ -393,7 +393,8 @@ Desktop 不使用这个共享进程。它把自己的 App Server 作为子进程
   [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
 - **团队上下文。** 六层归属链（公司 → 产线 → 项目 → 批次 → 版本 → 任务）配一份
   经过评审的知识目录：公司级红线不可被覆盖，外部批次始终标注「未验证」，每个回合
-  都从 `.deepcode/team/catalog.yaml` 装配同一份上下文。
+  都从每层各自的目录（`.deepcode/team/<层>/<slug>/`，含 `entity.yaml`、
+  `knowledge.yaml`、`AGENTS.md`）装配同一份上下文。
   [团队上下文](docs/guide/team-context.md)
 - **自动化。** 按计划运行保存好的指令，使用同样的 Agent、权限和历史记录。
   [Automations](docs/guide/goals-and-headless.md#persistent-interval-automations)

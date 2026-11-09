@@ -317,3 +317,66 @@ def test_a_malformed_catalog_does_not_break_prompt_assembly(tmp_path: Path) -> N
     path.parent.mkdir(parents=True)
     path.write_text("entities: [", encoding="utf-8")
     assert team_context_preamble(workspace, home=tmp_path / "home") == ""
+
+def test_each_layer_is_configured_by_its_own_directory(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    team = workspace / ".deepcode/team"
+
+    def layer(directory: str, slug: str, meta: dict, *, agents: str = "", knowledge=None):
+        target = team / directory / slug
+        target.mkdir(parents=True)
+        (target / "entity.yaml").write_text(
+            yaml.safe_dump(meta, allow_unicode=True), encoding="utf-8"
+        )
+        if agents:
+            (target / "AGENTS.md").write_text(agents, encoding="utf-8")
+        if knowledge:
+            (target / "knowledge.yaml").write_text(
+                yaml.safe_dump(knowledge, allow_unicode=True), encoding="utf-8"
+            )
+
+    layer("company", "auto-sub", {"name": "Auto Sub"}, agents="Company red line: never commit keys")
+    layer("line", "auto-outsourcing", {"name": "Outsourcing", "parent": "org://auto-sub"})
+    layer("project", "changan", {"name": "Changan", "parent": "line://auto-outsourcing"})
+    layer("batch", "phase-1", {"name": "Phase 1", "parent": "project://changan"})
+    layer("version", "v1.2.0", {"name": "v1.2.0", "parent": "batch://phase-1"})
+    layer(
+        "task",
+        "LEAD-1234",
+        {"name": "Task", "parent": "version://v1.2.0", "workspace": str(workspace)},
+        agents="Task instruction: run pytest -q",
+        knowledge=[
+            {
+                "id": "K-task",
+                "scope": "task://LEAD-1234",
+                "type": "lesson",
+                "statement": "retries twice",
+                "status": "reviewed",
+            }
+        ],
+    )
+
+    catalog = load_catalog(workspace, home=tmp_path / "home")
+    assert set(catalog.entities) == {
+        "org://auto-sub",
+        "line://auto-outsourcing",
+        "project://changan",
+        "batch://phase-1",
+        "version://v1.2.0",
+        "task://LEAD-1234",
+    }
+    assert catalog.bind_for(workspace) == "task://LEAD-1234"
+
+    text = assemble(catalog, task="task://LEAD-1234").text
+    assert "Company red line: never commit keys" in text
+    assert "Task instruction: run pytest -q" in text
+    assert text.index("Company red line") < text.index("Task instruction")
+    assert "retries twice" in text
+
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    added = service.add(
+        scope="task://LEAD-1234", type="lesson", statement="draft in the layer"
+    )
+    assert Path(added["path"]) == team / "task/LEAD-1234/knowledge.yaml"
+    promoted = service.promote(added["entry"]["id"])
+    assert promoted["status"] == "reviewed"

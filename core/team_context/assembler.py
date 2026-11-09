@@ -129,6 +129,7 @@ def _render(
     chain: Sequence[TeamEntity],
     entries: Sequence[KnowledgeEntry],
     catalog: Catalog,
+    instructions: Sequence[tuple[str, str]],
     *,
     max_chars: int,
 ) -> tuple[str, bool]:
@@ -155,7 +156,20 @@ def _render(
     body: list[str] = []
     used = len(header) + len(footer)
     truncated = False
+    if instructions:
+        title = "layer instructions (a nearer layer is read later and wins):"
+        body.append(title)
+        used += len(title) + 1
+        for entity_id, text in instructions:
+            block = f"--- {entity_id} ---\n{text}"
+            if used + len(block) + 1 > max_chars:
+                truncated = True
+                break
+            body.append(block)
+            used += len(block) + 1
     for title, group in groups:
+        if truncated:
+            break
         if not group:
             continue
         section = [title]
@@ -188,8 +202,15 @@ def assemble(
     entries, excluded, blocked = _ordered_entries(
         catalog, chain, include_external=include_external
     )
+    # Far first, near last: the nearest layer's instructions are the last word,
+    # matching "a nearer rule wins" without discarding the wider context.
+    instruction_blocks = tuple(
+        (entity.id, catalog.instructions[entity.id])
+        for entity in reversed(chain)
+        if entity.id in catalog.instructions
+    )
     text, truncated = _render(
-        start, chain, entries, catalog, max_chars=max_chars
+        start, chain, entries, catalog, instruction_blocks, max_chars=max_chars
     )
     included = tuple(
         entry for entry in entries if _label(entry, catalog) and entry.statement in text

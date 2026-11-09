@@ -9,6 +9,8 @@ ENTITY_KINDS = ("org", "line", "project", "batch", "version", "task")
 KNOWLEDGE_TYPES = ("redline", "decision", "convention", "domain", "lesson", "external")
 CONFIDENCE_LEVELS = ("high", "medium", "low")
 REVIEW_STATES = ("draft", "reviewed", "deprecated")
+# Old names kept for the document's wording (company is the org layer).
+KIND_ALIASES = {"company": "org"}
 
 
 class TeamContextError(ValueError):

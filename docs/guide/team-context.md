@@ -24,61 +24,53 @@ line's knowledge into a project is how two sources of truth start.
 Red lines (`type: redline`) belong at the organization level and can never be
 overridden by a narrower scope.
 
-## Where the catalog lives
+## Every layer is its own directory
 
 ```text
-~/.deepcode/team/catalog.yaml              organization and line entries,
-                                           shared by every workspace here
-<workspace>/.deepcode/team/catalog.yaml    the workspace's entities, its task
-                                           binding, and local knowledge
+~/.deepcode/team/                       shared by every workspace on this machine
+  company/auto-sub/
+    entity.yaml                         name, external, workspace binding
+    AGENTS.md                           that layer's standing instructions
+    knowledge.yaml                      entries owned by this layer
+    knowledge/*.yaml                    one entry (or a list) per file
+<workspace>/.deepcode/team/             the workspace's own layers, committed
+  line/auto-outsourcing/…
+  project/changan/…
+  batch/phase-1/…
+  version/v1.2.0/…
+  task/LEAD-1234/
 ```
 
-The workspace layer wins on the same id. Commit it with the repository: a
-convention that changes build output is repository content, not a personal note.
+Each layer is configured independently: changing the project layer does not
+touch the line or the task; a reviewer edits one directory and the diff stays
+readable. `entity.yaml` may omit `id` (derived as `kind://directory-name`) and
+`name` (defaults to the directory name); `parent` builds the chain, and
+`workspace` binds a task to a folder without any other file.
 
 ```yaml
-bind: task://LEAD-1234
-
-entities:
-  - { id: org://auto-sub, kind: org, name: Auto Sub }
-  - { id: line://auto-outsourcing, kind: line, name: Outsourcing, parent: org://auto-sub }
-  - { id: project://changan-lead-center, kind: project, name: Lead Center, parent: line://auto-outsourcing }
-  - { id: batch://phase-1, kind: batch, name: Phase 1, parent: project://changan-lead-center }
-  - { id: batch://phase-2-external, kind: batch, name: Phase 2 (external),
-      parent: project://changan-lead-center, external: true }
-  - { id: version://v1.2.0, kind: version, name: v1.2.0, parent: batch://phase-1 }
-  - { id: task://LEAD-1234, kind: task, name: Lead importer, parent: version://v1.2.0 }
-
-knowledge:
-  - id: K-001
-    scope: org://auto-sub
-    type: redline
-    statement: Never commit production keys
-    status: reviewed
-    confidence: high
-    owner: platform
-  - id: K-002
-    scope: project://changan-lead-center
-    type: decision
-    statement: Lead Center stores leads in PostgreSQL
-    rationale: Shared failover with the CRM
-    status: reviewed
-  - id: K-003
-    scope: batch://phase-2-external
-    type: external
-    statement: Phase 2 added a GraphQL endpoint
-    source: external-phase-2
-    status: reviewed
-  - id: K-004
-    scope: task://LEAD-1234
-    type: lesson
-    statement: The importer retries twice before surfacing an error
-    status: draft
+# .deepcode/team/task/LEAD-1234/entity.yaml
+name: Lead importer
+parent: version://v1.2.0
+workspace: E:\code\team\lead-center
 ```
 
-A workspace without this file, or without a binding, behaves exactly as before:
-no extra prompt text, no tool calls. A malformed catalog is logged and skipped,
-never allowed to fail a Turn.
+```yaml
+# .deepcode/team/task/LEAD-1234/knowledge.yaml
+- id: K-004
+  scope: task://LEAD-1234
+  type: lesson
+  statement: The importer retries twice before surfacing an error
+  status: draft
+```
+
+The workspace root wins over the shared root on the same id. A single
+`.deepcode/team/catalog.yaml` is still read (and is where programmatic `add`
+lands when a layer has no directory), but the per-layer directories are the
+configurable form: one folder per level, each with its own instructions,
+knowledge, and metadata.
+
+`AGENTS.md` at every layer is injected far-to-near, so the nearest layer is the
+last word and therefore wins on a conflict.
 
 ## How a Turn sees it
 
@@ -86,6 +78,11 @@ never allowed to fail a Turn.
 
 ```text
 <team-context task="task://LEAD-1234" chain="task://LEAD-1234 > version://v1.2.0 > ...">
+layer instructions (a nearer layer is read later and wins):
+--- org://auto-sub ---
+Never commit production keys. Use the shared toolchain.
+--- task://LEAD-1234 ---
+Run pytest -q before claiming done.
 red lines (organization, never overridden):
 - [red line] Never commit production keys
 team facts (reviewed):
