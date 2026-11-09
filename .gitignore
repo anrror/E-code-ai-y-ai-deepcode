@@ -103,6 +103,7 @@ credentials.json
 # Local agent session state (tooling, not project code)
 .ai/
 .omo/
+.opencode/
 
 # Experiment artifacts (large, machine-specific)
 eval/subagent_parallel/.runs/
