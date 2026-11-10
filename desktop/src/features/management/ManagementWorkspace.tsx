@@ -48,7 +48,7 @@ export function ManagementWorkspace({
     return <PluginsPage runtime={runtime} />;
   }
   if (destination === "team") {
-    return <TeamPage runtime={runtime} project={project} />;
+    return <TeamPage key={project?.id ?? "none"} runtime={runtime} project={project} />;
   }
   return <McpPage runtime={runtime} project={project} />;
 }

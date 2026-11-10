@@ -317,6 +317,8 @@ class Dispatcher:
             rpc_methods.TEAM_CREATE: self._team_create,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
+            rpc_methods.TEAM_KNOWLEDGE_UPDATE: self._team_knowledge_update,
+            rpc_methods.TEAM_KNOWLEDGE_REMOVE: self._team_knowledge_remove,
             rpc_methods.FILE_LIST: self._file_list,
             rpc_methods.FILE_READ: self._file_read,
             rpc_methods.FILE_WRITE: self._file_write,
@@ -1683,6 +1685,7 @@ class Dispatcher:
             "references",
             "designs",
             "codebases",
+            "shared",
         )
         service = self._team_service(str(params.string("projectId")))
         return service.create_entity(
@@ -1695,6 +1698,7 @@ class Dispatcher:
             references=list(params.string_array("references")),
             designs=list(params.string_array("designs")),
             codebases=list(params.string_array("codebases")),
+            shared=params.boolean("shared", default=False),
         )
 
     def _team_knowledge_add(self, params: Params) -> dict[str, Any]:
@@ -1707,6 +1711,7 @@ class Dispatcher:
             "evidence",
             "confidence",
             "owner",
+            "shared",
         )
         service = self._team_service(str(params.string("projectId")))
         return service.add(
@@ -1717,17 +1722,51 @@ class Dispatcher:
             evidence=params.string("evidence", required=False) or "",
             confidence=params.string("confidence", required=False) or "medium",
             owner=params.string("owner", required=False) or "",
+            shared=params.boolean("shared", default=False),
         )
 
     def _team_knowledge_promote(self, params: Params) -> dict[str, Any]:
-        params.only("projectId", "knowledgeId", "owner")
+        params.only("projectId", "knowledgeId", "owner", "shared")
         service = self._team_service(str(params.string("projectId")))
         return {
             "entry": service.promote(
                 str(params.string("knowledgeId")),
                 owner=params.string("owner", required=False) or "",
+                shared=params.boolean("shared", default=False),
             )
         }
+
+    def _team_knowledge_update(self, params: Params) -> dict[str, Any]:
+        params.only(
+            "projectId",
+            "knowledgeId",
+            "type",
+            "statement",
+            "rationale",
+            "evidence",
+            "confidence",
+            "owner",
+            "shared",
+        )
+        service = self._team_service(str(params.string("projectId")))
+        return service.update_entry(
+            str(params.string("knowledgeId")),
+            type=params.string("type", required=False) or None,
+            statement=params.string("statement", required=False) or None,
+            rationale=params.string("rationale", required=False) or None,
+            evidence=params.string("evidence", required=False) or None,
+            confidence=params.string("confidence", required=False) or None,
+            owner=params.string("owner", required=False) or None,
+            shared=params.boolean("shared", default=False),
+        )
+
+    def _team_knowledge_remove(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "knowledgeId", "shared")
+        service = self._team_service(str(params.string("projectId")))
+        return service.remove_entry(
+            str(params.string("knowledgeId")),
+            shared=params.boolean("shared", default=False),
+        )
 
     def _project_root(self, project_id: str):
         from pathlib import Path

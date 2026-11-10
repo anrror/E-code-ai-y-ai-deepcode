@@ -145,6 +145,53 @@ def save_catalog(
     return path
 
 
+def _knowledge_files(directory: Path) -> list[Path]:
+    files = [directory / "knowledge.yaml"]
+    folder = directory / "knowledge"
+    if folder.is_dir():
+        files.extend(sorted(folder.glob("*.yaml")))
+    return files
+
+
+def update_knowledge(directory: Path, entry: KnowledgeEntry) -> Path:
+    """Rewrite one entry where it lives: ``knowledge.yaml`` or ``knowledge/*.yaml``."""
+
+    for path in _knowledge_files(directory):
+        if not path.is_file():
+            continue
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
+        single = isinstance(raw, dict)
+        items = [raw] if single else raw
+        if not isinstance(items, list):
+            raise TeamContextError(f"{path} must contain an entry or a list of entries")
+        for index, item in enumerate(items):
+            if isinstance(item, dict) and str(item.get("id")) == entry.id:
+                items[index] = {**item, **entry.to_mapping()}
+                _atomic_yaml(path, items[0] if single else items)
+                return path
+    raise TeamContextError(f"{entry.id} was not found in {directory}")
+
+
+def remove_knowledge(directory: Path, entry_id: str) -> Path:
+    for path in _knowledge_files(directory):
+        if not path.is_file():
+            continue
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or []
+        single = isinstance(raw, dict)
+        items = [raw] if single else raw
+        if not isinstance(items, list):
+            raise TeamContextError(f"{path} must contain an entry or a list of entries")
+        kept = [
+            item
+            for item in items
+            if not (isinstance(item, dict) and str(item.get("id")) == entry_id)
+        ]
+        if len(kept) != len(items):
+            _atomic_yaml(path, kept)
+            return path
+    raise TeamContextError(f"{entry_id} was not found in {directory}")
+
+
 def append_knowledge(directory: Path, entry: KnowledgeEntry) -> Path:
     """Add or replace one entry in a layer directory's ``knowledge.yaml``."""
 

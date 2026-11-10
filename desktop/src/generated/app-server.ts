@@ -182,6 +182,8 @@ export interface MethodParams {
   "team/create": TeamCreateParams;
   "team/knowledge/add": TeamKnowledgeAddParams;
   "team/knowledge/promote": TeamKnowledgePromoteParams;
+  "team/knowledge/update": TeamKnowledgeUpdateParams;
+  "team/knowledge/remove": TeamKnowledgeRemoveParams;
   "git/status": ThreadReadParams;
   "git/diff": GitDiffParams;
   "git/discard": GitDiscardParams;
@@ -804,6 +806,7 @@ export interface TeamCreateParams {
    * @maxItems 50
    */
   codebases?: string[];
+  shared?: boolean;
 }
 export interface TeamKnowledgeAddParams {
   projectId: string;
@@ -814,11 +817,29 @@ export interface TeamKnowledgeAddParams {
   evidence?: string;
   confidence?: string;
   owner?: string;
+  shared?: boolean;
 }
 export interface TeamKnowledgePromoteParams {
   projectId: string;
   knowledgeId: string;
   owner?: string;
+  shared?: boolean;
+}
+export interface TeamKnowledgeUpdateParams {
+  projectId: string;
+  knowledgeId: string;
+  type?: string;
+  statement?: string;
+  rationale?: string;
+  evidence?: string;
+  confidence?: string;
+  owner?: string;
+  shared?: boolean;
+}
+export interface TeamKnowledgeRemoveParams {
+  projectId: string;
+  knowledgeId: string;
+  shared?: boolean;
 }
 export interface GitDiffParams {
   threadId: string;
@@ -1137,6 +1158,14 @@ export interface MethodResults {
   };
   "team/knowledge/promote": {
     entry: TeamKnowledgeView;
+    path?: string;
+  };
+  "team/knowledge/update": {
+    entry: TeamKnowledgeView;
+    path?: string;
+  };
+  "team/knowledge/remove": {
+    removed: string;
     path?: string;
   };
   "git/status": {

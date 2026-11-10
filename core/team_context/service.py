@@ -24,7 +24,9 @@ from core.team_context.catalog import (
     Catalog,
     append_knowledge,
     load_catalog,
+    remove_knowledge,
     save_catalog,
+    update_knowledge,
 )
 from core.team_context.models import (
     ENTITY_KINDS,
@@ -38,7 +40,13 @@ class TeamContextService:
     """File-backed team context for one workspace."""
     def __init__(self, workspace: str | Path, home: str | Path | None = None) -> None:
         self.workspace = Path(workspace)
-        self.home = Path(home) if home is not None else None
+        if home is None:
+            # The shared team store sits next to the user's config: honour
+            # DEEPCODE_HOME instead of assuming ~/.deepcode.
+            from core.config import deepcode_home
+
+            home = deepcode_home().parent
+        self.home = Path(home)
 
     def catalog(self) -> Catalog:
         return load_catalog(self.workspace, self.home)
@@ -121,6 +129,7 @@ class TeamContextService:
         references: list[str] | None = None,
         designs: list[str] | None = None,
         codebases: list[str] | None = None,
+        shared: bool = False,
     ) -> dict[str, Any]:
         """Create one layer directory in the workspace (``.deepcode/team``).
 
@@ -138,7 +147,8 @@ class TeamContextService:
             raise TeamContextError(
                 "a layer directory name must not be empty or contain path separators"
             )
-        directory = self.workspace / TEAM_RELATIVE / LAYER_DIRECTORIES[kind][0] / slug
+        base = (self.home or Path.home()) if shared else self.workspace
+        directory = base / TEAM_RELATIVE / LAYER_DIRECTORIES[kind][0] / slug
         if (directory / "entity.yaml").exists():
             raise TeamContextError(f"the {kind} layer {slug!r} already exists")
 
@@ -251,6 +261,7 @@ class TeamContextService:
         supersedes: str | None = None,
         source: str = "internal",
         owner: str = "",
+        shared: bool = False,
     ) -> dict[str, Any]:
         """Record a draft entry in the workspace layer (review promotes it)."""
 
@@ -276,9 +287,13 @@ class TeamContextService:
         )
         workspace_layer = self._workspace_layer()
         directory = catalog.directories.get(scope)
-        if directory is not None and _is_within(directory, self.workspace):
-            path = append_knowledge(directory, entry)
-            return {"entry": entry.to_mapping(), "path": str(path)}
+        if directory is not None:
+            if _is_within(directory, self.workspace) or shared:
+                path = append_knowledge(directory, entry)
+                return {"entry": entry.to_mapping(), "path": str(path)}
+            raise TeamContextError(
+                "this layer lives in the shared team store; unlock it before editing"
+            )
         saved = save_catalog(
             self.workspace,
             replace(
@@ -289,7 +304,9 @@ class TeamContextService:
         )
         return {"entry": entry.to_mapping(), "path": str(saved)}
 
-    def promote(self, entry_id: str, *, owner: str = "") -> dict[str, Any]:
+    def promote(
+        self, entry_id: str, *, owner: str = "", shared: bool = False
+    ) -> dict[str, Any]:
         """Mark a draft as reviewed; governance stays an explicit act."""
 
         catalog = self.catalog()
@@ -297,25 +314,14 @@ class TeamContextService:
         if current is None:
             raise TeamContextError(f"unknown knowledge entry {entry_id}")
         directory = catalog.directories.get(current.scope)
-        if directory is not None and _is_within(directory, self.workspace):
-            path = directory / "knowledge.yaml"
-            raw = yaml.safe_load(path.read_text(encoding="utf-8")) if path.is_file() else []
-            items = [raw] if isinstance(raw, dict) else (raw or [])
-            if not isinstance(items, list):
-                raise TeamContextError(f"{path} must contain a list of entries")
-            for item in items:
-                if isinstance(item, dict) and str(item.get("id")) == entry_id:
-                    item["status"] = "reviewed"
-                    if owner:
-                        item["owner"] = owner
-                    _write_yaml(path, items)
-                    updated = replace(
-                        current, status="reviewed", owner=owner or current.owner
-                    )
-                    return updated.to_mapping()
-            raise TeamContextError(
-                f"{entry_id} is not in {path}; promote it where it is owned"
-            )
+        if directory is not None:
+            if not (_is_within(directory, self.workspace) or shared):
+                raise TeamContextError(
+                    "this entry lives in the shared team layer; unlock it before editing"
+                )
+            updated = replace(current, status="reviewed", owner=owner or current.owner)
+            update_knowledge(directory, updated)
+            return updated.to_mapping()
         workspace_layer = self._workspace_layer()
         entry = workspace_layer.knowledge.get(entry_id)
         if entry is None:
@@ -332,6 +338,72 @@ class TeamContextService:
             home=self.home,
         )
         return updated.to_mapping()
+
+    def update_entry(
+        self,
+        entry_id: str,
+        *,
+        type: str | None = None,
+        statement: str | None = None,
+        rationale: str | None = None,
+        evidence: str | None = None,
+        confidence: str | None = None,
+        owner: str | None = None,
+        shared: bool = False,
+    ) -> dict[str, Any]:
+        """Edit a draft entry in place; reviewed entries stay immutable."""
+
+        catalog = self.catalog()
+        current = catalog.knowledge.get(entry_id)
+        if current is None:
+            raise TeamContextError(f"unknown knowledge entry {entry_id}")
+        if current.status != "draft":
+            raise TeamContextError(
+                "only draft entries can be edited; add a replacement and deprecate this one"
+            )
+        directory = catalog.directories.get(current.scope)
+        if directory is None or not (
+            _is_within(directory, self.workspace) or shared
+        ):
+            raise TeamContextError(
+                "this entry lives in the shared team layer; unlock it before editing"
+            )
+        updated = KnowledgeEntry(
+            id=current.id,
+            scope=current.scope,
+            type=type or current.type,
+            statement=statement if statement is not None else current.statement,
+            rationale=rationale if rationale is not None else current.rationale,
+            evidence=evidence if evidence is not None else current.evidence,
+            confidence=confidence or current.confidence,
+            status=current.status,
+            owner=owner if owner is not None else current.owner,
+            source=current.source,
+            supersedes=current.supersedes,
+        )
+        path = update_knowledge(directory, updated)
+        return {"entry": updated.to_mapping(), "path": str(path)}
+
+    def remove_entry(self, entry_id: str, *, shared: bool = False) -> dict[str, Any]:
+        """Delete a draft; reviewed entries are part of the record, not erasable."""
+
+        catalog = self.catalog()
+        current = catalog.knowledge.get(entry_id)
+        if current is None:
+            raise TeamContextError(f"unknown knowledge entry {entry_id}")
+        if current.status != "draft":
+            raise TeamContextError(
+                "only draft entries can be removed; reviewed entries are part of the record"
+            )
+        directory = catalog.directories.get(current.scope)
+        if directory is None or not (
+            _is_within(directory, self.workspace) or shared
+        ):
+            raise TeamContextError(
+                "this entry lives in the shared team layer; unlock it before editing"
+            )
+        path = remove_knowledge(directory, entry_id)
+        return {"removed": entry_id, "path": str(path)}
 
     def _workspace_layer(self) -> Catalog:
         path = self.workspace / CATALOG_RELATIVE

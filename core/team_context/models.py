@@ -8,6 +8,9 @@ from typing import Any
 ENTITY_KINDS = ("org", "line", "product", "project", "batch", "version", "task")
 KNOWLEDGE_TYPES = (
     "redline",
+    "compliance",
+    "license",
+    "toolchain",
     "decision",
     "convention",
     "domain",

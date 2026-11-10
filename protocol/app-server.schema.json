@@ -5491,7 +5491,8 @@
         "workspace": {"type": "string", "maxLength": 500},
         "references": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
         "designs": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}}
+        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
+        "shared": {"type": "boolean"}
       },
       "required": ["projectId", "kind", "slug"]
     },
@@ -5506,7 +5507,8 @@
         "rationale": {"type": "string", "maxLength": 2000},
         "evidence": {"type": "string", "maxLength": 2000},
         "confidence": {"type": "string"},
-        "owner": {"type": "string", "maxLength": 120}
+        "owner": {"type": "string", "maxLength": 120},
+        "shared": {"type": "boolean"}
       },
       "required": ["projectId", "entityId", "type", "statement"]
     },
@@ -5516,7 +5518,34 @@
       "properties": {
         "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
         "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "owner": {"type": "string", "maxLength": 120}
+        "owner": {"type": "string", "maxLength": 120},
+        "shared": {"type": "boolean"}
+      },
+      "required": ["projectId", "knowledgeId"]
+    },
+    "TeamKnowledgeUpdateParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "type": {"type": "string"},
+        "statement": {"type": "string", "maxLength": 2000},
+        "rationale": {"type": "string", "maxLength": 2000},
+        "evidence": {"type": "string", "maxLength": 2000},
+        "confidence": {"type": "string"},
+        "owner": {"type": "string", "maxLength": 120},
+        "shared": {"type": "boolean"}
+      },
+      "required": ["projectId", "knowledgeId"]
+    },
+    "TeamKnowledgeRemoveParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "shared": {"type": "boolean"}
       },
       "required": ["projectId", "knowledgeId"]
     },
@@ -6789,6 +6818,12 @@
         "team/knowledge/promote": {
           "$ref": "#/$defs/TeamKnowledgePromoteParams"
         },
+        "team/knowledge/update": {
+          "$ref": "#/$defs/TeamKnowledgeUpdateParams"
+        },
+        "team/knowledge/remove": {
+          "$ref": "#/$defs/TeamKnowledgeRemoveParams"
+        },
         "git/status": {
           "$ref": "#/$defs/ThreadReadParams"
         },
@@ -6961,6 +6996,8 @@
         "team/create",
         "team/knowledge/add",
         "team/knowledge/promote",
+        "team/knowledge/update",
+        "team/knowledge/remove",
         "git/status",
         "git/diff",
         "git/discard",
@@ -7863,6 +7900,24 @@
           },
           "required": ["entry"]
         },
+        "team/knowledge/update": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
+            "path": {"type": "string"}
+          },
+          "required": ["entry"]
+        },
+        "team/knowledge/remove": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "removed": {"type": "string"},
+            "path": {"type": "string"}
+          },
+          "required": ["removed"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8168,6 +8223,8 @@
         "team/create",
         "team/knowledge/add",
         "team/knowledge/promote",
+        "team/knowledge/update",
+        "team/knowledge/remove",
         "git/status",
         "git/diff",
         "git/discard",

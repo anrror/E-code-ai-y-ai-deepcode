@@ -638,3 +638,72 @@ def test_create_entity_seeds_a_layer_and_round_trips_knowledge(tmp_path: Path) -
     assert detail["entity"]["knowledgeCount"] == 1
     assert detail["entity"]["draftCount"] == 0
     assert detail["knowledge"][0]["status"] == "reviewed"
+
+def test_update_and_remove_only_touch_drafts(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="project", slug="changan")
+
+    added = service.add(
+        scope="project://changan", type="decision", statement="Tests run with pytest."
+    )
+    entry_id = added["entry"]["id"]
+    updated = service.update_entry(
+        entry_id, statement="Tests run with pytest -q.", confidence="high"
+    )
+    assert updated["entry"]["statement"] == "Tests run with pytest -q."
+    assert updated["entry"]["confidence"] == "high"
+
+    service.promote(entry_id)
+    with pytest.raises(TeamContextError):
+        service.update_entry(entry_id, statement="rewritten")
+    with pytest.raises(TeamContextError):
+        service.remove_entry(entry_id)
+
+    second = service.add(
+        scope="project://changan", type="lesson", statement="Temporary note."
+    )
+    removed = service.remove_entry(second["entry"]["id"])
+    assert removed["removed"] == second["entry"]["id"]
+    assert service.read_entity("project://changan")["knowledge"] == [
+        updated["entry"] | {"status": "reviewed"}
+    ]
+
+def test_org_policy_is_shared_across_projects(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    other = tmp_path / "other"
+    other.mkdir()
+
+    service = TeamContextService(workspace, home=home)
+    created = service.create_entity(
+        kind="org", slug="default", name="组织", shared=True
+    )
+    assert created["entity"]["id"] == "org://default"
+    assert (
+        home / ".deepcode" / "team" / "company" / "default" / "entity.yaml"
+    ).is_file()
+
+    with pytest.raises(TeamContextError):
+        service.add(
+            scope="org://default", type="redline", statement="禁止写入生产密钥"
+        )
+
+    added = service.add(
+        scope="org://default",
+        type="redline",
+        statement="禁止写入生产密钥",
+        shared=True,
+    )
+    service.promote(added["entry"]["id"], shared=True)
+
+    reader = TeamContextService(other, home=home)
+    org = next(
+        entity
+        for entity in reader.tree()["entities"]
+        if entity["id"] == "org://default"
+    )
+    assert org["knowledgeCount"] == 1
+    assert org["draftCount"] == 0
