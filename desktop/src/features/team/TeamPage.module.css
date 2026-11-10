@@ -269,7 +269,7 @@
   width: 100%;
   align-items: center;
   gap: 6px;
-  grid-template-columns: 44px minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   padding: 6px 8px;
   border: 0;
   border-radius: var(--radius-sm);
@@ -970,4 +970,37 @@
 .dangerButton:disabled {
   opacity: 0.55;
   cursor: default;
+}
+
+.layerGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 2px 0 6px;
+}
+
+.layerGroupHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px;
+  color: var(--text-tertiary);
+  font: var(--weight-semibold) var(--text-2xs) var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.layerGroupHead button {
+  display: inline-flex;
+  padding: 2px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.layerGroupHead button:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }

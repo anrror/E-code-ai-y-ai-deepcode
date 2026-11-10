@@ -255,6 +255,25 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     [tree],
   );
 
+  const pathEntities = useMemo(() => {
+    if (!tree) return [];
+    const byId = new Map(tree.entities.map((entity) => [entity.id, entity]));
+    if (tree.inChain.length > 0) {
+      return tree.inChain
+        .map((id) => byId.get(id))
+        .filter((entity): entity is TeamEntityView => Boolean(entity));
+    }
+    const chain: TeamEntityView[] = [];
+    const seen = new Set<string>();
+    let cursor = selectedId ? byId.get(selectedId) : undefined;
+    while (cursor && !seen.has(cursor.id)) {
+      seen.add(cursor.id);
+      chain.unshift(cursor);
+      cursor = cursor.parent ? byId.get(cursor.parent) : undefined;
+    }
+    return chain;
+  }, [tree, selectedId]);
+
   const draftTotal = useMemo(
     () =>
       (tree?.entities ?? []).reduce(
@@ -692,45 +711,33 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             : "点击配置"}
         </span>
       </button>
-      <ol className={styles.chain} aria-label={t("team.chain", "上下文链")}>
-        {KINDS.filter((kind) => kind !== "org").map((kind) => {
-          const entity = entityForKind(kind);
-          const linked = entity
-            ? (tree?.inChain.includes(entity.id) ?? false)
-            : false;
-          return (
-            <li key={kind} className={styles.chainItem}>
+      {pathEntities.length > 0 ? (
+        <ol className={styles.chain} aria-label={t("team.chain", "上下文链")}>
+          {pathEntities.map((entity) => (
+            <li key={entity.id} className={styles.chainItem}>
               <button
                 type="button"
                 className={styles.chainNode}
-                data-state={!entity ? "missing" : linked ? "linked" : "idle"}
-                data-active={entity?.id === selectedId}
-                onClick={() =>
-                  entity ? setSelectedId(entity.id) : openCreate(kind)
-                }
-                title={entity?.id ?? `${kind}://`}
+                data-state="linked"
+                data-active={entity.id === selectedId}
+                onClick={() => setSelectedId(entity.id)}
+                title={entity.id}
               >
-                <span className={styles.chainKind}>{KIND_LABELS[kind]}</span>
-                <span className={styles.chainName}>
-                  {entity ? entity.name : t("team.notConfigured", "未配置")}
+                <span className={styles.chainKind}>
+                  {KIND_LABELS[entity.kind as Kind] ?? entity.kind}
                 </span>
-                {entity ? (
-                  <span className={styles.chainMeta}>
-                    {entity.knowledgeCount - entity.draftCount}
-                    {entity.draftCount > 0 ? ` · ${entity.draftCount} 草稿` : ""}
-                    {entity.external ? " · 外部" : ""}
-                    {entity.archived ? " · 历史" : ""}
-                  </span>
-                ) : (
-                  <span className={styles.chainMeta}>
-                    <Plus size={11} /> {t("team.add", "添加")}
-                  </span>
-                )}
+                <span className={styles.chainName}>{entity.name}</span>
+                <span className={styles.chainMeta}>
+                  {entity.knowledgeCount - entity.draftCount}
+                  {entity.draftCount > 0 ? ` · ${entity.draftCount} 草稿` : ""}
+                  {entity.external ? " · 外部" : ""}
+                  {entity.archived ? " · 历史" : ""}
+                </span>
               </button>
             </li>
-          );
-        })}
-      </ol>
+          ))}
+        </ol>
+      ) : null}
 
       {error ? (
         <p className={styles.banner} role="alert">
@@ -792,35 +799,49 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
               )}
             </div>
           ) : (
-            <ul className={styles.layers}>
+            <div className={styles.layers}>
               {KINDS.filter((kind) => kind !== "org").map((kind) => {
-                const entity = entityForKind(kind);
+                const items = (tree?.entities ?? []).filter(
+                  (entity) => entity.kind === kind,
+                );
                 return (
-                  <li key={kind}>
-                    <button
-                      type="button"
-                      className={styles.layerRow}
-                      data-active={entity?.id === selectedId}
-                      onClick={() =>
-                        entity ? setSelectedId(entity.id) : openCreate(kind)
-                      }
-                    >
-                      <span className={styles.layerKind}>
-                        {KIND_LABELS[kind]}
-                      </span>
-                      <span className={styles.layerName}>
-                        {entity ? entity.name : "＋ 添加"}
-                      </span>
-                      {entity ? (
-                        <span className={styles.layerCounts}>
-                          {entity.knowledgeCount}
-                        </span>
-                      ) : null}
-                    </button>
-                  </li>
+                  <section key={kind} className={styles.layerGroup}>
+                    <div className={styles.layerGroupHead}>
+                      <span>{KIND_LABELS[kind]}</span>
+                      <button
+                        type="button"
+                        aria-label={`添加${KIND_LABELS[kind]}`}
+                        title={`添加${KIND_LABELS[kind]}`}
+                        onClick={() => openCreate(kind)}
+                      >
+                        <Plus size={11} />
+                      </button>
+                    </div>
+                    {items.length === 0 ? (
+                      <p className={styles.muted}>未配置</p>
+                    ) : (
+                      items.map((entity) => (
+                        <button
+                          key={entity.id}
+                          type="button"
+                          className={styles.layerRow}
+                          data-active={entity.id === selectedId}
+                          onClick={() => setSelectedId(entity.id)}
+                          title={entity.id}
+                        >
+                          <span className={styles.layerName}>
+                            {entity.name}
+                          </span>
+                          <span className={styles.layerCounts}>
+                            {entity.knowledgeCount}
+                          </span>
+                        </button>
+                      ))
+                    )}
+                  </section>
                 );
               })}
-            </ul>
+            </div>
           )}
         </aside>
 
