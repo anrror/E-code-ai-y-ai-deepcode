@@ -50,7 +50,7 @@ const PARENT_KINDS: Record<string, string[]> = {
 
 const CHILD_KINDS: Record<string, Kind[]> = {
   org: ["line", "product"],
-  line: ["product", "project"],
+  line: ["project", "product"],
   product: [],
   project: ["batch"],
   batch: ["version"],
@@ -387,9 +387,9 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
 
   const parentOptions = useMemo(() => {
     if (!createForm) return [];
-    const limit = kindIndex(createForm.kind);
-    return (tree?.entities ?? []).filter(
-      (entity) => kindIndex(entity.kind) >= 0 && kindIndex(entity.kind) < limit,
+    const allowed = PARENT_KINDS[createForm.kind] ?? [];
+    return (tree?.entities ?? []).filter((entity) =>
+      allowed.includes(entity.kind),
     );
   }, [createForm, tree]);
 
