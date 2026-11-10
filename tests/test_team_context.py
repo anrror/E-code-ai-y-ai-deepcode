@@ -588,3 +588,26 @@ def test_a_configured_layer_without_a_parent_still_contributes(tmp_path: Path) -
         "version://v9",
     ]
     assert "v9 contract" in result.text
+
+def test_tree_and_read_expose_what_the_team_page_needs(tmp_path: Path) -> None:
+    service = TeamContextService(
+        _workspace_with_catalog(tmp_path, _catalog()), home=tmp_path / "home"
+    )
+
+    tree = service.tree()
+    assert tree["bind"] == "task://LEAD-1234"
+    assert tree["inChain"][0] == "task://LEAD-1234"
+    org = next(
+        entity for entity in tree["entities"] if entity["id"] == "org://auto-sub"
+    )
+    assert org["kind"] == "org"
+    assert org["knowledgeCount"] == 1
+    assert org["hasInstructions"] is False
+    task = next(
+        entity for entity in tree["entities"] if entity["id"] == "task://LEAD-1234"
+    )
+    assert task["draftCount"] == 1
+
+    detail = service.read_entity("task://LEAD-1234")
+    assert detail["entity"]["knowledgeCount"] == 1
+    assert detail["knowledge"][0]["status"] == "draft"

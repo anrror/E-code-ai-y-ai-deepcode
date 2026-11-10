@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useState } from "react";
-import { FilePlus2, FolderTree, RefreshCw, Save } from "lucide-react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Eye, Layers, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type {
-  FileContent,
-  FileEntry,
   Project,
+  TeamEntityView,
+  TeamKnowledgeView,
 } from "../../generated/app-server";
 import type { ClientRuntime } from "../../rpc/contracts";
 
 import styles from "./TeamPage.module.css";
 
-const LAYERS = [
-  "company",
+const KIND_ORDER = [
+  "org",
   "line",
   "product",
   "project",
@@ -21,16 +21,27 @@ const LAYERS = [
   "task",
 ] as const;
 
-const TEMPLATES: Record<string, string> = {
-  "entity.yaml":
-    "# name defaults to the directory name; parent makes the chain.\nname: \nparent: \n",
-  "knowledge.yaml": "[]\n",
-  "AGENTS.md": "",
-};
+interface TeamTreeResult {
+  bind: string | null;
+  inChain: string[];
+  entities: TeamEntityView[];
+}
 
-function templateFor(path: string): string {
-  const name = path.split(/[\\/]/).pop() ?? "";
-  return TEMPLATES[name] ?? "";
+interface TeamReadResult {
+  entity: TeamEntityView;
+  instructions: string;
+  knowledge: TeamKnowledgeView[];
+}
+
+interface TeamPreviewResult {
+  task: string | null;
+  chain: string[];
+  referenced: string[];
+  entryCount: number;
+  externalExcluded: number;
+  blockedOverrides: string[];
+  truncated: boolean;
+  text: string;
 }
 
 interface TeamPageProps {
@@ -40,81 +51,90 @@ interface TeamPageProps {
 
 export function TeamPage({ runtime, project }: TeamPageProps) {
   const { t } = useTranslation();
-  const [threadId, setThreadId] = useState<string | null>(null);
-  const [entries, setEntries] = useState<FileEntry[]>([]);
-  const [selected, setSelected] = useState<FileContent | null>(null);
-  const [draft, setDraft] = useState("");
-  const [newPath, setNewPath] = useState("");
+  const [tree, setTree] = useState<TeamTreeResult | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [detail, setDetail] = useState<TeamReadResult | null>(null);
+  const [preview, setPreview] = useState<TeamPreviewResult | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const loadTree = useCallback(
-    async (id: string) => {
-      try {
-        const result = await runtime.request("file/list", {
-          threadId: id,
-          path: ".deepcode/team",
-          depth: 4,
-          limit: 750,
-        });
-        setEntries(
-          result.entries.filter((entry) => entry.kind === "file"),
-        );
-      } catch {
-        setEntries([]);
-      }
-    },
-    [runtime],
-  );
-
-  useEffect(() => {
-    let cancelled = false;
-    setStatus(null);
-    setSelected(null);
-    setEntries([]);
+  const loadTree = useCallback(async () => {
     if (!project) {
-      setThreadId(null);
+      setTree(null);
       return;
     }
+    setBusy(true);
+    try {
+      const result = await runtime.request("team/tree", {
+        projectId: project.id,
+      });
+      setTree(result);
+      setStatus(result.entities.length === 0 ? null : null);
+      setSelectedId((current) =>
+        result.entities.some((entity) => entity.id === current)
+          ? current
+          : (result.bind ?? result.entities[0]?.id ?? null),
+      );
+    } catch (error) {
+      setTree(null);
+      setStatus(String(error));
+    } finally {
+      setBusy(false);
+    }
+  }, [project, runtime]);
+
+  useEffect(() => {
+    setDetail(null);
+    setPreview(null);
+    setSelectedId(null);
+    void loadTree();
+  }, [loadTree]);
+
+  useEffect(() => {
+    if (!project || !selectedId) {
+      setDetail(null);
+      return;
+    }
+    setBusy(true);
     void (async () => {
       try {
-        const list = await runtime.request("thread/list", {
+        const result = await runtime.request("team/read", {
           projectId: project.id,
-          limit: 1,
+          entityId: selectedId,
         });
-        if (cancelled) return;
-        const id = list.threads[0]?.id ?? null;
-        setThreadId(id);
-        if (id) {
-          await loadTree(id);
-        } else {
-          setStatus(
-            t(
-              "team.needSession",
-              "Create one Session in this project first; team files are edited through a Session's workspace.",
-            ),
-          );
-        }
+        setDetail(result);
       } catch (error) {
-        if (!cancelled) setStatus(String(error));
+        setDetail(null);
+        setStatus(String(error));
+      } finally {
+        setBusy(false);
       }
     })();
-    return () => {
-      cancelled = true;
-    };
-  }, [loadTree, project, runtime, t]);
+  }, [project, runtime, selectedId]);
 
-  const open = async (path: string) => {
-    if (!threadId) return;
+  const groups = useMemo(() => {
+    const byKind = new Map<string, TeamEntityView[]>();
+    for (const entity of tree?.entities ?? []) {
+      const list = byKind.get(entity.kind) ?? [];
+      list.push(entity);
+      byKind.set(entity.kind, list);
+    }
+    return KIND_ORDER.filter((kind) => byKind.has(kind)).map((kind) => ({
+      kind,
+      entities: byKind.get(kind) ?? [],
+    }));
+  }, [tree]);
+
+  const showPreview = async () => {
+    if (!project) return;
     setBusy(true);
     try {
-      const result = await runtime.request("file/read", {
-        threadId,
-        path,
+      const result = await runtime.request("team/preview", {
+        projectId: project.id,
+        entityId: tree?.bind ?? selectedId ?? undefined,
+        includeExternal: true,
       });
-      setSelected(result.file);
-      setDraft(result.file.content);
-      setStatus(null);
+      setPreview(result);
     } catch (error) {
       setStatus(String(error));
     } finally {
@@ -122,70 +142,34 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     }
   };
 
-  const save = async () => {
-    if (!threadId || !selected) return;
-    setBusy(true);
-    try {
-      const result = await runtime.request("file/write", {
-        threadId,
-        path: selected.path,
-        content: draft,
-        expectedSha256: selected.sha256 ?? null,
-      });
-      setSelected(result.file);
-      setDraft(result.file.content);
-      setStatus(t("team.saved", "Saved"));
-      await loadTree(threadId);
-    } catch (error) {
-      setStatus(String(error));
-    } finally {
-      setBusy(false);
-    }
-  };
-
-  const create = async () => {
-    const path = newPath.trim().replaceAll("\\", "/");
-    if (!threadId || !path) return;
-    setBusy(true);
-    try {
-      const result = await runtime.request("file/write", {
-        threadId,
-        path: `.deepcode/team/${path}`,
-        content: templateFor(path),
-        expectedSha256: null,
-      });
-      setNewPath("");
-      setSelected(result.file);
-      setDraft(result.file.content);
-      setStatus(t("team.created", "Created"));
-      await loadTree(threadId);
-    } catch (error) {
-      setStatus(String(error));
-    } finally {
-      setBusy(false);
-    }
-  };
+  if (!project) {
+    return (
+      <section className={styles.page}>
+        <p className={styles.placeholder}>
+          {t("team.openProject", "Open a project to see its team context.")}
+        </p>
+      </section>
+    );
+  }
 
   return (
     <section className={styles.page}>
       <header className={styles.header}>
         <div>
-          <p className={styles.eyebrow}>
-            {t("team.eyebrow", "Team context")}
-          </p>
-          <h2>{t("team.title", "Six-layer context")}</h2>
+          <p className={styles.eyebrow}>{t("team.eyebrow", "Team context")}</p>
+          <h2>{project.displayName}</h2>
           <p className={styles.hint}>
             {t(
-              "team.hint",
-              "Every layer is a directory: entity.yaml (name, parent, external, references, designs, codebases, archived), knowledge.yaml, AGENTS.md. Layers are optional.",
+              "team.readonlyHint",
+              "Read-only in this phase: layers, knowledge, and the assembled context the agent sees. Editing and the product library follow in the next phase.",
             )}
           </p>
         </div>
         <button
           type="button"
           className={styles.iconButton}
-          disabled={!threadId || busy}
-          onClick={() => threadId && void loadTree(threadId)}
+          disabled={busy}
+          onClick={() => void loadTree()}
           title={t("team.refresh", "Refresh")}
         >
           <RefreshCw size={16} />
@@ -194,89 +178,141 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
 
       <div className={styles.body}>
         <aside className={styles.sidebar}>
-          <div className={styles.layers}>
-            {LAYERS.map((layer) => (
-              <span key={layer} className={styles.layer}>
-                {layer}
-              </span>
-            ))}
-          </div>
-
-          <button
-            type="button"
-            className={styles.treeTitle}
-            onClick={() => threadId && void loadTree(threadId)}
-          >
-            <FolderTree size={14} />
-            {t("team.files", ".deepcode/team")}
-          </button>
-
-          {entries.length === 0 ? (
-            <p className={styles.empty}>
-              {t("team.empty", "No layer files yet.")}
+          {tree?.bind ? (
+            <p className={styles.bound}>
+              <Layers size={14} />
+              <code>{tree.bind}</code>
             </p>
           ) : (
-            <ul className={styles.files}>
-              {entries.map((entry) => (
-                <li key={entry.path}>
-                  <button
-                    type="button"
-                    data-active={selected?.path === entry.path}
-                    onClick={() => void open(entry.path)}
-                  >
-                    <span>{entry.path.replace(".deepcode/team/", "")}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+            <p className={styles.empty}>
+              {t(
+                "team.unbound",
+                "This workspace does not bind to a task yet.",
+              )}
+            </p>
           )}
 
-          <div className={styles.newFile}>
-            <input
-              value={newPath}
-              placeholder="task/LEAD-1/entity.yaml"
-              onChange={(event) => setNewPath(event.target.value)}
-              spellCheck={false}
-            />
-            <button
-              type="button"
-              disabled={!threadId || busy || !newPath.trim()}
-              onClick={() => void create()}
-              title={t("team.newFile", "New file")}
-            >
-              <FilePlus2 size={14} />
-              {t("team.create", "Create")}
-            </button>
-          </div>
+          {groups.map((group) => (
+            <section key={group.kind} className={styles.group}>
+              <h3>{group.kind}</h3>
+              <ul className={styles.files}>
+                {group.entities.map((entity) => (
+                  <li key={entity.id}>
+                    <button
+                      type="button"
+                      data-active={selectedId === entity.id}
+                      onClick={() => setSelectedId(entity.id)}
+                      title={entity.id}
+                    >
+                      <span>{entity.name}</span>
+                      <em>
+                        {entity.knowledgeCount}
+                        {entity.draftCount > 0 ? ` · ${entity.draftCount}d` : ""}
+                        {entity.external ? " · ext" : ""}
+                        {entity.archived ? " · hist" : ""}
+                      </em>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+
+          {tree && tree.entities.length === 0 ? (
+            <p className={styles.empty}>
+              {t(
+                "team.empty",
+                "No layers configured yet. Add .deepcode/team/<layer>/<slug>/ in the workspace.",
+              )}
+            </p>
+          ) : null}
         </aside>
 
         <main className={styles.editor}>
-          {selected ? (
+          {detail ? (
             <>
               <div className={styles.editorBar}>
-                <code>{selected.path.replace(".deepcode/team/", "")}</code>
-                <button
-                  type="button"
-                  disabled={busy || draft === selected.content}
-                  onClick={() => void save()}
-                >
-                  <Save size={14} />
-                  {t("team.save", "Save")}
+                <code>{detail.entity.id}</code>
+                <button type="button" disabled={busy} onClick={() => void showPreview()}>
+                  <Eye size={14} />
+                  {t("team.preview", "Preview context")}
                 </button>
               </div>
-              <textarea
-                value={draft}
-                onChange={(event) => setDraft(event.target.value)}
-                spellCheck={false}
-                aria-label={selected.path}
-              />
+
+              <dl className={styles.meta}>
+                <dt>{t("team.kind", "Layer")}</dt>
+                <dd>{detail.entity.kind}</dd>
+                <dt>{t("team.parent", "Parent")}</dt>
+                <dd>{detail.entity.parent ?? "—"}</dd>
+                <dt>{t("team.workspace", "Workspace")}</dt>
+                <dd>{detail.entity.workspace ?? "—"}</dd>
+                <dt>{t("team.references", "References")}</dt>
+                <dd>{detail.entity.references?.join(", ") || "—"}</dd>
+                <dt>{t("team.codebases", "Codebases")}</dt>
+                <dd>{detail.entity.codebases?.join(", ") || "—"}</dd>
+                <dt>{t("team.designs", "Designs")}</dt>
+                <dd>{detail.entity.designs?.join(", ") || "—"}</dd>
+              </dl>
+
+              {detail.instructions ? (
+                <section className={styles.textBlock}>
+                  <h4>{t("team.instructions", "AGENTS.md")}</h4>
+                  <pre>{detail.instructions}</pre>
+                </section>
+              ) : null}
+
+              <section className={styles.textBlock}>
+                <h4>
+                  {t("team.knowledge", "Knowledge")} ({detail.knowledge.length})
+                </h4>
+                {detail.knowledge.length === 0 ? (
+                  <p className={styles.placeholder}>
+                    {t("team.noKnowledge", "No entries in this layer.")}
+                  </p>
+                ) : (
+                  <table className={styles.knowledge}>
+                    <thead>
+                      <tr>
+                        <th>{t("team.type", "Type")}</th>
+                        <th>{t("team.statement", "Statement")}</th>
+                        <th>{t("team.confidence", "Confidence")}</th>
+                        <th>{t("team.status", "Status")}</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {detail.knowledge.map((entry) => (
+                        <tr key={entry.id}>
+                          <td>{entry.type}</td>
+                          <td>{entry.statement}</td>
+                          <td>{entry.confidence}</td>
+                          <td>{entry.status}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                )}
+              </section>
+
+              {preview ? (
+                <section className={styles.textBlock}>
+                  <h4>
+                    {t("team.assembled", "Assembled context")} ·{" "}
+                    {preview.entryCount} {t("team.entries", "entries")}
+                    {preview.truncated ? " · truncated" : ""}
+                  </h4>
+                  <pre className={styles.assembled}>{preview.text}</pre>
+                  {preview.blockedOverrides.length > 0 ? (
+                    <p className={styles.warning}>
+                      {t("team.blocked", "Rejected overrides: ")}
+                      {preview.blockedOverrides.join(", ")}
+                    </p>
+                  ) : null}
+                </section>
+              ) : null}
             </>
           ) : (
             <p className={styles.placeholder}>
-              {t(
-                "team.select",
-                "Select a layer file to edit, or create one on the left.",
-              )}
+              {t("team.select", "Select a layer to inspect it.")}
             </p>
           )}
           {status ? <p className={styles.status}>{status}</p> : null}

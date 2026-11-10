@@ -5450,6 +5450,72 @@
         "threadId"
       ]
     },
+    "TeamTreeParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255}
+      },
+      "required": ["projectId"]
+    },
+    "TeamReadParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255}
+      },
+      "required": ["projectId", "entityId"]
+    },
+    "TeamPreviewParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "includeExternal": {"type": "boolean"},
+        "maxChars": {"type": "integer", "minimum": 200, "maximum": 20000}
+      },
+      "required": ["projectId"]
+    },
+    "TeamEntityView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "kind": {"type": "string"},
+        "name": {"type": "string"},
+        "parent": {"type": ["string", "null"]},
+        "external": {"type": "boolean"},
+        "archived": {"type": "boolean"},
+        "references": {"type": "array", "items": {"type": "string"}},
+        "designs": {"type": "array", "items": {"type": "string"}},
+        "codebases": {"type": "array", "items": {"type": "string"}},
+        "workspace": {"type": ["string", "null"]},
+        "knowledgeCount": {"type": "integer"},
+        "draftCount": {"type": "integer"},
+        "hasInstructions": {"type": "boolean"}
+      },
+      "required": ["id", "kind", "name", "external", "archived", "knowledgeCount", "draftCount", "hasInstructions"]
+    },
+    "TeamKnowledgeView": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {"type": "string"},
+        "scope": {"type": "string"},
+        "type": {"type": "string"},
+        "statement": {"type": "string"},
+        "rationale": {"type": "string"},
+        "evidence": {"type": "string"},
+        "confidence": {"type": "string"},
+        "status": {"type": "string"},
+        "source": {"type": "string"},
+        "owner": {"type": "string"},
+        "supersedes": {"type": ["string", "null"]}
+      },
+      "required": ["id", "scope", "type", "statement", "confidence", "status", "source"]
+    },
     "FileListParams": {
       "type": "object",
       "additionalProperties": false,
@@ -6663,6 +6729,15 @@
         "file/write": {
           "$ref": "#/$defs/FileWriteParams"
         },
+        "team/tree": {
+          "$ref": "#/$defs/TeamTreeParams"
+        },
+        "team/read": {
+          "$ref": "#/$defs/TeamReadParams"
+        },
+        "team/preview": {
+          "$ref": "#/$defs/TeamPreviewParams"
+        },
         "git/status": {
           "$ref": "#/$defs/ThreadReadParams"
         },
@@ -6829,6 +6904,9 @@
         "file/list",
         "file/read",
         "file/write",
+        "team/tree",
+        "team/read",
+        "team/preview",
         "git/status",
         "git/diff",
         "git/discard",
@@ -7668,6 +7746,41 @@
             "file"
           ]
         },
+        "team/tree": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "bind": {"type": ["string", "null"]},
+            "inChain": {"type": "array", "items": {"type": "string"}},
+            "entities": {"type": "array", "items": {"$ref": "#/$defs/TeamEntityView"}}
+          },
+          "required": ["bind", "inChain", "entities"]
+        },
+        "team/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity": {"$ref": "#/$defs/TeamEntityView"},
+            "instructions": {"type": "string"},
+            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+          },
+          "required": ["entity", "instructions", "knowledge"]
+        },
+        "team/preview": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "task": {"type": ["string", "null"]},
+            "chain": {"type": "array", "items": {"type": "string"}},
+            "referenced": {"type": "array", "items": {"type": "string"}},
+            "entryCount": {"type": "integer"},
+            "externalExcluded": {"type": "integer"},
+            "blockedOverrides": {"type": "array", "items": {"type": "string"}},
+            "truncated": {"type": "boolean"},
+            "text": {"type": "string"}
+          },
+          "required": ["task", "chain", "referenced", "entryCount", "externalExcluded", "blockedOverrides", "truncated", "text"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -7967,6 +8080,9 @@
         "file/list",
         "file/read",
         "file/write",
+        "team/tree",
+        "team/read",
+        "team/preview",
         "git/status",
         "git/diff",
         "git/discard",

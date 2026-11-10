@@ -12,6 +12,7 @@ import yaml
 
 from core.team_context.assembler import (
     DEFAULT_MAX_CHARS,
+    SCOPE_RANK,
     assemble,
     referenced_entities,
     resolve_chain,
@@ -38,6 +39,72 @@ class TeamContextService:
 
     def catalog(self) -> Catalog:
         return load_catalog(self.workspace, self.home)
+
+    def tree(self) -> dict[str, Any]:
+        """Everything the Team explorer needs in one call, project-scoped."""
+
+        catalog = self.catalog()
+        bound = catalog.bind_for(self.workspace)
+        counts: dict[str, int] = {}
+        drafts: dict[str, int] = {}
+        for entry in catalog.knowledge.values():
+            counts[entry.scope] = counts.get(entry.scope, 0) + 1
+            if entry.status == "draft":
+                drafts[entry.scope] = drafts.get(entry.scope, 0) + 1
+        entities = []
+        for entity in sorted(
+            catalog.entities.values(),
+            key=lambda item: (SCOPE_RANK.get(item.kind, 99), item.id),
+        ):
+            entities.append(
+                {
+                    **entity.to_mapping(),
+                    "configured": True,
+                    "knowledgeCount": counts.get(entity.id, 0),
+                    "draftCount": drafts.get(entity.id, 0),
+                    "hasInstructions": entity.id in catalog.instructions,
+                }
+            )
+        return {
+            "bind": bound,
+            "inChain": [
+                entity.id for entity in resolve_chain(catalog, bound)
+            ],
+            "entities": entities,
+        }
+
+    def read_entity(self, entity_id: str) -> dict[str, Any]:
+        """One layer: its metadata, instructions, and knowledge entries."""
+
+        catalog = self.catalog()
+        entity = catalog.entities.get(entity_id)
+        if entity is None:
+            raise TeamContextError(f"unknown entity {entity_id}")
+        entries = [
+            entry.to_mapping()
+            for entry in sorted(
+                catalog.knowledge.values(),
+                key=lambda item: (
+                    item.scope != entity_id,
+                    item.status != "reviewed",
+                    item.id,
+                ),
+            )
+            if entry.scope == entity_id
+        ]
+        return {
+            "entity": {
+                **entity.to_mapping(),
+                "configured": True,
+                "knowledgeCount": len(entries),
+                "draftCount": sum(
+                    1 for entry in entries if entry.get("status") == "draft"
+                ),
+                "hasInstructions": entity_id in catalog.instructions,
+            },
+            "instructions": catalog.instructions.get(entity_id, ""),
+            "knowledge": entries,
+        }
 
     def assemble(
         self,

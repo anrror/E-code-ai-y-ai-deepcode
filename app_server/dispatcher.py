@@ -311,6 +311,9 @@ class Dispatcher:
             rpc_methods.ARTIFACT_READ: self._artifact_read,
             rpc_methods.APPROVAL_RESPOND: self._approval_respond,
             rpc_methods.EVENT_REPLAY: self._event_replay,
+            rpc_methods.TEAM_TREE: self._team_tree,
+            rpc_methods.TEAM_READ: self._team_read,
+            rpc_methods.TEAM_PREVIEW: self._team_preview,
             rpc_methods.FILE_LIST: self._file_list,
             rpc_methods.FILE_READ: self._file_read,
             rpc_methods.FILE_WRITE: self._file_write,
@@ -1665,6 +1668,35 @@ class Dispatcher:
             "headSequence": page.head_sequence,
         }
 
+    def _project_root(self, project_id: str):
+        from pathlib import Path
+
+        return Path(self.application.projects.read(project_id).canonical_path)
+
+    def _team_service(self, project_id: str):
+        from core.team_context.service import TeamContextService
+
+        return TeamContextService(self._project_root(project_id))
+
+    def _team_tree(self, params: Params) -> dict[str, Any]:
+        params.only("projectId")
+        return self._team_service(str(params.string("projectId"))).tree()
+
+    def _team_read(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "entityId")
+        return self._team_service(
+            str(params.string("projectId"))
+        ).read_entity(str(params.string("entityId")))
+
+    def _team_preview(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "entityId", "includeExternal", "maxChars")
+        return self._team_service(str(params.string("projectId"))).assemble(
+            task=params.string("entityId", required=False) or None,
+            include_external=params.boolean("includeExternal", default=True),
+            max_chars=params.integer(
+                "maxChars", default=6000, minimum=200, maximum=20000
+            ),
+        )
     def _file_list(self, params: Params) -> dict[str, Any]:
         params.only("threadId", "path", "depth", "limit")
         entries, truncated = self.application.files.list(

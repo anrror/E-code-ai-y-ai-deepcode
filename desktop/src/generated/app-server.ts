@@ -176,6 +176,9 @@ export interface MethodParams {
   "file/list": FileListParams;
   "file/read": FileReadParams;
   "file/write": FileWriteParams;
+  "team/tree": TeamTreeParams;
+  "team/read": TeamReadParams;
+  "team/preview": TeamPreviewParams;
   "git/status": ThreadReadParams;
   "git/diff": GitDiffParams;
   "git/discard": GitDiscardParams;
@@ -765,6 +768,19 @@ export interface FileWriteParams {
   content: string;
   expectedSha256: string | null;
 }
+export interface TeamTreeParams {
+  projectId: string;
+}
+export interface TeamReadParams {
+  projectId: string;
+  entityId: string;
+}
+export interface TeamPreviewParams {
+  projectId: string;
+  entityId?: string;
+  includeExternal?: boolean;
+  maxChars?: number;
+}
 export interface GitDiffParams {
   threadId: string;
   scope?: "all" | "staged" | "working";
@@ -1050,6 +1066,26 @@ export interface MethodResults {
   };
   "file/write": {
     file: FileContent;
+  };
+  "team/tree": {
+    bind: string | null;
+    inChain: string[];
+    entities: TeamEntityView[];
+  };
+  "team/read": {
+    entity: TeamEntityView;
+    instructions: string;
+    knowledge: TeamKnowledgeView[];
+  };
+  "team/preview": {
+    task: string | null;
+    chain: string[];
+    referenced: string[];
+    entryCount: number;
+    externalExcluded: number;
+    blockedOverrides: string[];
+    truncated: boolean;
+    text: string;
   };
   "git/status": {
     status: GitStatus;
@@ -2473,6 +2509,34 @@ export interface FileContent {
   sha256: string | null;
   lineCount: number;
   truncated: boolean;
+}
+export interface TeamEntityView {
+  id: string;
+  kind: string;
+  name: string;
+  parent?: string | null;
+  external: boolean;
+  archived: boolean;
+  references?: string[];
+  designs?: string[];
+  codebases?: string[];
+  workspace?: string | null;
+  knowledgeCount: number;
+  draftCount: number;
+  hasInstructions: boolean;
+}
+export interface TeamKnowledgeView {
+  id: string;
+  scope: string;
+  type: string;
+  statement: string;
+  rationale?: string;
+  evidence?: string;
+  confidence: string;
+  status: string;
+  source: string;
+  owner?: string;
+  supersedes?: string | null;
 }
 export interface GitStatus {
   repositoryRoot: string;

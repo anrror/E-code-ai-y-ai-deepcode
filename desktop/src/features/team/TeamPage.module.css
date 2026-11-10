@@ -214,3 +214,106 @@
   font: var(--weight-regular) var(--text-xs) var(--font-ui);
   word-break: break-word;
 }
+.bound {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 4px;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+}
+
+.group h3 {
+  margin: 10px 0 4px;
+  color: var(--text-tertiary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.files em {
+  display: block;
+  margin-top: 2px;
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-2xs) var(--font-ui);
+  font-style: normal;
+}
+
+.meta {
+  display: grid;
+  margin: 0;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 4px 12px;
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.meta dt {
+  color: var(--text-tertiary);
+}
+
+.meta dd {
+  margin: 0;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+.textBlock {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.textBlock h4 {
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-xs) var(--font-ui);
+}
+
+.textBlock pre {
+  max-height: 320px;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+  line-height: 1.55;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.assembled {
+  max-height: 420px;
+}
+
+.knowledge {
+  width: 100%;
+  border-collapse: collapse;
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.knowledge th,
+.knowledge td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+  vertical-align: top;
+}
+
+.knowledge th {
+  color: var(--text-tertiary);
+  font-weight: var(--weight-medium);
+}
+
+.knowledge td {
+  color: var(--text-secondary);
+}
+
+.warning {
+  margin: 0;
+  color: var(--warning, #d19a66);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
