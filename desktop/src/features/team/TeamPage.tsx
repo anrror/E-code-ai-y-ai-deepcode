@@ -36,6 +36,16 @@ const KINDS = [
 ] as const;
 type Kind = (typeof KINDS)[number];
 
+const PARENT_KINDS: Record<string, string[]> = {
+  org: [],
+  line: ["org"],
+  product: ["org", "line"],
+  project: ["line"],
+  batch: ["project"],
+  version: ["batch"],
+  task: ["version"],
+};
+
 const KIND_LABELS: Record<Kind, string> = {
   org: "组织",
   line: "业务线",
@@ -171,8 +181,10 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [orgUnlocked, setOrgUnlocked] = useState(false);
-  const [renaming, setRenaming] = useState(false);
-  const [nameDraft, setNameDraft] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [editName, setEditName] = useState("");
+  const [editParent, setEditParent] = useState("");
+  const [editExternal, setEditExternal] = useState(false);
 
   const loadTree = useCallback(async () => {
     if (!project) {
@@ -482,17 +494,19 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     }
   };
 
-  const renameEntity = async () => {
-    if (!project || !selectedId || !nameDraft.trim()) return;
+  const saveLayer = async () => {
+    if (!project || !selectedId) return;
     setBusy(true);
     try {
       await runtime.request("team/entity/update", {
         projectId: project.id,
         entityId: selectedId,
-        name: nameDraft.trim(),
+        name: editName.trim() || undefined,
+        parent: editParent,
+        external: editExternal,
         shared: detail?.entity.kind === "org",
       });
-      setRenaming(false);
+      setEditing(false);
       await loadTree();
       await loadDetail(selectedId);
     } catch (caught) {
@@ -751,37 +765,23 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             <>
               <div className={styles.detailHead}>
                 <div>
-                  {renaming ? (
-                    <div className={styles.renameRow}>
-                      <input
-                        autoFocus
-                        value={nameDraft}
-                        onChange={(event) => setNameDraft(event.target.value)}
-                        onKeyDown={(event) => {
-                          if (event.key === "Enter") void renameEntity();
-                          if (event.key === "Escape") setRenaming(false);
-                        }}
-                      />
-                      <button
-                        type="button"
-                        disabled={busy}
-                        onClick={() => void renameEntity()}
-                      >
-                        保存
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setRenaming(false)}
-                      >
-                        取消
-                      </button>
-                    </div>
-                  ) : (
-                    <h3>{selectedEntity.name}</h3>
-                  )}
+                  <h3>{selectedEntity.name}</h3>
                   <code className={styles.entityId}>{selectedEntity.id}</code>
                 </div>
                 <div className={styles.badges}>
+                  <button
+                    type="button"
+                    className={styles.ghost}
+                    disabled={selectedEntity.kind === "org" && !orgUnlocked}
+                    onClick={() => {
+                      setEditing(true);
+                      setEditName(selectedEntity.name);
+                      setEditParent(selectedEntity.parent ?? "");
+                      setEditExternal(selectedEntity.external);
+                    }}
+                  >
+                    编辑层信息
+                  </button>
                   {selectedEntity.external ? (
                     <span className={styles.badge}>
                       {t("team.external", "外部 · 未验证")}
@@ -815,16 +815,6 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                   </div>
                   {orgUnlocked ? (
                     <span className={styles.bannerActions}>
-                      <button
-                        type="button"
-                        className={styles.ghost}
-                        onClick={() => {
-                          setRenaming(true);
-                          setNameDraft(selectedEntity.name);
-                        }}
-                      >
-                        改名
-                      </button>
                       <button
                         type="button"
                         className={styles.ghost}
@@ -1032,6 +1022,66 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </>
                   )}
 
+                  {editing ? (
+                    <form
+                      className={styles.layerForm}
+                      onSubmit={(event) => {
+                        event.preventDefault();
+                        void saveLayer();
+                      }}
+                    >
+                      <label>
+                        <span>名称</span>
+                        <input
+                          autoFocus
+                          value={editName}
+                          onChange={(event) => setEditName(event.target.value)}
+                        />
+                      </label>
+                      <label>
+                        <span>上级</span>
+                        <select
+                          value={editParent}
+                          onChange={(event) => setEditParent(event.target.value)}
+                        >
+                          <option value="">无</option>
+                          {(tree?.entities ?? [])
+                            .filter((entity) =>
+                              (PARENT_KINDS[selectedEntity.kind] ?? []).includes(
+                                entity.kind,
+                              ),
+                            )
+                            .map((entity) => (
+                              <option key={entity.id} value={entity.id}>
+                                {KIND_LABELS[entity.kind as Kind] ?? entity.kind} ·{" "}
+                                {entity.name}
+                              </option>
+                            ))}
+                        </select>
+                      </label>
+                      <label className={styles.checkbox}>
+                        <input
+                          type="checkbox"
+                          checked={editExternal}
+                          onChange={(event) =>
+                            setEditExternal(event.target.checked)
+                          }
+                        />
+                        <span>外部（未验证来源）</span>
+                      </label>
+                      <div className={styles.formActions}>
+                        <button type="submit" disabled={busy}>
+                          保存
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setEditing(false)}
+                        >
+                          取消
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
                   <details className={styles.disclosure}>
                     <summary>
                       <ChevronDown size={13} />
@@ -1050,6 +1100,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                       <dd>{selectedEntity.codebases?.join("、") || "—"}</dd>
                     </dl>
                   </details>
+                  )}
                 </>
               ) : (
                 <p className={styles.muted}>{t("team.loading", "加载中…")}</p>

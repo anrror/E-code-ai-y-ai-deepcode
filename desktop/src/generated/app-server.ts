@@ -813,6 +813,7 @@ export interface TeamEntityUpdateParams {
   projectId: string;
   entityId: string;
   name?: string;
+  parent?: string;
   external?: boolean;
   shared?: boolean;
 }

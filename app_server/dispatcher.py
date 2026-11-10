@@ -1708,11 +1708,12 @@ class Dispatcher:
         )
 
     def _team_entity_update(self, params: Params) -> dict[str, Any]:
-        params.only("projectId", "entityId", "name", "external", "shared")
+        params.only("projectId", "entityId", "name", "parent", "external", "shared")
         service = self._team_service(str(params.string("projectId")))
         return service.update_entity(
             str(params.string("entityId")),
             name=params.string("name", required=False) or None,
+            parent=params.string("parent", required=False),
             external=(
                 params.boolean("external") if "external" in params.values else None
             ),

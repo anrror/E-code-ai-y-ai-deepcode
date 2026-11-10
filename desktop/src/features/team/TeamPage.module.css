@@ -871,3 +871,53 @@
   font: var(--weight-medium) var(--text-2xs) var(--font-ui);
   cursor: pointer;
 }
+
+.layerForm {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  padding: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+}
+
+.layerForm label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--text-tertiary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+}
+
+.layerForm label.checkbox {
+  flex-direction: row;
+  align-items: center;
+  gap: 7px;
+  grid-column: 1 / -1;
+}
+
+.layerForm input:not([type="checkbox"]),
+.layerForm select {
+  padding: 5px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.formActions {
+  display: flex;
+  gap: 6px;
+  grid-column: 1 / -1;
+}
+
+.formActions button {
+  padding: 4px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  cursor: pointer;
+}

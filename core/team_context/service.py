@@ -20,6 +20,7 @@ from core.team_context.assembler import (
 from core.team_context.catalog import (
     CATALOG_RELATIVE,
     LAYER_DIRECTORIES,
+    PARENT_KINDS,
     TEAM_RELATIVE,
     Catalog,
     append_knowledge,
@@ -194,15 +195,46 @@ class TeamContextService:
         entity_id: str,
         *,
         name: str | None = None,
+        parent: str | None = None,
         external: bool | None = None,
         shared: bool = False,
     ) -> dict[str, Any]:
-        """Rename a layer or change its flags; the id and kind stay fixed."""
+        """Edit a layer's name, parent, or flags; the id and kind stay fixed."""
 
         catalog = self.catalog()
         current = catalog.entities.get(entity_id)
         if current is None:
             raise TeamContextError(f"unknown entity {entity_id}")
+        if parent is not None:
+            new_parent = parent.strip() or None
+            if new_parent is None:
+                if current.kind == "org":
+                    pass
+            elif current.kind == "org":
+                raise TeamContextError(
+                    "the organization layer is a root and cannot have a parent"
+                )
+            else:
+                candidate = catalog.entities.get(new_parent)
+                if candidate is None:
+                    raise TeamContextError(f"unknown parent {new_parent}")
+                allowed = PARENT_KINDS.get(current.kind, ())
+                if candidate.kind not in allowed:
+                    raise TeamContextError(
+                        f"a {current.kind} layer can only sit under "
+                        + ", ".join(allowed)
+                    )
+                seen = {current.id}
+                cursor: TeamEntity | None = candidate
+                while cursor is not None:
+                    if cursor.id in seen:
+                        raise TeamContextError("that parent would create a cycle")
+                    seen.add(cursor.id)
+                    cursor = (
+                        catalog.entities.get(cursor.parent) if cursor.parent else None
+                    )
+        else:
+            new_parent = current.parent
         directory = catalog.directories.get(entity_id)
         if directory is None or not (
             _is_within(directory, self.workspace) or shared
@@ -214,7 +246,7 @@ class TeamContextService:
             id=current.id,
             kind=current.kind,
             name=(name if name is not None else current.name).strip(),
-            parent=current.parent,
+            parent=new_parent,
             external=current.external if external is None else external,
             workspace=current.workspace,
             references=current.references,

@@ -5556,6 +5556,7 @@
         "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
         "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
         "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "parent": {"type": "string", "maxLength": 255},
         "external": {"type": "boolean"},
         "shared": {"type": "boolean"}
       },
