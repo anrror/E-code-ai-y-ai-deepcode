@@ -1,6 +1,6 @@
 use serde::Serialize;
 use serde_json::{json, Value};
-use std::collections::HashMap;
+use std::collections::{HashMap, VecDeque};
 use std::env;
 use std::fmt;
 use std::io::{BufRead, BufReader, Write};
@@ -113,6 +113,8 @@ pub struct RpcBridge {
     next_id: AtomicU64,
     generation: AtomicU64,
     status: Mutex<SidecarStatus>,
+    // Last stderr lines, kept for the crash report the UI shows.
+    stderr_tail: Mutex<VecDeque<String>>,
 }
 
 impl RpcBridge {
@@ -124,6 +126,7 @@ impl RpcBridge {
             next_id: AtomicU64::new(1),
             generation: AtomicU64::new(0),
             status: Mutex::new(SidecarStatus::default()),
+            stderr_tail: Mutex::new(VecDeque::new()),
         }
     }
 
@@ -205,6 +208,7 @@ impl RpcBridge {
 
         self.spawn_stdout_reader(stdout, generation);
         self.spawn_stderr_reader(stderr);
+        self.spawn_exit_monitor(generation);
 
         let handshake = self.request_with_timeout(
             "initialize",
@@ -293,6 +297,9 @@ impl RpcBridge {
     }
 
     fn prepare_for_start(&self) -> Result<(), BridgeError> {
+        if let Ok(mut tail) = self.stderr_tail.lock() {
+            tail.clear();
+        }
         let mut process = self.lock_process();
         if let Some(active) = process.as_mut() {
             match active.child.try_wait() {
@@ -442,12 +449,19 @@ impl RpcBridge {
         R: std::io::Read + Send + 'static,
     {
         let app = self.app.clone();
+        let bridge = self.clone();
         thread::Builder::new()
             .name("deepcode-sidecar-stderr".into())
             .spawn(move || {
                 for line in BufReader::new(stderr).lines() {
                     match line {
                         Ok(message) => {
+                            if let Ok(mut tail) = bridge.stderr_tail.lock() {
+                                if tail.len() >= 40 {
+                                    tail.pop_front();
+                                }
+                                tail.push_back(message.clone());
+                            }
                             let _ = app.emit("deepcode://sidecar-log", message);
                         }
                         Err(_) => break,
@@ -528,6 +542,71 @@ impl RpcBridge {
             launch_source: self.status().launch_source,
             server_info: self.status().server_info,
         });
+    }
+
+    /// Watch the child for the whole Session. A dead App Server must surface as
+    /// `crashed` with its exit code and last stderr lines, not as a client that
+    /// silently stops answering requests.
+    fn spawn_exit_monitor(self: &Arc<Self>, generation: u64) {
+        let bridge = Arc::downgrade(self);
+        thread::Builder::new()
+            .name("deepcode-sidecar-monitor".into())
+            .spawn(move || loop {
+                thread::sleep(Duration::from_millis(500));
+                let Some(bridge) = bridge.upgrade() else {
+                    return;
+                };
+                let exited = {
+                    let mut process = bridge.lock_process();
+                    match process.as_mut() {
+                        Some(active) => match active.child.try_wait() {
+                            Ok(Some(status)) => Some(status.code()),
+                            Ok(None) => None,
+                            Err(_) => return,
+                        },
+                        None => return,
+                    }
+                };
+                if let Some(code) = exited {
+                    bridge.mark_exited(code, generation);
+                    return;
+                }
+            })
+            .expect("failed to start App Server monitor");
+    }
+
+    fn mark_exited(&self, code: Option<i32>, generation: u64) {
+        if self.generation.load(Ordering::Acquire) != generation {
+            return;
+        }
+        if matches!(
+            self.status().phase,
+            SidecarPhase::Stopping | SidecarPhase::Stopped
+        ) {
+            return;
+        }
+        let tail = match self.stderr_tail.lock() {
+            Ok(lines) => lines
+                .iter()
+                .rev()
+                .take(5)
+                .cloned()
+                .collect::<Vec<_>>()
+                .into_iter()
+                .rev()
+                .collect::<Vec<_>>()
+                .join("\n"),
+            Err(poisoned) => poisoned.into_inner().iter().cloned().collect::<Vec<_>>().join("\n"),
+        };
+        let mut message = match code {
+            Some(code) => format!("the App Server exited unexpectedly (exit code {code})"),
+            None => "the App Server exited unexpectedly".to_string(),
+        };
+        if !tail.is_empty() {
+            message.push_str(":\n");
+            message.push_str(&tail);
+        }
+        self.mark_crashed(message);
     }
 
     fn update_phase(&self, phase: SidecarPhase, message: Option<String>) {
