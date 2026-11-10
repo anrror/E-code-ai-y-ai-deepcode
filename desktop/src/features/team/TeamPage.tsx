@@ -435,12 +435,13 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       });
       return;
     }
+    const allowed = PARENT_KINDS[kind] ?? [];
     const parent =
       parentId ??
       (tree?.inChain ?? [])
         .map((id) => tree?.entities.find((entity) => entity.id === id))
         .filter((entity): entity is TeamEntityView => Boolean(entity))
-        .filter((entity) => kindIndex(entity.kind) < kindIndex(kind))
+        .filter((entity) => allowed.includes(entity.kind))
         .pop()?.id ??
       "";
     setCreateError(null);
@@ -466,7 +467,10 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         kind: createForm.kind,
         slug,
         name: name || undefined,
-        parent: createForm.parent || undefined,
+        parent:
+          parentOptions.some((entity) => entity.id === createForm.parent)
+            ? createForm.parent
+            : undefined,
         external: createForm.external,
         shared: createForm.kind === "org",
       });
@@ -1360,6 +1364,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                   setCreateForm({
                     ...createForm,
                     kind: event.target.value as Kind,
+                    parent: "",
                   })
                 }
               >

@@ -150,6 +150,15 @@ class TeamContextService:
             raise TeamContextError(
                 "a layer directory name must not be empty or contain path separators"
             )
+        if parent:
+            parent_entity = self.catalog().entities.get(parent.strip())
+            if parent_entity is None:
+                raise TeamContextError(f"unknown parent {parent}")
+            allowed = PARENT_KINDS.get(kind, ())
+            if parent_entity.kind not in allowed:
+                raise TeamContextError(
+                    f"a {kind} layer can only sit under " + ", ".join(allowed)
+                )
         if kind == "org":
             existing = [
                 entity.id
