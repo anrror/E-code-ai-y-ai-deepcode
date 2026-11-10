@@ -8,7 +8,8 @@ export type DesktopDestination =
   | "automations"
   | "skills"
   | "plugins"
-  | "mcp";
+  | "mcp"
+  | "team";
 export type DesktopInspectorTab =
   | "changes"
   | "files"

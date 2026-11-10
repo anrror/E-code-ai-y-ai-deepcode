@@ -1,0 +1,216 @@
+.page {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  padding: 22px 26px;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.eyebrow {
+  margin: 0 0 4px;
+  color: var(--text-tertiary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.header h2 {
+  margin: 0 0 6px;
+  font: var(--weight-semibold) var(--text-xl) var(--font-ui);
+}
+
+.hint {
+  max-width: 760px;
+  margin: 0;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-sm) var(--font-ui);
+  line-height: 1.55;
+}
+
+.iconButton {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  flex: none;
+  place-items: center;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+}
+
+.iconButton:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.body {
+  display: grid;
+  min-height: 0;
+  flex: 1;
+  grid-template-columns: minmax(220px, 300px) minmax(0, 1fr);
+  gap: 16px;
+}
+
+.sidebar {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+  overflow-y: auto;
+}
+
+.layers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.layer {
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-hover);
+  color: var(--text-tertiary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-mono);
+}
+
+.treeTitle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 2px;
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-xs) var(--font-ui);
+  text-align: left;
+}
+
+.files {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.files button {
+  width: 100%;
+  padding: 5px 7px;
+  border-radius: var(--radius-xs);
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+  text-align: left;
+  word-break: break-all;
+}
+
+.files button:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.files button[data-active="true"] {
+  background: var(--surface-selected, var(--surface-hover));
+  color: var(--text-primary);
+}
+
+.empty,
+.placeholder {
+  margin: 0;
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-sm) var(--font-ui);
+}
+
+.newFile {
+  display: flex;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.newFile input {
+  min-width: 0;
+  flex: 1;
+  padding: 6px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xs);
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+}
+
+.newFile button,
+.editorBar button {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border-radius: var(--radius-xs);
+  background: var(--surface-hover);
+  color: var(--text-primary);
+  font: var(--weight-medium) var(--text-xs) var(--font-ui);
+}
+
+.newFile button:hover,
+.editorBar button:hover {
+  background: var(--surface-selected, var(--surface-hover));
+}
+
+.newFile button:disabled,
+.editorBar button:disabled {
+  opacity: 0.5;
+}
+
+.editor {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--surface-raised);
+}
+
+.editorBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.editorBar code {
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-xs) var(--font-mono);
+}
+
+.editor textarea {
+  min-height: 0;
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-sm) var(--font-mono);
+  line-height: 1.55;
+  resize: none;
+  tab-size: 2;
+}
+
+.status {
+  margin: 0;
+  padding: 6px 2px 0;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  word-break: break-word;
+}

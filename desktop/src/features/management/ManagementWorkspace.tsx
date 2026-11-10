@@ -5,6 +5,7 @@ import { AutomationsPage } from "../automations/AutomationsPage";
 import { SkillsPage } from "../extensions/SkillsPage";
 import { PluginsPage } from "../plugins/PluginsPage";
 import { McpPage } from "../mcp/McpPage";
+import { TeamPage } from "../team/TeamPage";
 
 interface ManagementWorkspaceProps {
   destination: DesktopDestination;
@@ -45,6 +46,9 @@ export function ManagementWorkspace({
   }
   if (destination === "plugins") {
     return <PluginsPage runtime={runtime} />;
+  }
+  if (destination === "team") {
+    return <TeamPage runtime={runtime} project={project} />;
   }
   return <McpPage runtime={runtime} project={project} />;
 }

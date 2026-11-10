@@ -4,6 +4,7 @@ import {
   Folder,
   FolderClock,
   FolderOpen,
+  Layers,
   MessageSquare,
   Plus,
   Puzzle,
@@ -306,6 +307,14 @@ export function DesktopSidebar({
         >
           <WandSparkles size={16} />
           {t("sidebar.skills", "Skills")}
+        </button>
+        <button
+          type="button"
+          data-active={destination === "team"}
+          onClick={() => onDestination("team")}
+        >
+          <Layers size={16} />
+          {t("sidebar.team", "Team context")}
         </button>
         <button
           type="button"
