@@ -1713,7 +1713,7 @@ class Dispatcher:
         return service.update_entity(
             str(params.string("entityId")),
             name=params.string("name", required=False) or None,
-            parent=params.string("parent", required=False),
+            parent=params.string("parent", required=False, allow_empty=True),
             external=(
                 params.boolean("external") if "external" in params.values else None
             ),

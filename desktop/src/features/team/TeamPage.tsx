@@ -7,6 +7,7 @@ import {
   Eye,
   Layers,
   Lock,
+  Shield,
   Pencil,
   Plus,
   RefreshCw,
@@ -628,8 +629,29 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         </div>
       </header>
 
+      <button
+        type="button"
+        className={styles.orgBar}
+        data-active={entityForKind("org")?.id === selectedId}
+        onClick={() => {
+          const org = entityForKind("org");
+          if (org) setSelectedId(org.id);
+          else openCreate("org");
+        }}
+      >
+        <Shield size={14} />
+        <span className={styles.orgTitle}>组织策略</span>
+        <span className={styles.orgName}>
+          {entityForKind("org")?.name ?? "未配置"}
+        </span>
+        <span className={styles.orgMeta}>
+          {entityForKind("org")
+            ? `${entityForKind("org")?.knowledgeCount ?? 0} 条 · 本机全局`
+            : "点击配置"}
+        </span>
+      </button>
       <ol className={styles.chain} aria-label={t("team.chain", "上下文链")}>
-        {KINDS.map((kind) => {
+        {KINDS.filter((kind) => kind !== "org").map((kind) => {
           const entity = entityForKind(kind);
           const linked = entity
             ? (tree?.inChain.includes(entity.id) ?? false)
@@ -729,7 +751,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             </div>
           ) : (
             <ul className={styles.layers}>
-              {KINDS.map((kind) => {
+              {KINDS.filter((kind) => kind !== "org").map((kind) => {
                 const entity = entityForKind(kind);
                 return (
                   <li key={kind}>
