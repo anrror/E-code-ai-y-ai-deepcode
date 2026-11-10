@@ -1004,3 +1004,90 @@
   background: var(--surface-hover);
   color: var(--text-primary);
 }
+
+.treeRow {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  border-radius: var(--radius-sm);
+}
+
+.treeRow[data-active="true"] {
+  background: var(--surface-selected);
+}
+
+.treeChevron,
+.treeAdd {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 22px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+}
+
+.treeChevron:disabled {
+  cursor: default;
+}
+
+.treeAdd:hover,
+.treeChevron:hover:not(:disabled) {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.treeDot {
+  width: 3px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--border-subtle);
+}
+
+.treeLabel {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 4px 4px 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.treeKind {
+  flex: none;
+  color: var(--text-tertiary);
+  font-size: var(--text-2xs);
+}
+
+.treeName {
+  overflow: hidden;
+  flex: 1;
+  font-size: var(--text-xs);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treeCount {
+  flex: none;
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-2xs) var(--font-mono);
+}
+
+.treeDraft {
+  flex: none;
+  padding: 0 4px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--signal) 14%, transparent);
+  color: var(--signal-strong);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+}

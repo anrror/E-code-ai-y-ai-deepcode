@@ -48,6 +48,16 @@ const PARENT_KINDS: Record<string, string[]> = {
   task: ["version"],
 };
 
+const CHILD_KINDS: Record<string, Kind[]> = {
+  org: ["line", "product"],
+  line: ["product", "project"],
+  product: [],
+  project: ["batch"],
+  batch: ["version"],
+  version: ["task"],
+  task: [],
+};
+
 const KIND_LABELS: Record<Kind, string> = {
   org: "组织",
   line: "业务线",
@@ -188,6 +198,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [editParent, setEditParent] = useState("");
   const [editExternal, setEditExternal] = useState(false);
   const [deleteArmed, setDeleteArmed] = useState(false);
+  const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
   const loadTree = useCallback(async () => {
     if (!project) {
@@ -274,6 +285,97 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     return chain;
   }, [tree, selectedId]);
 
+  const childrenByParent = useMemo(() => {
+    const byParent = new Map<string | null, TeamEntityView[]>();
+    const known = new Set((tree?.entities ?? []).map((entity) => entity.id));
+    for (const entity of tree?.entities ?? []) {
+      if (entity.kind === "org") continue;
+      const key =
+        entity.parent && known.has(entity.parent) ? entity.parent : null;
+      const list = byParent.get(key) ?? [];
+      list.push(entity);
+      byParent.set(key, list);
+    }
+    for (const list of byParent.values()) {
+      list.sort(
+        (left, right) =>
+          kindIndex(left.kind) - kindIndex(right.kind) ||
+          left.name.localeCompare(right.name),
+      );
+    }
+    return byParent;
+  }, [tree]);
+
+  const nextChildKind = (kind: string): Kind | null =>
+    CHILD_KINDS[kind]?.[0] ?? null;
+
+  const renderBranch = (parent: string | null, depth: number): ReactNode =>
+    (childrenByParent.get(parent) ?? []).map((entity) => {
+      const children = childrenByParent.get(entity.id) ?? [];
+      const collapsed = collapsedIds.has(entity.id);
+      const childKind = nextChildKind(entity.kind);
+      return (
+        <div key={entity.id}>
+          <div
+            className={styles.treeRow}
+            data-active={entity.id === selectedId}
+            style={{ paddingLeft: 4 + depth * 14 }}
+          >
+            <button
+              type="button"
+              className={styles.treeChevron}
+              disabled={children.length === 0}
+              aria-label={collapsed ? "展开" : "折叠"}
+              onClick={() => {
+                const next = new Set(collapsedIds);
+                if (collapsed) next.delete(entity.id);
+                else next.add(entity.id);
+                setCollapsedIds(next);
+              }}
+            >
+              {children.length === 0 ? (
+                <span className={styles.treeDot} />
+              ) : (
+                <ChevronDown
+                  size={12}
+                  style={{
+                    transform: collapsed ? "rotate(-90deg)" : undefined,
+                  }}
+                />
+              )}
+            </button>
+            <button
+              type="button"
+              className={styles.treeLabel}
+              onClick={() => setSelectedId(entity.id)}
+              title={entity.id}
+            >
+              <span className={styles.treeKind}>
+                {KIND_LABELS[entity.kind as Kind] ?? entity.kind}
+              </span>
+              <span className={styles.treeName}>{entity.name}</span>
+              {entity.draftCount > 0 ? (
+                <span className={styles.treeDraft}>{entity.draftCount}</span>
+              ) : null}
+              <span className={styles.treeCount}>{entity.knowledgeCount}</span>
+            </button>
+            {childKind ? (
+              <button
+                type="button"
+                className={styles.treeAdd}
+                aria-label={`添加${KIND_LABELS[childKind]}`}
+                title={`添加${KIND_LABELS[childKind]}`}
+                onClick={() => openCreate(childKind, entity.id)}
+              >
+                <Plus size={11} />
+              </button>
+            ) : null}
+          </div>
+          {collapsed ? null : renderBranch(entity.id, depth + 1)}
+        </div>
+      );
+    });
+
   const draftTotal = useMemo(
     () =>
       (tree?.entities ?? []).reduce(
@@ -321,7 +423,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     if (queueMode) void loadQueue();
   }, [queueMode, loadQueue]);
 
-  const openCreate = (kind: Kind) => {
+  const openCreate = (kind: Kind, parentId?: string) => {
     if (kind === "org") {
       setCreateError(null);
       setCreateForm({
@@ -334,11 +436,13 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       return;
     }
     const parent =
+      parentId ??
       (tree?.inChain ?? [])
         .map((id) => tree?.entities.find((entity) => entity.id === id))
         .filter((entity): entity is TeamEntityView => Boolean(entity))
         .filter((entity) => kindIndex(entity.kind) < kindIndex(kind))
-        .pop()?.id ?? "";
+        .pop()?.id ??
+      "";
     setCreateError(null);
     setCreateForm({ kind, slug: "", name: "", parent, external: false });
   };
@@ -800,47 +904,12 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             </div>
           ) : (
             <div className={styles.layers}>
-              {KINDS.filter((kind) => kind !== "org").map((kind) => {
-                const items = (tree?.entities ?? []).filter(
-                  (entity) => entity.kind === kind,
-                );
-                return (
-                  <section key={kind} className={styles.layerGroup}>
-                    <div className={styles.layerGroupHead}>
-                      <span>{KIND_LABELS[kind]}</span>
-                      <button
-                        type="button"
-                        aria-label={`添加${KIND_LABELS[kind]}`}
-                        title={`添加${KIND_LABELS[kind]}`}
-                        onClick={() => openCreate(kind)}
-                      >
-                        <Plus size={11} />
-                      </button>
-                    </div>
-                    {items.length === 0 ? (
-                      <p className={styles.muted}>未配置</p>
-                    ) : (
-                      items.map((entity) => (
-                        <button
-                          key={entity.id}
-                          type="button"
-                          className={styles.layerRow}
-                          data-active={entity.id === selectedId}
-                          onClick={() => setSelectedId(entity.id)}
-                          title={entity.id}
-                        >
-                          <span className={styles.layerName}>
-                            {entity.name}
-                          </span>
-                          <span className={styles.layerCounts}>
-                            {entity.knowledgeCount}
-                          </span>
-                        </button>
-                      ))
-                    )}
-                  </section>
-                );
-              })}
+              {renderBranch(null, 0)}
+              {(tree?.entities ?? []).filter(
+                (entity) => entity.kind !== "org",
+              ).length === 0 ? (
+                <p className={styles.muted}>还没有层；点击右上角“新建层”。</p>
+              ) : null}
             </div>
           )}
         </aside>
