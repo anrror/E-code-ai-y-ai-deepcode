@@ -179,6 +179,9 @@ export interface MethodParams {
   "team/tree": TeamTreeParams;
   "team/read": TeamReadParams;
   "team/preview": TeamPreviewParams;
+  "team/create": TeamCreateParams;
+  "team/knowledge/add": TeamKnowledgeAddParams;
+  "team/knowledge/promote": TeamKnowledgePromoteParams;
   "git/status": ThreadReadParams;
   "git/diff": GitDiffParams;
   "git/discard": GitDiscardParams;
@@ -781,6 +784,42 @@ export interface TeamPreviewParams {
   includeExternal?: boolean;
   maxChars?: number;
 }
+export interface TeamCreateParams {
+  projectId: string;
+  kind: string;
+  slug: string;
+  name?: string;
+  parent?: string;
+  external?: boolean;
+  workspace?: string;
+  /**
+   * @maxItems 50
+   */
+  references?: string[];
+  /**
+   * @maxItems 50
+   */
+  designs?: string[];
+  /**
+   * @maxItems 50
+   */
+  codebases?: string[];
+}
+export interface TeamKnowledgeAddParams {
+  projectId: string;
+  entityId: string;
+  type: string;
+  statement: string;
+  rationale?: string;
+  evidence?: string;
+  confidence?: string;
+  owner?: string;
+}
+export interface TeamKnowledgePromoteParams {
+  projectId: string;
+  knowledgeId: string;
+  owner?: string;
+}
 export interface GitDiffParams {
   threadId: string;
   scope?: "all" | "staged" | "working";
@@ -1086,6 +1125,19 @@ export interface MethodResults {
     blockedOverrides: string[];
     truncated: boolean;
     text: string;
+  };
+  "team/create": {
+    entity: TeamEntityView;
+    instructions: string;
+    knowledge: TeamKnowledgeView[];
+  };
+  "team/knowledge/add": {
+    entry: TeamKnowledgeView;
+    path?: string;
+  };
+  "team/knowledge/promote": {
+    entry: TeamKnowledgeView;
+    path?: string;
   };
   "git/status": {
     status: GitStatus;

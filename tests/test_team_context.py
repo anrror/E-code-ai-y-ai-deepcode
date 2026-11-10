@@ -611,3 +611,30 @@ def test_tree_and_read_expose_what_the_team_page_needs(tmp_path: Path) -> None:
     detail = service.read_entity("task://LEAD-1234")
     assert detail["entity"]["knowledgeCount"] == 1
     assert detail["knowledge"][0]["status"] == "draft"
+
+def test_create_entity_seeds_a_layer_and_round_trips_knowledge(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+
+    created = service.create_entity(kind="project", slug="changan", name="Changan")
+    assert created["entity"]["id"] == "project://changan"
+    assert created["entity"]["name"] == "Changan"
+    assert (
+        workspace / ".deepcode" / "team" / "project" / "changan" / "entity.yaml"
+    ).is_file()
+
+    added = service.add(
+        scope="project://changan",
+        type="decision",
+        statement="Tests run with pytest.",
+    )
+    assert added["entry"]["status"] == "draft"
+
+    promoted = service.promote(added["entry"]["id"], owner="reviewer")
+    assert promoted["status"] == "reviewed"
+
+    detail = service.read_entity("project://changan")
+    assert detail["entity"]["knowledgeCount"] == 1
+    assert detail["entity"]["draftCount"] == 0
+    assert detail["knowledge"][0]["status"] == "reviewed"

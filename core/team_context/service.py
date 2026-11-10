@@ -19,12 +19,15 @@ from core.team_context.assembler import (
 )
 from core.team_context.catalog import (
     CATALOG_RELATIVE,
+    LAYER_DIRECTORIES,
+    TEAM_RELATIVE,
     Catalog,
     append_knowledge,
     load_catalog,
     save_catalog,
 )
 from core.team_context.models import (
+    ENTITY_KINDS,
     KNOWLEDGE_TYPES,
     KnowledgeEntry,
     TeamContextError,
@@ -105,6 +108,65 @@ class TeamContextService:
             "instructions": catalog.instructions.get(entity_id, ""),
             "knowledge": entries,
         }
+
+    def create_entity(
+        self,
+        *,
+        kind: str,
+        slug: str,
+        name: str = "",
+        parent: str | None = None,
+        external: bool = False,
+        workspace: str | None = None,
+        references: list[str] | None = None,
+        designs: list[str] | None = None,
+        codebases: list[str] | None = None,
+    ) -> dict[str, Any]:
+        """Create one layer directory in the workspace (``.deepcode/team``).
+
+        A missing layer means "this level adds nothing"; creating one is the
+        first write the Team page offers, before any knowledge exists.
+        """
+
+        kind = kind.strip()
+        slug = slug.strip()
+        if kind not in ENTITY_KINDS:
+            raise TeamContextError(
+                f"unknown layer {kind!r}; expected one of {ENTITY_KINDS}"
+            )
+        if not slug or any(part in slug for part in ("/", "\\", "..")):
+            raise TeamContextError(
+                "a layer directory name must not be empty or contain path separators"
+            )
+        directory = self.workspace / TEAM_RELATIVE / LAYER_DIRECTORIES[kind][0] / slug
+        if (directory / "entity.yaml").exists():
+            raise TeamContextError(f"the {kind} layer {slug!r} already exists")
+
+        payload: dict[str, Any] = {
+            "id": f"{kind}://{slug}",
+            "kind": kind,
+            "name": (name or slug).strip(),
+        }
+        if parent:
+            payload["parent"] = parent.strip()
+        if external:
+            payload["external"] = True
+        if workspace:
+            payload["workspace"] = workspace.strip()
+        for key, values in (
+            ("references", references),
+            ("designs", designs),
+            ("codebases", codebases),
+        ):
+            cleaned = [
+                str(value).strip() for value in values or [] if str(value).strip()
+            ]
+            if cleaned:
+                payload[key] = cleaned
+
+        directory.mkdir(parents=True, exist_ok=True)
+        _write_yaml(directory / "entity.yaml", payload)
+        return self.read_entity(f"{kind}://{slug}")
 
     def assemble(
         self,

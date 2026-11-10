@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Eye, Layers, RefreshCw } from "lucide-react";
+import { Eye, Layers, Plus, RefreshCw } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import type {
@@ -19,6 +19,16 @@ const KIND_ORDER = [
   "batch",
   "version",
   "task",
+] as const;
+
+const KNOWLEDGE_TYPES = [
+  "redline",
+  "decision",
+  "convention",
+  "domain",
+  "design",
+  "lesson",
+  "external",
 ] as const;
 
 interface TeamTreeResult {
@@ -58,6 +68,20 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [status, setStatus] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
+  const [showCreate, setShowCreate] = useState(false);
+  const [createForm, setCreateForm] = useState({
+    kind: "project",
+    slug: "",
+    name: "",
+    parent: "",
+  });
+  const [knowledgeForm, setKnowledgeForm] = useState({
+    type: "decision",
+    statement: "",
+    owner: "",
+  });
+  const [formError, setFormError] = useState<string | null>(null);
+
   const loadTree = useCallback(async () => {
     if (!project) {
       setTree(null);
@@ -69,7 +93,6 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         projectId: project.id,
       });
       setTree(result);
-      setStatus(result.entities.length === 0 ? null : null);
       setSelectedId((current) =>
         result.entities.some((entity) => entity.id === current)
           ? current
@@ -83,24 +106,14 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     }
   }, [project, runtime]);
 
-  useEffect(() => {
-    setDetail(null);
-    setPreview(null);
-    setSelectedId(null);
-    void loadTree();
-  }, [loadTree]);
-
-  useEffect(() => {
-    if (!project || !selectedId) {
-      setDetail(null);
-      return;
-    }
-    setBusy(true);
-    void (async () => {
+  const loadDetail = useCallback(
+    async (entityId: string) => {
+      if (!project) return;
+      setBusy(true);
       try {
         const result = await runtime.request("team/read", {
           projectId: project.id,
-          entityId: selectedId,
+          entityId,
         });
         setDetail(result);
       } catch (error) {
@@ -109,8 +122,24 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       } finally {
         setBusy(false);
       }
-    })();
-  }, [project, runtime, selectedId]);
+    },
+    [project, runtime],
+  );
+
+  useEffect(() => {
+    setDetail(null);
+    setPreview(null);
+    setSelectedId(null);
+    void loadTree();
+  }, [loadTree]);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setDetail(null);
+      return;
+    }
+    void loadDetail(selectedId);
+  }, [loadDetail, selectedId]);
 
   const groups = useMemo(() => {
     const byKind = new Map<string, TeamEntityView[]>();
@@ -124,6 +153,79 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       entities: byKind.get(kind) ?? [],
     }));
   }, [tree]);
+
+  const createEntity = async () => {
+    if (!project) return;
+    const slug = createForm.slug.trim();
+    if (!slug) {
+      setFormError(t("team.slugRequired", "A folder name is required."));
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      const entityId = `${createForm.kind}://${slug}`;
+      await runtime.request("team/create", {
+        projectId: project.id,
+        kind: createForm.kind,
+        slug,
+        name: createForm.name.trim() || undefined,
+        parent: createForm.parent.trim() || undefined,
+      });
+      setShowCreate(false);
+      setCreateForm({ kind: createForm.kind, slug: "", name: "", parent: "" });
+      await loadTree();
+      setSelectedId(entityId);
+    } catch (error) {
+      setFormError(String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const addKnowledge = async () => {
+    if (!project || !selectedId) return;
+    const statement = knowledgeForm.statement.trim();
+    if (!statement) {
+      setFormError(t("team.statementRequired", "A statement is required."));
+      return;
+    }
+    setBusy(true);
+    setFormError(null);
+    try {
+      await runtime.request("team/knowledge/add", {
+        projectId: project.id,
+        entityId: selectedId,
+        type: knowledgeForm.type,
+        statement,
+        owner: knowledgeForm.owner.trim() || undefined,
+      });
+      setKnowledgeForm({ ...knowledgeForm, statement: "" });
+      await loadDetail(selectedId);
+      await loadTree();
+    } catch (error) {
+      setFormError(String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const promote = async (knowledgeId: string) => {
+    if (!project || !selectedId) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/knowledge/promote", {
+        projectId: project.id,
+        knowledgeId,
+      });
+      await loadDetail(selectedId);
+      await loadTree();
+    } catch (error) {
+      setStatus(String(error));
+    } finally {
+      setBusy(false);
+    }
+  };
 
   const showPreview = async () => {
     if (!project) return;
@@ -152,6 +254,56 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     );
   }
 
+  const isEmpty = !tree || tree.entities.length === 0;
+
+  const createFormView = (
+    <form
+      className={styles.createForm}
+      onSubmit={(event) => {
+        event.preventDefault();
+        void createEntity();
+      }}
+    >
+      <select
+        value={createForm.kind}
+        onChange={(event) =>
+          setCreateForm({ ...createForm, kind: event.target.value })
+        }
+      >
+        {KIND_ORDER.map((kind) => (
+          <option key={kind} value={kind}>
+            {kind}
+          </option>
+        ))}
+      </select>
+      <input
+        value={createForm.slug}
+        placeholder={t("team.slugPlaceholder", "Folder name, e.g. changan")}
+        onChange={(event) =>
+          setCreateForm({ ...createForm, slug: event.target.value })
+        }
+      />
+      <input
+        value={createForm.name}
+        placeholder={t("team.namePlaceholder", "Display name")}
+        onChange={(event) =>
+          setCreateForm({ ...createForm, name: event.target.value })
+        }
+      />
+      <input
+        value={createForm.parent}
+        placeholder={t("team.parentPlaceholder", "Parent id (optional)")}
+        onChange={(event) =>
+          setCreateForm({ ...createForm, parent: event.target.value })
+        }
+      />
+      <button type="submit" disabled={busy}>
+        <Plus size={14} />
+        {t("team.create", "Create layer")}
+      </button>
+    </form>
+  );
+
   return (
     <section className={styles.page}>
       <header className={styles.header}>
@@ -161,20 +313,33 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
           <p className={styles.hint}>
             {t(
               "team.readonlyHint",
-              "Read-only in this phase: layers, knowledge, and the assembled context the agent sees. Editing and the product library follow in the next phase.",
+              "Layers below the task are optional: a missing layer adds nothing. Choose a layer, then add knowledge; drafts become effective once reviewed.",
             )}
           </p>
         </div>
-        <button
-          type="button"
-          className={styles.iconButton}
-          disabled={busy}
-          onClick={() => void loadTree()}
-          title={t("team.refresh", "Refresh")}
-        >
-          <RefreshCw size={16} />
-        </button>
+        <div className={styles.headerActions}>
+          <button
+            type="button"
+            className={styles.iconButton}
+            onClick={() => setShowCreate((value) => !value)}
+            title={t("team.newLayer", "New layer")}
+          >
+            <Plus size={16} />
+          </button>
+          <button
+            type="button"
+            className={styles.iconButton}
+            disabled={busy}
+            onClick={() => void loadTree()}
+            title={t("team.refresh", "Refresh")}
+          >
+            <RefreshCw size={16} />
+          </button>
+        </div>
       </header>
+
+      {showCreate || isEmpty ? createFormView : null}
+      {formError ? <p className={styles.status}>{formError}</p> : null}
 
       <div className={styles.body}>
         <aside className={styles.sidebar}>
@@ -185,10 +350,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             </p>
           ) : (
             <p className={styles.empty}>
-              {t(
-                "team.unbound",
-                "This workspace does not bind to a task yet.",
-              )}
+              {t("team.unbound", "This workspace does not bind to a task yet.")}
             </p>
           )}
 
@@ -218,11 +380,11 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             </section>
           ))}
 
-          {tree && tree.entities.length === 0 ? (
+          {isEmpty ? (
             <p className={styles.empty}>
               {t(
                 "team.empty",
-                "No layers configured yet. Add .deepcode/team/<layer>/<slug>/ in the workspace.",
+                "No layers configured yet. Create one above; it writes .deepcode/team/<layer>/<folder>/.",
               )}
             </p>
           ) : null}
@@ -233,7 +395,11 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             <>
               <div className={styles.editorBar}>
                 <code>{detail.entity.id}</code>
-                <button type="button" disabled={busy} onClick={() => void showPreview()}>
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void showPreview()}
+                >
                   <Eye size={14} />
                   {t("team.preview", "Preview context")}
                 </button>
@@ -277,6 +443,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                         <th>{t("team.statement", "Statement")}</th>
                         <th>{t("team.confidence", "Confidence")}</th>
                         <th>{t("team.status", "Status")}</th>
+                        <th />
                       </tr>
                     </thead>
                     <tbody>
@@ -286,12 +453,74 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                           <td>{entry.statement}</td>
                           <td>{entry.confidence}</td>
                           <td>{entry.status}</td>
+                          <td>
+                            {entry.status === "draft" ? (
+                              <button
+                                type="button"
+                                disabled={busy}
+                                onClick={() => void promote(entry.id)}
+                              >
+                                {t("team.markReviewed", "Mark reviewed")}
+                              </button>
+                            ) : null}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 )}
               </section>
+
+              <form
+                className={styles.knowledgeForm}
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  void addKnowledge();
+                }}
+              >
+                <select
+                  value={knowledgeForm.type}
+                  onChange={(event) =>
+                    setKnowledgeForm({
+                      ...knowledgeForm,
+                      type: event.target.value,
+                    })
+                  }
+                >
+                  {KNOWLEDGE_TYPES.map((type) => (
+                    <option key={type} value={type}>
+                      {type}
+                    </option>
+                  ))}
+                </select>
+                <input
+                  value={knowledgeForm.statement}
+                  placeholder={t(
+                    "team.statementPlaceholder",
+                    "What should the agent know?",
+                  )}
+                  onChange={(event) =>
+                    setKnowledgeForm({
+                      ...knowledgeForm,
+                      statement: event.target.value,
+                    })
+                  }
+                />
+                <input
+                  value={knowledgeForm.owner}
+                  placeholder={t("team.ownerPlaceholder", "Owner")}
+                  onChange={(event) =>
+                    setKnowledgeForm({
+                      ...knowledgeForm,
+                      owner: event.target.value,
+                    })
+                  }
+                />
+                <button type="submit" disabled={busy}>
+                  <Plus size={14} />
+                  {t("team.addKnowledge", "Add knowledge")}
+                </button>
+              </form>
 
               {preview ? (
                 <section className={styles.textBlock}>

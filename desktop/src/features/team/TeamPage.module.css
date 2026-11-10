@@ -317,3 +317,71 @@
   color: var(--warning, #d19a66);
   font: var(--weight-regular) var(--text-xs) var(--font-ui);
 }
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.createForm,
+.knowledgeForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.createForm {
+  padding: 0 0 8px;
+}
+
+.knowledgeForm {
+  padding: 0;
+}
+
+.createForm input,
+.createForm select,
+.knowledgeForm input,
+.knowledgeForm select {
+  min-width: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-base);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.createForm input {
+  flex: 1 1 120px;
+}
+
+.knowledgeForm input {
+  flex: 1 1 160px;
+}
+
+.createForm button,
+.knowledgeForm button,
+.knowledge td button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised, var(--surface-base));
+  color: var(--text-primary);
+  font: var(--weight-medium) var(--text-xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.createForm button:disabled,
+.knowledgeForm button:disabled,
+.knowledge td button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.knowledge td button {
+  padding: 3px 8px;
+}

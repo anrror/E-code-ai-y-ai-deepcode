@@ -5478,6 +5478,48 @@
       },
       "required": ["projectId"]
     },
+    "TeamCreateParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "kind": {"type": "string", "minLength": 1, "maxLength": 32},
+        "slug": {"type": "string", "minLength": 1, "maxLength": 80},
+        "name": {"type": "string", "maxLength": 200},
+        "parent": {"type": "string", "maxLength": 255},
+        "external": {"type": "boolean"},
+        "workspace": {"type": "string", "maxLength": 500},
+        "references": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
+        "designs": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
+        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}}
+      },
+      "required": ["projectId", "kind", "slug"]
+    },
+    "TeamKnowledgeAddParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "type": {"type": "string"},
+        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
+        "rationale": {"type": "string", "maxLength": 2000},
+        "evidence": {"type": "string", "maxLength": 2000},
+        "confidence": {"type": "string"},
+        "owner": {"type": "string", "maxLength": 120}
+      },
+      "required": ["projectId", "entityId", "type", "statement"]
+    },
+    "TeamKnowledgePromoteParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "owner": {"type": "string", "maxLength": 120}
+      },
+      "required": ["projectId", "knowledgeId"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6738,6 +6780,15 @@
         "team/preview": {
           "$ref": "#/$defs/TeamPreviewParams"
         },
+        "team/create": {
+          "$ref": "#/$defs/TeamCreateParams"
+        },
+        "team/knowledge/add": {
+          "$ref": "#/$defs/TeamKnowledgeAddParams"
+        },
+        "team/knowledge/promote": {
+          "$ref": "#/$defs/TeamKnowledgePromoteParams"
+        },
         "git/status": {
           "$ref": "#/$defs/ThreadReadParams"
         },
@@ -6907,6 +6958,9 @@
         "team/tree",
         "team/read",
         "team/preview",
+        "team/create",
+        "team/knowledge/add",
+        "team/knowledge/promote",
         "git/status",
         "git/diff",
         "git/discard",
@@ -7781,6 +7835,34 @@
           },
           "required": ["task", "chain", "referenced", "entryCount", "externalExcluded", "blockedOverrides", "truncated", "text"]
         },
+        "team/create": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity": {"$ref": "#/$defs/TeamEntityView"},
+            "instructions": {"type": "string"},
+            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+          },
+          "required": ["entity", "instructions", "knowledge"]
+        },
+        "team/knowledge/add": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
+            "path": {"type": "string"}
+          },
+          "required": ["entry"]
+        },
+        "team/knowledge/promote": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
+            "path": {"type": "string"}
+          },
+          "required": ["entry"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8083,6 +8165,9 @@
         "team/tree",
         "team/read",
         "team/preview",
+        "team/create",
+        "team/knowledge/add",
+        "team/knowledge/promote",
         "git/status",
         "git/diff",
         "git/discard",

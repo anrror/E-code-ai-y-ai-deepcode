@@ -314,6 +314,9 @@ class Dispatcher:
             rpc_methods.TEAM_TREE: self._team_tree,
             rpc_methods.TEAM_READ: self._team_read,
             rpc_methods.TEAM_PREVIEW: self._team_preview,
+            rpc_methods.TEAM_CREATE: self._team_create,
+            rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
+            rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
             rpc_methods.FILE_LIST: self._file_list,
             rpc_methods.FILE_READ: self._file_read,
             rpc_methods.FILE_WRITE: self._file_write,
@@ -1666,6 +1669,64 @@ class Dispatcher:
             "nextAfter": page.next_after,
             "hasMore": page.has_more,
             "headSequence": page.head_sequence,
+        }
+
+    def _team_create(self, params: Params) -> dict[str, Any]:
+        params.only(
+            "projectId",
+            "kind",
+            "slug",
+            "name",
+            "parent",
+            "external",
+            "workspace",
+            "references",
+            "designs",
+            "codebases",
+        )
+        service = self._team_service(str(params.string("projectId")))
+        return service.create_entity(
+            kind=str(params.string("kind")),
+            slug=str(params.string("slug")),
+            name=params.string("name", required=False) or "",
+            parent=params.string("parent", required=False) or None,
+            external=params.boolean("external", default=False),
+            workspace=params.string("workspace", required=False) or None,
+            references=list(params.string_array("references")),
+            designs=list(params.string_array("designs")),
+            codebases=list(params.string_array("codebases")),
+        )
+
+    def _team_knowledge_add(self, params: Params) -> dict[str, Any]:
+        params.only(
+            "projectId",
+            "entityId",
+            "type",
+            "statement",
+            "rationale",
+            "evidence",
+            "confidence",
+            "owner",
+        )
+        service = self._team_service(str(params.string("projectId")))
+        return service.add(
+            scope=str(params.string("entityId")),
+            type=str(params.string("type")),
+            statement=str(params.string("statement")),
+            rationale=params.string("rationale", required=False) or "",
+            evidence=params.string("evidence", required=False) or "",
+            confidence=params.string("confidence", required=False) or "medium",
+            owner=params.string("owner", required=False) or "",
+        )
+
+    def _team_knowledge_promote(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "knowledgeId", "owner")
+        service = self._team_service(str(params.string("projectId")))
+        return {
+            "entry": service.promote(
+                str(params.string("knowledgeId")),
+                owner=params.string("owner", required=False) or "",
+            )
         }
 
     def _project_root(self, project_id: str):
