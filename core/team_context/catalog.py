@@ -61,7 +61,10 @@ LAYER_DIRECTORIES = {
 PARENT_KINDS: dict[str, tuple[str, ...]] = {
     "line": ("org",),
     "product": ("org", "line"),
-    "project": ("line",),
+    # A project may belong to a line directly, or to a product the line owns
+    # (line -> product -> project). Referencing a product stays available for
+    # projects that live under a line.
+    "project": ("line", "product"),
     "batch": ("project",),
     "version": ("batch",),
     "task": ("version",),

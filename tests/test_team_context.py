@@ -748,3 +748,16 @@ def test_remove_layer_and_deprecate_entry(tmp_path: Path) -> None:
     assert not (
         workspace / ".deepcode" / "team" / "project" / "changan"
     ).exists()
+
+def test_project_may_sit_under_a_product(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="line", slug="platform")
+    service.create_entity(kind="product", slug="paas", parent="line://platform")
+    service.create_entity(kind="project", slug="sign", parent="product://paas")
+
+    tree = service.tree()
+    assert {
+        entity["id"]: entity.get("parent") for entity in tree["entities"]
+    }["project://sign"] == "product://paas"

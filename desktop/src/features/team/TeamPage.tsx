@@ -42,7 +42,7 @@ const PARENT_KINDS: Record<string, string[]> = {
   org: [],
   line: ["org"],
   product: ["org", "line"],
-  project: ["line"],
+  project: ["line", "product"],
   batch: ["project"],
   version: ["batch"],
   task: ["version"],
@@ -50,8 +50,8 @@ const PARENT_KINDS: Record<string, string[]> = {
 
 const CHILD_KINDS: Record<string, Kind[]> = {
   org: ["line", "product"],
-  line: ["project", "product"],
-  product: [],
+  line: ["product", "project"],
+  product: ["project"],
   project: ["batch"],
   batch: ["version"],
   version: ["task"],
