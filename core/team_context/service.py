@@ -33,6 +33,7 @@ from core.team_context.models import (
     KNOWLEDGE_TYPES,
     KnowledgeEntry,
     TeamContextError,
+    TeamEntity,
 )
 
 
@@ -147,6 +148,16 @@ class TeamContextService:
             raise TeamContextError(
                 "a layer directory name must not be empty or contain path separators"
             )
+        if kind == "org":
+            existing = [
+                entity.id
+                for entity in self.catalog().entities.values()
+                if entity.kind == "org"
+            ]
+            if existing:
+                raise TeamContextError(
+                    f"the organization layer already exists ({existing[0]}); edit it instead of creating another"
+                )
         base = (self.home or Path.home()) if shared else self.workspace
         directory = base / TEAM_RELATIVE / LAYER_DIRECTORIES[kind][0] / slug
         if (directory / "entity.yaml").exists():
@@ -177,6 +188,42 @@ class TeamContextService:
         directory.mkdir(parents=True, exist_ok=True)
         _write_yaml(directory / "entity.yaml", payload)
         return self.read_entity(f"{kind}://{slug}")
+
+    def update_entity(
+        self,
+        entity_id: str,
+        *,
+        name: str | None = None,
+        external: bool | None = None,
+        shared: bool = False,
+    ) -> dict[str, Any]:
+        """Rename a layer or change its flags; the id and kind stay fixed."""
+
+        catalog = self.catalog()
+        current = catalog.entities.get(entity_id)
+        if current is None:
+            raise TeamContextError(f"unknown entity {entity_id}")
+        directory = catalog.directories.get(entity_id)
+        if directory is None or not (
+            _is_within(directory, self.workspace) or shared
+        ):
+            raise TeamContextError(
+                "this layer lives in the shared team store; unlock it before editing"
+            )
+        updated = TeamEntity(
+            id=current.id,
+            kind=current.kind,
+            name=(name if name is not None else current.name).strip(),
+            parent=current.parent,
+            external=current.external if external is None else external,
+            workspace=current.workspace,
+            references=current.references,
+            designs=current.designs,
+            codebases=current.codebases,
+            archived=current.archived,
+        )
+        _write_yaml(directory / "entity.yaml", updated.to_mapping())
+        return self.read_entity(entity_id)
 
     def assemble(
         self,

@@ -180,6 +180,7 @@ export interface MethodParams {
   "team/read": TeamReadParams;
   "team/preview": TeamPreviewParams;
   "team/create": TeamCreateParams;
+  "team/entity/update": TeamEntityUpdateParams;
   "team/knowledge/add": TeamKnowledgeAddParams;
   "team/knowledge/promote": TeamKnowledgePromoteParams;
   "team/knowledge/update": TeamKnowledgeUpdateParams;
@@ -808,6 +809,13 @@ export interface TeamCreateParams {
   codebases?: string[];
   shared?: boolean;
 }
+export interface TeamEntityUpdateParams {
+  projectId: string;
+  entityId: string;
+  name?: string;
+  external?: boolean;
+  shared?: boolean;
+}
 export interface TeamKnowledgeAddParams {
   projectId: string;
   entityId: string;
@@ -1167,6 +1175,11 @@ export interface MethodResults {
   "team/knowledge/remove": {
     removed: string;
     path?: string;
+  };
+  "team/entity/update": {
+    entity: TeamEntityView;
+    instructions: string;
+    knowledge: TeamKnowledgeView[];
   };
   "git/status": {
     status: GitStatus;

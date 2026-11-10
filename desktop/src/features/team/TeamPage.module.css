@@ -64,7 +64,7 @@
   padding: 6px 11px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   color: var(--text-primary);
   font: var(--weight-medium) var(--text-xs) var(--font-ui);
   cursor: pointer;
@@ -123,7 +123,7 @@
   padding: 7px 9px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   color: var(--text-secondary);
   font-family: var(--font-ui);
   text-align: left;
@@ -207,7 +207,7 @@
   overflow: hidden;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--surface-base);
+  background: var(--surface-raised);
 }
 
 .sidebar {
@@ -219,7 +219,7 @@
   gap: 4px;
   padding: 2px;
   border-radius: var(--radius-sm);
-  background: var(--surface-sunken);
+  background: var(--surface-inset);
 }
 
 .switcher button {
@@ -238,7 +238,7 @@
 }
 
 .switcher button[data-active="true"] {
-  background: var(--surface-base);
+  background: var(--surface-raised);
   color: var(--text-primary);
   box-shadow: 0 0 0 1px var(--border-subtle);
 }
@@ -404,7 +404,7 @@
   margin: 0 0 10px;
   padding: 10px;
   border-radius: var(--radius-sm);
-  background: var(--surface-sunken);
+  background: var(--surface-inset);
   color: var(--text-primary);
   font: var(--weight-regular) var(--text-xs) var(--font-mono);
   line-height: 1.55;
@@ -443,7 +443,7 @@
   padding: 5px 9px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   color: var(--text-primary);
   font: var(--weight-regular) var(--text-xs) var(--font-ui);
 }
@@ -510,7 +510,7 @@
   display: inline-block;
   padding: 1px 6px;
   border-radius: var(--radius-pill);
-  background: var(--surface-sunken);
+  background: var(--surface-inset);
   color: var(--text-secondary);
   font: var(--weight-medium) var(--text-2xs) var(--font-ui);
   white-space: nowrap;
@@ -614,7 +614,7 @@
   flex-direction: column;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-md);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   box-shadow: 0 24px 64px rgb(0 0 0 / 35%);
 }
 
@@ -687,7 +687,7 @@
   padding: 6px 8px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--surface-base);
+  background: var(--surface-raised);
   color: var(--text-primary);
   font: var(--weight-regular) var(--text-xs) var(--font-ui);
   resize: vertical;
@@ -739,7 +739,7 @@
   padding: 12px;
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-sm);
-  background: var(--surface-sunken);
+  background: var(--surface-inset);
   color: var(--text-primary);
   font: var(--weight-regular) var(--text-xs) var(--font-mono);
   line-height: 1.55;
@@ -782,4 +782,92 @@
   font: var(--weight-semibold) var(--text-2xs) var(--font-ui);
   letter-spacing: 0.05em;
   text-transform: uppercase;
+}
+
+.policy {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.policySection h4 {
+  margin: 0 0 6px;
+  color: var(--text-secondary);
+  font: var(--weight-semibold) var(--text-2xs) var(--font-ui);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.policyRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 0;
+}
+
+.policyRow span:first-child {
+  min-width: 0;
+  flex: 1;
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.policyRow input {
+  min-width: 0;
+  flex: 1;
+  padding: 5px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.policyRow button {
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.policyRow button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.policyRow .danger {
+  color: var(--danger);
+}
+
+.bannerActions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.renameRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.renameRow input {
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font: var(--weight-semibold) var(--text-sm) var(--font-ui);
+}
+
+.renameRow button {
+  padding: 4px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  cursor: pointer;
 }

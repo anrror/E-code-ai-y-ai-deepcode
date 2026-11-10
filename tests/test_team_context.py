@@ -707,3 +707,20 @@ def test_org_policy_is_shared_across_projects(tmp_path: Path) -> None:
     )
     assert org["knowledgeCount"] == 1
     assert org["draftCount"] == 0
+
+def test_only_one_org_layer_can_exist(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="org", slug="default", shared=True)
+    with pytest.raises(TeamContextError):
+        service.create_entity(kind="org", slug="second", shared=True)
+
+def test_update_entity_renames_a_layer(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="project", slug="changan", name="Changan")
+    updated = service.update_entity("project://changan", name="长安项目")
+    assert updated["entity"]["name"] == "长安项目"
+    assert updated["entity"]["id"] == "project://changan"

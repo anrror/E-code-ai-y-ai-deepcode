@@ -73,6 +73,7 @@ from core.domain.project import TrustState
 from core.domain.thread import ThreadMode
 from core.domain.thread_goal import KEEP_TIME_BUDGET, GoalCheck
 from core.skills.models import MAX_SELECTED_SKILLS, SkillScope
+from core.team_context.models import TeamContextError
 from core.version import __version__
 
 PROTOCOL_VERSION = "1.0"
@@ -315,6 +316,7 @@ class Dispatcher:
             rpc_methods.TEAM_READ: self._team_read,
             rpc_methods.TEAM_PREVIEW: self._team_preview,
             rpc_methods.TEAM_CREATE: self._team_create,
+            rpc_methods.TEAM_ENTITY_UPDATE: self._team_entity_update,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
             rpc_methods.TEAM_KNOWLEDGE_UPDATE: self._team_knowledge_update,
@@ -354,7 +356,11 @@ class Dispatcher:
             raise MethodNotFound(request.method)
         if request.method != rpc_methods.INITIALIZE and not self.connection.initialized:
             raise NotInitialized()
-        return handler(Params(request.params))
+        try:
+            return handler(Params(request.params))
+        except TeamContextError as exc:
+            # A layer rule is a user mistake, not a server fault: surface it.
+            raise InvalidParams(str(exc)) from exc
 
     def _initialize(self, params: Params) -> dict[str, Any]:
         params.only("protocolVersion", "clientInfo")
@@ -1698,6 +1704,18 @@ class Dispatcher:
             references=list(params.string_array("references")),
             designs=list(params.string_array("designs")),
             codebases=list(params.string_array("codebases")),
+            shared=params.boolean("shared", default=False),
+        )
+
+    def _team_entity_update(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "entityId", "name", "external", "shared")
+        service = self._team_service(str(params.string("projectId")))
+        return service.update_entity(
+            str(params.string("entityId")),
+            name=params.string("name", required=False) or None,
+            external=(
+                params.boolean("external") if "external" in params.values else None
+            ),
             shared=params.boolean("shared", default=False),
         )
 

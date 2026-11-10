@@ -5549,6 +5549,18 @@
       },
       "required": ["projectId", "knowledgeId"]
     },
+    "TeamEntityUpdateParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "name": {"type": "string", "minLength": 1, "maxLength": 200},
+        "external": {"type": "boolean"},
+        "shared": {"type": "boolean"}
+      },
+      "required": ["projectId", "entityId"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6812,6 +6824,9 @@
         "team/create": {
           "$ref": "#/$defs/TeamCreateParams"
         },
+        "team/entity/update": {
+          "$ref": "#/$defs/TeamEntityUpdateParams"
+        },
         "team/knowledge/add": {
           "$ref": "#/$defs/TeamKnowledgeAddParams"
         },
@@ -6994,6 +7009,7 @@
         "team/read",
         "team/preview",
         "team/create",
+        "team/entity/update",
         "team/knowledge/add",
         "team/knowledge/promote",
         "team/knowledge/update",
@@ -7918,6 +7934,16 @@
           },
           "required": ["removed"]
         },
+        "team/entity/update": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entity": {"$ref": "#/$defs/TeamEntityView"},
+            "instructions": {"type": "string"},
+            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+          },
+          "required": ["entity", "instructions", "knowledge"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8221,6 +8247,7 @@
         "team/read",
         "team/preview",
         "team/create",
+        "team/entity/update",
         "team/knowledge/add",
         "team/knowledge/promote",
         "team/knowledge/update",

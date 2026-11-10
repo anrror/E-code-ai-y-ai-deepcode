@@ -171,6 +171,8 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [copied, setCopied] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState<string | null>(null);
   const [orgUnlocked, setOrgUnlocked] = useState(false);
+  const [renaming, setRenaming] = useState(false);
+  const [nameDraft, setNameDraft] = useState("");
 
   const loadTree = useCallback(async () => {
     if (!project) {
@@ -442,6 +444,64 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     }
   };
 
+  const policyAdd = async (type: string, statement: string) => {
+    if (!project || !selectedId || !statement.trim()) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/knowledge/add", {
+        projectId: project.id,
+        entityId: selectedId,
+        type,
+        statement: statement.trim(),
+        shared: true,
+      });
+      await loadDetail(selectedId);
+      await loadTree();
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const policySave = async (entry: TeamKnowledgeView, statement: string) => {
+    if (!project || !statement.trim()) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/knowledge/update", {
+        projectId: project.id,
+        knowledgeId: entry.id,
+        statement: statement.trim(),
+        shared: true,
+      });
+      if (selectedId) await loadDetail(selectedId);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const renameEntity = async () => {
+    if (!project || !selectedId || !nameDraft.trim()) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/entity/update", {
+        projectId: project.id,
+        entityId: selectedId,
+        name: nameDraft.trim(),
+        shared: detail?.entity.kind === "org",
+      });
+      setRenaming(false);
+      await loadTree();
+      await loadDetail(selectedId);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const showPreview = async () => {
     if (!project) return;
     setPreviewBusy(true);
@@ -691,7 +751,34 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             <>
               <div className={styles.detailHead}>
                 <div>
-                  <h3>{selectedEntity.name}</h3>
+                  {renaming ? (
+                    <div className={styles.renameRow}>
+                      <input
+                        autoFocus
+                        value={nameDraft}
+                        onChange={(event) => setNameDraft(event.target.value)}
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") void renameEntity();
+                          if (event.key === "Escape") setRenaming(false);
+                        }}
+                      />
+                      <button
+                        type="button"
+                        disabled={busy}
+                        onClick={() => void renameEntity()}
+                      >
+                        保存
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRenaming(false)}
+                      >
+                        取消
+                      </button>
+                    </div>
+                  ) : (
+                    <h3>{selectedEntity.name}</h3>
+                  )}
                   <code className={styles.entityId}>{selectedEntity.id}</code>
                 </div>
                 <div className={styles.badges}>
@@ -705,19 +792,16 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                       {t("team.historical", "历史")}
                     </span>
                   ) : null}
-                  <button
-                    type="button"
-                    className={styles.primary}
-                    disabled={selectedEntity.kind === "org" && !orgUnlocked}
-                    onClick={() =>
-                      openNewEntry(
-                        selectedEntity.kind === "org" ? "redline" : "decision",
-                      )
-                    }
-                  >
-                    <Plus size={14} />
-                    {t("team.addKnowledge", "添加知识")}
-                  </button>
+                  {selectedEntity.kind === "org" ? null : (
+                    <button
+                      type="button"
+                      className={styles.primary}
+                      onClick={() => openNewEntry("decision")}
+                    >
+                      <Plus size={14} />
+                      {t("team.addKnowledge", "添加知识")}
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -730,7 +814,25 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </span>
                   </div>
                   {orgUnlocked ? (
-                    <span className={styles.badge}>已解锁</span>
+                    <span className={styles.bannerActions}>
+                      <button
+                        type="button"
+                        className={styles.ghost}
+                        onClick={() => {
+                          setRenaming(true);
+                          setNameDraft(selectedEntity.name);
+                        }}
+                      >
+                        改名
+                      </button>
+                      <button
+                        type="button"
+                        className={styles.ghost}
+                        onClick={() => setOrgUnlocked(false)}
+                      >
+                        锁定
+                      </button>
+                    </span>
                   ) : (
                     <button
                       type="button"
@@ -759,6 +861,20 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </p>
                   )}
 
+                  {selectedEntity.kind === "org" ? (
+                    <OrgPolicyEditor
+                      knowledge={knowledge}
+                      unlocked={orgUnlocked}
+                      busy={busy}
+                      onAdd={(type, statement) => void policyAdd(type, statement)}
+                      onSave={(entry, statement) =>
+                        void policySave(entry, statement)
+                      }
+                      onPromote={(id) => void promote(id)}
+                      onRemove={(id) => void removeEntry(id)}
+                    />
+                  ) : (
+                    <>
                   <div className={styles.toolbar}>
                     <div className={styles.segmented}>
                       {(
@@ -913,6 +1029,9 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </table>
                   )}
 
+                    </>
+                  )}
+
                   <details className={styles.disclosure}>
                     <summary>
                       <ChevronDown size={13} />
@@ -996,7 +1115,13 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                 }
               >
                 {KINDS.map((kind) => (
-                  <option key={kind} value={kind}>
+                  <option
+                    key={kind}
+                    value={kind}
+                    disabled={
+                      kind === "org" && Boolean(entityForKind("org"))
+                    }
+                  >
                     {KIND_LABELS[kind]}（{kind}）
                   </option>
                 ))}
@@ -1257,6 +1382,136 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         </Modal>
       ) : null}
     </section>
+  );
+}
+
+
+function OrgPolicyEditor({
+  knowledge,
+  unlocked,
+  busy,
+  onAdd,
+  onSave,
+  onPromote,
+  onRemove,
+}: {
+  knowledge: TeamKnowledgeView[];
+  unlocked: boolean;
+  busy: boolean;
+  onAdd: (type: string, statement: string) => void;
+  onSave: (entry: TeamKnowledgeView, statement: string) => void;
+  onPromote: (id: string) => void;
+  onRemove: (id: string) => void;
+}) {
+  const [edits, setEdits] = useState<Record<string, string>>({});
+  const [rows, setRows] = useState<Record<string, string>>({});
+  const [confirmId, setConfirmId] = useState<string | null>(null);
+
+  return (
+    <div className={styles.policy}>
+      {ORG_SECTIONS.map(([type, label]) => {
+        const entries = knowledge.filter((entry) => entry.type === type);
+        return (
+          <section key={type} className={styles.policySection}>
+            <h4>{label}</h4>
+            {entries.length === 0 ? (
+              <p className={styles.muted}>暂无条目</p>
+            ) : (
+              entries.map((entry) => {
+                const draft = edits[entry.id] ?? entry.statement;
+                const editable = unlocked && entry.status === "draft";
+                return (
+                  <div key={entry.id} className={styles.policyRow}>
+                    {editable ? (
+                      <input
+                        value={draft}
+                        onChange={(event) =>
+                          setEdits({ ...edits, [entry.id]: event.target.value })
+                        }
+                      />
+                    ) : (
+                      <span>{entry.statement}</span>
+                    )}
+                    <span
+                      className={styles.statusChip}
+                      data-status={entry.status}
+                    >
+                      {STATUS_LABELS[entry.status] ?? entry.status}
+                    </span>
+                    {editable ? (
+                      <>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => onSave(entry, draft)}
+                        >
+                          保存
+                        </button>
+                        <button
+                          type="button"
+                          disabled={busy}
+                          onClick={() => onPromote(entry.id)}
+                        >
+                          启用
+                        </button>
+                        {confirmId === entry.id ? (
+                          <button
+                            type="button"
+                            className={styles.danger}
+                            disabled={busy}
+                            onClick={() => {
+                              onRemove(entry.id);
+                              setConfirmId(null);
+                            }}
+                          >
+                            确认删除
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => setConfirmId(entry.id)}
+                          >
+                            删除
+                          </button>
+                        )}
+                      </>
+                    ) : null}
+                  </div>
+                );
+              })
+            )}
+            {unlocked ? (
+              <div className={styles.policyRow}>
+                <input
+                  value={rows[type] ?? ""}
+                  placeholder={`添加${label}条目…`}
+                  onChange={(event) =>
+                    setRows({ ...rows, [type]: event.target.value })
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      onAdd(type, rows[type] ?? "");
+                      setRows({ ...rows, [type]: "" });
+                    }
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={busy || !(rows[type] ?? "").trim()}
+                  onClick={() => {
+                    onAdd(type, rows[type] ?? "");
+                    setRows({ ...rows, [type]: "" });
+                  }}
+                >
+                  添加
+                </button>
+              </div>
+            ) : null}
+          </section>
+        );
+      })}
+    </div>
   );
 }
 
