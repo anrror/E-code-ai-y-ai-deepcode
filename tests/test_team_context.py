@@ -724,3 +724,27 @@ def test_update_entity_renames_a_layer(tmp_path: Path) -> None:
     updated = service.update_entity("project://changan", name="长安项目")
     assert updated["entity"]["name"] == "长安项目"
     assert updated["entity"]["id"] == "project://changan"
+
+
+def test_remove_layer_and_deprecate_entry(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="project", slug="changan")
+    added = service.add(
+        scope="project://changan", type="decision", statement="Tests run with pytest."
+    )
+    entry_id = added["entry"]["id"]
+    service.promote(entry_id)
+
+    with pytest.raises(TeamContextError):
+        service.remove_entity("project://changan")
+
+    deprecated = service.deprecate_entry(entry_id)
+    assert deprecated["entry"]["status"] == "deprecated"
+
+    removed = service.remove_entity("project://changan", force=True)
+    assert removed["removed"] == "project://changan"
+    assert not (
+        workspace / ".deepcode" / "team" / "project" / "changan"
+    ).exists()

@@ -955,3 +955,19 @@
   color: var(--text-tertiary);
   font: var(--weight-regular) var(--text-2xs) var(--font-ui);
 }
+
+.dangerButton {
+  margin-right: auto;
+  padding: 6px 11px;
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--danger);
+  font: var(--weight-medium) var(--text-xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.dangerButton:disabled {
+  opacity: 0.55;
+  cursor: default;
+}

@@ -1,6 +1,7 @@
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
+  Archive,
   Check,
   ChevronDown,
   Copy,
@@ -186,6 +187,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [editName, setEditName] = useState("");
   const [editParent, setEditParent] = useState("");
   const [editExternal, setEditExternal] = useState(false);
+  const [deleteArmed, setDeleteArmed] = useState(false);
 
   const loadTree = useCallback(async () => {
     if (!project) {
@@ -510,6 +512,46 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       setEditing(false);
       await loadTree();
       await loadDetail(selectedId);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const deleteLayer = async () => {
+    if (!project || !selectedId) return;
+    const entity = tree?.entities.find((item) => item.id === selectedId);
+    setBusy(true);
+    try {
+      await runtime.request("team/entity/remove", {
+        projectId: project.id,
+        entityId: selectedId,
+        shared: entity?.kind === "org",
+        force: (entity?.knowledgeCount ?? 0) > 0,
+      });
+      setEditing(false);
+      setDeleteArmed(false);
+      setSelectedId(null);
+      await loadTree();
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const deprecate = async (knowledgeId: string) => {
+    if (!project) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/knowledge/deprecate", {
+        projectId: project.id,
+        knowledgeId,
+        shared: detail?.entity.kind === "org",
+      });
+      if (selectedId) await loadDetail(selectedId);
+      await loadTree();
     } catch (caught) {
       setError(String(caught));
     } finally {
@@ -1021,12 +1063,22 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                                     </button>
                                   </>
                                 )
+                              ) : entry.status === "reviewed" ? (
+                                <button
+                                  type="button"
+                                  aria-label="弃用"
+                                  title="弃用（保留记录，标记为已废弃）"
+                                  disabled={busy}
+                                  onClick={() => void deprecate(entry.id)}
+                                >
+                                  <Archive size={13} />
+                                </button>
                               ) : (
                                 <span
                                   className={styles.locked}
                                   title={t(
                                     "team.lockedHint",
-                                    "已评审条目不可改；如需变更请新增条目替代。",
+                                    "已废弃条目只读。",
                                   )}
                                 >
                                   <Lock size={12} />
@@ -1044,66 +1096,6 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </>
                   )}
 
-                  {editing ? (
-                    <form
-                      className={styles.layerForm}
-                      onSubmit={(event) => {
-                        event.preventDefault();
-                        void saveLayer();
-                      }}
-                    >
-                      <label>
-                        <span>名称</span>
-                        <input
-                          autoFocus
-                          value={editName}
-                          onChange={(event) => setEditName(event.target.value)}
-                        />
-                      </label>
-                      <label>
-                        <span>上级</span>
-                        <select
-                          value={editParent}
-                          onChange={(event) => setEditParent(event.target.value)}
-                        >
-                          <option value="">无</option>
-                          {(tree?.entities ?? [])
-                            .filter((entity) =>
-                              (PARENT_KINDS[selectedEntity.kind] ?? []).includes(
-                                entity.kind,
-                              ),
-                            )
-                            .map((entity) => (
-                              <option key={entity.id} value={entity.id}>
-                                {KIND_LABELS[entity.kind as Kind] ?? entity.kind} ·{" "}
-                                {entity.name}
-                              </option>
-                            ))}
-                        </select>
-                      </label>
-                      <label className={styles.checkbox}>
-                        <input
-                          type="checkbox"
-                          checked={editExternal}
-                          onChange={(event) =>
-                            setEditExternal(event.target.checked)
-                          }
-                        />
-                        <span>外部（未验证来源）</span>
-                      </label>
-                      <div className={styles.formActions}>
-                        <button type="submit" disabled={busy}>
-                          保存
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditing(false)}
-                        >
-                          取消
-                        </button>
-                      </div>
-                    </form>
-                  ) : (
                   <details className={styles.disclosure}>
                     <summary>
                       <ChevronDown size={13} />
@@ -1122,7 +1114,6 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                       <dd>{selectedEntity.codebases?.join("、") || "—"}</dd>
                     </dl>
                   </details>
-                  )}
                 </>
               ) : (
                 <p className={styles.muted}>{t("team.loading", "加载中…")}</p>
@@ -1149,6 +1140,101 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
           )}
         </main>
       </div>
+
+      {editing && selectedEntity ? (
+        <Modal
+          title="编辑层信息"
+          onClose={() => {
+            setEditing(false);
+            setDeleteArmed(false);
+          }}
+          footer={
+            <>
+              <button
+                type="button"
+                className={styles.dangerButton}
+                disabled={busy}
+                onClick={() => {
+                  if (deleteArmed) void deleteLayer();
+                  else setDeleteArmed(true);
+                }}
+              >
+                {deleteArmed
+                  ? `确认删除${
+                      selectedEntity.knowledgeCount > 0
+                        ? `（含 ${selectedEntity.knowledgeCount} 条知识）`
+                        : ""
+                    }`
+                  : "删除层"}
+              </button>
+              <button
+                type="button"
+                className={styles.ghost}
+                onClick={() => {
+                  setEditing(false);
+                  setDeleteArmed(false);
+                }}
+                disabled={busy}
+              >
+                取消
+              </button>
+              <button
+                type="button"
+                className={styles.primary}
+                disabled={busy}
+                onClick={() => void saveLayer()}
+              >
+                保存
+              </button>
+            </>
+          }
+        >
+          <div className={styles.formGrid}>
+            <label className={styles.wide}>
+              <span>名称</span>
+              <input
+                autoFocus
+                value={editName}
+                onChange={(event) => setEditName(event.target.value)}
+              />
+            </label>
+            <label>
+              <span>上级</span>
+              <select
+                value={editParent}
+                onChange={(event) => setEditParent(event.target.value)}
+              >
+                <option value="">无</option>
+                {(tree?.entities ?? [])
+                  .filter((entity) =>
+                    (PARENT_KINDS[selectedEntity.kind] ?? []).includes(
+                      entity.kind,
+                    ),
+                  )
+                  .map((entity) => (
+                    <option key={entity.id} value={entity.id}>
+                      {KIND_LABELS[entity.kind as Kind] ?? entity.kind} ·{" "}
+                      {entity.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+            <label className={styles.checkbox}>
+              <input
+                type="checkbox"
+                checked={editExternal}
+                onChange={(event) => setEditExternal(event.target.checked)}
+              />
+              <span>外部（未验证来源）</span>
+            </label>
+          </div>
+          {deleteArmed ? (
+            <p className={styles.formError}>
+              删除不可恢复；有子层时需先处理子层。
+            </p>
+          ) : null}
+        </Modal>
+      ) : null}
 
       {createForm ? (
         <Modal

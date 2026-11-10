@@ -317,6 +317,8 @@ class Dispatcher:
             rpc_methods.TEAM_PREVIEW: self._team_preview,
             rpc_methods.TEAM_CREATE: self._team_create,
             rpc_methods.TEAM_ENTITY_UPDATE: self._team_entity_update,
+            rpc_methods.TEAM_ENTITY_REMOVE: self._team_entity_remove,
+            rpc_methods.TEAM_KNOWLEDGE_DEPRECATE: self._team_knowledge_deprecate,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
             rpc_methods.TEAM_KNOWLEDGE_UPDATE: self._team_knowledge_update,
@@ -1717,6 +1719,23 @@ class Dispatcher:
             external=(
                 params.boolean("external") if "external" in params.values else None
             ),
+            shared=params.boolean("shared", default=False),
+        )
+
+    def _team_entity_remove(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "entityId", "shared", "force")
+        service = self._team_service(str(params.string("projectId")))
+        return service.remove_entity(
+            str(params.string("entityId")),
+            shared=params.boolean("shared", default=False),
+            force=params.boolean("force", default=False),
+        )
+
+    def _team_knowledge_deprecate(self, params: Params) -> dict[str, Any]:
+        params.only("projectId", "knowledgeId", "shared")
+        service = self._team_service(str(params.string("projectId")))
+        return service.deprecate_entry(
+            str(params.string("knowledgeId")),
             shared=params.boolean("shared", default=False),
         )
 

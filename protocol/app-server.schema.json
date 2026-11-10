@@ -5562,6 +5562,27 @@
       },
       "required": ["projectId", "entityId"]
     },
+    "TeamEntityRemoveParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "shared": {"type": "boolean"},
+        "force": {"type": "boolean"}
+      },
+      "required": ["projectId", "entityId"]
+    },
+    "TeamKnowledgeDeprecateParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "shared": {"type": "boolean"}
+      },
+      "required": ["projectId", "knowledgeId"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6828,6 +6849,12 @@
         "team/entity/update": {
           "$ref": "#/$defs/TeamEntityUpdateParams"
         },
+        "team/entity/remove": {
+          "$ref": "#/$defs/TeamEntityRemoveParams"
+        },
+        "team/knowledge/deprecate": {
+          "$ref": "#/$defs/TeamKnowledgeDeprecateParams"
+        },
         "team/knowledge/add": {
           "$ref": "#/$defs/TeamKnowledgeAddParams"
         },
@@ -7011,6 +7038,8 @@
         "team/preview",
         "team/create",
         "team/entity/update",
+        "team/entity/remove",
+        "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",
         "team/knowledge/update",
@@ -7945,6 +7974,23 @@
           },
           "required": ["entity", "instructions", "knowledge"]
         },
+        "team/entity/remove": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "removed": {"type": "string"},
+            "path": {"type": "string"}
+          },
+          "required": ["removed"]
+        },
+        "team/knowledge/deprecate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entry": {"$ref": "#/$defs/TeamKnowledgeView"}
+          },
+          "required": ["entry"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8249,6 +8295,8 @@
         "team/preview",
         "team/create",
         "team/entity/update",
+        "team/entity/remove",
+        "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",
         "team/knowledge/update",

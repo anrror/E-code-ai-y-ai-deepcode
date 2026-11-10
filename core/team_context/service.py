@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import uuid
 from dataclasses import replace
 from pathlib import Path
@@ -417,6 +418,61 @@ class TeamContextService:
             home=self.home,
         )
         return updated.to_mapping()
+
+    def remove_entity(
+        self, entity_id: str, *, shared: bool = False, force: bool = False
+    ) -> dict[str, Any]:
+        """Delete a layer directory; knowledge and children must be dealt with first."""
+
+        catalog = self.catalog()
+        current = catalog.entities.get(entity_id)
+        if current is None:
+            raise TeamContextError(f"unknown entity {entity_id}")
+        directory = catalog.directories.get(entity_id)
+        if directory is None or not (
+            _is_within(directory, self.workspace) or shared
+        ):
+            raise TeamContextError(
+                "this layer lives in the shared team store; unlock it before editing"
+            )
+        children = [
+            entity.id
+            for entity in catalog.entities.values()
+            if entity.parent == entity_id
+        ]
+        if children:
+            raise TeamContextError(
+                "delete or reparent the child layers first: " + ", ".join(children)
+            )
+        owned = [
+            entry for entry in catalog.knowledge.values() if entry.scope == entity_id
+        ]
+        if owned and not force:
+            raise TeamContextError(
+                f"this layer still owns {len(owned)} knowledge entries; confirm the delete"
+            )
+        shutil.rmtree(directory)
+        return {"removed": entity_id, "path": str(directory)}
+
+    def deprecate_entry(
+        self, entry_id: str, *, shared: bool = False
+    ) -> dict[str, Any]:
+        """Retire a reviewed entry without erasing the record."""
+
+        catalog = self.catalog()
+        current = catalog.knowledge.get(entry_id)
+        if current is None:
+            raise TeamContextError(f"unknown knowledge entry {entry_id}")
+        directory = catalog.directories.get(current.scope)
+        if directory is None or not (
+            _is_within(directory, self.workspace) or shared
+        ):
+            raise TeamContextError(
+                "this entry lives in the shared team layer; unlock it before editing"
+            )
+        updated = replace(current, status="deprecated")
+        update_knowledge(directory, updated)
+        return {"entry": updated.to_mapping()}
 
     def update_entry(
         self,
