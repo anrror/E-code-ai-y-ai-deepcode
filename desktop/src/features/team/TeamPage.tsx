@@ -6,6 +6,7 @@ import {
   ChevronDown,
   Copy,
   Eye,
+  EyeOff,
   Layers,
   Lock,
   Shield,
@@ -234,6 +235,15 @@ export function TeamPage({
     }
   }, [projectId, runtime]);
 
+  const loadVisibility = useCallback(async () => {
+    try {
+      const result = await runtime.request("team/visibility/read", {});
+      setHiddenPaths(new Set(result.hidden));
+    } catch {
+      setHiddenPaths(new Set());
+    }
+  }, [runtime]);
+
   const loadProjects = useCallback(async () => {
     try {
       const result = await runtime.request("project/list", { limit: 200 });
@@ -263,6 +273,11 @@ export function TeamPage({
     // eslint-disable-next-line react-hooks/set-state-in-effect -- page load
     void loadTree();
   }, [loadTree]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- visibility load
+    void loadVisibility();
+  }, [loadVisibility]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -384,6 +399,34 @@ export function TeamPage({
               ) : null}
               <span className={styles.treeCount}>{entity.knowledgeCount}</span>
             </button>
+            {entity.kind === "project" && entity.workspace ? (
+              <button
+                type="button"
+                className={styles.treeAdd}
+                aria-label={
+                  hiddenPaths.has(entity.workspace)
+                    ? "在侧栏显示"
+                    : "在侧栏隐藏"
+                }
+                title={
+                  hiddenPaths.has(entity.workspace)
+                    ? "在侧栏显示"
+                    : "在侧栏隐藏"
+                }
+                onClick={() =>
+                  void toggleVisibility(
+                    entity.workspace as string,
+                    hiddenPaths.has(entity.workspace as string),
+                  )
+                }
+              >
+                {hiddenPaths.has(entity.workspace) ? (
+                  <EyeOff size={11} />
+                ) : (
+                  <Eye size={11} />
+                )}
+              </button>
+            ) : null}
             {childKind ? (
               <button
                 type="button"
