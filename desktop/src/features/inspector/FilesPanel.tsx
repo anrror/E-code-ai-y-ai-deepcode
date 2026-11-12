@@ -86,11 +86,11 @@ export function FilesPanel({
   const dirty = Boolean(
     workbench.file && workbench.draft !== workbench.file.content,
   );
-  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
   const tree = useMemo(() => buildTree(workbench.entries), [workbench.entries]);
 
   const toggle = (path: string) => {
-    setExpanded((current) => {
+    setCollapsed((current) => {
       const next = new Set(current);
       if (next.has(path)) next.delete(path);
       else next.add(path);
@@ -100,7 +100,7 @@ export function FilesPanel({
 
   const renderNode = (node: TreeNode, depth: number): React.ReactNode => {
     const isDirectory = node.kind === "directory";
-    const open = expanded.has(node.path);
+    const open = !collapsed.has(node.path);
     return (
       <div key={node.path}>
         <div
