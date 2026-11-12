@@ -639,7 +639,7 @@ def test_create_entity_seeds_a_layer_and_round_trips_knowledge(tmp_path: Path) -
     assert detail["entity"]["draftCount"] == 0
     assert detail["knowledge"][0]["status"] == "reviewed"
 
-def test_update_and_remove_only_touch_drafts(tmp_path: Path) -> None:
+def test_update_and_remove_entry_lifecycle(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     service = TeamContextService(workspace, home=tmp_path / "home")
@@ -656,19 +656,17 @@ def test_update_and_remove_only_touch_drafts(tmp_path: Path) -> None:
     assert updated["entry"]["confidence"] == "high"
 
     service.promote(entry_id)
-    with pytest.raises(TeamContextError):
-        service.update_entry(entry_id, statement="rewritten")
-    with pytest.raises(TeamContextError):
-        service.remove_entry(entry_id)
+    reviewed = service.update_entry(entry_id, statement="Tests run with pytest -q.")
+    assert reviewed["entry"]["status"] == "reviewed"
+    removed_reviewed = service.remove_entry(entry_id)
+    assert removed_reviewed["removed"] == entry_id
 
     second = service.add(
         scope="project://changan", type="lesson", statement="Temporary note."
     )
     removed = service.remove_entry(second["entry"]["id"])
     assert removed["removed"] == second["entry"]["id"]
-    assert service.read_entity("project://changan")["knowledge"] == [
-        updated["entry"] | {"status": "reviewed"}
-    ]
+    assert service.read_entity("project://changan")["knowledge"] == []
 
 def test_org_policy_is_shared_across_projects(tmp_path: Path) -> None:
     home = tmp_path / "home"

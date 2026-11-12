@@ -692,9 +692,9 @@ class TeamContextService:
         current = catalog.knowledge.get(entry_id)
         if current is None:
             raise TeamContextError(f"unknown knowledge entry {entry_id}")
-        if current.status != "draft":
+        if current.status == "deprecated":
             raise TeamContextError(
-                "only draft entries can be edited; add a replacement and deprecate this one"
+                "a deprecated entry is read-only; add a new entry instead"
             )
         directory = catalog.directories.get(current.scope)
         if directory is None or not self._writable(directory, shared):
@@ -724,10 +724,7 @@ class TeamContextService:
         current = catalog.knowledge.get(entry_id)
         if current is None:
             raise TeamContextError(f"unknown knowledge entry {entry_id}")
-        if current.status != "draft":
-            raise TeamContextError(
-                "only draft entries can be removed; reviewed entries are part of the record"
-            )
+
         directory = catalog.directories.get(current.scope)
         if directory is None or not self._writable(directory, shared):
             raise TeamContextError(

@@ -1421,35 +1421,46 @@ export function TeamPage({
                             </td>
                             <td>{entry.owner || "—"}</td>
                             <td className={styles.rowActions}>
-                              {entry.status === "draft" &&
-                              !(selectedEntity.kind === "org" && !orgUnlocked) ? (
-                                confirmDelete === entry.id ? (
-                                  <>
-                                    <button
-                                      type="button"
-                                      className={styles.danger}
-                                      disabled={busy}
-                                      onClick={() => void removeEntry(entry.id)}
-                                    >
-                                      {t("team.confirmDelete", "确认删除")}
-                                    </button>
-                                    <button
-                                      type="button"
-                                      onClick={() => setConfirmDelete(null)}
-                                    >
-                                      {t("team.cancel", "取消")}
-                                    </button>
-                                  </>
-                                ) : (
-                                  <>
-                                    <button
-                                      type="button"
-                                      aria-label={t("team.edit", "编辑")}
-                                      title={t("team.edit", "编辑")}
-                                      onClick={() => openEntry(entry)}
-                                    >
-                                      <Pencil size={13} />
-                                    </button>
+                              {entry.status === "deprecated" ||
+                              (selectedEntity.kind === "org" &&
+                                !orgUnlocked) ? (
+                                <span
+                                  className={styles.locked}
+                                  title={t(
+                                    "team.lockedHint",
+                                    "已废弃条目只读。",
+                                  )}
+                                >
+                                  <Lock size={12} />
+                                </span>
+                              ) : confirmDelete === entry.id ? (
+                                <>
+                                  <button
+                                    type="button"
+                                    className={styles.danger}
+                                    disabled={busy}
+                                    onClick={() => void removeEntry(entry.id)}
+                                  >
+                                    {t("team.confirmDelete", "确认删除")}
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => setConfirmDelete(null)}
+                                  >
+                                    {t("team.cancel", "取消")}
+                                  </button>
+                                </>
+                              ) : (
+                                <>
+                                  <button
+                                    type="button"
+                                    aria-label={t("team.edit", "编辑")}
+                                    title={t("team.edit", "编辑")}
+                                    onClick={() => openEntry(entry)}
+                                  >
+                                    <Pencil size={13} />
+                                  </button>
+                                  {entry.status === "draft" ? (
                                     <button
                                       type="button"
                                       aria-label={t(
@@ -1461,36 +1472,26 @@ export function TeamPage({
                                     >
                                       <Check size={13} />
                                     </button>
+                                  ) : (
                                     <button
                                       type="button"
-                                      aria-label={t("team.delete", "删除")}
-                                      title={t("team.delete", "删除")}
-                                      onClick={() => setConfirmDelete(entry.id)}
+                                      aria-label="弃用"
+                                      title="弃用（保留记录）"
+                                      disabled={busy}
+                                      onClick={() => void deprecate(entry.id)}
                                     >
-                                      <Trash2 size={13} />
+                                      <Archive size={13} />
                                     </button>
-                                  </>
-                                )
-                              ) : entry.status === "reviewed" ? (
-                                <button
-                                  type="button"
-                                  aria-label="弃用"
-                                  title="弃用（保留记录，标记为已废弃）"
-                                  disabled={busy}
-                                  onClick={() => void deprecate(entry.id)}
-                                >
-                                  <Archive size={13} />
-                                </button>
-                              ) : (
-                                <span
-                                  className={styles.locked}
-                                  title={t(
-                                    "team.lockedHint",
-                                    "已废弃条目只读。",
                                   )}
-                                >
-                                  <Lock size={12} />
-                                </span>
+                                  <button
+                                    type="button"
+                                    aria-label={t("team.delete", "删除")}
+                                    title={t("team.delete", "删除")}
+                                    onClick={() => setConfirmDelete(entry.id)}
+                                  >
+                                    <Trash2 size={13} />
+                                  </button>
+                                </>
                               )}
                             </td>
                           </tr>
@@ -2089,22 +2090,35 @@ export function TeamPage({
               >
                 {t("team.cancel", "取消")}
               </button>
-              <button
-                type="button"
-                className={styles.ghost}
-                onClick={() => void submitEntry(false)}
-                disabled={entryBusy}
-              >
-                {t("team.saveDraft", "保存草稿")}
-              </button>
-              <button
-                type="button"
-                className={styles.primary}
-                onClick={() => void submitEntry(true)}
-                disabled={entryBusy}
-              >
-                {t("team.saveAndReview", "保存并标记已评审")}
-              </button>
+              {entryDraft.entry?.status === "reviewed" ? (
+                <button
+                  type="button"
+                  className={styles.primary}
+                  onClick={() => void submitEntry(false)}
+                  disabled={entryBusy}
+                >
+                  保存
+                </button>
+              ) : (
+                <>
+                  <button
+                    type="button"
+                    className={styles.ghost}
+                    onClick={() => void submitEntry(false)}
+                    disabled={entryBusy}
+                  >
+                    {t("team.saveDraft", "保存草稿")}
+                  </button>
+                  <button
+                    type="button"
+                    className={styles.primary}
+                    onClick={() => void submitEntry(true)}
+                    disabled={entryBusy}
+                  >
+                    {t("team.saveAndReview", "保存并标记已评审")}
+                  </button>
+                </>
+              )}
             </>
           }
         >
