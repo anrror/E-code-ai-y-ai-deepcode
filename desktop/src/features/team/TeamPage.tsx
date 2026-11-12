@@ -212,6 +212,7 @@ export function TeamPage({
   const [editCodebases, setEditCodebases] = useState("");
   const [editDesigns, setEditDesigns] = useState("");
   const [editReferences, setEditReferences] = useState<string[]>([]);
+  const [refQuery, setRefQuery] = useState("");
   const [projects, setProjects] = useState<
     { id: string; canonicalPath: string; displayName: string }[]
   >([]);
@@ -1867,15 +1868,44 @@ export function TeamPage({
                     onChange={(event) => setEditDesigns(event.target.value)}
                   />
                 </label>
-                <label className={styles.wide}>
-                  <span>关联其他产品 / 项目（调用其接口，不覆盖本层）</span>
+                <div className={styles.wide}>
+                  <span className={styles.fieldLabel}>
+                    关联其他产品 / 项目（调用其接口，不覆盖本层）
+                  </span>
+                  {editReferences.length > 0 ? (
+                    <div className={styles.refChips}>
+                      {editReferences.map((id) => (
+                        <button
+                          key={id}
+                          type="button"
+                          className={styles.refChip}
+                          onClick={() =>
+                            setEditReferences((current) =>
+                              current.filter((item) => item !== id),
+                            )
+                          }
+                        >
+                          {entityName(id)} ×
+                        </button>
+                      ))}
+                    </div>
+                  ) : null}
+                  <input
+                    value={refQuery}
+                    placeholder="搜索产品或项目…"
+                    onChange={(event) => setRefQuery(event.target.value)}
+                  />
                   <div className={styles.referenceList}>
                     {(tree?.entities ?? [])
                       .filter(
                         (entity) =>
                           entity.id !== selectedEntity.id &&
                           (entity.kind === "product" ||
-                            entity.kind === "project"),
+                            entity.kind === "project") &&
+                          (refQuery.trim() === "" ||
+                            `${entity.name} ${entity.id}`
+                              .toLowerCase()
+                              .includes(refQuery.trim().toLowerCase())),
                       )
                       .map((entity) => (
                         <label
@@ -1900,7 +1930,7 @@ export function TeamPage({
                         </label>
                       ))}
                   </div>
-                </label>
+                </div>
               </>
             ) : null}
             <label className={styles.checkbox}>

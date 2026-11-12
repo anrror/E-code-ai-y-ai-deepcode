@@ -1282,3 +1282,30 @@
   font-size: var(--text-2xs);
   font-style: normal;
 }
+
+.fieldLabel {
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+}
+
+.refChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 4px 0;
+}
+
+.refChip {
+  padding: 2px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-pill);
+  background: var(--surface-selected);
+  color: var(--text-primary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.wide > input[type="text"],
+.wide > input:not([type]) {
+  margin-bottom: 4px;
+}
