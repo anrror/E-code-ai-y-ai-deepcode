@@ -1309,3 +1309,40 @@
 .wide > input:not([type]) {
   margin-bottom: 4px;
 }
+
+.formGrid .wide {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  gap: 4px;
+  grid-column: 1 / -1;
+}
+
+.formGrid .wide > span {
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+}
+
+.formGrid .referenceList {
+  max-height: 220px;
+  gap: 1px;
+  padding: 4px;
+  background: var(--surface-raised);
+}
+
+.formGrid .referenceRow {
+  min-height: 28px;
+  padding: 4px 8px;
+}
+
+.formGrid .referenceRow:has(input:checked) {
+  background: var(--surface-selected);
+}
+
+.formGrid .referenceRow em {
+  margin-left: auto;
+  padding: 1px 6px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-inset);
+  color: var(--text-tertiary);
+}
