@@ -101,6 +101,7 @@ export interface WorkspaceController {
     contextWindow: number | null,
   ): Promise<void>;
   setAccessPreset(preset: ExecutionAccessPreset | null): Promise<boolean>;
+  refreshProjects(): Promise<void>;
   refreshSettings(): Promise<void>;
   /** False when the write failed (the error is already shown). */
   updateSettings(
@@ -711,6 +712,11 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
     [runtime, selectedThread, t, withBusy],
   );
 
+  const refreshProjects = useCallback(async () => {
+    loadedRuntimeRef.current = false;
+    await loadProjects();
+  }, [loadProjects]);
+
   const refreshSettings = useCallback(
     () => withBusy(() => loadSettings(selectedProject?.id)),
     [loadSettings, selectedProject?.id, withBusy],
@@ -1117,7 +1123,8 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
       setThreadModel,
       setThreadExecution,
       setAccessPreset,
-      refreshSettings,
+      refreshProjects,
+    refreshSettings,
       updateSettings,
       setGoal,
       pauseGoal,

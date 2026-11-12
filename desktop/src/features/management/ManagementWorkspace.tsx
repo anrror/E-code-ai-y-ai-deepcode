@@ -11,6 +11,7 @@ interface ManagementWorkspaceProps {
   destination: DesktopDestination;
   runtime: ClientRuntime;
   project: Project | null;
+  onProjectsChanged?: () => void;
   onThreadCreated(thread: Thread): void;
   onOpenThread(threadId: string): void;
   onCreateSkill(skill: SkillInfo): Promise<void>;
@@ -20,6 +21,7 @@ export function ManagementWorkspace({
   destination,
   runtime,
   project,
+  onProjectsChanged,
   onThreadCreated,
   onOpenThread,
   onCreateSkill,
@@ -48,7 +50,11 @@ export function ManagementWorkspace({
     return <PluginsPage runtime={runtime} />;
   }
   if (destination === "team") {
-    return <TeamPage runtime={runtime} project={project} />;
+    return <TeamPage
+      runtime={runtime}
+      project={project}
+      onProjectsChanged={onProjectsChanged}
+    />;
   }
   return <McpPage runtime={runtime} project={project} />;
 }

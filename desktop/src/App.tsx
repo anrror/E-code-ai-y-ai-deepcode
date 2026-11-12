@@ -544,6 +544,7 @@ export function App({ runtime }: { runtime: ClientRuntime }) {
               destination={ui.destination}
               runtime={runtime}
               project={selectedProject}
+              onProjectsChanged={() => void controller.refreshProjects()}
               onThreadCreated={controller.registerThread}
               onOpenThread={(threadId) => {
                 void (async () => {

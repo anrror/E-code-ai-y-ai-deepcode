@@ -136,6 +136,7 @@ interface CreateForm {
 interface TeamPageProps {
   runtime: ClientRuntime;
   project: Project | null;
+  onProjectsChanged?: () => void;
 }
 
 function emptyEntryForm(entry?: TeamKnowledgeView): EntryForm {
@@ -158,7 +159,11 @@ function sectionIndex(type: string): number {
   return index === -1 ? ORG_POLICY_TYPES.length : index;
 }
 
-export function TeamPage({ runtime, project }: TeamPageProps) {
+export function TeamPage({
+  runtime,
+  project,
+  onProjectsChanged,
+}: TeamPageProps) {
   const { t } = useTranslation();
   const projectId = project?.id;
   const [tree, setTree] = useState<TreeResult | null>(null);
@@ -674,6 +679,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             displayName: editName.trim() || undefined,
           });
           await loadProjects();
+          onProjectsChanged?.();
         } catch (caught) {
           setError(`层已保存，但添加项目失败：${String(caught)}`);
         }

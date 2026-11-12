@@ -1695,7 +1695,7 @@ class Dispatcher:
             "codebases",
             "shared",
         )
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.create_entity(
             kind=str(params.string("kind")),
             slug=str(params.string("slug")),
@@ -1723,7 +1723,7 @@ class Dispatcher:
             "codebases",
             "shared",
         )
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.update_entity(
             str(params.string("entityId")),
             name=params.string("name", required=False) or None,
@@ -1755,7 +1755,7 @@ class Dispatcher:
 
     def _team_entity_remove(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId", "shared", "force")
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.remove_entity(
             str(params.string("entityId")),
             shared=params.boolean("shared", default=False)
@@ -1765,7 +1765,7 @@ class Dispatcher:
 
     def _team_knowledge_deprecate(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "shared")
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.deprecate_entry(
             str(params.string("knowledgeId")),
             shared=params.boolean("shared", default=False)
@@ -1784,7 +1784,7 @@ class Dispatcher:
             "owner",
             "shared",
         )
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.add(
             scope=str(params.string("entityId")),
             type=str(params.string("type")),
@@ -1799,7 +1799,7 @@ class Dispatcher:
 
     def _team_knowledge_promote(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "owner", "shared")
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return {
             "entry": service.promote(
                 str(params.string("knowledgeId")),
@@ -1821,7 +1821,7 @@ class Dispatcher:
             "owner",
             "shared",
         )
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.update_entry(
             str(params.string("knowledgeId")),
             type=params.string("type", required=False) or None,
@@ -1836,7 +1836,7 @@ class Dispatcher:
 
     def _team_knowledge_remove(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "shared")
-        service = self._team_service(params.string("projectId"))
+        service = self._team_service(params.string("projectId", required=False, allow_empty=True))
         return service.remove_entry(
             str(params.string("knowledgeId")),
             shared=params.boolean("shared", default=False)
@@ -1858,17 +1858,17 @@ class Dispatcher:
 
     def _team_tree(self, params: Params) -> dict[str, Any]:
         params.only("projectId")
-        return self._team_service(params.string("projectId")).tree()
+        return self._team_service(params.string("projectId", required=False, allow_empty=True)).tree()
 
     def _team_read(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId")
         return self._team_service(
-            str(params.string("projectId"))
+            str(params.string("projectId", required=False, allow_empty=True))
         ).read_entity(str(params.string("entityId")))
 
     def _team_preview(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId", "includeExternal", "maxChars")
-        return self._team_service(params.string("projectId")).assemble(
+        return self._team_service(params.string("projectId", required=False, allow_empty=True)).assemble(
             task=params.string("entityId", required=False) or None,
             include_external=params.boolean("includeExternal", default=True),
             max_chars=params.integer(
