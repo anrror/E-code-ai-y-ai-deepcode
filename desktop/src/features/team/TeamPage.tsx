@@ -525,8 +525,10 @@ export function TeamPage({
       return;
     }
     const allowed = PARENT_KINDS[kind] ?? [];
+    const orgEntity = entityForKind("org");
     const parent =
       parentId ??
+      (kind === "line" && orgEntity ? orgEntity.id : undefined) ??
       (tree?.inChain ?? [])
         .map((id) => tree?.entities.find((entity) => entity.id === id))
         .filter((entity): entity is TeamEntityView => Boolean(entity))
