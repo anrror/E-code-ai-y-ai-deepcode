@@ -1821,10 +1821,11 @@ export function TeamPage({
                   ))}
               </select>
             </label>
-            {selectedEntity.kind === "project" ? (
+            {selectedEntity.kind === "project" ||
+            selectedEntity.kind === "product" ? (
               <>
                 <label className={styles.wide}>
-                  <span>关联项目</span>
+                  <span>关联面板项目</span>
                   <select
                     value={editWorkspace}
                     onChange={(event) => setEditWorkspace(event.target.value)}
