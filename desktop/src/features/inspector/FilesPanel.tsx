@@ -1,4 +1,16 @@
 import { lazy, Suspense, useMemo, useState } from "react";
+import {
+  ChevronDown,
+  ChevronRight,
+  ChevronsDownUp,
+  ChevronsUpDown,
+  File,
+  FileCode2,
+  FileJson,
+  FileText,
+  Folder,
+  FolderOpen,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { useSystemDarkMode } from "../../app/useSystemDarkMode";
@@ -15,6 +27,19 @@ interface TreeNode {
   path: string;
   kind: FileEntry["kind"];
   children: TreeNode[];
+}
+
+function fileIcon(name: string) {
+  const lower = name.toLowerCase();
+  if (lower.endsWith(".json") || lower.endsWith(".jsonc")) return FileJson;
+  if (
+    /\.(ts|tsx|js|jsx|mjs|cjs|py|rs|go|java|kt|cs|c|cpp|h|rb|php|swift|sh|ps1)$/.test(
+      lower,
+    )
+  )
+    return FileCode2;
+  if (/\.(md|mdx|txt|rst|yaml|yml|toml|ini)$/.test(lower)) return FileText;
+  return File;
 }
 
 function buildTree(entries: FileEntry[]): TreeNode[] {
@@ -114,11 +139,25 @@ export function FilesPanel({
               aria-label={open ? "折叠" : "展开"}
               onClick={() => toggle(node.path)}
             >
-              {open ? "▾" : "▸"}
+              {open ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
             </button>
           ) : (
             <span className={styles.treeSpacer} />
           )}
+          <span className={styles.treeIcon} aria-hidden="true">
+            {isDirectory ? (
+              open ? (
+                <FolderOpen size={14} />
+              ) : (
+                <Folder size={14} />
+              )
+            ) : (
+              (() => {
+                const Icon = fileIcon(node.name);
+                return <Icon size={14} />;
+              })()
+            )}
+          </span>
           <button
             type="button"
             className={styles.treeLabel}
@@ -127,9 +166,6 @@ export function FilesPanel({
               isDirectory ? toggle(node.path) : void onOpenFile(node.path)
             }
           >
-            <span aria-hidden="true">
-              {isDirectory ? (open ? "📂" : "📁") : "·"}
-            </span>
             {node.name}
           </button>
         </div>
@@ -142,11 +178,45 @@ export function FilesPanel({
 
   return (
     <div className={styles.filesView}>
-      <div
-        className={styles.fileTree}
-        aria-label={t("inspector.files.label", "Workspace files")}
-      >
-        {tree.map((node) => renderNode(node, 0))}
+      <div className={styles.fileTreeWrap}>
+        <div className={styles.treeHeader}>
+          <span className={styles.treeTitle}>
+            {t("inspector.files.label", "资源管理器")}
+          </span>
+          <span className={styles.treeCount}>{workbench.entries.length}</span>
+          <span className={styles.treeActions}>
+            <button
+              type="button"
+              title="全部展开"
+              aria-label="全部展开"
+              onClick={() => setCollapsed(new Set())}
+            >
+              <ChevronsUpDown size={13} />
+            </button>
+            <button
+              type="button"
+              title="全部折叠"
+              aria-label="全部折叠"
+              onClick={() =>
+                setCollapsed(
+                  new Set(
+                    workbench.entries
+                      .filter((entry) => entry.kind === "directory")
+                      .map((entry) => entry.path),
+                  ),
+                )
+              }
+            >
+              <ChevronsDownUp size={13} />
+            </button>
+          </span>
+        </div>
+        <div
+          className={styles.fileTree}
+          aria-label={t("inspector.files.label", "Workspace files")}
+        >
+          {tree.map((node) => renderNode(node, 0))}
+        </div>
         {workbench.entriesTruncated ? (
           <p className={styles.treeNotice}>
             {t(
