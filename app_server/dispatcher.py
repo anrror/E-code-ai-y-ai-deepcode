@@ -1876,7 +1876,7 @@ class Dispatcher:
     def _team_read(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId")
         return self._team_service(
-            str(params.string("projectId", required=False, allow_empty=True))
+            params.string("projectId", required=False, allow_empty=True)
         ).read_entity(str(params.string("entityId")))
 
     def _team_preview(self, params: Params) -> dict[str, Any]:
