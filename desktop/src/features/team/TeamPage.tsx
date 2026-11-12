@@ -299,10 +299,17 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const childrenByParent = useMemo(() => {
     const byParent = new Map<string | null, TeamEntityView[]>();
     const known = new Set((tree?.entities ?? []).map((entity) => entity.id));
+    const orgIds = new Set(
+      (tree?.entities ?? [])
+        .filter((entity) => entity.kind === "org")
+        .map((entity) => entity.id),
+    );
     for (const entity of tree?.entities ?? []) {
       if (entity.kind === "org") continue;
       const key =
-        entity.parent && known.has(entity.parent) ? entity.parent : null;
+        entity.parent && known.has(entity.parent) && !orgIds.has(entity.parent)
+          ? entity.parent
+          : null;
       const list = byParent.get(key) ?? [];
       list.push(entity);
       byParent.set(key, list);
@@ -483,7 +490,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
             ? createForm.parent
             : undefined,
         external: createForm.external,
-        shared: createForm.kind === "org",
+        shared: true,
       });
       setCreateForm(null);
       if (createForm.kind === "org") setOrgUnlocked(true);
@@ -516,7 +523,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     setEntryBusy(true);
     setEntryError(null);
     try {
-      const shared = detail?.entity.kind === "org";
+      const shared = true;
       const params = {
         ...(projectId ? { projectId } : {}),
         type: entryDraft.form.type,
@@ -567,7 +574,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       await runtime.request("team/knowledge/promote", {
         ...(projectId ? { projectId } : {}),
         knowledgeId,
-        shared: detail?.entity.kind === "org",
+        shared: true,
       });
       await loadDetail(selectedId);
       await loadTree();
@@ -585,7 +592,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       await runtime.request("team/knowledge/remove", {
         ...(projectId ? { projectId } : {}),
         knowledgeId,
-        shared: detail?.entity.kind === "org",
+        shared: true,
       });
       setConfirmDelete(null);
       await loadDetail(selectedId);
@@ -654,11 +661,23 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
           .split("\n")
           .map((line) => line.trim())
           .filter(Boolean),
-        shared: detail?.entity.kind === "org",
+        shared: true,
       });
       setEditing(false);
       await loadTree();
       await loadDetail(selectedId);
+      const folder = editWorkspace.trim();
+      if (folder && !projects.some((item) => item.canonicalPath === folder)) {
+        try {
+          await runtime.request("project/add", {
+            path: folder,
+            displayName: editName.trim() || undefined,
+          });
+          await loadProjects();
+        } catch (caught) {
+          setError(`层已保存，但添加项目失败：${String(caught)}`);
+        }
+      }
     } catch (caught) {
       setError(String(caught));
     } finally {
@@ -674,7 +693,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       await runtime.request("team/entity/remove", {
         ...(projectId ? { projectId } : {}),
         entityId: selectedId,
-        shared: entity?.kind === "org",
+        shared: true,
         force: (entity?.knowledgeCount ?? 0) > 0,
       });
       setEditing(false);
@@ -694,7 +713,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       await runtime.request("team/knowledge/deprecate", {
         ...(projectId ? { projectId } : {}),
         knowledgeId,
-        shared: detail?.entity.kind === "org",
+        shared: true,
       });
       if (selectedId) await loadDetail(selectedId);
       await loadTree();
