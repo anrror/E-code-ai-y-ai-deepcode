@@ -498,7 +498,7 @@ def test_a_project_references_company_and_line_products(tmp_path: Path) -> None:
     assert text.index("Use PostgreSQL") < text.index(
         "Standard CRM uses the shared lead schema"
     )
-    assert "- product://legacy-crm [historical]" in text
+    assert "- product://legacy-crm (referenced [historical])" in text
     assert "codebases: https://git/legacy-crm" in text
     assert "designs: docs/legacy/design.md" in text
     assert [entity.id for entity in result.referenced] == [

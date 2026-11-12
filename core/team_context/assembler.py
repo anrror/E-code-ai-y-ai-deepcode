@@ -274,16 +274,38 @@ def _render(
             if not append(_label(entry, catalog, referenced_ids, descendant_ids)):
                 break
 
-    pointers = [
-        entity
-        for entity in referenced
-        if entity.designs or entity.codebases
+    # Pointers belong to every layer in play, not only to referenced products:
+    # a product's own document paths are exactly what a project needs to read.
+    pointer_entities = [
+        *reversed(chain),
+        *descendants,
+        *referenced,
     ]
+    seen_pointers: set[str] = set()
+    pointers = []
+    for entity in pointer_entities:
+        if entity.id in seen_pointers:
+            continue
+        if not (entity.designs or entity.codebases or entity.workspace):
+            continue
+        seen_pointers.add(entity.id)
+        pointers.append(entity)
     if pointers and not truncated:
-        append("referenced products (design and codebase pointers):")
+        append("layer pointers (code, documents, workspace):")
+        chain_ids = {entity.id for entity in chain}
+        descendant_ids = {entity.id for entity in descendants}
+        referenced_ids = {entity.id for entity in referenced}
         for entity in pointers:
+            if entity.id in chain_ids:
+                role = "chain"
+            elif entity.id in descendant_ids:
+                role = "sub-layer"
+            else:
+                role = "referenced"
             tag = " [historical]" if entity.archived else ""
-            parts = [f"{entity.id}{tag}"]
+            parts = [f"{entity.id} ({role}{tag})"]
+            if entity.workspace:
+                parts.append("workspace: " + entity.workspace)
             if entity.codebases:
                 parts.append("codebases: " + ", ".join(entity.codebases))
             if entity.designs:
