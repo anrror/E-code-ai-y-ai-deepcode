@@ -1651,45 +1651,55 @@ export function TeamPage({
                   ))}
               </select>
             </label>
-            <label className={styles.wide}>
-              <span>关联项目</span>
-              <select
-                value={editWorkspace}
-                onChange={(event) => setEditWorkspace(event.target.value)}
-              >
-                <option value="">不关联</option>
-                {projects.map((item) => (
-                  <option key={item.id} value={item.canonicalPath}>
-                    {item.displayName} — {item.canonicalPath}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label className={styles.wide}>
-              <span>目录（项目文件夹）</span>
-              <input
-                value={editWorkspace}
-                placeholder="D:\work\project"
-                onChange={(event) => setEditWorkspace(event.target.value)}
-              />
-            </label>
-            <label className={styles.wide}>
-              <span>代码库（Git 地址，每行一个）</span>
-              <textarea
-                rows={2}
-                value={editCodebases}
-                placeholder="https://git.example.com/team/service.git"
-                onChange={(event) => setEditCodebases(event.target.value)}
-              />
-            </label>
-            <label className={styles.wide}>
-              <span>设计文档（路径或 URL，每行一个）</span>
-              <textarea
-                rows={2}
-                value={editDesigns}
-                onChange={(event) => setEditDesigns(event.target.value)}
-              />
-            </label>
+            {selectedEntity.kind === "project" ? (
+              <>
+                <label className={styles.wide}>
+                  <span>关联项目</span>
+                  <select
+                    value={editWorkspace}
+                    onChange={(event) => setEditWorkspace(event.target.value)}
+                  >
+                    <option value="">不关联</option>
+                    {projects.map((item) => (
+                      <option key={item.id} value={item.canonicalPath}>
+                        {item.displayName} — {item.canonicalPath}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label className={styles.wide}>
+                  <span>项目文件夹</span>
+                  <input
+                    value={editWorkspace}
+                    placeholder="D:\work\project"
+                    onChange={(event) => setEditWorkspace(event.target.value)}
+                  />
+                </label>
+              </>
+            ) : null}
+            {selectedEntity.kind === "project" ||
+            selectedEntity.kind === "product" ? (
+              <>
+                <label className={styles.wide}>
+                  <span>代码路径（文件夹或 Git 地址，每行一个）</span>
+                  <textarea
+                    rows={3}
+                    value={editCodebases}
+                    placeholder={"D:/work/service/src\nhttps://git.example.com/team/service.git"}
+                    onChange={(event) => setEditCodebases(event.target.value)}
+                  />
+                </label>
+                <label className={styles.wide}>
+                  <span>文档路径（文件夹或 URL，每行一个）</span>
+                  <textarea
+                    rows={3}
+                    value={editDesigns}
+                    placeholder={"D:/work/service/docs\nhttps://git.example.com/team/docs.git"}
+                    onChange={(event) => setEditDesigns(event.target.value)}
+                  />
+                </label>
+              </>
+            ) : null}
             <label className={styles.checkbox}>
               <input
                 type="checkbox"
