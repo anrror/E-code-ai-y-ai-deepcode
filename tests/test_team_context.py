@@ -788,3 +788,33 @@ def test_global_service_reads_the_shared_store_without_a_workspace(
     )
     tree = TeamContextService(None, home=home).tree()
     assert any(entity["id"] == "org://default" for entity in tree["entities"])
+
+def test_export_bundle_is_portable_and_imports_into_another_home(tmp_path: Path) -> None:
+    home = tmp_path / "home"
+    workspace = tmp_path / "ws"
+    workspace.mkdir()
+    source = TeamContextService(workspace, home=home)
+    source.create_entity(kind="project", slug="p1", name="P1")
+    source.update_entity(
+        "project://p1",
+        workspace=str(workspace),
+        codebases=["https://git.example.com/p1.git", "D:/local/code"],
+        designs=["docs/p1.md", "https://doc.example.com/p1"],
+    )
+    source.add(scope="project://p1", type="decision", statement="Use pytest.")
+
+    bundle = source.export_bundle()
+    entity = next(item for item in bundle["entities"] if item["id"] == "project://p1")
+    assert "workspace" not in entity
+    assert entity["codebases"] == ["https://git.example.com/p1.git"]
+    assert entity["designs"] == ["https://doc.example.com/p1"]
+
+    target = TeamContextService(tmp_path / "ws2", home=tmp_path / "home2")
+    target_ws = tmp_path / "ws2"
+    target_ws.mkdir(exist_ok=True)
+    result = target.import_bundle(bundle)
+    assert result["importedEntities"] == 1
+    assert result["importedKnowledge"] == 1
+    imported = target.read_entity("project://p1")
+    assert imported["entity"].get("workspace") is None
+    assert imported["knowledge"][0]["statement"] == "Use pytest."

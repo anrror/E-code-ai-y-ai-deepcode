@@ -320,6 +320,8 @@ class Dispatcher:
             rpc_methods.TEAM_ENTITY_REMOVE: self._team_entity_remove,
             rpc_methods.TEAM_VISIBILITY_READ: self._team_visibility_read,
             rpc_methods.TEAM_VISIBILITY_SET: self._team_visibility_set,
+            rpc_methods.TEAM_EXPORT: self._team_export,
+            rpc_methods.TEAM_IMPORT: self._team_import,
             rpc_methods.TEAM_ENV_READ: self._team_env_read,
             rpc_methods.TEAM_ENV_VALUES: self._team_env_values,
             rpc_methods.TEAM_ENV_SAVE: self._team_env_save,
@@ -1801,6 +1803,15 @@ class Dispatcher:
             str(params.string("root")),
             str(params.string("path")),
         )
+
+    def _team_export(self, params: Params) -> dict[str, Any]:
+        params.only()
+        return self._team_service(None).export_bundle()
+
+    def _team_import(self, params: Params) -> dict[str, Any]:
+        params.only("bundle")
+        bundle = params.object("bundle")
+        return self._team_service(None).import_bundle(bundle or {})
 
     def _team_visibility_read(self, params: Params) -> dict[str, Any]:
         params.only()

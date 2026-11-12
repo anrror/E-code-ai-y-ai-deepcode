@@ -213,6 +213,9 @@ export function TeamPage({
   const [editDesigns, setEditDesigns] = useState("");
   const [editReferences, setEditReferences] = useState<string[]>([]);
   const [refQuery, setRefQuery] = useState("");
+  const [bundleMode, setBundleMode] = useState<null | "export" | "import">(null);
+  const [bundleText, setBundleText] = useState("");
+  const [bundleResult, setBundleResult] = useState<string | null>(null);
   const [projects, setProjects] = useState<
     { id: string; canonicalPath: string; displayName: string }[]
   >([]);
@@ -958,6 +961,37 @@ export function TeamPage({
     }
   };
 
+  const openExport = async () => {
+    setBundleMode("export");
+    setBundleResult(null);
+    try {
+      const bundle = await runtime.request("team/export", {});
+      setBundleText(JSON.stringify(bundle, null, 2));
+    } catch (caught) {
+      setError(String(caught));
+    }
+  };
+
+  const openImport = () => {
+    setBundleMode("import");
+    setBundleText("");
+    setBundleResult(null);
+  };
+
+  const runImport = async () => {
+    try {
+      const bundle = JSON.parse(bundleText);
+      const result = await runtime.request("team/import", { bundle });
+      setBundleResult(
+        `导入实体 ${result.importedEntities}（跳过 ${result.skippedEntities}），知识 ${result.importedKnowledge}（跳过 ${result.skippedKnowledge}）`,
+      );
+      await loadTree();
+      await loadVisibility();
+    } catch (caught) {
+      setBundleResult(String(caught));
+    }
+  };
+
   const openVisibility = async () => {
     setShowVisibility(true);
     await loadProjects();
@@ -1085,6 +1119,12 @@ export function TeamPage({
             onClick={() => void openVisibility()}
           >
             侧栏项目
+          </button>
+          <button type="button" className={styles.ghost} onClick={() => void openExport()}>
+            导出
+          </button>
+          <button type="button" className={styles.ghost} onClick={openImport}>
+            导入
           </button>
           <button
             type="button"
@@ -1706,6 +1746,68 @@ export function TeamPage({
               )}
             </div>
           </div>
+        </Modal>
+      ) : null}
+
+      {bundleMode ? (
+        <Modal
+          title={bundleMode === "export" ? "导出团队配置" : "导入团队配置"}
+          wide
+          onClose={() => setBundleMode(null)}
+          footer={
+            bundleMode === "export" ? (
+              <>
+                <button
+                  type="button"
+                  className={styles.ghost}
+                  onClick={() => void navigator.clipboard.writeText(bundleText)}
+                >
+                  复制
+                </button>
+                <button
+                  type="button"
+                  className={styles.primary}
+                  onClick={() => setBundleMode(null)}
+                >
+                  关闭
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className={styles.ghost}
+                  onClick={() => setBundleMode(null)}
+                >
+                  取消
+                </button>
+                <button
+                  type="button"
+                  className={styles.primary}
+                  onClick={() => void runImport()}
+                >
+                  导入
+                </button>
+              </>
+            )
+          }
+        >
+          <p className={styles.muted}>
+            只传输团队配置（层、知识、指令、git/网页链接）。本地文件夹、环境变量和侧栏可见性不会导出，也不会被导入覆盖。
+          </p>
+          <textarea
+            className={styles.bundleText}
+            rows={16}
+            value={bundleText}
+            placeholder={
+              bundleMode === "import" ? "粘贴导出的 JSON…" : undefined
+            }
+            readOnly={bundleMode === "export"}
+            onChange={(event) => setBundleText(event.target.value)}
+          />
+          {bundleResult ? (
+            <p className={styles.muted}>{bundleResult}</p>
+          ) : null}
         </Modal>
       ) : null}
 

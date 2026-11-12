@@ -597,6 +597,121 @@ class TeamContextService:
             "truncated": truncated,
         }
 
+    def export_bundle(self) -> dict[str, Any]:
+        """A portable snapshot for offline hand-off.
+
+        Local-only data never leaves the machine: the workspace folder, local
+        code and document paths, environment files, and project visibility are
+        all excluded. Git URLs and web document links are portable and stay.
+        """
+
+        catalog = self.catalog()
+        entities: list[dict[str, Any]] = []
+        for entity in catalog.entities.values():
+            data = entity.to_mapping()
+            data.pop("workspace", None)
+            data["codebases"] = [
+                value
+                for value in entity.codebases
+                if value.startswith(("http://", "https://", "git@", "ssh://"))
+            ]
+            data["designs"] = [
+                value
+                for value in entity.designs
+                if value.startswith(("http://", "https://"))
+            ]
+            if not data["codebases"]:
+                data.pop("codebases")
+            if not data["designs"]:
+                data.pop("designs")
+            if not data.get("references"):
+                data.pop("references", None)
+            entities.append(data)
+        knowledge = [
+            entry.to_mapping()
+            for entry in catalog.knowledge.values()
+            if entry.status != "deprecated"
+        ]
+        return {
+            "kind": "deepcode-team-context",
+            "version": 1,
+            "entities": entities,
+            "knowledge": knowledge,
+            "instructions": {
+                entity_id: text
+                for entity_id, text in catalog.instructions.items()
+                if text.strip()
+            },
+        }
+
+    def import_bundle(self, bundle: dict[str, Any]) -> dict[str, Any]:
+        """Merge a snapshot into the global store, skipping what already exists."""
+
+        if bundle.get("kind") != "deepcode-team-context":
+            raise TeamContextError("this file is not a team-context snapshot")
+        if bundle.get("version") != 1:
+            raise TeamContextError("unsupported snapshot version")
+        raw_entities = bundle.get("entities")
+        raw_knowledge = bundle.get("knowledge")
+        if not isinstance(raw_entities, list) or not isinstance(raw_knowledge, list):
+            raise TeamContextError("the snapshot is missing entities or knowledge")
+
+        home = self.home or Path.home()
+        base = home / TEAM_RELATIVE
+        existing = self.catalog()
+        imported_entities = 0
+        skipped_entities = 0
+        imported_knowledge = 0
+        skipped_knowledge = 0
+
+        directories: dict[str, Path] = {
+            entity.id: directory
+            for entity in existing.entities.values()
+            if (directory := existing.directories.get(entity.id)) is not None
+        }
+        for raw in raw_entities:
+            entity = TeamEntity.from_mapping(raw)
+            if entity.id in existing.entities:
+                skipped_entities += 1
+                continue
+            directory = base / LAYER_DIRECTORIES[entity.kind][0] / entity.id.split("://", 1)[1]
+            directory.mkdir(parents=True, exist_ok=True)
+            _write_yaml(directory / "entity.yaml", entity.to_mapping())
+            directories[entity.id] = directory
+            imported_entities += 1
+
+        seen_knowledge = set(existing.knowledge)
+        for raw in raw_knowledge:
+            entry = KnowledgeEntry.from_mapping(raw)
+            directory = directories.get(entry.scope)
+            if directory is None or entry.id in seen_knowledge:
+                skipped_knowledge += 1
+                continue
+            append_knowledge(directory, entry)
+            seen_knowledge.add(entry.id)
+            imported_knowledge += 1
+
+        instructions = bundle.get("instructions") or {}
+        if isinstance(instructions, dict):
+            for entity_id, text in instructions.items():
+                entity = self.catalog().entities.get(str(entity_id))
+                if entity is None:
+                    continue
+                directory = self.catalog().directories.get(entity.id)
+                if directory is None:
+                    continue
+                target = directory / "AGENTS.md"
+                if target.is_file() or not str(text).strip():
+                    continue
+                target.write_text(str(text), encoding="utf-8")
+
+        return {
+            "importedEntities": imported_entities,
+            "skippedEntities": skipped_entities,
+            "importedKnowledge": imported_knowledge,
+            "skippedKnowledge": skipped_knowledge,
+        }
+
     def _visibility_path(self) -> Path:
         base = self.home or Path.home()
         return base / TEAM_RELATIVE / "visibility.yaml"

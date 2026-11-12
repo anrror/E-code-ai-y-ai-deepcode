@@ -184,6 +184,8 @@ export interface MethodParams {
   "team/entity/remove": TeamEntityRemoveParams;
   "team/visibility/read": TeamVisibilityReadParams;
   "team/visibility/set": TeamVisibilitySetParams;
+  "team/export": TeamExportParams;
+  "team/import": TeamImportParams;
   "team/env/read": TeamEnvReadParams;
   "team/env/values": TeamEnvValuesParams;
   "team/env/save": TeamEnvSaveParams;
@@ -851,6 +853,12 @@ export interface TeamVisibilitySetParams {
   path: string;
   hidden?: boolean;
 }
+export interface TeamExportParams {}
+export interface TeamImportParams {
+  bundle: {
+    [k: string]: unknown;
+  };
+}
 export interface TeamEnvReadParams {
   entityId: string;
 }
@@ -1296,6 +1304,15 @@ export interface MethodResults {
     path: string;
     content: string;
     truncated: boolean;
+  };
+  "team/export": {
+    [k: string]: unknown;
+  };
+  "team/import": {
+    importedEntities: number;
+    skippedEntities: number;
+    importedKnowledge: number;
+    skippedKnowledge: number;
   };
   "git/status": {
     status: GitStatus;

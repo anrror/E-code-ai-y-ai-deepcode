@@ -5658,6 +5658,19 @@
       },
       "required": ["entityId", "root", "path"]
     },
+    "TeamExportParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "TeamImportParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "bundle": {"type": "object"}
+      },
+      "required": ["bundle"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6933,6 +6946,12 @@
         "team/visibility/set": {
           "$ref": "#/$defs/TeamVisibilitySetParams"
         },
+        "team/export": {
+          "$ref": "#/$defs/TeamExportParams"
+        },
+        "team/import": {
+          "$ref": "#/$defs/TeamImportParams"
+        },
         "team/env/read": {
           "$ref": "#/$defs/TeamEnvReadParams"
         },
@@ -7140,6 +7159,8 @@
         "team/entity/remove",
         "team/visibility/read",
         "team/visibility/set",
+        "team/export",
+        "team/import",
         "team/env/read",
         "team/env/values",
         "team/env/save",
@@ -8191,6 +8212,21 @@
           },
           "required": ["path", "content", "truncated"]
         },
+        "team/export": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "team/import": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "importedEntities": {"type": "integer"},
+            "skippedEntities": {"type": "integer"},
+            "importedKnowledge": {"type": "integer"},
+            "skippedKnowledge": {"type": "integer"}
+          },
+          "required": ["importedEntities", "skippedEntities", "importedKnowledge", "skippedKnowledge"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8498,6 +8534,8 @@
         "team/entity/remove",
         "team/visibility/read",
         "team/visibility/set",
+        "team/export",
+        "team/import",
         "team/env/read",
         "team/env/values",
         "team/env/save",
