@@ -2312,7 +2312,7 @@ function OrgPolicyEditor({
             ) : (
               entries.map((entry) => {
                 const draft = edits[entry.id] ?? entry.statement;
-                const editable = unlocked && entry.status === "draft";
+                const editable = unlocked && entry.status !== "deprecated";
                 return (
                   <div key={entry.id} className={styles.policyRow}>
                     {editable ? (
@@ -2340,13 +2340,15 @@ function OrgPolicyEditor({
                         >
                           保存
                         </button>
-                        <button
-                          type="button"
-                          disabled={busy}
-                          onClick={() => onPromote(entry.id)}
-                        >
-                          启用
-                        </button>
+                        {entry.status === "draft" ? (
+                          <button
+                            type="button"
+                            disabled={busy}
+                            onClick={() => onPromote(entry.id)}
+                          >
+                            启用
+                          </button>
+                        ) : null}
                         {confirmId === entry.id ? (
                           <button
                             type="button"
