@@ -160,6 +160,7 @@ function sectionIndex(type: string): number {
 
 export function TeamPage({ runtime, project }: TeamPageProps) {
   const { t } = useTranslation();
+  const projectId = project?.id;
   const [tree, setTree] = useState<TreeResult | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [detail, setDetail] = useState<ReadResult | null>(null);
@@ -207,14 +208,10 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
   const loadTree = useCallback(async () => {
-    if (!project) {
-      setTree(null);
-      return;
-    }
     setBusy(true);
     try {
       const result = await runtime.request("team/tree", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
       });
       setTree(result);
       setSelectedId((current) =>
@@ -228,7 +225,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     } finally {
       setBusy(false);
     }
-  }, [project, runtime]);
+  }, [projectId, runtime]);
 
   const loadProjects = useCallback(async () => {
     try {
@@ -241,10 +238,9 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
 
   const loadDetail = useCallback(
     async (entityId: string) => {
-      if (!project) return;
-      try {
+        try {
         const result = await runtime.request("team/read", {
-          projectId: project.id,
+          ...(projectId ? { projectId } : {}),
           entityId,
         });
         setDetail(result);
@@ -253,7 +249,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         setError(String(caught));
       }
     },
-    [project, runtime],
+    [projectId, runtime],
   );
 
   useEffect(() => {
@@ -409,13 +405,13 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   }, [createForm, tree]);
 
   const loadQueue = useCallback(async () => {
-    if (!project || !tree) return;
+    if (!tree) return;
     setQueueLoading(true);
     try {
       const details = await Promise.all(
         tree.entities.map((entity) =>
           runtime.request("team/read", {
-            projectId: project.id,
+            ...(projectId ? { projectId } : {}),
             entityId: entity.id,
           }),
         ),
@@ -431,7 +427,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     } finally {
       setQueueLoading(false);
     }
-  }, [project, runtime, tree]);
+  }, [projectId, runtime, tree]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- queue is fetched when opened
@@ -478,7 +474,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     setCreateError(null);
     try {
       await runtime.request("team/create", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         kind: createForm.kind,
         slug,
         name: name || undefined,
@@ -511,7 +507,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const submitEntry = async (review: boolean) => {
-    if (!project || !selectedId || !entryDraft) return;
+    if (!selectedId || !entryDraft) return;
     const statement = entryDraft.form.statement.trim();
     if (!statement) {
       setEntryError(t("team.statementRequired", "请填写陈述内容"));
@@ -522,7 +518,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     try {
       const shared = detail?.entity.kind === "org";
       const params = {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         type: entryDraft.form.type,
         statement,
         rationale: entryDraft.form.rationale.trim() || undefined,
@@ -548,7 +544,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       }
       if (review) {
         await runtime.request("team/knowledge/promote", {
-          projectId: project.id,
+          ...(projectId ? { projectId } : {}),
           knowledgeId,
           owner: entryDraft.form.owner.trim() || undefined,
           shared,
@@ -565,11 +561,11 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const promote = async (knowledgeId: string) => {
-    if (!project || !selectedId) return;
+    if (!selectedId) return;
     setBusy(true);
     try {
       await runtime.request("team/knowledge/promote", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         knowledgeId,
         shared: detail?.entity.kind === "org",
       });
@@ -583,11 +579,11 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const removeEntry = async (knowledgeId: string) => {
-    if (!project || !selectedId) return;
+    if (!selectedId) return;
     setBusy(true);
     try {
       await runtime.request("team/knowledge/remove", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         knowledgeId,
         shared: detail?.entity.kind === "org",
       });
@@ -606,7 +602,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     setBusy(true);
     try {
       await runtime.request("team/knowledge/add", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         entityId: selectedId,
         type,
         statement: statement.trim(),
@@ -626,7 +622,7 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
     setBusy(true);
     try {
       await runtime.request("team/knowledge/update", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         knowledgeId: entry.id,
         statement: statement.trim(),
         shared: true,
@@ -640,11 +636,11 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const saveLayer = async () => {
-    if (!project || !selectedId) return;
+    if (!selectedId) return;
     setBusy(true);
     try {
       await runtime.request("team/entity/update", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         entityId: selectedId,
         name: editName.trim() || undefined,
         parent: editParent,
@@ -671,12 +667,12 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const deleteLayer = async () => {
-    if (!project || !selectedId) return;
+    if (!selectedId) return;
     const entity = tree?.entities.find((item) => item.id === selectedId);
     setBusy(true);
     try {
       await runtime.request("team/entity/remove", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         entityId: selectedId,
         shared: entity?.kind === "org",
         force: (entity?.knowledgeCount ?? 0) > 0,
@@ -693,11 +689,10 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const deprecate = async (knowledgeId: string) => {
-    if (!project) return;
     setBusy(true);
     try {
       await runtime.request("team/knowledge/deprecate", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         knowledgeId,
         shared: detail?.entity.kind === "org",
       });
@@ -711,11 +706,10 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   };
 
   const showPreview = async () => {
-    if (!project) return;
     setPreviewBusy(true);
     try {
       const result = await runtime.request("team/preview", {
-        projectId: project.id,
+        ...(projectId ? { projectId } : {}),
         entityId: tree?.bind ?? selectedId ?? undefined,
         includeExternal: true,
       });
@@ -738,16 +732,6 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       setCopied(false);
     }
   };
-
-  if (!project) {
-    return (
-      <section className={styles.page}>
-        <p className={styles.placeholder}>
-          {t("team.openProject", "打开一个项目以查看团队上下文。")}
-        </p>
-      </section>
-    );
-  }
 
   const activeDetail =
     detail && detail.entity.id === selectedId ? detail : null;
@@ -781,15 +765,17 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       <header className={styles.header}>
         <div className={styles.headerText}>
           <p className={styles.eyebrow}>{t("team.eyebrow", "团队上下文")}</p>
-          <h2>{project.displayName}</h2>
+          <h2>全局团队上下文</h2>
           <p className={styles.binding}>
+            {project
+              ? `当前项目：${project.displayName}`
+              : "未选择项目；显示本机全局库"}
             {tree?.bind ? (
               <>
+                {" · "}
                 {t("team.boundTask", "当前任务")} <code>{tree.bind}</code>
               </>
-            ) : (
-              t("team.unbound", "当前工作区尚未绑定任务；任务层不参与装配。")
-            )}
+            ) : null}
           </p>
         </div>
         <div className={styles.headerActions}>

@@ -109,12 +109,17 @@ def default_catalog_paths(
     return root / CATALOG_RELATIVE, Path(workspace) / CATALOG_RELATIVE
 
 
-def load_catalog(workspace: str | Path, home: str | Path | None = None) -> Catalog:
-    """Load the global then workspace roots, validating the merged result."""
+def load_catalog(
+    workspace: str | Path | None, home: str | Path | None = None
+) -> Catalog:
+    """Load the global root, then a workspace overlay when one is given."""
 
     root = Path(home) if home is not None else Path.home()
     catalog = Catalog()
-    for base in (root / TEAM_RELATIVE, Path(workspace) / TEAM_RELATIVE):
+    bases = [root / TEAM_RELATIVE]
+    if workspace is not None:
+        bases.append(Path(workspace) / TEAM_RELATIVE)
+    for base in bases:
         if base.is_dir():
             catalog = catalog.merged(_read_root(base))
     _validate(catalog)

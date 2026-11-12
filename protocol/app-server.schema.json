@@ -5455,8 +5455,7 @@
       "additionalProperties": false,
       "properties": {
         "projectId": {"type": "string", "minLength": 1, "maxLength": 255}
-      },
-      "required": ["projectId"]
+      }
     },
     "TeamReadParams": {
       "type": "object",
@@ -5465,7 +5464,7 @@
         "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
         "entityId": {"type": "string", "minLength": 1, "maxLength": 255}
       },
-      "required": ["projectId", "entityId"]
+      "required": ["entityId"]
     },
     "TeamPreviewParams": {
       "type": "object",
@@ -5475,8 +5474,7 @@
         "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
         "includeExternal": {"type": "boolean"},
         "maxChars": {"type": "integer", "minimum": 200, "maximum": 20000}
-      },
-      "required": ["projectId"]
+      }
     },
     "TeamCreateParams": {
       "type": "object",
@@ -5494,7 +5492,7 @@
         "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "kind", "slug"]
+      "required": ["kind", "slug"]
     },
     "TeamKnowledgeAddParams": {
       "type": "object",
@@ -5510,7 +5508,7 @@
         "owner": {"type": "string", "maxLength": 120},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "entityId", "type", "statement"]
+      "required": ["entityId", "type", "statement"]
     },
     "TeamKnowledgePromoteParams": {
       "type": "object",
@@ -5521,7 +5519,7 @@
         "owner": {"type": "string", "maxLength": 120},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "knowledgeId"]
+      "required": ["knowledgeId"]
     },
     "TeamKnowledgeUpdateParams": {
       "type": "object",
@@ -5537,7 +5535,7 @@
         "owner": {"type": "string", "maxLength": 120},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "knowledgeId"]
+      "required": ["knowledgeId"]
     },
     "TeamKnowledgeRemoveParams": {
       "type": "object",
@@ -5547,7 +5545,7 @@
         "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "knowledgeId"]
+      "required": ["knowledgeId"]
     },
     "TeamEntityUpdateParams": {
       "type": "object",
@@ -5564,7 +5562,7 @@
         "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "entityId"]
+      "required": ["entityId"]
     },
     "TeamEntityRemoveParams": {
       "type": "object",
@@ -5575,7 +5573,7 @@
         "shared": {"type": "boolean"},
         "force": {"type": "boolean"}
       },
-      "required": ["projectId", "entityId"]
+      "required": ["entityId"]
     },
     "TeamKnowledgeDeprecateParams": {
       "type": "object",
@@ -5585,7 +5583,7 @@
         "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
         "shared": {"type": "boolean"}
       },
-      "required": ["projectId", "knowledgeId"]
+      "required": ["knowledgeId"]
     },
     "TeamEntityView": {
       "type": "object",

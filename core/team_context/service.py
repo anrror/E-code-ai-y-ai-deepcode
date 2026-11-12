@@ -41,8 +41,10 @@ from core.team_context.models import (
 
 class TeamContextService:
     """File-backed team context for one workspace."""
-    def __init__(self, workspace: str | Path, home: str | Path | None = None) -> None:
-        self.workspace = Path(workspace)
+    def __init__(
+        self, workspace: str | Path | None, home: str | Path | None = None
+    ) -> None:
+        self.workspace = Path(workspace) if workspace is not None else None
         if home is None:
             # The shared team store sits next to the user's config: honour
             # DEEPCODE_HOME instead of assuming ~/.deepcode.
@@ -170,6 +172,10 @@ class TeamContextService:
                     f"the organization layer already exists ({existing[0]}); edit it instead of creating another"
                 )
         base = (self.home or Path.home()) if shared else self.workspace
+        if base is None:
+            raise TeamContextError(
+                "open a workspace or create the layer in the shared store"
+            )
         directory = base / TEAM_RELATIVE / LAYER_DIRECTORIES[kind][0] / slug
         if (directory / "entity.yaml").exists():
             raise TeamContextError(f"the {kind} layer {slug!r} already exists")
@@ -250,9 +256,7 @@ class TeamContextService:
         else:
             new_parent = current.parent
         directory = catalog.directories.get(entity_id)
-        if directory is None or not (
-            _is_within(directory, self.workspace) or shared
-        ):
+        if directory is None or not self._writable(directory, shared):
             raise TeamContextError(
                 "this layer lives in the shared team store; unlock it before editing"
             )
@@ -389,11 +393,15 @@ class TeamContextService:
         workspace_layer = self._workspace_layer()
         directory = catalog.directories.get(scope)
         if directory is not None:
-            if _is_within(directory, self.workspace) or shared:
+            if self._writable(directory, shared):
                 path = append_knowledge(directory, entry)
                 return {"entry": entry.to_mapping(), "path": str(path)}
             raise TeamContextError(
                 "this layer lives in the shared team store; unlock it before editing"
+            )
+        if self.workspace is None:
+            raise TeamContextError(
+                "this entry lives in the shared team layer; unlock it before editing"
             )
         saved = save_catalog(
             self.workspace,
@@ -450,9 +458,7 @@ class TeamContextService:
         if current is None:
             raise TeamContextError(f"unknown entity {entity_id}")
         directory = catalog.directories.get(entity_id)
-        if directory is None or not (
-            _is_within(directory, self.workspace) or shared
-        ):
+        if directory is None or not self._writable(directory, shared):
             raise TeamContextError(
                 "this layer lives in the shared team store; unlock it before editing"
             )
@@ -485,9 +491,7 @@ class TeamContextService:
         if current is None:
             raise TeamContextError(f"unknown knowledge entry {entry_id}")
         directory = catalog.directories.get(current.scope)
-        if directory is None or not (
-            _is_within(directory, self.workspace) or shared
-        ):
+        if directory is None or not self._writable(directory, shared):
             raise TeamContextError(
                 "this entry lives in the shared team layer; unlock it before editing"
             )
@@ -518,9 +522,7 @@ class TeamContextService:
                 "only draft entries can be edited; add a replacement and deprecate this one"
             )
         directory = catalog.directories.get(current.scope)
-        if directory is None or not (
-            _is_within(directory, self.workspace) or shared
-        ):
+        if directory is None or not self._writable(directory, shared):
             raise TeamContextError(
                 "this entry lives in the shared team layer; unlock it before editing"
             )
@@ -552,14 +554,19 @@ class TeamContextService:
                 "only draft entries can be removed; reviewed entries are part of the record"
             )
         directory = catalog.directories.get(current.scope)
-        if directory is None or not (
-            _is_within(directory, self.workspace) or shared
-        ):
+        if directory is None or not self._writable(directory, shared):
             raise TeamContextError(
                 "this entry lives in the shared team layer; unlock it before editing"
             )
         path = remove_knowledge(directory, entry_id)
         return {"removed": entry_id, "path": str(path)}
+
+    def _writable(self, directory: Path, shared: bool) -> bool:
+        if shared:
+            return True
+        return self.workspace is not None and _is_within(
+            directory, self.workspace
+        )
 
     def _workspace_layer(self) -> Catalog:
         path = self.workspace / CATALOG_RELATIVE

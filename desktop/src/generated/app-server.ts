@@ -777,20 +777,20 @@ export interface FileWriteParams {
   expectedSha256: string | null;
 }
 export interface TeamTreeParams {
-  projectId: string;
+  projectId?: string;
 }
 export interface TeamReadParams {
-  projectId: string;
+  projectId?: string;
   entityId: string;
 }
 export interface TeamPreviewParams {
-  projectId: string;
+  projectId?: string;
   entityId?: string;
   includeExternal?: boolean;
   maxChars?: number;
 }
 export interface TeamCreateParams {
-  projectId: string;
+  projectId?: string;
   kind: string;
   slug: string;
   name?: string;
@@ -812,7 +812,7 @@ export interface TeamCreateParams {
   shared?: boolean;
 }
 export interface TeamEntityUpdateParams {
-  projectId: string;
+  projectId?: string;
   entityId: string;
   name?: string;
   parent?: string;
@@ -833,18 +833,18 @@ export interface TeamEntityUpdateParams {
   shared?: boolean;
 }
 export interface TeamEntityRemoveParams {
-  projectId: string;
+  projectId?: string;
   entityId: string;
   shared?: boolean;
   force?: boolean;
 }
 export interface TeamKnowledgeDeprecateParams {
-  projectId: string;
+  projectId?: string;
   knowledgeId: string;
   shared?: boolean;
 }
 export interface TeamKnowledgeAddParams {
-  projectId: string;
+  projectId?: string;
   entityId: string;
   type: string;
   statement: string;
@@ -855,13 +855,13 @@ export interface TeamKnowledgeAddParams {
   shared?: boolean;
 }
 export interface TeamKnowledgePromoteParams {
-  projectId: string;
+  projectId?: string;
   knowledgeId: string;
   owner?: string;
   shared?: boolean;
 }
 export interface TeamKnowledgeUpdateParams {
-  projectId: string;
+  projectId?: string;
   knowledgeId: string;
   type?: string;
   statement?: string;
@@ -872,7 +872,7 @@ export interface TeamKnowledgeUpdateParams {
   shared?: boolean;
 }
 export interface TeamKnowledgeRemoveParams {
-  projectId: string;
+  projectId?: string;
   knowledgeId: string;
   shared?: boolean;
 }

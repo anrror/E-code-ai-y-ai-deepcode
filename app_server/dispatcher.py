@@ -1695,7 +1695,7 @@ class Dispatcher:
             "codebases",
             "shared",
         )
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.create_entity(
             kind=str(params.string("kind")),
             slug=str(params.string("slug")),
@@ -1706,7 +1706,8 @@ class Dispatcher:
             references=list(params.string_array("references")),
             designs=list(params.string_array("designs")),
             codebases=list(params.string_array("codebases")),
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _team_entity_update(self, params: Params) -> dict[str, Any]:
@@ -1722,7 +1723,7 @@ class Dispatcher:
             "codebases",
             "shared",
         )
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.update_entity(
             str(params.string("entityId")),
             name=params.string("name", required=False) or None,
@@ -1748,24 +1749,27 @@ class Dispatcher:
                 if "codebases" in params.values
                 else None
             ),
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _team_entity_remove(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId", "shared", "force")
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.remove_entity(
             str(params.string("entityId")),
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
             force=params.boolean("force", default=False),
         )
 
     def _team_knowledge_deprecate(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "shared")
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.deprecate_entry(
             str(params.string("knowledgeId")),
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _team_knowledge_add(self, params: Params) -> dict[str, Any]:
@@ -1780,7 +1784,7 @@ class Dispatcher:
             "owner",
             "shared",
         )
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.add(
             scope=str(params.string("entityId")),
             type=str(params.string("type")),
@@ -1789,17 +1793,19 @@ class Dispatcher:
             evidence=params.string("evidence", required=False) or "",
             confidence=params.string("confidence", required=False) or "medium",
             owner=params.string("owner", required=False) or "",
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _team_knowledge_promote(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "owner", "shared")
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return {
             "entry": service.promote(
                 str(params.string("knowledgeId")),
                 owner=params.string("owner", required=False) or "",
-                shared=params.boolean("shared", default=False),
+                shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
             )
         }
 
@@ -1815,7 +1821,7 @@ class Dispatcher:
             "owner",
             "shared",
         )
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.update_entry(
             str(params.string("knowledgeId")),
             type=params.string("type", required=False) or None,
@@ -1824,15 +1830,17 @@ class Dispatcher:
             evidence=params.string("evidence", required=False) or None,
             confidence=params.string("confidence", required=False) or None,
             owner=params.string("owner", required=False) or None,
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _team_knowledge_remove(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "knowledgeId", "shared")
-        service = self._team_service(str(params.string("projectId")))
+        service = self._team_service(params.string("projectId"))
         return service.remove_entry(
             str(params.string("knowledgeId")),
-            shared=params.boolean("shared", default=False),
+            shared=params.boolean("shared", default=False)
+            or params.string("projectId", required=False) is None,
         )
 
     def _project_root(self, project_id: str):
@@ -1840,14 +1848,17 @@ class Dispatcher:
 
         return Path(self.application.projects.read(project_id).canonical_path)
 
-    def _team_service(self, project_id: str):
+    def _team_service(self, project_id: str | None):
         from core.team_context.service import TeamContextService
 
+        if not project_id:
+            # Global view: the shared store is the source of truth.
+            return TeamContextService(None)
         return TeamContextService(self._project_root(project_id))
 
     def _team_tree(self, params: Params) -> dict[str, Any]:
         params.only("projectId")
-        return self._team_service(str(params.string("projectId"))).tree()
+        return self._team_service(params.string("projectId")).tree()
 
     def _team_read(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId")
@@ -1857,7 +1868,7 @@ class Dispatcher:
 
     def _team_preview(self, params: Params) -> dict[str, Any]:
         params.only("projectId", "entityId", "includeExternal", "maxChars")
-        return self._team_service(str(params.string("projectId"))).assemble(
+        return self._team_service(params.string("projectId")).assemble(
             task=params.string("entityId", required=False) or None,
             include_external=params.boolean("includeExternal", default=True),
             max_chars=params.integer(

@@ -777,3 +777,16 @@ def test_update_entity_can_point_at_a_project_and_git_remotes(tmp_path: Path) ->
     assert entity["workspace"] == str(tmp_path / "repo")
     assert entity["codebases"] == ["https://git.example.com/team/sign.git"]
     assert entity["designs"] == ["docs/design/sign.md"]
+
+
+def test_global_service_reads_the_shared_store_without_a_workspace(
+    tmp_path: Path,
+) -> None:
+    home = tmp_path / "home"
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    TeamContextService(workspace, home=home).create_entity(
+        kind="org", slug="default", shared=True
+    )
+    tree = TeamContextService(None, home=home).tree()
+    assert any(entity["id"] == "org://default" for entity in tree["entities"])
