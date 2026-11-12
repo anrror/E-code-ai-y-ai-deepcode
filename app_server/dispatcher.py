@@ -1710,7 +1710,18 @@ class Dispatcher:
         )
 
     def _team_entity_update(self, params: Params) -> dict[str, Any]:
-        params.only("projectId", "entityId", "name", "parent", "external", "shared")
+        params.only(
+            "projectId",
+            "entityId",
+            "name",
+            "parent",
+            "external",
+            "workspace",
+            "references",
+            "designs",
+            "codebases",
+            "shared",
+        )
         service = self._team_service(str(params.string("projectId")))
         return service.update_entity(
             str(params.string("entityId")),
@@ -1718,6 +1729,24 @@ class Dispatcher:
             parent=params.string("parent", required=False, allow_empty=True),
             external=(
                 params.boolean("external") if "external" in params.values else None
+            ),
+            workspace=params.string(
+                "workspace", required=False, allow_empty=True
+            ),
+            references=(
+                list(params.string_array("references"))
+                if "references" in params.values
+                else None
+            ),
+            designs=(
+                list(params.string_array("designs"))
+                if "designs" in params.values
+                else None
+            ),
+            codebases=(
+                list(params.string_array("codebases"))
+                if "codebases" in params.values
+                else None
             ),
             shared=params.boolean("shared", default=False),
         )

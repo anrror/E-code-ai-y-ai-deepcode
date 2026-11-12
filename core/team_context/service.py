@@ -207,6 +207,10 @@ class TeamContextService:
         name: str | None = None,
         parent: str | None = None,
         external: bool | None = None,
+        workspace: str | None = None,
+        references: list[str] | None = None,
+        designs: list[str] | None = None,
+        codebases: list[str] | None = None,
         shared: bool = False,
     ) -> dict[str, Any]:
         """Edit a layer's name, parent, or flags; the id and kind stay fixed."""
@@ -258,10 +262,18 @@ class TeamContextService:
             name=(name if name is not None else current.name).strip(),
             parent=new_parent,
             external=current.external if external is None else external,
-            workspace=current.workspace,
-            references=current.references,
-            designs=current.designs,
-            codebases=current.codebases,
+            workspace=(
+                (workspace.strip() or None)
+                if workspace is not None
+                else current.workspace
+            ),
+            references=(
+                tuple(references) if references is not None else current.references
+            ),
+            designs=tuple(designs) if designs is not None else current.designs,
+            codebases=(
+                tuple(codebases) if codebases is not None else current.codebases
+            ),
             archived=current.archived,
         )
         _write_yaml(directory / "entity.yaml", updated.to_mapping())

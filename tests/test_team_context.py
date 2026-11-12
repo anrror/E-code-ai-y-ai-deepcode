@@ -761,3 +761,19 @@ def test_project_may_sit_under_a_product(tmp_path: Path) -> None:
     assert {
         entity["id"]: entity.get("parent") for entity in tree["entities"]
     }["project://sign"] == "product://paas"
+
+def test_update_entity_can_point_at_a_project_and_git_remotes(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    service = TeamContextService(workspace, home=tmp_path / "home")
+    service.create_entity(kind="project", slug="sign")
+    updated = service.update_entity(
+        "project://sign",
+        workspace=str(tmp_path / "repo"),
+        codebases=["https://git.example.com/team/sign.git"],
+        designs=["docs/design/sign.md"],
+    )
+    entity = updated["entity"]
+    assert entity["workspace"] == str(tmp_path / "repo")
+    assert entity["codebases"] == ["https://git.example.com/team/sign.git"]
+    assert entity["designs"] == ["docs/design/sign.md"]

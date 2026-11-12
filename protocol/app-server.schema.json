@@ -5558,6 +5558,10 @@
         "name": {"type": "string", "minLength": 1, "maxLength": 200},
         "parent": {"type": "string", "maxLength": 255},
         "external": {"type": "boolean"},
+        "workspace": {"type": "string", "maxLength": 1000},
+        "references": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
+        "designs": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
+        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
         "shared": {"type": "boolean"}
       },
       "required": ["projectId", "entityId"]

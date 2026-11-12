@@ -817,6 +817,19 @@ export interface TeamEntityUpdateParams {
   name?: string;
   parent?: string;
   external?: boolean;
+  workspace?: string;
+  /**
+   * @maxItems 50
+   */
+  references?: string[];
+  /**
+   * @maxItems 50
+   */
+  designs?: string[];
+  /**
+   * @maxItems 50
+   */
+  codebases?: string[];
   shared?: boolean;
 }
 export interface TeamEntityRemoveParams {

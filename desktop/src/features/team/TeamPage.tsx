@@ -197,6 +197,12 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
   const [editName, setEditName] = useState("");
   const [editParent, setEditParent] = useState("");
   const [editExternal, setEditExternal] = useState(false);
+  const [editWorkspace, setEditWorkspace] = useState("");
+  const [editCodebases, setEditCodebases] = useState("");
+  const [editDesigns, setEditDesigns] = useState("");
+  const [projects, setProjects] = useState<
+    { id: string; canonicalPath: string; displayName: string }[]
+  >([]);
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
@@ -223,6 +229,15 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
       setBusy(false);
     }
   }, [project, runtime]);
+
+  const loadProjects = useCallback(async () => {
+    try {
+      const result = await runtime.request("project/list", { limit: 200 });
+      setProjects(result.projects);
+    } catch {
+      setProjects([]);
+    }
+  }, [runtime]);
 
   const loadDetail = useCallback(
     async (entityId: string) => {
@@ -634,6 +649,15 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
         name: editName.trim() || undefined,
         parent: editParent,
         external: editExternal,
+        workspace: editWorkspace.trim(),
+        codebases: editCodebases
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
+        designs: editDesigns
+          .split("\n")
+          .map((line) => line.trim())
+          .filter(Boolean),
         shared: detail?.entity.kind === "org",
       });
       setEditing(false);
@@ -936,6 +960,12 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                       setEditName(selectedEntity.name);
                       setEditParent(selectedEntity.parent ?? "");
                       setEditExternal(selectedEntity.external);
+                      setEditWorkspace(selectedEntity.workspace ?? "");
+                      setEditCodebases(
+                        (selectedEntity.codebases ?? []).join("\n"),
+                      );
+                      setEditDesigns((selectedEntity.designs ?? []).join("\n"));
+                      void loadProjects();
                     }}
                   >
                     编辑层信息
@@ -1312,6 +1342,45 @@ export function TeamPage({ runtime, project }: TeamPageProps) {
                     </option>
                   ))}
               </select>
+            </label>
+            <label className={styles.wide}>
+              <span>关联项目</span>
+              <select
+                value={editWorkspace}
+                onChange={(event) => setEditWorkspace(event.target.value)}
+              >
+                <option value="">不关联</option>
+                {projects.map((item) => (
+                  <option key={item.id} value={item.canonicalPath}>
+                    {item.displayName} — {item.canonicalPath}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className={styles.wide}>
+              <span>目录（项目文件夹）</span>
+              <input
+                value={editWorkspace}
+                placeholder="D:\work\project"
+                onChange={(event) => setEditWorkspace(event.target.value)}
+              />
+            </label>
+            <label className={styles.wide}>
+              <span>代码库（Git 地址，每行一个）</span>
+              <textarea
+                rows={2}
+                value={editCodebases}
+                placeholder="https://git.example.com/team/service.git"
+                onChange={(event) => setEditCodebases(event.target.value)}
+              />
+            </label>
+            <label className={styles.wide}>
+              <span>设计文档（路径或 URL，每行一个）</span>
+              <textarea
+                rows={2}
+                value={editDesigns}
+                onChange={(event) => setEditDesigns(event.target.value)}
+              />
             </label>
             <label className={styles.checkbox}>
               <input
