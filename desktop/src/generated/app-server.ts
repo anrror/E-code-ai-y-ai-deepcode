@@ -184,6 +184,10 @@ export interface MethodParams {
   "team/entity/remove": TeamEntityRemoveParams;
   "team/visibility/read": TeamVisibilityReadParams;
   "team/visibility/set": TeamVisibilitySetParams;
+  "team/env/read": TeamEnvReadParams;
+  "team/env/values": TeamEnvValuesParams;
+  "team/env/save": TeamEnvSaveParams;
+  "team/env/activate": TeamEnvActivateParams;
   "team/knowledge/deprecate": TeamKnowledgeDeprecateParams;
   "team/knowledge/add": TeamKnowledgeAddParams;
   "team/knowledge/promote": TeamKnowledgePromoteParams;
@@ -845,6 +849,24 @@ export interface TeamVisibilitySetParams {
   path: string;
   hidden?: boolean;
 }
+export interface TeamEnvReadParams {
+  entityId: string;
+}
+export interface TeamEnvValuesParams {
+  entityId: string;
+  environment: string;
+}
+export interface TeamEnvSaveParams {
+  entityId: string;
+  environment: string;
+  values: {
+    [k: string]: string;
+  };
+}
+export interface TeamEnvActivateParams {
+  entityId: string;
+  environment: string;
+}
 export interface TeamKnowledgeDeprecateParams {
   projectId?: string;
   knowledgeId: string;
@@ -1227,6 +1249,26 @@ export interface MethodResults {
   };
   "team/visibility/set": {
     hidden: string[];
+  };
+  "team/env/read": {
+    environments: {
+      name: string;
+      keys: string[];
+    }[];
+    active: string | null;
+  };
+  "team/env/values": {
+    values: {
+      [k: string]: string;
+    };
+  };
+  "team/env/save": {
+    values: {
+      [k: string]: string;
+    };
+  };
+  "team/env/activate": {
+    active: string;
   };
   "git/status": {
     status: GitStatus;

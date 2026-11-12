@@ -5599,6 +5599,45 @@
       },
       "required": ["path"]
     },
+    "TeamEnvReadParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255}
+      },
+      "required": ["entityId"]
+    },
+    "TeamEnvValuesParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "environment": {"type": "string", "minLength": 1, "maxLength": 80}
+      },
+      "required": ["entityId", "environment"]
+    },
+    "TeamEnvSaveParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "environment": {"type": "string", "minLength": 1, "maxLength": 80},
+        "values": {
+          "type": "object",
+          "additionalProperties": {"type": "string"}
+        }
+      },
+      "required": ["entityId", "environment", "values"]
+    },
+    "TeamEnvActivateParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "environment": {"type": "string", "minLength": 1, "maxLength": 80}
+      },
+      "required": ["entityId", "environment"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6874,6 +6913,18 @@
         "team/visibility/set": {
           "$ref": "#/$defs/TeamVisibilitySetParams"
         },
+        "team/env/read": {
+          "$ref": "#/$defs/TeamEnvReadParams"
+        },
+        "team/env/values": {
+          "$ref": "#/$defs/TeamEnvValuesParams"
+        },
+        "team/env/save": {
+          "$ref": "#/$defs/TeamEnvSaveParams"
+        },
+        "team/env/activate": {
+          "$ref": "#/$defs/TeamEnvActivateParams"
+        },
         "team/knowledge/deprecate": {
           "$ref": "#/$defs/TeamKnowledgeDeprecateParams"
         },
@@ -7063,6 +7114,10 @@
         "team/entity/remove",
         "team/visibility/read",
         "team/visibility/set",
+        "team/env/read",
+        "team/env/values",
+        "team/env/save",
+        "team/env/activate",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",
@@ -8031,6 +8086,50 @@
           },
           "required": ["hidden"]
         },
+        "team/env/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "environments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {"type": "string"},
+                  "keys": {"type": "array", "items": {"type": "string"}}
+                },
+                "required": ["name", "keys"]
+              }
+            },
+            "active": {"type": ["string", "null"]}
+          },
+          "required": ["environments", "active"]
+        },
+        "team/env/values": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "values": {"type": "object", "additionalProperties": {"type": "string"}}
+          },
+          "required": ["values"]
+        },
+        "team/env/save": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "values": {"type": "object", "additionalProperties": {"type": "string"}}
+          },
+          "required": ["values"]
+        },
+        "team/env/activate": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "active": {"type": "string"}
+          },
+          "required": ["active"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8338,6 +8437,10 @@
         "team/entity/remove",
         "team/visibility/read",
         "team/visibility/set",
+        "team/env/read",
+        "team/env/values",
+        "team/env/save",
+        "team/env/activate",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",

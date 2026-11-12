@@ -320,6 +320,10 @@ class Dispatcher:
             rpc_methods.TEAM_ENTITY_REMOVE: self._team_entity_remove,
             rpc_methods.TEAM_VISIBILITY_READ: self._team_visibility_read,
             rpc_methods.TEAM_VISIBILITY_SET: self._team_visibility_set,
+            rpc_methods.TEAM_ENV_READ: self._team_env_read,
+            rpc_methods.TEAM_ENV_VALUES: self._team_env_values,
+            rpc_methods.TEAM_ENV_SAVE: self._team_env_save,
+            rpc_methods.TEAM_ENV_ACTIVATE: self._team_env_activate,
             rpc_methods.TEAM_KNOWLEDGE_DEPRECATE: self._team_knowledge_deprecate,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
@@ -1753,6 +1757,31 @@ class Dispatcher:
             ),
             shared=params.boolean("shared", default=False)
             or params.string("projectId", required=False) is None,
+        )
+
+    def _team_env_read(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        return self._team_service(None).environments(str(params.string("entityId")))
+
+    def _team_env_values(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "environment")
+        return self._team_service(None).environment_values(
+            str(params.string("entityId")), str(params.string("environment"))
+        )
+
+    def _team_env_save(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "environment", "values")
+        values = params.object("values") or {}
+        return self._team_service(None).save_environment(
+            str(params.string("entityId")),
+            str(params.string("environment")),
+            {str(key): str(value) for key, value in values.items()},
+        )
+
+    def _team_env_activate(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "environment")
+        return self._team_service(None).activate_environment(
+            str(params.string("entityId")), str(params.string("environment"))
         )
 
     def _team_visibility_read(self, params: Params) -> dict[str, Any]:

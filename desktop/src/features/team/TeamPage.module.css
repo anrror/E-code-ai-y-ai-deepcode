@@ -1122,3 +1122,47 @@
   font: var(--weight-regular) var(--text-2xs) var(--font-mono);
   font-style: normal;
 }
+
+.envPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 10px;
+}
+
+.envRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.envRow select,
+.envRow input {
+  padding: 5px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+}
+
+.envRow button {
+  padding: 5px 9px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font: var(--weight-medium) var(--text-2xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.envPanel textarea {
+  padding: 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-code);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+  resize: vertical;
+}

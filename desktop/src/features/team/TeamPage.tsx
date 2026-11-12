@@ -211,6 +211,12 @@ export function TeamPage({
     { id: string; canonicalPath: string; displayName: string }[]
   >([]);
   const [showVisibility, setShowVisibility] = useState(false);
+  const [envInfo, setEnvInfo] = useState<
+    { environments: { name: string; keys: string[] }[]; active: string | null } | null
+  >(null);
+  const [envName, setEnvName] = useState("");
+  const [envText, setEnvText] = useState("");
+  const [newEnvName, setNewEnvName] = useState("");
   const [hiddenPaths, setHiddenPaths] = useState<Set<string>>(new Set());
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
@@ -775,6 +781,119 @@ export function TeamPage({
     }
   };
 
+  const readEnv = useCallback(
+    async (entityId: string) => {
+      try {
+        const info = await runtime.request("team/env/read", { entityId });
+        setEnvInfo(info);
+        const first = info.active ?? info.environments[0]?.name ?? "";
+        setEnvName(first);
+        if (first) {
+          const values = await runtime.request("team/env/values", {
+            entityId,
+            environment: first,
+          });
+          setEnvText(
+            Object.entries(values.values)
+              .map(([key, value]) => `${key}=${value}`)
+              .join("\n"),
+          );
+        } else {
+          setEnvText("");
+        }
+      } catch (caught) {
+        setError(String(caught));
+      }
+    },
+    [runtime],
+  );
+
+  useEffect(() => {
+    if (detail && detail.entity.kind === "project") {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- environment load
+      void readEnv(detail.entity.id);
+    }
+  }, [detail, readEnv]);
+
+  const openEnv = async (name: string) => {
+    if (!selectedEntity) return;
+    setEnvName(name);
+    try {
+      const values = await runtime.request("team/env/values", {
+        entityId: selectedEntity.id,
+        environment: name,
+      });
+      setEnvText(
+        Object.entries(values.values)
+          .map(([key, value]) => `${key}=${value}`)
+          .join("\n"),
+      );
+    } catch (caught) {
+      setError(String(caught));
+    }
+  };
+
+  const saveEnv = async () => {
+    if (!selectedEntity || !envName) return;
+    setBusy(true);
+    try {
+      const values: Record<string, string> = {};
+      for (const line of envText.split("\n")) {
+        const trimmed = line.trim();
+        if (!trimmed || trimmed.startsWith("#")) continue;
+        const index = trimmed.indexOf("=");
+        if (index <= 0) continue;
+        values[trimmed.slice(0, index).trim()] = trimmed.slice(index + 1);
+      }
+      await runtime.request("team/env/save", {
+        entityId: selectedEntity.id,
+        environment: envName,
+        values,
+      });
+      await readEnv(selectedEntity.id);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const createEnv = async () => {
+    if (!selectedEntity || !newEnvName.trim()) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/env/save", {
+        entityId: selectedEntity.id,
+        environment: newEnvName.trim(),
+        values: {},
+      });
+      const name = newEnvName.trim();
+      setNewEnvName("");
+      await readEnv(selectedEntity.id);
+      await openEnv(name);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const activateEnv = async () => {
+    if (!selectedEntity || !envName) return;
+    setBusy(true);
+    try {
+      await runtime.request("team/env/activate", {
+        entityId: selectedEntity.id,
+        environment: envName,
+      });
+      await readEnv(selectedEntity.id);
+    } catch (caught) {
+      setError(String(caught));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const openVisibility = async () => {
     setShowVisibility(true);
     await loadProjects();
@@ -1309,6 +1428,64 @@ export function TeamPage({
 
                     </>
                   )}
+
+                  {selectedEntity.kind === "project" ? (
+                    <details className={styles.disclosure} open>
+                      <summary>
+                        <ChevronDown size={13} />
+                        环境变量
+                        {envInfo?.active ? ` · 当前 ${envInfo.active}` : ""}
+                      </summary>
+                      <div className={styles.envPanel}>
+                        <div className={styles.envRow}>
+                          <select
+                            value={envName}
+                            onChange={(event) => void openEnv(event.target.value)}
+                          >
+                            <option value="">选择环境</option>
+                            {(envInfo?.environments ?? []).map((item) => (
+                              <option key={item.name} value={item.name}>
+                                {item.name}（{item.keys.length} 项）
+                              </option>
+                            ))}
+                          </select>
+                          <input
+                            value={newEnvName}
+                            placeholder="新环境，如 dev"
+                            onChange={(event) => setNewEnvName(event.target.value)}
+                          />
+                          <button type="button" onClick={() => void createEnv()}>
+                            新建
+                          </button>
+                          <button
+                            type="button"
+                            disabled={!envName}
+                            onClick={() => void activateEnv()}
+                          >
+                            设为当前
+                          </button>
+                        </div>
+                        <textarea
+                          rows={6}
+                          value={envText}
+                          placeholder={"DATABASE_NAME=app\nDATABASE_USER=app\nDATABASE_PASSWORD=..."}
+                          onChange={(event) => setEnvText(event.target.value)}
+                        />
+                        <div className={styles.envRow}>
+                          <button
+                            type="button"
+                            disabled={!envName || busy}
+                            onClick={() => void saveEnv()}
+                          >
+                            保存
+                          </button>
+                          <span className={styles.muted}>
+                            仅存本机；不会进入模型上下文。
+                          </span>
+                        </div>
+                      </div>
+                    </details>
+                  ) : null}
 
                   <details className={styles.disclosure}>
                     <summary>

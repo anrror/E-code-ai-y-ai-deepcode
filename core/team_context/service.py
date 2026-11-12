@@ -448,6 +448,77 @@ class TeamContextService:
         )
         return updated.to_mapping()
 
+    def _env_dir(self, entity_id: str) -> Path:
+        catalog = self.catalog()
+        entity = catalog.entities.get(entity_id)
+        if entity is None:
+            raise TeamContextError(f"unknown entity {entity_id}")
+        if entity.kind != "project":
+            raise TeamContextError("environment files belong to project layers")
+        directory = catalog.directories.get(entity_id)
+        if directory is None or not self._writable(directory, True):
+            raise TeamContextError(
+                "this layer lives in the shared team store; unlock it before editing"
+            )
+        return directory / "environments"
+
+    def environments(self, entity_id: str) -> dict[str, Any]:
+        env_dir = self._env_dir(entity_id)
+        items: list[dict[str, Any]] = []
+        active: str | None = None
+        if env_dir.is_dir():
+            for path in sorted(env_dir.glob("*.yaml")):
+                if path.stem == "active":
+                    continue
+                raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+                values = raw.get("values") if isinstance(raw, dict) else {}
+                items.append(
+                    {"name": path.stem, "keys": sorted(str(key) for key in values or {})}
+                )
+            active_file = env_dir / "active.yaml"
+            if active_file.is_file():
+                raw = yaml.safe_load(active_file.read_text(encoding="utf-8")) or {}
+                if isinstance(raw, dict):
+                    active = str(raw.get("name") or "") or None
+        return {"environments": items, "active": active}
+
+    def environment_values(self, entity_id: str, name: str) -> dict[str, Any]:
+        path = self._env_dir(entity_id) / f"{_safe_env_name(name)}.yaml"
+        if not path.is_file():
+            return {"values": {}}
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        values = raw.get("values") if isinstance(raw, dict) else {}
+        return {"values": {str(key): str(value) for key, value in (values or {}).items()}}
+
+    def save_environment(
+        self, entity_id: str, name: str, values: dict[str, str]
+    ) -> dict[str, Any]:
+        env_dir = self._env_dir(entity_id)
+        env_dir.mkdir(parents=True, exist_ok=True)
+        path = env_dir / f"{_safe_env_name(name)}.yaml"
+        _write_yaml(
+            path,
+            {
+                "name": name,
+                "values": {
+                    str(key).strip(): str(value)
+                    for key, value in values.items()
+                    if str(key).strip()
+                },
+            },
+        )
+        try:
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
+        return self.environment_values(entity_id, name)
+
+    def activate_environment(self, entity_id: str, name: str) -> dict[str, Any]:
+        env_dir = self._env_dir(entity_id)
+        env_dir.mkdir(parents=True, exist_ok=True)
+        _write_yaml(env_dir / "active.yaml", {"name": _safe_env_name(name)})
+        return {"active": name}
+
     def _visibility_path(self) -> Path:
         base = self.home or Path.home()
         return base / TEAM_RELATIVE / "visibility.yaml"
@@ -618,3 +689,14 @@ def _write_yaml(path: Path, payload: Any) -> None:
         encoding="utf-8",
     )
     os.replace(temporary, path)
+
+
+def _safe_env_name(name: str) -> str:
+    cleaned = "".join(
+        character
+        for character in name.strip()
+        if character.isalnum() or character in "._-"
+    )
+    if not cleaned:
+        raise TeamContextError("an environment needs a name")
+    return cleaned
