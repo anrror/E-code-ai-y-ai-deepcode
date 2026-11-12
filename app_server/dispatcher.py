@@ -1936,7 +1936,7 @@ class Dispatcher:
             ),
         )
     def _file_list(self, params: Params) -> dict[str, Any]:
-        params.only("threadId", "path", "depth", "limit")
+        params.only("threadId", "path", "depth", "limit", "includeHidden")
         entries, truncated = self.application.files.list(
             str(params.string("threadId")),
             path=str(params.string("path", required=False, allow_empty=True) or ""),

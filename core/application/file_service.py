@@ -2,13 +2,13 @@
 
 from __future__ import annotations
 
+import codecs
 import hashlib
 import itertools
-import codecs
 import os
 import tempfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from core.application.errors import (
@@ -22,7 +22,6 @@ from core.application.errors import (
 from core.application.workspace_service import WorkspaceService
 from core.persistence.database import Database
 from core.persistence.execution_repository import TurnRepository
-
 
 DEFAULT_READ_LIMIT = 128 * 1024
 MAX_READ_LIMIT = 128 * 1024
@@ -62,6 +61,7 @@ class FileService:
         path: str = "",
         depth: int = 2,
         limit: int = 750,
+        include_hidden: bool = False,
     ) -> tuple[list[FileEntry], bool]:
         if not 1 <= depth <= 8:
             raise InvalidArgumentError("depth must be between 1 and 8")
@@ -83,9 +83,16 @@ class FileService:
             try:
                 remaining_slots = limit - len(entries)
                 with os.scandir(directory) as scan:
+                    def visible(entry) -> bool:
+                        if entry.name == ".git":
+                            return False
+                        if include_hidden:
+                            return True
+                        return not entry.name.startswith(".")
+
                     children = sorted(
                         itertools.islice(
-                            (entry for entry in scan if entry.name != ".git"),
+                            (entry for entry in scan if visible(entry)),
                             remaining_slots + 1,
                         ),
                         key=lambda entry: (
@@ -233,7 +240,7 @@ def _sha256(path: Path) -> str:
 
 def _timestamp(value: float) -> str:
     return (
-        datetime.fromtimestamp(value, tz=timezone.utc)
+        datetime.fromtimestamp(value, tz=UTC)
         .isoformat()
         .replace("+00:00", "Z")
     )
