@@ -1331,8 +1331,22 @@
 }
 
 .formGrid .referenceRow {
+  display: flex;
   min-height: 28px;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
   padding: 4px 8px;
+}
+
+.formGrid .referenceRow > span {
+  display: block;
+  overflow: hidden;
+  flex: 1;
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .formGrid .referenceRow:has(input:checked) {

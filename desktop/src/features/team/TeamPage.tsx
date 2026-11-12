@@ -825,7 +825,10 @@ export function TeamPage({
   );
 
   useEffect(() => {
-    if (detail && detail.entity.kind === "project") {
+    if (
+      detail &&
+      (detail.entity.kind === "project" || detail.entity.kind === "product")
+    ) {
       // eslint-disable-next-line react-hooks/set-state-in-effect -- environment load
       void readEnv(detail.entity.id);
     }
@@ -1501,7 +1504,8 @@ export function TeamPage({
                     </>
                   )}
 
-                  {selectedEntity.kind === "project" ? (
+                  {selectedEntity.kind === "project" ||
+                  selectedEntity.kind === "product" ? (
                     <details className={styles.disclosure} open>
                       <summary>
                         <ChevronDown size={13} />

@@ -453,8 +453,10 @@ class TeamContextService:
         entity = catalog.entities.get(entity_id)
         if entity is None:
             raise TeamContextError(f"unknown entity {entity_id}")
-        if entity.kind != "project":
-            raise TeamContextError("environment files belong to project layers")
+        if entity.kind not in ("project", "product"):
+            raise TeamContextError(
+                "environment files belong to project or product layers"
+            )
         directory = catalog.directories.get(entity_id)
         if directory is None or not self._writable(directory, True):
             raise TeamContextError(
