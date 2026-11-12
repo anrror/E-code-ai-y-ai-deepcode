@@ -5638,6 +5638,26 @@
       },
       "required": ["entityId", "environment"]
     },
+    "TeamBrowseParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "root": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "path": {"type": "string", "maxLength": 2000}
+      },
+      "required": ["entityId", "root"]
+    },
+    "TeamBrowseReadParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
+        "root": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "path": {"type": "string", "minLength": 1, "maxLength": 2000}
+      },
+      "required": ["entityId", "root", "path"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6925,6 +6945,12 @@
         "team/env/activate": {
           "$ref": "#/$defs/TeamEnvActivateParams"
         },
+        "team/browse": {
+          "$ref": "#/$defs/TeamBrowseParams"
+        },
+        "team/browse/read": {
+          "$ref": "#/$defs/TeamBrowseReadParams"
+        },
         "team/knowledge/deprecate": {
           "$ref": "#/$defs/TeamKnowledgeDeprecateParams"
         },
@@ -7118,6 +7144,8 @@
         "team/env/values",
         "team/env/save",
         "team/env/activate",
+        "team/browse",
+        "team/browse/read",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",
@@ -8130,6 +8158,39 @@
           },
           "required": ["active"]
         },
+        "team/browse": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "root": {"type": "string"},
+            "path": {"type": "string"},
+            "entries": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {"type": "string"},
+                  "path": {"type": "string"},
+                  "type": {"type": "string"},
+                  "size": {"type": "integer"}
+                },
+                "required": ["name", "path", "type", "size"]
+              }
+            }
+          },
+          "required": ["root", "path", "entries"]
+        },
+        "team/browse/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "path": {"type": "string"},
+            "content": {"type": "string"},
+            "truncated": {"type": "boolean"}
+          },
+          "required": ["path", "content", "truncated"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8441,6 +8502,8 @@
         "team/env/values",
         "team/env/save",
         "team/env/activate",
+        "team/browse",
+        "team/browse/read",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",

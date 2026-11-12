@@ -519,6 +519,82 @@ class TeamContextService:
         _write_yaml(env_dir / "active.yaml", {"name": _safe_env_name(name)})
         return {"active": name}
 
+    def _allowed_roots(self, entity_id: str) -> list[Path]:
+        catalog = self.catalog()
+        entity = catalog.entities.get(entity_id)
+        if entity is None:
+            raise TeamContextError(f"unknown entity {entity_id}")
+        roots: list[Path] = []
+        for candidate in (
+            entity.workspace,
+            *entity.codebases,
+            *entity.designs,
+        ):
+            if not candidate:
+                continue
+            path = Path(candidate)
+            if path.is_dir():
+                roots.append(path.resolve())
+        return roots
+
+    def _resolve_root(self, entity_id: str, root: str) -> Path:
+        resolved = Path(root).resolve()
+        allowed = self._allowed_roots(entity_id)
+        if not allowed:
+            raise TeamContextError(
+                "this layer has no local code or document path yet"
+            )
+        if resolved not in allowed:
+            raise TeamContextError(
+                "this path is not configured on the layer; add it under code or documents"
+            )
+        return resolved
+
+    def browse(self, entity_id: str, root: str, path: str = "") -> dict[str, Any]:
+        base = self._resolve_root(entity_id, root)
+        target = (base / path).resolve()
+        if base not in target.parents and target != base:
+            raise TeamContextError("path escapes the configured root")
+        if not target.is_dir():
+            raise TeamContextError("not a directory")
+        entries = []
+        for child in sorted(target.iterdir(), key=lambda item: (item.is_file(), item.name.lower())):
+            if child.name.startswith("."):
+                relative = child.relative_to(base).as_posix()
+            else:
+                relative = child.relative_to(base).as_posix()
+            entries.append(
+                {
+                    "name": child.name,
+                    "path": relative,
+                    "type": "dir" if child.is_dir() else "file",
+                    "size": child.stat().st_size if child.is_file() else 0,
+                }
+            )
+        return {
+            "root": str(base),
+            "path": target.relative_to(base).as_posix() if target != base else "",
+            "entries": entries,
+        }
+
+    def read_path(self, entity_id: str, root: str, path: str) -> dict[str, Any]:
+        base = self._resolve_root(entity_id, root)
+        target = (base / path).resolve()
+        if base not in target.parents:
+            raise TeamContextError("path escapes the configured root")
+        if not target.is_file():
+            raise TeamContextError("not a file")
+        raw = target.read_bytes()
+        if b"\x00" in raw[:4096]:
+            raise TeamContextError("binary files are not shown here")
+        truncated = len(raw) > 512_000
+        text = raw[: 512_000].decode("utf-8", errors="replace")
+        return {
+            "path": target.relative_to(base).as_posix(),
+            "content": text,
+            "truncated": truncated,
+        }
+
     def _visibility_path(self) -> Path:
         base = self.home or Path.home()
         return base / TEAM_RELATIVE / "visibility.yaml"

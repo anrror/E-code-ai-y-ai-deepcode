@@ -324,6 +324,8 @@ class Dispatcher:
             rpc_methods.TEAM_ENV_VALUES: self._team_env_values,
             rpc_methods.TEAM_ENV_SAVE: self._team_env_save,
             rpc_methods.TEAM_ENV_ACTIVATE: self._team_env_activate,
+            rpc_methods.TEAM_BROWSE: self._team_browse,
+            rpc_methods.TEAM_BROWSE_READ: self._team_browse_read,
             rpc_methods.TEAM_KNOWLEDGE_DEPRECATE: self._team_knowledge_deprecate,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
@@ -1782,6 +1784,22 @@ class Dispatcher:
         params.only("entityId", "environment")
         return self._team_service(None).activate_environment(
             str(params.string("entityId")), str(params.string("environment"))
+        )
+
+    def _team_browse(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "root", "path")
+        return self._team_service(None).browse(
+            str(params.string("entityId")),
+            str(params.string("root")),
+            params.string("path", required=False, allow_empty=True) or "",
+        )
+
+    def _team_browse_read(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "root", "path")
+        return self._team_service(None).read_path(
+            str(params.string("entityId")),
+            str(params.string("root")),
+            str(params.string("path")),
         )
 
     def _team_visibility_read(self, params: Params) -> dict[str, Any]:

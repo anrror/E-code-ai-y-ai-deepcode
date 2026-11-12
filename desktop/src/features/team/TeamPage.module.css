@@ -1166,3 +1166,79 @@
   font: var(--weight-regular) var(--text-xs) var(--font-mono);
   resize: vertical;
 }
+
+.browser {
+  display: grid;
+  height: 62vh;
+  grid-template-columns: 260px minmax(0, 1fr);
+  gap: 10px;
+}
+
+.browserSide {
+  display: flex;
+  min-height: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.browserSide select {
+  padding: 5px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-2xs) var(--font-mono);
+}
+
+.browserPath {
+  margin: 0;
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-2xs) var(--font-mono);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.browserList {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.browserList button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+}
+
+.browserList button:hover {
+  background: var(--surface-hover);
+}
+
+.browserList button[data-active="true"] {
+  background: var(--surface-selected);
+  color: var(--text-primary);
+}
+
+.browserView {
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-code);
+}

@@ -1,4 +1,4 @@
-import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import { Fragment, Suspense, lazy, useCallback, useEffect, useMemo, useState } from "react";
 import type { ReactNode } from "react";
 import {
   Archive,
@@ -25,8 +25,12 @@ import type {
   TeamKnowledgeView,
 } from "../../generated/app-server";
 import type { ClientRuntime } from "../../rpc/contracts";
+import { useSystemDarkMode } from "../../app/useSystemDarkMode";
+import { languageFor } from "../inspector/inspectorFormat";
 
 import styles from "./TeamPage.module.css";
+
+const LocalMonacoEditor = lazy(() => import("../workbench/LocalMonacoEditor"));
 
 const KINDS = [
   "org",
@@ -217,6 +221,15 @@ export function TeamPage({
   const [envName, setEnvName] = useState("");
   const [envText, setEnvText] = useState("");
   const [newEnvName, setNewEnvName] = useState("");
+  const [browser, setBrowser] = useState<
+    {
+      root: string;
+      cwd: string;
+      entries: { name: string; path: string; type: string; size: number }[];
+      file: { path: string; content: string; truncated: boolean } | null;
+    } | null
+  >(null);
+  const darkMode = useSystemDarkMode();
   const [hiddenPaths, setHiddenPaths] = useState<Set<string>>(new Set());
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
@@ -894,6 +907,49 @@ export function TeamPage({
     }
   };
 
+  const browseEntity = detail?.entity ?? null;
+  const browseRoots = browseEntity
+    ? [browseEntity.workspace, ...(browseEntity.codebases ?? []), ...(browseEntity.designs ?? [])].filter(
+        (value): value is string => Boolean(value),
+      )
+    : [];
+
+  const loadDir = async (root: string, pathValue: string) => {
+    if (!browseEntity) return;
+    try {
+      const result = await runtime.request("team/browse", {
+        entityId: browseEntity.id,
+        root,
+        path: pathValue,
+      });
+      setBrowser({ root, cwd: result.path, entries: result.entries, file: null });
+    } catch (caught) {
+      setError(String(caught));
+    }
+  };
+
+  const openBrowse = async () => {
+    if (!browseEntity || browseRoots.length === 0) {
+      setError("先在“编辑层信息”里配置代码或文档路径");
+      return;
+    }
+    await loadDir(browseRoots[0], "");
+  };
+
+  const openFile = async (root: string, filePath: string) => {
+    if (!browseEntity) return;
+    try {
+      const file = await runtime.request("team/browse/read", {
+        entityId: browseEntity.id,
+        root,
+        path: filePath,
+      });
+      setBrowser((current) => (current ? { ...current, file } : current));
+    } catch (caught) {
+      setError(String(caught));
+    }
+  };
+
   const openVisibility = async () => {
     setShowVisibility(true);
     await loadProjects();
@@ -1188,6 +1244,15 @@ export function TeamPage({
                     <span className={styles.badge}>
                       {t("team.historical", "历史")}
                     </span>
+                  ) : null}
+                  {browseRoots.length > 0 ? (
+                    <button
+                      type="button"
+                      className={styles.ghost}
+                      onClick={() => void openBrowse()}
+                    >
+                      浏览代码/文档
+                    </button>
                   ) : null}
                   {selectedEntity.kind === "org" ? null : (
                     <button
@@ -1531,6 +1596,98 @@ export function TeamPage({
           )}
         </main>
       </div>
+
+      {browser ? (
+        <Modal
+          title="浏览代码与文档"
+          wide
+          onClose={() => setBrowser(null)}
+          footer={
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => setBrowser(null)}
+            >
+              关闭
+            </button>
+          }
+        >
+          <div className={styles.browser}>
+            <div className={styles.browserSide}>
+              <select
+                value={browser.root}
+                onChange={(event) => void loadDir(event.target.value, "")}
+              >
+                {browseRoots.map((root) => (
+                  <option key={root} value={root}>
+                    {root}
+                  </option>
+                ))}
+              </select>
+              <p className={styles.browserPath}>/{browser.cwd}</p>
+              <ul className={styles.browserList}>
+                {browser.cwd ? (
+                  <li>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void loadDir(
+                          browser.root,
+                          browser.cwd.includes("/")
+                            ? browser.cwd.slice(0, browser.cwd.lastIndexOf("/"))
+                            : "",
+                        )
+                      }
+                    >
+                      ..
+                    </button>
+                  </li>
+                ) : null}
+                {browser.entries.map((entry) => (
+                  <li key={entry.path}>
+                    <button
+                      type="button"
+                      data-active={
+                        entry.type === "file" &&
+                        browser.file?.path === entry.path
+                      }
+                      onClick={() =>
+                        entry.type === "dir"
+                          ? void loadDir(browser.root, entry.path)
+                          : void openFile(browser.root, entry.path)
+                      }
+                    >
+                      <span>{entry.type === "dir" ? "▸" : "·"}</span>
+                      {entry.name}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className={styles.browserView}>
+              {browser.file ? (
+                <Suspense fallback={<p className={styles.muted}>加载编辑器…</p>}>
+                  <LocalMonacoEditor
+                    height="100%"
+                    language={languageFor(browser.file.path)}
+                    theme={darkMode ? "vs-dark" : "light"}
+                    value={browser.file.content}
+                    options={{
+                      readOnly: true,
+                      minimap: { enabled: false },
+                      lineNumbers: "on",
+                      scrollBeyondLastLine: false,
+                      fontSize: 12,
+                    }}
+                  />
+                </Suspense>
+              ) : (
+                <p className={styles.muted}>选择左侧文件查看内容</p>
+              )}
+            </div>
+          </div>
+        </Modal>
+      ) : null}
 
       {showVisibility ? (
         <Modal

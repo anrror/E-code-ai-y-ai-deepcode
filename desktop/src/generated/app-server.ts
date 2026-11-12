@@ -188,6 +188,8 @@ export interface MethodParams {
   "team/env/values": TeamEnvValuesParams;
   "team/env/save": TeamEnvSaveParams;
   "team/env/activate": TeamEnvActivateParams;
+  "team/browse": TeamBrowseParams;
+  "team/browse/read": TeamBrowseReadParams;
   "team/knowledge/deprecate": TeamKnowledgeDeprecateParams;
   "team/knowledge/add": TeamKnowledgeAddParams;
   "team/knowledge/promote": TeamKnowledgePromoteParams;
@@ -867,6 +869,16 @@ export interface TeamEnvActivateParams {
   entityId: string;
   environment: string;
 }
+export interface TeamBrowseParams {
+  entityId: string;
+  root: string;
+  path?: string;
+}
+export interface TeamBrowseReadParams {
+  entityId: string;
+  root: string;
+  path: string;
+}
 export interface TeamKnowledgeDeprecateParams {
   projectId?: string;
   knowledgeId: string;
@@ -1269,6 +1281,21 @@ export interface MethodResults {
   };
   "team/env/activate": {
     active: string;
+  };
+  "team/browse": {
+    root: string;
+    path: string;
+    entries: {
+      name: string;
+      path: string;
+      type: string;
+      size: number;
+    }[];
+  };
+  "team/browse/read": {
+    path: string;
+    content: string;
+    truncated: boolean;
   };
   "git/status": {
     status: GitStatus;
