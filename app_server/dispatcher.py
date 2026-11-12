@@ -318,6 +318,8 @@ class Dispatcher:
             rpc_methods.TEAM_CREATE: self._team_create,
             rpc_methods.TEAM_ENTITY_UPDATE: self._team_entity_update,
             rpc_methods.TEAM_ENTITY_REMOVE: self._team_entity_remove,
+            rpc_methods.TEAM_VISIBILITY_READ: self._team_visibility_read,
+            rpc_methods.TEAM_VISIBILITY_SET: self._team_visibility_set,
             rpc_methods.TEAM_KNOWLEDGE_DEPRECATE: self._team_knowledge_deprecate,
             rpc_methods.TEAM_KNOWLEDGE_ADD: self._team_knowledge_add,
             rpc_methods.TEAM_KNOWLEDGE_PROMOTE: self._team_knowledge_promote,
@@ -1751,6 +1753,17 @@ class Dispatcher:
             ),
             shared=params.boolean("shared", default=False)
             or params.string("projectId", required=False) is None,
+        )
+
+    def _team_visibility_read(self, params: Params) -> dict[str, Any]:
+        params.only()
+        return self._team_service(None).visibility()
+
+    def _team_visibility_set(self, params: Params) -> dict[str, Any]:
+        params.only("path", "hidden")
+        return self._team_service(None).set_visibility(
+            str(params.string("path")),
+            hidden=params.boolean("hidden", default=False),
         )
 
     def _team_entity_remove(self, params: Params) -> dict[str, Any]:

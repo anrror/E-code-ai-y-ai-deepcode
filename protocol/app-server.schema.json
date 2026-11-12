@@ -5585,6 +5585,20 @@
       },
       "required": ["knowledgeId"]
     },
+    "TeamVisibilityReadParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {}
+    },
+    "TeamVisibilitySetParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1, "maxLength": 1000},
+        "hidden": {"type": "boolean"}
+      },
+      "required": ["path"]
+    },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
@@ -6854,6 +6868,12 @@
         "team/entity/remove": {
           "$ref": "#/$defs/TeamEntityRemoveParams"
         },
+        "team/visibility/read": {
+          "$ref": "#/$defs/TeamVisibilityReadParams"
+        },
+        "team/visibility/set": {
+          "$ref": "#/$defs/TeamVisibilitySetParams"
+        },
         "team/knowledge/deprecate": {
           "$ref": "#/$defs/TeamKnowledgeDeprecateParams"
         },
@@ -7041,6 +7061,8 @@
         "team/create",
         "team/entity/update",
         "team/entity/remove",
+        "team/visibility/read",
+        "team/visibility/set",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",
@@ -7993,6 +8015,22 @@
           },
           "required": ["entry"]
         },
+        "team/visibility/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hidden": {"type": "array", "items": {"type": "string"}}
+          },
+          "required": ["hidden"]
+        },
+        "team/visibility/set": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "hidden": {"type": "array", "items": {"type": "string"}}
+          },
+          "required": ["hidden"]
+        },
         "git/status": {
           "type": "object",
           "additionalProperties": false,
@@ -8298,6 +8336,8 @@
         "team/create",
         "team/entity/update",
         "team/entity/remove",
+        "team/visibility/read",
+        "team/visibility/set",
         "team/knowledge/deprecate",
         "team/knowledge/add",
         "team/knowledge/promote",

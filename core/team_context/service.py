@@ -448,6 +448,32 @@ class TeamContextService:
         )
         return updated.to_mapping()
 
+    def _visibility_path(self) -> Path:
+        base = self.home or Path.home()
+        return base / TEAM_RELATIVE / "visibility.yaml"
+
+    def visibility(self) -> dict[str, Any]:
+        path = self._visibility_path()
+        if not path.is_file():
+            return {"hidden": []}
+        raw = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+        hidden = raw.get("hidden") if isinstance(raw, dict) else []
+        return {"hidden": [str(item) for item in hidden or []]}
+
+    def set_visibility(self, project_path: str, *, hidden: bool) -> dict[str, Any]:
+        """Hide a panel project from the sidebar without touching the project."""
+
+        path = self._visibility_path()
+        current = set(self.visibility()["hidden"])
+        normalized = str(Path(project_path))
+        if hidden:
+            current.add(normalized)
+        else:
+            current.discard(normalized)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        _write_yaml(path, {"hidden": sorted(current)})
+        return {"hidden": sorted(current)}
+
     def remove_entity(
         self, entity_id: str, *, shared: bool = False, force: bool = False
     ) -> dict[str, Any]:

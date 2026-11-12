@@ -1091,3 +1091,34 @@
   color: var(--signal-strong);
   font: var(--weight-medium) var(--text-2xs) var(--font-ui);
 }
+
+.visibilityList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 10px;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.visibilityRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.visibilityRow:hover {
+  background: var(--surface-hover);
+}
+
+.visibilityRow em {
+  margin-left: auto;
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-2xs) var(--font-mono);
+  font-style: normal;
+}

@@ -275,12 +275,22 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
     loadedRuntimeRef.current = true;
     try {
       const result = await runtime.request("project/list", { limit: 500 });
+      let hidden = new Set<string>();
+      try {
+        const visibility = await runtime.request("team/visibility/read", {});
+        hidden = new Set(visibility.hidden);
+      } catch {
+        // Older servers have no visibility registry: show everything.
+      }
+      const visibleProjects = result.projects.filter(
+        (project) => !hidden.has(project.canonicalPath),
+      );
       const preferredProject = localStorage.getItem(PROJECT_KEY);
       const selected =
-        result.projects.find((project) => project.id === preferredProject)?.id ??
-        result.projects[0]?.id ??
+        visibleProjects.find((project) => project.id === preferredProject)?.id ??
+        visibleProjects[0]?.id ??
         null;
-      dispatch({ type: "projects", projects: result.projects, selectedProjectId: selected });
+      dispatch({ type: "projects", projects: visibleProjects, selectedProjectId: selected });
       if (selected) {
         localStorage.setItem(PROJECT_KEY, selected);
         const selectedThread = await loadThreads(
@@ -1159,6 +1169,7 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
       pickContextFiles,
       pickWorkflowFile,
       removeProject,
+      refreshProjects,
       respondToApproval,
       respondToWorkflow,
       restartRuntime,

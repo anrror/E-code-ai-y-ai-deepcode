@@ -209,6 +209,8 @@ export function TeamPage({
   const [projects, setProjects] = useState<
     { id: string; canonicalPath: string; displayName: string }[]
   >([]);
+  const [showVisibility, setShowVisibility] = useState(false);
+  const [hiddenPaths, setHiddenPaths] = useState<Set<string>>(new Set());
   const [deleteArmed, setDeleteArmed] = useState(false);
   const [collapsedIds, setCollapsedIds] = useState<Set<string>>(new Set());
 
@@ -730,6 +732,33 @@ export function TeamPage({
     }
   };
 
+  const openVisibility = async () => {
+    setShowVisibility(true);
+    await loadProjects();
+    try {
+      const result = await runtime.request("team/visibility/read", {});
+      setHiddenPaths(new Set(result.hidden));
+    } catch {
+      setHiddenPaths(new Set());
+    }
+  };
+
+  const toggleVisibility = async (path: string, visible: boolean) => {
+    const next = new Set(hiddenPaths);
+    if (visible) next.delete(path);
+    else next.add(path);
+    setHiddenPaths(next);
+    try {
+      await runtime.request("team/visibility/set", {
+        path,
+        hidden: !visible,
+      });
+      onProjectsChanged?.();
+    } catch (caught) {
+      setError(String(caught));
+    }
+  };
+
   const showPreview = async () => {
     setPreviewBusy(true);
     try {
@@ -820,6 +849,13 @@ export function TeamPage({
           >
             <Plus size={14} />
             {t("team.newLayer", "新建层")}
+          </button>
+          <button
+            type="button"
+            className={styles.ghost}
+            onClick={() => void openVisibility()}
+          >
+            侧栏项目
           </button>
           <button
             type="button"
@@ -1275,6 +1311,47 @@ export function TeamPage({
           )}
         </main>
       </div>
+
+      {showVisibility ? (
+        <Modal
+          title="侧栏显示的项目"
+          onClose={() => setShowVisibility(false)}
+          footer={
+            <button
+              type="button"
+              className={styles.primary}
+              onClick={() => setShowVisibility(false)}
+            >
+              关闭
+            </button>
+          }
+        >
+          <p className={styles.muted}>
+            关闭后该项目只从左侧栏隐藏，项目本身与团队上下文不受影响。
+          </p>
+          <div className={styles.visibilityList}>
+            {projects.map((item) => {
+              const visible = !hiddenPaths.has(item.canonicalPath);
+              return (
+                <label key={item.id} className={styles.visibilityRow}>
+                  <input
+                    type="checkbox"
+                    checked={visible}
+                    onChange={(event) =>
+                      void toggleVisibility(
+                        item.canonicalPath,
+                        event.target.checked,
+                      )
+                    }
+                  />
+                  <span>{item.displayName}</span>
+                  <em>{item.canonicalPath}</em>
+                </label>
+              );
+            })}
+          </div>
+        </Modal>
+      ) : null}
 
       {editing && selectedEntity ? (
         <Modal

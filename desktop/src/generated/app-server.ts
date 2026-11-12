@@ -182,6 +182,8 @@ export interface MethodParams {
   "team/create": TeamCreateParams;
   "team/entity/update": TeamEntityUpdateParams;
   "team/entity/remove": TeamEntityRemoveParams;
+  "team/visibility/read": TeamVisibilityReadParams;
+  "team/visibility/set": TeamVisibilitySetParams;
   "team/knowledge/deprecate": TeamKnowledgeDeprecateParams;
   "team/knowledge/add": TeamKnowledgeAddParams;
   "team/knowledge/promote": TeamKnowledgePromoteParams;
@@ -838,6 +840,11 @@ export interface TeamEntityRemoveParams {
   shared?: boolean;
   force?: boolean;
 }
+export interface TeamVisibilityReadParams {}
+export interface TeamVisibilitySetParams {
+  path: string;
+  hidden?: boolean;
+}
 export interface TeamKnowledgeDeprecateParams {
   projectId?: string;
   knowledgeId: string;
@@ -1214,6 +1221,12 @@ export interface MethodResults {
   };
   "team/knowledge/deprecate": {
     entry: TeamKnowledgeView;
+  };
+  "team/visibility/read": {
+    hidden: string[];
+  };
+  "team/visibility/set": {
+    hidden: string[];
   };
   "git/status": {
     status: GitStatus;
