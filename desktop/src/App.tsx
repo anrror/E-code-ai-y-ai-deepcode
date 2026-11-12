@@ -218,7 +218,7 @@ export function App({ runtime }: { runtime: ClientRuntime }) {
           const confirmed = window.confirm(
             t(
               "sidebar.removeProjectConfirm",
-              "Remove {{name}} from DeepCode? Its Sessions are deleted from DeepCode; the folder itself is not touched.",
+              "Remove {{name}} from DeepCodeX? Its Sessions are deleted from DeepCodeX; the folder itself is not touched.",
               { name },
             ),
           );
@@ -330,7 +330,7 @@ export function App({ runtime }: { runtime: ClientRuntime }) {
                   <p>
                     {t(
                       "app.start.body",
-                      "Continue the same Sessions from DeepCode CLI, with tools, approvals, changes, and tests kept in one local workspace.",
+                      "Continue the same Sessions from DeepCodeX CLI, with tools, approvals, changes, and tests kept in one local workspace.",
                     )}
                   </p>
                   <div className={styles.startActions}>
@@ -364,7 +364,7 @@ export function App({ runtime }: { runtime: ClientRuntime }) {
                   <p>
                     {t(
                       "app.noSessions.body",
-                      "Start with a clear outcome and a way to verify it. DeepCode will keep the conversation and execution trail together.",
+                      "Start with a clear outcome and a way to verify it. DeepCodeX will keep the conversation and execution trail together.",
                     )}
                   </p>
                   <div className={styles.startActions}>
