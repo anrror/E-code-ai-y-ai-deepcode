@@ -43,6 +43,7 @@ class AssembledContext:
     entries: tuple[KnowledgeEntry, ...]
     text: str
     referenced: tuple[TeamEntity, ...] = ()
+    descendants: tuple[TeamEntity, ...] = ()
     external_excluded: int = 0
     blocked_overrides: tuple[str, ...] = ()
     truncated: bool = False
@@ -84,6 +85,29 @@ def referenced_entities(
     return tuple(result)
 
 
+def descendant_entities(catalog: Catalog, start_id: str | None) -> tuple[TeamEntity, ...]:
+    """Every layer below ``start``, breadth first.
+
+    A preview of a product or a line must show the projects and batches that
+    actually consume it, not only the ancestors above it.
+    """
+
+    if not start_id:
+        return ()
+    guard = {entity.id for entity in resolve_chain(catalog, start_id)}
+    frontier = [start_id]
+    found: list[TeamEntity] = []
+    while frontier:
+        current = frontier.pop(0)
+        for entity in catalog.entities.values():
+            if entity.parent != current or entity.id in guard:
+                continue
+            guard.add(entity.id)
+            found.append(entity)
+            frontier.append(entity.id)
+    return tuple(found)
+
+
 def _scope_rank(entry: KnowledgeEntry, catalog: Catalog) -> int:
     entity = catalog.entities.get(entry.scope)
     return SCOPE_RANK.get(entity.kind if entity else "", 9)
@@ -95,10 +119,12 @@ def _ordered_entries(
     referenced: Sequence[TeamEntity],
     *,
     include_external: bool,
+    descendants: Sequence[TeamEntity] = (),
 ) -> tuple[list[KnowledgeEntry], int, tuple[str, ...]]:
     chain_ids = {entity.id for entity in chain}
+    descendant_ids = {entity.id for entity in descendants}
     referenced_ids = {entity.id for entity in referenced}
-    scopes = chain_ids | referenced_ids
+    scopes = chain_ids | descendant_ids | referenced_ids
     if not scopes:
         return [], 0, ()
     candidates = [
@@ -127,7 +153,11 @@ def _ordered_entries(
     kept.sort(
         key=lambda entry: (
             0 if entry.type == "redline" else 1,
-            0 if entry.scope in chain_ids else 1,
+            0
+            if entry.scope in chain_ids
+            else 1
+            if entry.scope in descendant_ids
+            else 2,
             _scope_rank(entry, catalog),
             _STATUS_RANK.get(entry.status, 2),
             1 if _is_external(entry, catalog) else 0,
@@ -153,6 +183,7 @@ def _label(
     entry: KnowledgeEntry,
     catalog: Catalog,
     referenced_ids: set[str],
+    descendant_ids: set[str] | None = None,
 ) -> str:
     entity = catalog.entities.get(entry.scope)
     tags: list[str] = []
@@ -162,6 +193,8 @@ def _label(
         tags.append("draft")
     if entry.scope in referenced_ids:
         tags.append(f"referenced: {entry.scope}")
+    if descendant_ids and entry.scope in descendant_ids:
+        tags.append(f"sub-layer: {entry.scope}")
     if _is_historical(entity):
         tags.append("historical")
     if _is_external(entry, catalog):
@@ -177,6 +210,7 @@ def _render(
     task: str | None,
     chain: Sequence[TeamEntity],
     referenced: Sequence[TeamEntity],
+    descendants: Sequence[TeamEntity],
     entries: Sequence[KnowledgeEntry],
     catalog: Catalog,
     instructions: Sequence[tuple[str, str]],
@@ -189,6 +223,8 @@ def _render(
     )
     if referenced:
         header += f' referenced="{" ".join(entity.id for entity in referenced)}"'
+    if descendants:
+        header += f' descendants="{" ".join(entity.id for entity in descendants)}"'
     header += ">"
     footer = "</team-context>"
     body: list[str] = []
@@ -211,6 +247,7 @@ def _render(
                 break
 
     referenced_ids = {entity.id for entity in referenced}
+    descendant_ids = {entity.id for entity in descendants}
     groups: list[tuple[str, list[KnowledgeEntry]]] = [
         ("red lines (organization, never overridden):", []),
         ("team facts (reviewed):", []),
@@ -234,7 +271,7 @@ def _render(
         if not append(title):
             break
         for entry in group:
-            if not append(_label(entry, catalog, referenced_ids)):
+            if not append(_label(entry, catalog, referenced_ids, descendant_ids)):
                 break
 
     pointers = [
@@ -268,9 +305,14 @@ def assemble(
 
     start = task or catalog.bind
     chain = resolve_chain(catalog, start)
+    descendants = descendant_entities(catalog, start)
     referenced = referenced_entities(catalog, chain)
     entries, excluded, blocked = _ordered_entries(
-        catalog, chain, referenced, include_external=include_external
+        catalog,
+        chain,
+        referenced,
+        include_external=include_external,
+        descendants=descendants,
     )
     # Far first, near last: the nearest layer's instructions are the last word,
     # matching "a nearer rule wins" without discarding the wider context.
@@ -281,12 +323,24 @@ def assemble(
         if entity.id in catalog.instructions
     ]
     blocks.extend(
+        (f"sub-layer: {entity.id}", catalog.instructions[entity.id])
+        for entity in descendants
+        if entity.id in catalog.instructions
+    )
+    blocks.extend(
         (f"referenced: {entity.id}", catalog.instructions[entity.id])
         for entity in referenced
         if entity.id in catalog.instructions
     )
     text, truncated = _render(
-        start, chain, referenced, entries, catalog, blocks, max_chars=max_chars
+        start,
+        chain,
+        referenced,
+        descendants,
+        entries,
+        catalog,
+        blocks,
+        max_chars=max_chars,
     )
     included = tuple(
         entry for entry in entries if entry.statement and entry.statement in text
@@ -295,6 +349,7 @@ def assemble(
         task=start,
         chain=chain,
         referenced=referenced,
+        descendants=descendants,
         entries=included,
         text=text,
         external_excluded=excluded,
