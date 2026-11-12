@@ -62,6 +62,10 @@ function buildTree(entries: FileEntry[]): TreeNode[] {
   };
   for (const entry of entries) {
     if (!entry.path) continue;
+    const segments = entry.path.split("/");
+    if (entry.hidden || segments.some((segment) => segment.startsWith("."))) {
+      continue;
+    }
     const parentPath = entry.path.includes("/")
       ? entry.path.slice(0, entry.path.lastIndexOf("/"))
       : "";
@@ -111,11 +115,11 @@ export function FilesPanel({
   const dirty = Boolean(
     workbench.file && workbench.draft !== workbench.file.content,
   );
-  const [collapsed, setCollapsed] = useState<Set<string>>(new Set());
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
   const tree = useMemo(() => buildTree(workbench.entries), [workbench.entries]);
 
   const toggle = (path: string) => {
-    setCollapsed((current) => {
+    setExpanded((current) => {
       const next = new Set(current);
       if (next.has(path)) next.delete(path);
       else next.add(path);
@@ -125,7 +129,7 @@ export function FilesPanel({
 
   const renderNode = (node: TreeNode, depth: number): React.ReactNode => {
     const isDirectory = node.kind === "directory";
-    const open = !collapsed.has(node.path);
+    const open = expanded.has(node.path);
     return (
       <div key={node.path}>
         <div
@@ -189,16 +193,8 @@ export function FilesPanel({
               type="button"
               title="全部展开"
               aria-label="全部展开"
-              onClick={() => setCollapsed(new Set())}
-            >
-              <ChevronsUpDown size={13} />
-            </button>
-            <button
-              type="button"
-              title="全部折叠"
-              aria-label="全部折叠"
               onClick={() =>
-                setCollapsed(
+                setExpanded(
                   new Set(
                     workbench.entries
                       .filter((entry) => entry.kind === "directory")
@@ -206,6 +202,14 @@ export function FilesPanel({
                   ),
                 )
               }
+            >
+              <ChevronsUpDown size={13} />
+            </button>
+            <button
+              type="button"
+              title="全部折叠"
+              aria-label="全部折叠"
+              onClick={() => setExpanded(new Set())}
             >
               <ChevronsDownUp size={13} />
             </button>
