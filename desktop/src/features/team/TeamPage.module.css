@@ -1242,3 +1242,43 @@
   border-radius: var(--radius-sm);
   background: var(--surface-code);
 }
+
+.referenceList {
+  display: flex;
+  max-height: 180px;
+  flex-direction: column;
+  gap: 1px;
+  padding: 4px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-canvas);
+  overflow-y: auto;
+}
+
+.referenceRow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  cursor: pointer;
+}
+
+.referenceRow:hover {
+  background: var(--surface-hover);
+}
+
+.referenceRow span {
+  overflow: hidden;
+  flex: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.referenceRow em {
+  color: var(--text-tertiary);
+  font-size: var(--text-2xs);
+  font-style: normal;
+}

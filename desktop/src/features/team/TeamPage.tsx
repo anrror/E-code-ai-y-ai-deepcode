@@ -211,6 +211,7 @@ export function TeamPage({
   const [editWorkspace, setEditWorkspace] = useState("");
   const [editCodebases, setEditCodebases] = useState("");
   const [editDesigns, setEditDesigns] = useState("");
+  const [editReferences, setEditReferences] = useState<string[]>([]);
   const [projects, setProjects] = useState<
     { id: string; canonicalPath: string; displayName: string }[]
   >([]);
@@ -730,6 +731,7 @@ export function TeamPage({
           .split("\n")
           .map((line) => line.trim())
           .filter(Boolean),
+        references: editReferences,
         shared: true,
       });
       setEditing(false);
@@ -1028,6 +1030,9 @@ export function TeamPage({
     tree?.entities.find((entity) => entity.id === selectedId) ??
     null;
 
+  const entityName = (id: string) =>
+    tree?.entities.find((entity) => entity.id === id)?.name ?? id;
+
   const createIdPreview = createForm
     ? `${createForm.kind}://${createForm.slug.trim() || "…"}`
     : "";
@@ -1230,6 +1235,7 @@ export function TeamPage({
                         (selectedEntity.codebases ?? []).join("\n"),
                       );
                       setEditDesigns((selectedEntity.designs ?? []).join("\n"));
+                      setEditReferences(selectedEntity.references ?? []);
                       void loadProjects();
                     }}
                   >
@@ -1563,7 +1569,13 @@ export function TeamPage({
                       <dt>{t("team.workspace", "工作区")}</dt>
                       <dd>{selectedEntity.workspace ?? "—"}</dd>
                       <dt>{t("team.references", "引用")}</dt>
-                      <dd>{selectedEntity.references?.join("、") || "—"}</dd>
+                      <dd>
+                        {(selectedEntity.references ?? []).length > 0
+                          ? (selectedEntity.references ?? [])
+                              .map(entityName)
+                              .join("、")
+                          : "—"}
+                      </dd>
                       <dt>{t("team.designs", "设计")}</dt>
                       <dd>{selectedEntity.designs?.join("、") || "—"}</dd>
                       <dt>{t("team.codebases", "代码库")}</dt>
@@ -1854,6 +1866,40 @@ export function TeamPage({
                     placeholder={"D:/work/service/docs\nhttps://git.example.com/team/docs.git"}
                     onChange={(event) => setEditDesigns(event.target.value)}
                   />
+                </label>
+                <label className={styles.wide}>
+                  <span>关联其他产品 / 项目（调用其接口，不覆盖本层）</span>
+                  <div className={styles.referenceList}>
+                    {(tree?.entities ?? [])
+                      .filter(
+                        (entity) =>
+                          entity.id !== selectedEntity.id &&
+                          (entity.kind === "product" ||
+                            entity.kind === "project"),
+                      )
+                      .map((entity) => (
+                        <label
+                          key={entity.id}
+                          className={styles.referenceRow}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={editReferences.includes(entity.id)}
+                            onChange={(event) =>
+                              setEditReferences((current) =>
+                                event.target.checked
+                                  ? [...current, entity.id]
+                                  : current.filter((id) => id !== entity.id),
+                              )
+                            }
+                          />
+                          <span>{entity.name}</span>
+                          <em>
+                            {KIND_LABELS[entity.kind as Kind] ?? entity.kind}
+                          </em>
+                        </label>
+                      ))}
+                  </div>
                 </label>
               </>
             ) : null}
