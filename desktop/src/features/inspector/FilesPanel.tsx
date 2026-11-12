@@ -1,13 +1,69 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import { useSystemDarkMode } from "../../app/useSystemDarkMode";
+import type { FileEntry } from "../../generated/app-server";
 import type { CodeWorkbenchController } from "../workbench/useCodeWorkbench";
 import { InspectorEmpty } from "./InspectorEmpty";
 import { languageFor } from "./inspectorFormat";
 import styles from "./Inspector.module.css";
 
 const LocalMonacoEditor = lazy(() => import("../workbench/LocalMonacoEditor"));
+
+interface TreeNode {
+  name: string;
+  path: string;
+  kind: FileEntry["kind"];
+  children: TreeNode[];
+}
+
+function buildTree(entries: FileEntry[]): TreeNode[] {
+  const root: TreeNode = { name: "", path: "", kind: "directory", children: [] };
+  const byPath = new Map<string, TreeNode>([["", root]]);
+  const ensure = (path: string): TreeNode => {
+    const existing = byPath.get(path);
+    if (existing) return existing;
+    const parts = path.split("/");
+    const parent = ensure(parts.slice(0, -1).join("/"));
+    const node: TreeNode = {
+      name: parts[parts.length - 1],
+      path,
+      kind: "directory",
+      children: [],
+    };
+    parent.children.push(node);
+    byPath.set(path, node);
+    return node;
+  };
+  for (const entry of entries) {
+    if (!entry.path) continue;
+    const parentPath = entry.path.includes("/")
+      ? entry.path.slice(0, entry.path.lastIndexOf("/"))
+      : "";
+    const parent = ensure(parentPath);
+    if (entry.kind === "directory") {
+      ensure(entry.path);
+    } else {
+      parent.children.push({
+        name: entry.name,
+        path: entry.path,
+        kind: entry.kind,
+        children: [],
+      });
+    }
+  }
+  const sort = (nodes: TreeNode[]) => {
+    nodes.sort(
+      (left, right) =>
+        (left.kind === "directory" ? 0 : 1) -
+          (right.kind === "directory" ? 0 : 1) ||
+        left.name.localeCompare(right.name),
+    );
+    nodes.forEach((node) => sort(node.children));
+  };
+  sort(root.children);
+  return root.children;
+}
 
 interface FilesPanelProps {
   trusted: boolean;
@@ -30,6 +86,59 @@ export function FilesPanel({
   const dirty = Boolean(
     workbench.file && workbench.draft !== workbench.file.content,
   );
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
+  const tree = useMemo(() => buildTree(workbench.entries), [workbench.entries]);
+
+  const toggle = (path: string) => {
+    setExpanded((current) => {
+      const next = new Set(current);
+      if (next.has(path)) next.delete(path);
+      else next.add(path);
+      return next;
+    });
+  };
+
+  const renderNode = (node: TreeNode, depth: number): React.ReactNode => {
+    const isDirectory = node.kind === "directory";
+    const open = expanded.has(node.path);
+    return (
+      <div key={node.path}>
+        <div
+          className={styles.treeRow}
+          style={{ paddingLeft: `${8 + depth * 12}px` }}
+        >
+          {isDirectory ? (
+            <button
+              type="button"
+              className={styles.treeChevron}
+              aria-label={open ? "折叠" : "展开"}
+              onClick={() => toggle(node.path)}
+            >
+              {open ? "▾" : "▸"}
+            </button>
+          ) : (
+            <span className={styles.treeSpacer} />
+          )}
+          <button
+            type="button"
+            className={styles.treeLabel}
+            title={node.path}
+            onClick={() =>
+              isDirectory ? toggle(node.path) : void onOpenFile(node.path)
+            }
+          >
+            <span aria-hidden="true">
+              {isDirectory ? (open ? "📂" : "📁") : "·"}
+            </span>
+            {node.name}
+          </button>
+        </div>
+        {isDirectory && open
+          ? node.children.map((child) => renderNode(child, depth + 1))
+          : null}
+      </div>
+    );
+  };
 
   return (
     <div className={styles.filesView}>
@@ -37,18 +146,7 @@ export function FilesPanel({
         className={styles.fileTree}
         aria-label={t("inspector.files.label", "Workspace files")}
       >
-        {workbench.entries.map((entry) => (
-          <button
-            key={entry.path}
-            type="button"
-            disabled={entry.kind !== "file"}
-            onClick={() => void onOpenFile(entry.path)}
-            style={{ paddingLeft: `${10 + (entry.path.split("/").length - 1) * 10}px` }}
-          >
-            <span aria-hidden="true">{entry.kind === "directory" ? "▾" : "·"}</span>
-            {entry.name}
-          </button>
-        ))}
+        {tree.map((node) => renderNode(node, 0))}
         {workbench.entriesTruncated ? (
           <p className={styles.treeNotice}>
             {t(

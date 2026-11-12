@@ -647,3 +647,60 @@
   background: var(--signal);
   box-shadow: 14px 0 var(--success), 28px 0 var(--attention);
 }
+
+.treeRow {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  gap: 2px;
+}
+
+.treeChevron {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  min-height: 24px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.treeChevron:hover {
+  background: var(--surface-hover);
+}
+
+.treeSpacer {
+  width: 18px;
+  flex: none;
+}
+
+.treeLabel {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  min-height: 28px;
+  padding: 0 6px;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-ui);
+  text-align: left;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.treeLabel:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
