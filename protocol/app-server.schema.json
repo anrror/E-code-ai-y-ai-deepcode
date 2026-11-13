@@ -7502,7 +7502,11 @@
         "process/list": {
           "type": "object",
           "additionalProperties": false,
-          "properties": {}
+          "properties": {
+            "workspace": {
+              "type": "string"
+            }
+          }
         },
         "process/read": {
           "type": "object",
@@ -9320,6 +9324,12 @@
             },
             "hasMore": {
               "type": "boolean"
+            },
+            "external": {
+              "type": "boolean"
+            },
+            "source": {
+              "type": "string"
             }
           },
           "required": [

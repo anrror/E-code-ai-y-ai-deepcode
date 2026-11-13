@@ -1014,3 +1014,11 @@
   white-space: pre-wrap;
   word-break: break-all;
 }
+
+.processNote {
+  margin: 0;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border-subtle);
+  color: var(--text-tertiary);
+  font: var(--weight-regular) var(--text-xs) var(--font-sans);
+}

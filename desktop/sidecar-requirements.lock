@@ -204,3 +204,7 @@ win32-setctime==1.2.0 ; sys_platform == 'win32'
     # via loguru
 yarl==1.25.1
     # via aiohttp
+psutil==7.2.2
+    # via -r sidecar-requirements.in
+pywinpty==3.1.2 ; sys_platform == 'win32'
+    # via -r sidecar-requirements.in

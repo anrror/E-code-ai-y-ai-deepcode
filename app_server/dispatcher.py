@@ -25,7 +25,6 @@ from core.application.errors import (
     ThreadNotFoundError,
     TurnNotSteerableError,
 )
-from core.process_registry import registry
 from core.application.views import (
     agent_preset_view,
     approval_view,
@@ -73,6 +72,7 @@ from core.domain.message_provenance import ClientSurface
 from core.domain.project import TrustState
 from core.domain.thread import ThreadMode
 from core.domain.thread_goal import KEEP_TIME_BUDGET, GoalCheck
+from core.process_registry import registry
 from core.skills.models import MAX_SELECTED_SKILLS, SkillScope
 from core.team_context.models import TeamContextError
 from core.version import __version__
@@ -2017,8 +2017,8 @@ class Dispatcher:
         return {"text": self.application.git.show(thread_id, revision)}
 
     def _process_list(self, params: Params) -> dict[str, Any]:
-        params.only()
-        return {"processes": registry.list()}
+        params.only("workspace")
+        return {"processes": registry.list(params.string("workspace", required=False))}
 
     def _process_read(self, params: Params) -> dict[str, Any]:
         params.only("processId", "offset", "limit")

@@ -225,7 +225,9 @@ export interface MethodParams {
   "provider/logout": ProviderLogoutParams;
   "dictation/status": OptionalProjectParams;
   "dictation/transcribe": DictationTranscribeParams;
-  "process/list"?: {};
+  "process/list"?: {
+    workspace?: string;
+  };
   "process/read"?: {
     processId: string;
     offset?: number;
@@ -1428,6 +1430,8 @@ export interface MethodResults {
     availableFrom: number;
     headOffset: number;
     hasMore: boolean;
+    external?: boolean;
+    source?: string;
   };
   "process/stop"?: {
     stopped: boolean;

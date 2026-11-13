@@ -41,7 +41,10 @@ export function ProcessesPanel({ runtime, workspace }: ProcessesPanelProps) {
     let alive = true;
     const tick = async () => {
       try {
-        const result = await runtime.request("process/list", {});
+        const result = await runtime.request(
+          "process/list",
+          workspace ? { workspace } : {},
+        );
         if (alive && result) {
           setProcesses(result.processes);
         }
@@ -55,7 +58,7 @@ export function ProcessesPanel({ runtime, workspace }: ProcessesPanelProps) {
       alive = false;
       clearInterval(timer);
     };
-  }, [runtime]);
+  }, [runtime, workspace]);
 
   useEffect(() => {
     if (!expanded) {
@@ -179,9 +182,20 @@ export function ProcessesPanel({ runtime, workspace }: ProcessesPanelProps) {
               ) : null}
             </button>
             {expanded === process.id ? (
-              <pre ref={logRef} className={styles.processLog}>
-                {logs[process.id] ?? ""}
-              </pre>
+              logs[process.id] ? (
+                <pre ref={logRef} className={styles.processLog}>
+                  {logs[process.id]}
+                </pre>
+              ) : (
+                <p className={styles.processNote}>
+                  {process.id.startsWith("os:")
+                    ? t(
+                        "inspector.processes.external",
+                        "该进程由应用外部启动，标准输出无法直接捕获；已在项目目录中查找最新的 .log 文件。",
+                      )
+                    : t("inspector.processes.waiting", "等待输出…")}
+                </p>
+              )
             ) : null}
           </section>
         ))}
