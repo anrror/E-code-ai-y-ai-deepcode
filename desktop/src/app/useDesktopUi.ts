@@ -15,6 +15,7 @@ export type DesktopInspectorTab =
   | "files"
   | "artifacts"
   | "tests"
+  | "processes"
   | "terminal"
   | "details";
 

@@ -935,3 +935,82 @@
 .patchMeta {
   color: var(--text-tertiary);
 }
+
+.processList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.processRow {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.processHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+
+.processCommand {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-mono);
+}
+
+.processMeta {
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.processDot,
+.processDotRunning {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex: none;
+  background: var(--text-tertiary);
+}
+
+.processDotRunning {
+  background: var(--status-success, #4ca66b);
+}
+
+.processStop {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--status-danger, #d05a5a);
+  font: var(--weight-regular) var(--text-xs) var(--font-sans);
+  cursor: pointer;
+}
+
+.processLog {
+  margin: 0;
+  padding: 8px 10px;
+  max-height: 320px;
+  overflow: auto;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-code);
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+  white-space: pre-wrap;
+  word-break: break-all;
+}

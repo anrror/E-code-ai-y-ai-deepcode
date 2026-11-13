@@ -39,6 +39,7 @@ from core.agent_runtime.tools.base import Tool, ToolResult, tool_parameters
 from core.harness.command_guard import screen_all
 from core.harness.env_sanitize import child_env
 from core.harness.sandbox import build_exec_command
+from core.process_registry import registry
 
 _MAX_OUTPUT_CHARS = 30_000
 _DEFAULT_TIMEOUT = 120
@@ -240,13 +241,38 @@ class BashTool(Tool):
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.STDOUT,
             )
+            loop = asyncio.get_running_loop()
+            entry = registry.register(
+                command,
+                self._workspace,
+                pid=proc.pid,
+                stop=lambda: loop.call_soon_threadsafe(
+                    lambda: asyncio.ensure_future(terminate_process_tree(proc))
+                ),
+            )
+
+            async def _drain() -> bytes:
+                assert proc.stdout is not None
+                chunks: list[bytes] = []
+                while True:
+                    chunk = await proc.stdout.read(8192)
+                    if not chunk:
+                        break
+                    chunks.append(chunk)
+                    registry.append(entry, chunk)
+                return b"".join(chunks)
+
             try:
-                out, _ = await asyncio.wait_for(proc.communicate(), timeout=timeout)
+                out = await asyncio.wait_for(_drain(), timeout=timeout)
+                await proc.wait()
+                registry.finish(entry, proc.returncode)
             except TimeoutError:
                 await terminate_process_tree(proc)
+                registry.finish(entry, None, "timed out")
                 return f"Error: command timed out after {timeout}s: {command}"
             except asyncio.CancelledError:
                 await terminate_process_tree(proc)
+                registry.finish(entry, None, "cancelled")
                 raise
         except OSError as exc:
             return f"Error: could not run command: {exc}"

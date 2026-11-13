@@ -20,12 +20,11 @@ from typing import Any
 from core.application.errors import (
     ConflictError,
     InvalidArgumentError,
-    NotSupportedApplicationError,
     TerminalNotFoundError,
     ThreadNotFoundError,
 )
-from core.application.workspace_service import WorkspaceService
 from core.application.views import terminal_info_view
+from core.application.workspace_service import WorkspaceService
 from core.file_lock import FileLease
 from core.sessions import SessionStore
 
@@ -33,6 +32,11 @@ if os.name != "nt":
     import fcntl
     import pty
     import termios
+else:
+    try:
+        from winpty import PtyProcess
+    except ImportError:  # pragma: no cover - optional Windows PTY backend
+        PtyProcess = None  # type: ignore[assignment]
 
 
 TerminalListener = Callable[[str, dict[str, Any]], None]
@@ -51,9 +55,11 @@ class TerminalInfo:
 @dataclass(slots=True)
 class _TerminalSession:
     info: TerminalInfo
-    process: subprocess.Popen[bytes]
+    process: subprocess.Popen[bytes] | _WindowsPtyProcess
     master_fd: int | None
     activity_lease: FileLease
+    windows_pty: object | None = None
+    pipe_mode: bool = False
     closing: bool = False
     output: bytearray = field(default_factory=bytearray)
     offset: int = 0
@@ -65,6 +71,35 @@ class _TerminalSession:
     @property
     def head(self) -> int:
         return self.offset + len(self.output)
+
+
+class _WindowsPtyProcess:
+    """Small adapter so a ConPTY process looks like ``subprocess.Popen``."""
+
+    def __init__(self, process: object) -> None:
+        self.process = process
+        self.pid = int(getattr(process, "pid", 0))
+
+    def poll(self) -> int | None:
+        try:
+            alive = bool(self.process.isalive())  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001 - a dead PTY reports no status
+            return 0
+        return None if alive else 0
+
+    def kill(self) -> None:
+        try:
+            self.process.terminate(force=True)  # type: ignore[attr-defined]
+        except Exception:  # noqa: BLE001, S110 - best-effort teardown
+            pass
+
+    def wait(self, timeout: float | None = None) -> int:
+        deadline = None if timeout is None else time.monotonic() + timeout
+        while self.poll() is None:
+            if deadline is not None and time.monotonic() >= deadline:
+                raise subprocess.TimeoutExpired("pty", timeout)
+            time.sleep(0.02)
+        return 0
 
 
 class TerminalService:
@@ -103,10 +138,6 @@ class TerminalService:
     def create(
         self, thread_id: str, *, columns: int = 100, rows: int = 30
     ) -> TerminalInfo:
-        if os.name == "nt":
-            raise NotSupportedApplicationError(
-                "PTY terminals require the Windows ConPTY adapter"
-            )
         self._validate_size(columns, rows)
         activity_lease = self.sessions.acquire_activity_lease(thread_id)
         if activity_lease is None:
@@ -122,28 +153,35 @@ class TerminalService:
                     raise ConflictError("maximum terminal session count reached")
                 self._creating += 1
                 counted = True
-            master_fd, slave_fd = pty.openpty()
-            self._set_size(master_fd, columns, rows)
             shell = _shell_path()
             environment = {
                 **os.environ,
                 "TERM": os.environ.get("TERM", "xterm-256color"),
                 "DEEPCODE_THREAD_ID": thread_id,
             }
-            try:
-                process = subprocess.Popen(
-                    [shell],
-                    cwd=context.root,
-                    stdin=slave_fd,
-                    stdout=slave_fd,
-                    stderr=slave_fd,
-                    close_fds=True,
-                    start_new_session=True,
-                    env=environment,
+            windows_pty: object | None = None
+            pipe_mode = False
+            if os.name == "nt":
+                process, windows_pty, pipe_mode = _spawn_windows_shell(
+                    shell, context.root, environment, columns, rows
                 )
-            finally:
-                os.close(slave_fd)
-                slave_fd = None
+            else:
+                master_fd, slave_fd = pty.openpty()
+                self._set_size(master_fd, columns, rows)
+                try:
+                    process = subprocess.Popen(
+                        [shell],
+                        cwd=context.root,
+                        stdin=slave_fd,
+                        stdout=slave_fd,
+                        stderr=slave_fd,
+                        close_fds=True,
+                        start_new_session=True,
+                        env=environment,
+                    )
+                finally:
+                    os.close(slave_fd)
+                    slave_fd = None
             terminal_id = f"term_{uuid.uuid4().hex}"
             info = TerminalInfo(
                 id=terminal_id,
@@ -158,6 +196,8 @@ class TerminalService:
                 process=process,
                 master_fd=master_fd,
                 activity_lease=activity_lease,
+                windows_pty=windows_pty,
+                pipe_mode=pipe_mode,
             )
             with self._lock:
                 self._sessions[terminal_id] = session
@@ -201,7 +241,25 @@ class TerminalService:
             raise InvalidArgumentError("terminal input exceeds 64 KiB")
         session = self._owned(thread_id, terminal_id)
         with session.io_lock:
-            if session.master_fd is None or session.closing:
+            if session.closing:
+                raise ConflictError("terminal is no longer writable")
+            if session.windows_pty is not None:
+                try:
+                    session.windows_pty.write(data)  # type: ignore[attr-defined]
+                    return len(encoded)
+                except Exception as exc:
+                    raise ConflictError("terminal is no longer writable") from exc
+            if session.pipe_mode:
+                stdin = session.process.stdin
+                if stdin is None:
+                    raise ConflictError("terminal is no longer writable")
+                try:
+                    stdin.write(encoded)
+                    stdin.flush()
+                    return len(encoded)
+                except (OSError, ValueError) as exc:
+                    raise ConflictError("terminal is no longer writable") from exc
+            if session.master_fd is None:
                 raise ConflictError("terminal is no longer writable")
             try:
                 return os.write(session.master_fd, encoded)
@@ -214,9 +272,17 @@ class TerminalService:
         self._validate_size(columns, rows)
         session = self._owned(thread_id, terminal_id)
         with session.io_lock:
-            if session.master_fd is None or session.closing:
+            if session.closing:
                 raise ConflictError("terminal has closed")
-            self._set_size(session.master_fd, columns, rows)
+            if session.windows_pty is not None:
+                try:
+                    session.windows_pty.setwinsize(rows, columns)  # type: ignore[attr-defined]
+                except Exception as exc:
+                    raise ConflictError("terminal has closed") from exc
+            elif not session.pipe_mode:
+                if session.master_fd is None:
+                    raise ConflictError("terminal has closed")
+                self._set_size(session.master_fd, columns, rows)
         with self._lock:
             session.info = TerminalInfo(
                 id=session.info.id,
@@ -342,6 +408,12 @@ class TerminalService:
         return session
 
     def _read_output(self, session: _TerminalSession) -> None:
+        if session.windows_pty is not None:
+            self._read_windows_pty(session, session.windows_pty)
+            return
+        if session.pipe_mode:
+            self._read_windows_pipe(session)
+            return
         decoder = codecs.getincrementaldecoder("utf-8")("replace")
         close_deadline = None
         try:
@@ -399,6 +471,63 @@ class TerminalService:
                 },
             )
 
+    def _read_windows_pty(self, session: _TerminalSession, pty_process: object) -> None:
+        try:
+            while not session.closing:
+                try:
+                    text = pty_process.read(16 * 1024)  # type: ignore[attr-defined]
+                except EOFError:
+                    break
+                except Exception:  # noqa: BLE001 - PTY is gone
+                    break
+                if text:
+                    self._record_output(session, text)
+        finally:
+            self._finalize_windows(session)
+
+    def _read_windows_pipe(self, session: _TerminalSession) -> None:
+        decoder = codecs.getincrementaldecoder("utf-8")("replace")
+        stdout = session.process.stdout
+        try:
+            if stdout is not None:
+                while not session.closing:
+                    chunk = stdout.read(16 * 1024)
+                    if not chunk:
+                        break
+                    text = decoder.decode(chunk)
+                    if text:
+                        self._record_output(session, text)
+                trailing = decoder.decode(b"", final=True)
+                if trailing:
+                    self._record_output(session, trailing)
+        finally:
+            self._finalize_windows(session)
+
+    def _finalize_windows(self, session: _TerminalSession) -> None:
+        try:
+            exit_code = session.process.wait(timeout=1)
+        except subprocess.TimeoutExpired:
+            self._terminate(session.process)
+            exit_code = getattr(session.process, "returncode", None)
+        with self._lock:
+            session.exited = True
+            session.exit_code = exit_code
+            if self._sessions.get(session.info.id) is session:
+                self._sessions.pop(session.info.id, None)
+            self._finished[session.info.id] = session
+            while len(self._finished) > self.retained_exits:
+                self._finished.popitem(last=False)
+        session.activity_lease.close()
+        self._publish(
+            "terminal.exit",
+            {
+                "terminalId": session.info.id,
+                "threadId": session.info.thread_id,
+                "exitCode": exit_code,
+                "nextOffset": session.head,
+            },
+        )
+
     def _record_output(self, session: _TerminalSession, text: str) -> None:
         encoded = text.encode("utf-8")
         with self._lock:
@@ -428,12 +557,18 @@ class TerminalService:
         for listener in listeners:
             try:
                 listener(method, payload)
-            except Exception:
+            except Exception:  # noqa: BLE001, S112 - one listener must not break the rest
                 continue
 
     @staticmethod
-    def _terminate(process: subprocess.Popen[bytes]) -> None:
+    def _terminate(process: subprocess.Popen[bytes] | _WindowsPtyProcess) -> None:
         if process.poll() is not None:
+            return
+        if os.name == "nt":
+            try:
+                process.kill()
+            except Exception:  # noqa: BLE001, S110 - best-effort teardown
+                pass
             return
         try:
             os.killpg(process.pid, signal.SIGTERM)
@@ -470,7 +605,40 @@ class TerminalService:
 
 
 def _shell_path() -> str:
+    if os.name == "nt":
+        return os.environ.get("COMSPEC") or "cmd.exe"
     configured = os.environ.get("SHELL")
     if configured and Path(configured).is_file():
         return configured
     return "/bin/sh"
+
+
+def _spawn_windows_shell(
+    shell: str,
+    workspace: Path,
+    environment: dict[str, str],
+    columns: int,
+    rows: int,
+) -> tuple[subprocess.Popen[bytes] | _WindowsPtyProcess, object | None, bool]:
+    """Prefer ConPTY; fall back to pipes when the adapter is unavailable."""
+
+    if PtyProcess is not None:
+        try:
+            process = PtyProcess.spawn(
+                [shell],
+                cwd=str(workspace),
+                env=environment,
+                dimensions=(rows, columns),
+            )
+            return _WindowsPtyProcess(process), process, False
+        except Exception:  # noqa: BLE001, S110 - fall back to pipes
+            pass
+    process = subprocess.Popen(
+        [shell],
+        cwd=workspace,
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        env=environment,
+    )
+    return process, None, True

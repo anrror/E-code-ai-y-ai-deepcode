@@ -377,6 +377,7 @@ const ZH_CN: Record<string, string> = {
   "inspector.tab.files": "文件",
   "inspector.tab.artifacts": "产物",
   "inspector.tab.tests": "测试",
+  "inspector.tab.processes": "运行",
   "inspector.tab.terminal": "终端",
   "inspector.tab.details": "详情",
   // Settings: visual credits

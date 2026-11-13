@@ -7498,6 +7498,44 @@
         },
         "dictation/transcribe": {
           "$ref": "#/$defs/DictationTranscribeParams"
+        },
+        "process/list": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {}
+        },
+        "process/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "processId": {
+              "type": "string"
+            },
+            "offset": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "limit": {
+              "type": "integer",
+              "minimum": 4,
+              "maximum": 65536
+            }
+          },
+          "required": [
+            "processId"
+          ]
+        },
+        "process/stop": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "processId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "processId"
+          ]
         }
       },
       "required": [
@@ -9149,6 +9187,161 @@
           },
           "required": [
             "text"
+          ]
+        },
+        "process/list": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "processes": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "command": {
+                    "type": "string"
+                  },
+                  "workspace": {
+                    "type": "string"
+                  },
+                  "pid": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "exitCode": {
+                    "type": [
+                      "integer",
+                      "null"
+                    ]
+                  },
+                  "startedAt": {
+                    "type": "number"
+                  },
+                  "endedAt": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  }
+                },
+                "required": [
+                  "id",
+                  "command",
+                  "workspace",
+                  "pid",
+                  "status",
+                  "exitCode",
+                  "startedAt",
+                  "endedAt"
+                ]
+              }
+            }
+          },
+          "required": [
+            "processes"
+          ]
+        },
+        "process/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "process": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "command": {
+                  "type": "string"
+                },
+                "workspace": {
+                  "type": "string"
+                },
+                "pid": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "status": {
+                  "type": "string"
+                },
+                "exitCode": {
+                  "type": [
+                    "integer",
+                    "null"
+                  ]
+                },
+                "startedAt": {
+                  "type": "number"
+                },
+                "endedAt": {
+                  "type": [
+                    "number",
+                    "null"
+                  ]
+                }
+              },
+              "required": [
+                "id",
+                "command",
+                "workspace",
+                "pid",
+                "status",
+                "exitCode",
+                "startedAt",
+                "endedAt"
+              ]
+            },
+            "data": {
+              "type": "string"
+            },
+            "offset": {
+              "type": "integer"
+            },
+            "nextOffset": {
+              "type": "integer"
+            },
+            "availableFrom": {
+              "type": "integer"
+            },
+            "headOffset": {
+              "type": "integer"
+            },
+            "hasMore": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "process",
+            "data",
+            "offset",
+            "nextOffset",
+            "availableFrom",
+            "headOffset",
+            "hasMore"
+          ]
+        },
+        "process/stop": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stopped": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "stopped"
           ]
         }
       },

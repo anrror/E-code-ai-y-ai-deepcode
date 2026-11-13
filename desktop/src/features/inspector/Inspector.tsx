@@ -18,6 +18,7 @@ import { ArtifactsPanel } from "./ArtifactsPanel";
 import { ChangesPanel } from "./ChangesPanel";
 import { DetailsPanel } from "./DetailsPanel";
 import { FilesPanel } from "./FilesPanel";
+import { ProcessesPanel } from "./ProcessesPanel";
 import { TestsPanel } from "./TestsPanel";
 import styles from "./Inspector.module.css";
 
@@ -42,6 +43,7 @@ const tabs: DesktopInspectorTab[] = [
   "files",
   "artifacts",
   "tests",
+  "processes",
   "terminal",
   "details",
 ];
@@ -140,6 +142,7 @@ export function Inspector({
     files: t("inspector.tab.files", "files"),
     artifacts: t("inspector.tab.artifacts", "artifacts"),
     tests: t("inspector.tab.tests", "tests"),
+    processes: t("inspector.tab.processes", "processes"),
     terminal: t("inspector.tab.terminal", "terminal"),
     details: t("inspector.tab.details", "details"),
   };
@@ -204,6 +207,11 @@ export function Inspector({
             latestTurn={latestTurn}
             workbench={workbench}
           />
+          ) : tab === "processes" ? (
+            <ProcessesPanel
+              runtime={runtime}
+              workspace={thread?.worktreePath ?? thread?.workspacePath ?? null}
+            />
         ) : null}
         {/* Sibling keys must differ: with one shared key React keeps the
             Artifacts panel mounted beside every other tab. */}

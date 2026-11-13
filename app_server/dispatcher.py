@@ -25,6 +25,7 @@ from core.application.errors import (
     ThreadNotFoundError,
     TurnNotSteerableError,
 )
+from core.process_registry import registry
 from core.application.views import (
     agent_preset_view,
     approval_view,
@@ -340,6 +341,9 @@ class Dispatcher:
             rpc_methods.GIT_DIFF: self._git_diff,
             rpc_methods.GIT_LOG: self._git_log,
             rpc_methods.GIT_SHOW: self._git_show,
+            rpc_methods.PROCESS_LIST: self._process_list,
+            rpc_methods.PROCESS_READ: self._process_read,
+            rpc_methods.PROCESS_STOP: self._process_stop,
             rpc_methods.GIT_DISCARD: self._git_discard,
             rpc_methods.GIT_WORKTREE_CREATE: self._git_worktree_create,
             rpc_methods.GIT_WORKTREE_REMOVE: self._git_worktree_remove,
@@ -2011,6 +2015,25 @@ class Dispatcher:
         thread_id = str(params.string("threadId"))
         revision = str(params.string("revision"))
         return {"text": self.application.git.show(thread_id, revision)}
+
+    def _process_list(self, params: Params) -> dict[str, Any]:
+        params.only()
+        return {"processes": registry.list()}
+
+    def _process_read(self, params: Params) -> dict[str, Any]:
+        params.only("processId", "offset", "limit")
+        process_id = str(params.string("processId"))
+        offset = params.optional_integer("offset", minimum=0) or 0
+        limit = params.optional_integer("limit", minimum=4, maximum=65536) or 32 * 1024
+        try:
+            return registry.read(process_id, offset=offset, limit=limit)
+        except KeyError as exc:
+            raise InvalidParams(f"unknown process: {process_id}") from exc
+
+    def _process_stop(self, params: Params) -> dict[str, Any]:
+        params.only("processId")
+        process_id = str(params.string("processId"))
+        return {"stopped": registry.stop(process_id)}
 
     def _git_discard(self, params: Params) -> dict[str, Any]:
         params.only("threadId", "path", "expectedRevision")

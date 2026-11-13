@@ -225,6 +225,15 @@ export interface MethodParams {
   "provider/logout": ProviderLogoutParams;
   "dictation/status": OptionalProjectParams;
   "dictation/transcribe": DictationTranscribeParams;
+  "process/list"?: {};
+  "process/read"?: {
+    processId: string;
+    offset?: number;
+    limit?: number;
+  };
+  "process/stop"?: {
+    processId: string;
+  };
 }
 export interface InitializeParams {
   protocolVersion: "1.0";
@@ -1389,6 +1398,39 @@ export interface MethodResults {
   };
   "git/show": {
     text: string;
+  };
+  "process/list"?: {
+    processes: {
+      id: string;
+      command: string;
+      workspace: string;
+      pid: number | null;
+      status: string;
+      exitCode: number | null;
+      startedAt: number;
+      endedAt: number | null;
+    }[];
+  };
+  "process/read"?: {
+    process: {
+      id: string;
+      command: string;
+      workspace: string;
+      pid: number | null;
+      status: string;
+      exitCode: number | null;
+      startedAt: number;
+      endedAt: number | null;
+    };
+    data: string;
+    offset: number;
+    nextOffset: number;
+    availableFrom: number;
+    headOffset: number;
+    hasMore: boolean;
+  };
+  "process/stop"?: {
+    stopped: boolean;
   };
 }
 export interface InitializeResult {
