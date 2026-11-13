@@ -94,6 +94,8 @@ def default_coding_tools(
         ProposeGoalChecksTool,
         UpdateGoalTool,
     )
+    from core.harness.tools.browser_use import BrowserUseTool
+    from core.harness.tools.computer_use import ComputerUseTool
     from core.harness.tools.plan import UpdatePlanTool
     from core.harness.tools.spawn_agent import (
         InterruptAgentTool,
@@ -156,6 +158,8 @@ def default_coding_tools(
         MemoryTool(workspace),
         UpdatePlanTool(),  # the agent's self-driven TODO plan
         WebFetchTool(),
+        BrowserUseTool(workspace),
+        ComputerUseTool(),
         TeamContextTool(workspace),
     ]
     # Standalone fallback is workspace-hermetic (no ambient ~/.claude scan);
