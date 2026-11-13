@@ -829,3 +829,109 @@
   background: transparent;
   color: var(--text-primary);
 }
+
+.segmented {
+  display: flex;
+  gap: 4px;
+  margin: 10px 0 4px;
+}
+
+.segmented button {
+  padding: 4px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-secondary);
+  font: var(--weight-regular) var(--text-xs) var(--font-sans);
+  cursor: pointer;
+}
+
+.segmentedActive {
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  background: var(--accent-soft) !important;
+}
+
+.historyList {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  max-height: 42vh;
+  overflow-y: auto;
+}
+
+.historyRow,
+.historyRowActive {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-primary);
+  font: var(--weight-regular) var(--text-xs) var(--font-sans);
+  text-align: left;
+  cursor: pointer;
+}
+
+.historyRowActive {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.historyRow code,
+.historyRowActive code {
+  font-family: var(--font-mono);
+  color: var(--text-tertiary);
+}
+
+.historySubject {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.historyMeta {
+  color: var(--text-tertiary);
+  white-space: nowrap;
+}
+
+.commitPatch {
+  margin: 8px 0 0;
+  padding: 10px;
+  max-height: 52vh;
+  overflow: auto;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-code);
+  font: var(--weight-regular) var(--text-xs) var(--font-mono);
+}
+
+.commitPatch span {
+  display: block;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.patchLine {
+  color: var(--text-secondary);
+}
+
+.patchAdd {
+  color: var(--status-success, #4ca66b);
+}
+
+.patchRemove {
+  color: var(--status-danger, #d05a5a);
+}
+
+.patchHunk {
+  color: var(--accent);
+}
+
+.patchMeta {
+  color: var(--text-tertiary);
+}

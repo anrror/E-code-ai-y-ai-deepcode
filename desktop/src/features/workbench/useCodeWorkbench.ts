@@ -34,6 +34,7 @@ interface CodeWorkbenchState {
 }
 
 export interface CodeWorkbenchController extends CodeWorkbenchState {
+  runtime: ClientRuntime;
   refresh(): Promise<void>;
   openFile(path: string): Promise<void>;
   setDraft(value: string): void;
@@ -308,6 +309,7 @@ export function useCodeWorkbench(
   return useMemo(
     () => ({
       ...state,
+      runtime,
       refresh,
       openFile,
       setDraft: (draft: string) => setState((current) => ({ ...current, draft })),
@@ -324,6 +326,7 @@ export function useCodeWorkbench(
       refresh,
       resolveWorktree,
       runTest,
+      runtime,
       saveFile,
       state,
     ],

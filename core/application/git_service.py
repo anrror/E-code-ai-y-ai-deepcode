@@ -21,7 +21,6 @@ from core.persistence.database import Database
 from core.persistence.execution_repository import TurnRepository
 from core.safe_git import safe_git_options
 
-
 MAX_GIT_OUTPUT = 8 * 1024 * 1024
 MAX_DIFF_FILES = 500
 MAX_DIFF_LINES = 4_000
@@ -217,6 +216,54 @@ class GitService:
                 )
             files.append(file_diff)
         return tuple(files)
+
+    def log(self, thread_id: str, *, limit: int = 100) -> tuple[dict[str, str], ...]:
+        context = self.workspaces.resolve(thread_id)
+        if not self._has_head(context.root):
+            return ()
+        bounded = max(1, min(limit, 200))
+        completed = self._run_bytes(
+            context.root,
+            "log",
+            f"--max-count={bounded}",
+            "--date=iso-strict",
+            "--pretty=format:%H%x1f%h%x1f%s%x1f%an%x1f%ad",
+        )
+        commits: list[dict[str, str]] = []
+        for line in completed.stdout.decode("utf-8", errors="replace").splitlines():
+            fields = line.split("\x1f")
+            if len(fields) != 5:
+                continue
+            commits.append(
+                {
+                    "hash": fields[0],
+                    "short": fields[1],
+                    "subject": fields[2],
+                    "author": fields[3],
+                    "date": fields[4],
+                }
+            )
+        return tuple(commits)
+
+    def show(self, thread_id: str, revision: str) -> str:
+        if not re.fullmatch(r"[0-9a-fA-F]{4,64}", revision):
+            raise InvalidArgumentError("revision must be a commit hash")
+        context = self.workspaces.resolve(thread_id)
+        completed = self._run_bytes(
+            context.root,
+            "show",
+            "--no-color",
+            "--format=fuller",
+            "--stat",
+            "--patch",
+            "--find-renames",
+            revision,
+            check=False,
+        )
+        text = completed.stdout.decode("utf-8", errors="replace")
+        if len(text) > MAX_DIFF_TEXT_BYTES:
+            text = text[:MAX_DIFF_TEXT_BYTES] + "\n[truncated]"
+        return text
 
     def discard(self, thread_id: str, path: str, expected_revision: str) -> str:
         context = self.workspaces.resolve(thread_id, require_trusted=True)
@@ -419,7 +466,7 @@ def _parse_branch_header(
 ) -> tuple[str | None, str | None, int, int, bool]:
     if header.startswith("No commits yet on "):
         return header.removeprefix("No commits yet on "), None, 0, 0, False
-    if header.startswith("HEAD (no branch)") or header.startswith("HEAD detached"):
+    if header.startswith(("HEAD (no branch)", "HEAD detached")):
         return None, None, 0, 0, True
     head, _, tracking = header.partition("...")
     upstream: str | None = None

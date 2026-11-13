@@ -338,6 +338,8 @@ class Dispatcher:
             rpc_methods.FILE_WRITE: self._file_write,
             rpc_methods.GIT_STATUS: self._git_status,
             rpc_methods.GIT_DIFF: self._git_diff,
+            rpc_methods.GIT_LOG: self._git_log,
+            rpc_methods.GIT_SHOW: self._git_show,
             rpc_methods.GIT_DISCARD: self._git_discard,
             rpc_methods.GIT_WORKTREE_CREATE: self._git_worktree_create,
             rpc_methods.GIT_WORKTREE_REMOVE: self._git_worktree_remove,
@@ -1996,6 +1998,19 @@ class Dispatcher:
             path=params.string("path", required=False),
         )
         return {"files": [file_diff_view(file_diff) for file_diff in diffs]}
+
+    def _git_log(self, params: Params) -> dict[str, Any]:
+        params.only("threadId", "limit")
+        thread_id = str(params.string("threadId"))
+        limit = params.optional_integer("limit", minimum=1, maximum=200) or 100
+        commits = self.application.git.log(thread_id, limit=limit)
+        return {"commits": [dict(commit) for commit in commits]}
+
+    def _git_show(self, params: Params) -> dict[str, Any]:
+        params.only("threadId", "revision")
+        thread_id = str(params.string("threadId"))
+        revision = str(params.string("revision"))
+        return {"text": self.application.git.show(thread_id, revision)}
 
     def _git_discard(self, params: Params) -> dict[str, Any]:
         params.only("threadId", "path", "expectedRevision")

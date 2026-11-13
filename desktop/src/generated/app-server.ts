@@ -200,6 +200,8 @@ export interface MethodParams {
   "git/status": ThreadReadParams;
   "git/diff": GitDiffParams;
   "git/discard": GitDiscardParams;
+  "git/log": GitLogParams;
+  "git/show": GitShowParams;
   "git/worktree/create": ThreadReadParams;
   "git/worktree/remove": WorktreeRemoveParams;
   "terminal/list": TerminalListParams;
@@ -935,6 +937,14 @@ export interface GitDiscardParams {
   path: string;
   expectedRevision: string;
 }
+export interface GitLogParams {
+  threadId: string;
+  limit?: number;
+}
+export interface GitShowParams {
+  threadId: string;
+  revision: string;
+}
 export interface WorktreeRemoveParams {
   threadId: string;
   disposition: "keep" | "clean";
@@ -1368,6 +1378,18 @@ export interface MethodResults {
   "provider/logout": ProviderLogoutResult;
   "dictation/status": DictationStatusResult;
   "dictation/transcribe": DictationTranscribeResult;
+  "git/log": {
+    commits: {
+      hash: string;
+      short: string;
+      subject: string;
+      author: string;
+      date: string;
+    }[];
+  };
+  "git/show": {
+    text: string;
+  };
 }
 export interface InitializeResult {
   protocolVersion: "1.0";

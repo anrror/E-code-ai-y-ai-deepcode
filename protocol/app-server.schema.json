@@ -5454,136 +5454,364 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
       }
     },
     "TeamReadParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
       },
-      "required": ["entityId"]
+      "required": [
+        "entityId"
+      ]
     },
     "TeamPreviewParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "includeExternal": {"type": "boolean"},
-        "maxChars": {"type": "integer", "minimum": 200, "maximum": 20000}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "includeExternal": {
+          "type": "boolean"
+        },
+        "maxChars": {
+          "type": "integer",
+          "minimum": 200,
+          "maximum": 20000
+        }
       }
     },
     "TeamCreateParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "kind": {"type": "string", "minLength": 1, "maxLength": 32},
-        "slug": {"type": "string", "minLength": 1, "maxLength": 80},
-        "name": {"type": "string", "maxLength": 200},
-        "parent": {"type": "string", "maxLength": 255},
-        "external": {"type": "boolean"},
-        "workspace": {"type": "string", "maxLength": 500},
-        "references": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "designs": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 32
+        },
+        "slug": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "name": {
+          "type": "string",
+          "maxLength": 200
+        },
+        "parent": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "external": {
+          "type": "boolean"
+        },
+        "workspace": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "references": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "designs": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "codebases": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["kind", "slug"]
+      "required": [
+        "kind",
+        "slug"
+      ]
     },
     "TeamKnowledgeAddParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "type": {"type": "string"},
-        "statement": {"type": "string", "minLength": 1, "maxLength": 2000},
-        "rationale": {"type": "string", "maxLength": 2000},
-        "evidence": {"type": "string", "maxLength": 2000},
-        "confidence": {"type": "string"},
-        "owner": {"type": "string", "maxLength": 120},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "type": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        },
+        "rationale": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "confidence": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["entityId", "type", "statement"]
+      "required": [
+        "entityId",
+        "type",
+        "statement"
+      ]
     },
     "TeamKnowledgePromoteParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "owner": {"type": "string", "maxLength": 120},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "knowledgeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "owner": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["knowledgeId"]
+      "required": [
+        "knowledgeId"
+      ]
     },
     "TeamKnowledgeUpdateParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "type": {"type": "string"},
-        "statement": {"type": "string", "maxLength": 2000},
-        "rationale": {"type": "string", "maxLength": 2000},
-        "evidence": {"type": "string", "maxLength": 2000},
-        "confidence": {"type": "string"},
-        "owner": {"type": "string", "maxLength": 120},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "knowledgeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "type": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "rationale": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "evidence": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "confidence": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string",
+          "maxLength": 120
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["knowledgeId"]
+      "required": [
+        "knowledgeId"
+      ]
     },
     "TeamKnowledgeRemoveParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "knowledgeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["knowledgeId"]
+      "required": [
+        "knowledgeId"
+      ]
     },
     "TeamEntityUpdateParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "name": {"type": "string", "minLength": 1, "maxLength": 200},
-        "parent": {"type": "string", "maxLength": 255},
-        "external": {"type": "boolean"},
-        "workspace": {"type": "string", "maxLength": 1000},
-        "references": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "designs": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "codebases": {"type": "array", "maxItems": 50, "items": {"type": "string"}},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
+        },
+        "parent": {
+          "type": "string",
+          "maxLength": 255
+        },
+        "external": {
+          "type": "boolean"
+        },
+        "workspace": {
+          "type": "string",
+          "maxLength": 1000
+        },
+        "references": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "designs": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "codebases": {
+          "type": "array",
+          "maxItems": 50,
+          "items": {
+            "type": "string"
+          }
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["entityId"]
+      "required": [
+        "entityId"
+      ]
     },
     "TeamEntityRemoveParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "shared": {"type": "boolean"},
-        "force": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "shared": {
+          "type": "boolean"
+        },
+        "force": {
+          "type": "boolean"
+        }
       },
-      "required": ["entityId"]
+      "required": [
+        "entityId"
+      ]
     },
     "TeamKnowledgeDeprecateParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "projectId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "knowledgeId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "shared": {"type": "boolean"}
+        "projectId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "knowledgeId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "shared": {
+          "type": "boolean"
+        }
       },
-      "required": ["knowledgeId"]
+      "required": [
+        "knowledgeId"
+      ]
     },
     "TeamVisibilityReadParams": {
       "type": "object",
@@ -5594,69 +5822,149 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "path": {"type": "string", "minLength": 1, "maxLength": 1000},
-        "hidden": {"type": "boolean"}
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "hidden": {
+          "type": "boolean"
+        }
       },
-      "required": ["path"]
+      "required": [
+        "path"
+      ]
     },
     "TeamEnvReadParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255}
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        }
       },
-      "required": ["entityId"]
+      "required": [
+        "entityId"
+      ]
     },
     "TeamEnvValuesParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "environment": {"type": "string", "minLength": 1, "maxLength": 80}
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
       },
-      "required": ["entityId", "environment"]
+      "required": [
+        "entityId",
+        "environment"
+      ]
     },
     "TeamEnvSaveParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "environment": {"type": "string", "minLength": 1, "maxLength": 80},
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
         "values": {
           "type": "object",
-          "additionalProperties": {"type": "string"}
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       },
-      "required": ["entityId", "environment", "values"]
+      "required": [
+        "entityId",
+        "environment",
+        "values"
+      ]
     },
     "TeamEnvActivateParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "environment": {"type": "string", "minLength": 1, "maxLength": 80}
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "environment": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        }
       },
-      "required": ["entityId", "environment"]
+      "required": [
+        "entityId",
+        "environment"
+      ]
     },
     "TeamBrowseParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "root": {"type": "string", "minLength": 1, "maxLength": 1000},
-        "path": {"type": "string", "maxLength": 2000}
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "root": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "path": {
+          "type": "string",
+          "maxLength": 2000
+        }
       },
-      "required": ["entityId", "root"]
+      "required": [
+        "entityId",
+        "root"
+      ]
     },
     "TeamBrowseReadParams": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "entityId": {"type": "string", "minLength": 1, "maxLength": 255},
-        "root": {"type": "string", "minLength": 1, "maxLength": 1000},
-        "path": {"type": "string", "minLength": 1, "maxLength": 2000}
+        "entityId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 255
+        },
+        "root": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 1000
+        },
+        "path": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 2000
+        }
       },
-      "required": ["entityId", "root", "path"]
+      "required": [
+        "entityId",
+        "root",
+        "path"
+      ]
     },
     "TeamExportParams": {
       "type": "object",
@@ -5667,47 +5975,134 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "bundle": {"type": "object"}
+        "bundle": {
+          "type": "object"
+        }
       },
-      "required": ["bundle"]
+      "required": [
+        "bundle"
+      ]
     },
     "TeamEntityView": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string"},
-        "kind": {"type": "string"},
-        "name": {"type": "string"},
-        "parent": {"type": ["string", "null"]},
-        "external": {"type": "boolean"},
-        "archived": {"type": "boolean"},
-        "references": {"type": "array", "items": {"type": "string"}},
-        "designs": {"type": "array", "items": {"type": "string"}},
-        "codebases": {"type": "array", "items": {"type": "string"}},
-        "workspace": {"type": ["string", "null"]},
-        "knowledgeCount": {"type": "integer"},
-        "draftCount": {"type": "integer"},
-        "hasInstructions": {"type": "boolean"}
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "external": {
+          "type": "boolean"
+        },
+        "archived": {
+          "type": "boolean"
+        },
+        "references": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "designs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "codebases": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workspace": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "knowledgeCount": {
+          "type": "integer"
+        },
+        "draftCount": {
+          "type": "integer"
+        },
+        "hasInstructions": {
+          "type": "boolean"
+        }
       },
-      "required": ["id", "kind", "name", "external", "archived", "knowledgeCount", "draftCount", "hasInstructions"]
+      "required": [
+        "id",
+        "kind",
+        "name",
+        "external",
+        "archived",
+        "knowledgeCount",
+        "draftCount",
+        "hasInstructions"
+      ]
     },
     "TeamKnowledgeView": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "id": {"type": "string"},
-        "scope": {"type": "string"},
-        "type": {"type": "string"},
-        "statement": {"type": "string"},
-        "rationale": {"type": "string"},
-        "evidence": {"type": "string"},
-        "confidence": {"type": "string"},
-        "status": {"type": "string"},
-        "source": {"type": "string"},
-        "owner": {"type": "string"},
-        "supersedes": {"type": ["string", "null"]}
+        "id": {
+          "type": "string"
+        },
+        "scope": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "statement": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "evidence": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "supersedes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       },
-      "required": ["id", "scope", "type", "statement", "confidence", "status", "source"]
+      "required": [
+        "id",
+        "scope",
+        "type",
+        "statement",
+        "confidence",
+        "status",
+        "source"
+      ]
     },
     "FileListParams": {
       "type": "object",
@@ -5895,6 +6290,41 @@
       },
       "required": [
         "threadId"
+      ]
+    },
+    "GitLogParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "threadId": {
+          "type": "string"
+        },
+        "limit": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        }
+      },
+      "required": [
+        "threadId"
+      ]
+    },
+    "GitShowParams": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "threadId": {
+          "type": "string"
+        },
+        "revision": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 64
+        }
+      },
+      "required": [
+        "threadId",
+        "revision"
       ]
     },
     "GitDiscardParams": {
@@ -6994,6 +7424,12 @@
         "git/discard": {
           "$ref": "#/$defs/GitDiscardParams"
         },
+        "git/log": {
+          "$ref": "#/$defs/GitLogParams"
+        },
+        "git/show": {
+          "$ref": "#/$defs/GitShowParams"
+        },
         "git/worktree/create": {
           "$ref": "#/$defs/ThreadReadParams"
         },
@@ -7175,6 +7611,8 @@
         "git/status",
         "git/diff",
         "git/discard",
+        "git/log",
+        "git/show",
         "git/worktree/create",
         "git/worktree/remove",
         "terminal/list",
@@ -8015,125 +8453,268 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "bind": {"type": ["string", "null"]},
-            "inChain": {"type": "array", "items": {"type": "string"}},
-            "entities": {"type": "array", "items": {"$ref": "#/$defs/TeamEntityView"}}
+            "bind": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "inChain": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "entities": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TeamEntityView"
+              }
+            }
           },
-          "required": ["bind", "inChain", "entities"]
+          "required": [
+            "bind",
+            "inChain",
+            "entities"
+          ]
         },
         "team/read": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entity": {"$ref": "#/$defs/TeamEntityView"},
-            "instructions": {"type": "string"},
-            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+            "entity": {
+              "$ref": "#/$defs/TeamEntityView"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "knowledge": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TeamKnowledgeView"
+              }
+            }
           },
-          "required": ["entity", "instructions", "knowledge"]
+          "required": [
+            "entity",
+            "instructions",
+            "knowledge"
+          ]
         },
         "team/preview": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "task": {"type": ["string", "null"]},
-            "chain": {"type": "array", "items": {"type": "string"}},
-            "referenced": {"type": "array", "items": {"type": "string"}},
-            "entryCount": {"type": "integer"},
-            "externalExcluded": {"type": "integer"},
-            "blockedOverrides": {"type": "array", "items": {"type": "string"}},
-            "truncated": {"type": "boolean"},
-            "text": {"type": "string"}
+            "task": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "chain": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "referenced": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "entryCount": {
+              "type": "integer"
+            },
+            "externalExcluded": {
+              "type": "integer"
+            },
+            "blockedOverrides": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "truncated": {
+              "type": "boolean"
+            },
+            "text": {
+              "type": "string"
+            }
           },
-          "required": ["task", "chain", "referenced", "entryCount", "externalExcluded", "blockedOverrides", "truncated", "text"]
+          "required": [
+            "task",
+            "chain",
+            "referenced",
+            "entryCount",
+            "externalExcluded",
+            "blockedOverrides",
+            "truncated",
+            "text"
+          ]
         },
         "team/create": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entity": {"$ref": "#/$defs/TeamEntityView"},
-            "instructions": {"type": "string"},
-            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+            "entity": {
+              "$ref": "#/$defs/TeamEntityView"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "knowledge": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TeamKnowledgeView"
+              }
+            }
           },
-          "required": ["entity", "instructions", "knowledge"]
+          "required": [
+            "entity",
+            "instructions",
+            "knowledge"
+          ]
         },
         "team/knowledge/add": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
-            "path": {"type": "string"}
+            "entry": {
+              "$ref": "#/$defs/TeamKnowledgeView"
+            },
+            "path": {
+              "type": "string"
+            }
           },
-          "required": ["entry"]
+          "required": [
+            "entry"
+          ]
         },
         "team/knowledge/promote": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
-            "path": {"type": "string"}
+            "entry": {
+              "$ref": "#/$defs/TeamKnowledgeView"
+            },
+            "path": {
+              "type": "string"
+            }
           },
-          "required": ["entry"]
+          "required": [
+            "entry"
+          ]
         },
         "team/knowledge/update": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entry": {"$ref": "#/$defs/TeamKnowledgeView"},
-            "path": {"type": "string"}
+            "entry": {
+              "$ref": "#/$defs/TeamKnowledgeView"
+            },
+            "path": {
+              "type": "string"
+            }
           },
-          "required": ["entry"]
+          "required": [
+            "entry"
+          ]
         },
         "team/knowledge/remove": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "removed": {"type": "string"},
-            "path": {"type": "string"}
+            "removed": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
           },
-          "required": ["removed"]
+          "required": [
+            "removed"
+          ]
         },
         "team/entity/update": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entity": {"$ref": "#/$defs/TeamEntityView"},
-            "instructions": {"type": "string"},
-            "knowledge": {"type": "array", "items": {"$ref": "#/$defs/TeamKnowledgeView"}}
+            "entity": {
+              "$ref": "#/$defs/TeamEntityView"
+            },
+            "instructions": {
+              "type": "string"
+            },
+            "knowledge": {
+              "type": "array",
+              "items": {
+                "$ref": "#/$defs/TeamKnowledgeView"
+              }
+            }
           },
-          "required": ["entity", "instructions", "knowledge"]
+          "required": [
+            "entity",
+            "instructions",
+            "knowledge"
+          ]
         },
         "team/entity/remove": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "removed": {"type": "string"},
-            "path": {"type": "string"}
+            "removed": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            }
           },
-          "required": ["removed"]
+          "required": [
+            "removed"
+          ]
         },
         "team/knowledge/deprecate": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "entry": {"$ref": "#/$defs/TeamKnowledgeView"}
+            "entry": {
+              "$ref": "#/$defs/TeamKnowledgeView"
+            }
           },
-          "required": ["entry"]
+          "required": [
+            "entry"
+          ]
         },
         "team/visibility/read": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "hidden": {"type": "array", "items": {"type": "string"}}
+            "hidden": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["hidden"]
+          "required": [
+            "hidden"
+          ]
         },
         "team/visibility/set": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "hidden": {"type": "array", "items": {"type": "string"}}
+            "hidden": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["hidden"]
+          "required": [
+            "hidden"
+          ]
         },
         "team/env/read": {
           "type": "object",
@@ -8145,72 +8726,139 @@
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "name": {"type": "string"},
-                  "keys": {"type": "array", "items": {"type": "string"}}
+                  "name": {
+                    "type": "string"
+                  },
+                  "keys": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    }
+                  }
                 },
-                "required": ["name", "keys"]
+                "required": [
+                  "name",
+                  "keys"
+                ]
               }
             },
-            "active": {"type": ["string", "null"]}
+            "active": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
           },
-          "required": ["environments", "active"]
+          "required": [
+            "environments",
+            "active"
+          ]
         },
         "team/env/values": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "values": {"type": "object", "additionalProperties": {"type": "string"}}
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["values"]
+          "required": [
+            "values"
+          ]
         },
         "team/env/save": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "values": {"type": "object", "additionalProperties": {"type": "string"}}
+            "values": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
           },
-          "required": ["values"]
+          "required": [
+            "values"
+          ]
         },
         "team/env/activate": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "active": {"type": "string"}
+            "active": {
+              "type": "string"
+            }
           },
-          "required": ["active"]
+          "required": [
+            "active"
+          ]
         },
         "team/browse": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "root": {"type": "string"},
-            "path": {"type": "string"},
+            "root": {
+              "type": "string"
+            },
+            "path": {
+              "type": "string"
+            },
             "entries": {
               "type": "array",
               "items": {
                 "type": "object",
                 "additionalProperties": false,
                 "properties": {
-                  "name": {"type": "string"},
-                  "path": {"type": "string"},
-                  "type": {"type": "string"},
-                  "size": {"type": "integer"}
+                  "name": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "type": {
+                    "type": "string"
+                  },
+                  "size": {
+                    "type": "integer"
+                  }
                 },
-                "required": ["name", "path", "type", "size"]
+                "required": [
+                  "name",
+                  "path",
+                  "type",
+                  "size"
+                ]
               }
             }
           },
-          "required": ["root", "path", "entries"]
+          "required": [
+            "root",
+            "path",
+            "entries"
+          ]
         },
         "team/browse/read": {
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "path": {"type": "string"},
-            "content": {"type": "string"},
-            "truncated": {"type": "boolean"}
+            "path": {
+              "type": "string"
+            },
+            "content": {
+              "type": "string"
+            },
+            "truncated": {
+              "type": "boolean"
+            }
           },
-          "required": ["path", "content", "truncated"]
+          "required": [
+            "path",
+            "content",
+            "truncated"
+          ]
         },
         "team/export": {
           "type": "object",
@@ -8220,12 +8868,25 @@
           "type": "object",
           "additionalProperties": false,
           "properties": {
-            "importedEntities": {"type": "integer"},
-            "skippedEntities": {"type": "integer"},
-            "importedKnowledge": {"type": "integer"},
-            "skippedKnowledge": {"type": "integer"}
+            "importedEntities": {
+              "type": "integer"
+            },
+            "skippedEntities": {
+              "type": "integer"
+            },
+            "importedKnowledge": {
+              "type": "integer"
+            },
+            "skippedKnowledge": {
+              "type": "integer"
+            }
           },
-          "required": ["importedEntities", "skippedEntities", "importedKnowledge", "skippedKnowledge"]
+          "required": [
+            "importedEntities",
+            "skippedEntities",
+            "importedKnowledge",
+            "skippedKnowledge"
+          ]
         },
         "git/status": {
           "type": "object",
@@ -8437,6 +9098,58 @@
         },
         "dictation/transcribe": {
           "$ref": "#/$defs/DictationTranscribeResult"
+        },
+        "git/log": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "commits": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "hash": {
+                    "type": "string"
+                  },
+                  "short": {
+                    "type": "string"
+                  },
+                  "subject": {
+                    "type": "string"
+                  },
+                  "author": {
+                    "type": "string"
+                  },
+                  "date": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "hash",
+                  "short",
+                  "subject",
+                  "author",
+                  "date"
+                ]
+              }
+            }
+          },
+          "required": [
+            "commits"
+          ]
+        },
+        "git/show": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "text": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "text"
+          ]
         }
       },
       "required": [
@@ -8550,6 +9263,8 @@
         "git/status",
         "git/diff",
         "git/discard",
+        "git/log",
+        "git/show",
         "git/worktree/create",
         "git/worktree/remove",
         "terminal/list",

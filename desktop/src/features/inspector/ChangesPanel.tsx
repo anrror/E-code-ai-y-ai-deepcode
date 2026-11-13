@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import type { Thread } from "../../generated/app-server";
@@ -5,6 +6,24 @@ import { confirmAction } from "../../platform/confirmAction";
 import type { CodeWorkbenchController } from "../workbench/useCodeWorkbench";
 import { InspectorEmpty } from "./InspectorEmpty";
 import styles from "./Inspector.module.css";
+
+interface CommitSummary {
+  hash: string;
+  short: string;
+  subject: string;
+  author: string;
+  date: string;
+}
+
+function patchLineClass(line: string): string {
+  if (line.startsWith("+++") || line.startsWith("---")) return styles.patchMeta;
+  if (line.startsWith("+")) return styles.patchAdd;
+  if (line.startsWith("-")) return styles.patchRemove;
+  if (line.startsWith("@@")) return styles.patchHunk;
+  if (line.startsWith("commit ") || line.startsWith("Author:") || line.startsWith("Date:"))
+    return styles.patchMeta;
+  return styles.patchLine;
+}
 
 interface ChangesPanelProps {
   thread: Thread | null;
@@ -22,6 +41,67 @@ export function ChangesPanel({
   onOpenFile,
 }: ChangesPanelProps) {
   const { t } = useTranslation();
+  const [view, setView] = useState<"changes" | "history">("changes");
+  const [commits, setCommits] = useState<CommitSummary[]>([]);
+  const [commit, setCommit] = useState<CommitSummary | null>(null);
+  const [patch, setPatch] = useState("");
+  const [historyLoading, setHistoryLoading] = useState(false);
+
+  useEffect(() => {
+    if (view !== "history" || !thread) {
+      return;
+    }
+    let cancelled = false;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loading flag for the async fetch
+    setHistoryLoading(true);
+    void workbench.runtime
+      .request("git/log", { threadId: thread.id, limit: 100 })
+      .then((result) => {
+        if (cancelled) {
+          return;
+        }
+        setCommits(result.commits);
+        setCommit(result.commits[0] ?? null);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setCommits([]);
+        }
+      })
+      .finally(() => {
+        if (!cancelled) {
+          setHistoryLoading(false);
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [view, thread, workbench.runtime]);
+
+  useEffect(() => {
+    if (!thread || !commit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clearing the diff is a render input
+      setPatch("");
+      return;
+    }
+    let cancelled = false;
+    void workbench.runtime
+      .request("git/show", { threadId: thread.id, revision: commit.hash })
+      .then((result) => {
+        if (!cancelled) {
+          setPatch(result.text);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPatch("");
+        }
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [thread, commit, workbench.runtime]);
+
   const cleanWorktree = async () => {
     const dirty = Boolean(workbench.git?.entries.length);
     if (
@@ -80,6 +160,61 @@ export function ChangesPanel({
         </button>
       </div>
 
+      <div className={styles.segmented}>
+        <button
+          type="button"
+          className={view === "changes" ? styles.segmentedActive : undefined}
+          onClick={() => setView("changes")}
+        >
+          {t("inspector.changes.tabChanges", "变更")}
+        </button>
+        <button
+          type="button"
+          className={view === "history" ? styles.segmentedActive : undefined}
+          onClick={() => setView("history")}
+        >
+          {t("inspector.changes.tabHistory", "提交历史")}
+        </button>
+      </div>
+
+      {view === "history" ? (
+        <div className={styles.diffList}>
+          <div className={styles.historyList}>
+            {historyLoading ? (
+              <p className={styles.note}>{t("inspector.changes.loadingHistory", "读取提交记录…")}</p>
+            ) : commits.length === 0 ? (
+              <InspectorEmpty label={t("inspector.changes.emptyHistory", "还没有提交记录")} compact />
+            ) : (
+              commits.map((item) => (
+                <button
+                  key={item.hash}
+                  type="button"
+                  className={
+                    item.hash === commit?.hash ? styles.historyRowActive : styles.historyRow
+                  }
+                  onClick={() => setCommit(item)}
+                >
+                  <code>{item.short}</code>
+                  <span className={styles.historySubject}>{item.subject}</span>
+                  <span className={styles.historyMeta}>
+                    {item.author} · {item.date.slice(0, 16).replace("T", " ")}
+                  </span>
+                </button>
+              ))
+            )}
+          </div>
+          <pre className={styles.commitPatch}>
+            {patch
+              ? patch.split("\n").map((line, index) => (
+                  <span key={index} className={patchLineClass(line)}>
+                    {line || " "}
+                  </span>
+                ))
+              : null}
+          </pre>
+        </div>
+      ) : (
+        <>
       {thread?.worktreePath ? (
         <div className={styles.worktreeControl}>
           <strong>{t("inspector.changes.isolated", "Isolated worktree")}</strong>
@@ -190,6 +325,8 @@ export function ChangesPanel({
           )}
         </p>
       ) : null}
+        </>
+      )}
     </div>
   );
 }
