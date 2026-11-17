@@ -68,10 +68,28 @@ from core.providers.registry import (
     find_by_name,
 )
 
+
 _DEFAULT_CONFIG_FILENAME = "deepcode_config.json"
 # Env var that relocates the user-level config base (cf. Codex's CODEX_HOME).
 DEEPCODE_HOME_ENV = "DEEPCODE_HOME"
 _ENV_REF_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
+_ENV_NAME_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
+# Kubernetes object names: DNS-1123 labels/subdomains. CI/CD config only needs
+# namespaces, deployments, pods and containers; a strict pattern keeps a name
+# from turning into a path segment.
+_K8S_NAME_PATTERN = re.compile(r"^[a-z0-9]([-a-z0-9.]*[a-z0-9])?$")
+# Credential-bearing settings name an environment variable; they are never
+# interpolation sites and are withheld from child processes.
+_CREDENTIAL_ENV_FIELDS = frozenset(
+    {
+        "apiKeyEnv",
+        "api_key_env",
+        "apiTokenEnv",
+        "api_token_env",
+        "tokenEnv",
+        "token_env",
+    }
+)
 
 
 # ---------------------------------------------------------------------------
@@ -529,6 +547,172 @@ class DictationConfig(_Base):
         return self
 
 
+class JenkinsConfig(_Base):
+    """One Jenkins controller the agent may inspect or operate.
+
+    The controller is normally on an internal network, so — unlike
+    :mod:`core.network.safe_http` — requests may resolve to private addresses.
+    That makes the configured host itself the trust boundary, which is why the
+    whole ``cicd`` block is user-owned and dropped from a project layer.
+
+    ``apiTokenEnv`` names an environment variable; it is never the token and is
+    never interpolated. ``username`` may be omitted for anonymous read-only
+    controllers. ``allowedJobs`` narrows what a tool call may address; an empty
+    list allows every job the credential can see.
+    """
+
+    base_url: str = Field(min_length=1)
+    username: str | None = None
+    auth: Literal["basic", "bearer"] = "basic"
+    api_token_env: str | None = "JENKINS_API_TOKEN"
+    verify_tls: bool = True
+    ca_file: str | None = None
+    timeout_seconds: float = Field(default=30.0, gt=0, le=600)
+    max_response_bytes: int = Field(default=1_000_000, ge=1024, le=16_777_216)
+    max_log_bytes: int = Field(default=128_000, ge=1024, le=1_048_576)
+    build_queue_timeout_seconds: float = Field(default=120.0, gt=0, le=3600)
+    allowed_jobs: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_endpoint(self):
+        endpoint = self.base_url.strip().rstrip("/")
+        parsed = urlsplit(endpoint)
+        if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+            raise ValueError(
+                "cicd.jenkins.baseUrl must be an absolute http:// or https:// URL"
+            )
+        if parsed.username or parsed.password:
+            raise ValueError(
+                "cicd.jenkins.baseUrl must not embed credentials; use username "
+                "and apiTokenEnv"
+            )
+        if parsed.query or parsed.fragment:
+            raise ValueError("cicd.jenkins.baseUrl must not carry a query or fragment")
+        self.base_url = endpoint
+        if self.api_token_env is not None and not _ENV_NAME_PATTERN.match(
+            self.api_token_env
+        ):
+            raise ValueError(
+                "cicd.jenkins.apiTokenEnv must be an environment variable name"
+            )
+        if self.auth == "bearer" and not self.api_token_env:
+            raise ValueError(
+                "cicd.jenkins.apiTokenEnv is required when auth is 'bearer'"
+            )
+        return self
+
+
+class KubernetesConfig(_Base):
+    """Kubernetes API access for inspection and controlled rollouts.
+
+    Credentials resolve in this order: explicit ``apiServer`` plus
+    ``tokenEnv``/``tokenFile`` (or client certificate files), then
+    ``kubeconfig`` for its current or named context, then in-cluster service
+    account credentials. Exec and auth-provider kubeconfig entries are refused:
+    running arbitrary helper binaries from a config file would be a second,
+    unreviewed execution channel.
+
+    ``allowedNamespaces`` and ``allowedDeployments`` are optional narrowing
+    lists. A deployment may be written as ``name`` or ``namespace/name`` and
+    supports shell-style wildcards.
+    """
+
+    api_server: str | None = None
+    namespace: str = "default"
+    token_env: str | None = None
+    token_file: str | None = None
+    kubeconfig: str | None = None
+    context: str | None = None
+    ca_file: str | None = None
+    client_cert_file: str | None = None
+    client_key_file: str | None = None
+    verify_tls: bool = True
+    timeout_seconds: float = Field(default=30.0, gt=0, le=600)
+    max_response_bytes: int = Field(default=1_000_000, ge=1024, le=16_777_216)
+    max_log_bytes: int = Field(default=128_000, ge=1024, le=1_048_576)
+    rollout_timeout_seconds: float = Field(default=300.0, gt=0, le=3600)
+    allowed_namespaces: list[str] = Field(default_factory=list)
+    allowed_deployments: list[str] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_connection(self):
+        if self.api_server is not None:
+            endpoint = self.api_server.strip().rstrip("/")
+            parsed = urlsplit(endpoint)
+            if parsed.scheme not in {"http", "https"} or not parsed.hostname:
+                raise ValueError(
+                    "cicd.kubernetes.apiServer must be an absolute http:// or "
+                    "https:// URL"
+                )
+            if parsed.username or parsed.password:
+                raise ValueError(
+                    "cicd.kubernetes.apiServer must not embed credentials; use "
+                    "tokenEnv or tokenFile"
+                )
+            if parsed.query or parsed.fragment:
+                raise ValueError(
+                    "cicd.kubernetes.apiServer must not carry a query or fragment"
+                )
+            self.api_server = endpoint
+        if self.token_env and self.token_file:
+            raise ValueError(
+                "cicd.kubernetes.tokenEnv and tokenFile are mutually exclusive"
+            )
+        if bool(self.client_cert_file) != bool(self.client_key_file):
+            raise ValueError(
+                "cicd.kubernetes.clientCertFile and clientKeyFile must be set together"
+            )
+        explicit = any(
+            (
+                self.api_server,
+                self.token_env,
+                self.token_file,
+                self.ca_file,
+                self.client_cert_file,
+                self.client_key_file,
+            )
+        )
+        if self.kubeconfig and explicit:
+            raise ValueError(
+                "cicd.kubernetes.kubeconfig cannot be combined with explicit "
+                "apiServer/token/certificate settings"
+            )
+        if self.token_env is not None and not _ENV_NAME_PATTERN.match(self.token_env):
+            raise ValueError(
+                "cicd.kubernetes.tokenEnv must be an environment variable name"
+            )
+        if not _K8S_NAME_PATTERN.match(self.namespace or ""):
+            raise ValueError(
+                "cicd.kubernetes.namespace must be a valid Kubernetes namespace"
+            )
+        for namespace in self.allowed_namespaces:
+            if not _K8S_NAME_PATTERN.match(namespace or ""):
+                raise ValueError(
+                    "cicd.kubernetes.allowedNamespaces contains an invalid name"
+                )
+        if self.allowed_namespaces and self.namespace not in self.allowed_namespaces:
+            raise ValueError(
+                "cicd.kubernetes.namespace must be listed in allowedNamespaces"
+            )
+        return self
+
+
+class CicdConfig(_Base):
+    """CI/CD backends exposed to the CLI and the agent.
+
+    Presence of a backend enables it. An absent ``cicd`` block leaves the
+    feature off: no tools are registered and the CLI reports that nothing is
+    configured.
+    """
+
+    jenkins: JenkinsConfig | None = None
+    kubernetes: KubernetesConfig | None = None
+
+    @property
+    def configured(self) -> bool:
+        return self.jenkins is not None or self.kubernetes is not None
+
+
 class DocumentSegmentationConfig(_Base):
     enabled: bool = True
     size_threshold_chars: int = 50000
@@ -627,6 +811,10 @@ class DeepCodeConfig(BaseSettings):
     # disabled microphone that still ships an endpoint would be a config that
     # reads as configured while doing nothing.
     dictation: DictationConfig | None = None
+    # Absent means "no CI/CD integration"; present backends are offered to the
+    # agent and the `deepcode cicd` CLI. User-owned: a project layer may not
+    # redirect an infrastructure credential.
+    cicd: CicdConfig | None = None
     document_segmentation: DocumentSegmentationConfig = Field(
         default_factory=DocumentSegmentationConfig,
         validation_alias=AliasChoices("documentSegmentation", "document_segmentation"),
@@ -938,9 +1126,11 @@ def _project_runtime_layer(raw: dict[str, Any]) -> dict[str, Any]:
     remains readable against the registry provider's trusted default endpoint;
     all routing fields are discarded.
 
-    ``dictation`` is discarded for the same reason: its endpoint receives raw
-    microphone audio, so a cloned repository must not be able to point it at a
-    host of its own choosing.
+    ``dictation`` and ``cicd`` are discarded for the same reason: the former
+    endpoint receives raw microphone audio, and the latter carries
+    infrastructure credentials that can trigger builds and change workloads.
+    A cloned repository must not be able to point either at a host of its own
+    choosing.
 
     ``security`` may tighten but not remove the command sandbox: trusting a
     folder lets the agent work there and never grants Full access, which the
@@ -951,6 +1141,8 @@ def _project_runtime_layer(raw: dict[str, Any]) -> dict[str, Any]:
     sanitized = dict(raw)
     if sanitized.pop("dictation", None) is not None:
         logger.trace("Ignoring project dictation endpoint; dictation is user-owned")
+    if sanitized.pop("cicd", None) is not None:
+        logger.trace("Ignoring project CI/CD backends; CI/CD is user-owned")
     if isinstance(raw.get("security"), dict):
         kept, ignored = split_project_security(raw)
         if ignored:
@@ -987,7 +1179,7 @@ def _resolve_env_refs(value: Any, *, path: str = "") -> Any:
         # the environment value into Pydantic validation errors and could
         # reflect credential material through a public configuration surface.
         field_name = path.rsplit(".", 1)[-1]
-        if field_name in {"apiKeyEnv", "api_key_env"}:
+        if field_name in _CREDENTIAL_ENV_FIELDS:
             return value
 
         def _replace(match: re.Match[str]) -> str:
@@ -1032,7 +1224,7 @@ def credential_variables() -> set[str]:
             for child in value:
                 collect(child, key)
         elif isinstance(value, str):
-            if key in {"apiKeyEnv", "api_key_env"}:
+            if key in _CREDENTIAL_ENV_FIELDS:
                 names.add(value.strip())
             else:
                 names.update(_ENV_REF_PATTERN.findall(value))
@@ -1044,7 +1236,7 @@ def credential_variables() -> set[str]:
             continue
         if project:
             raw = _project_runtime_layer(raw)
-        for section in ("providers", "dictation"):
+        for section in ("providers", "dictation", "cicd"):
             collect(raw.get(section))
     names.discard("")
     return names
@@ -1339,6 +1531,7 @@ __all__ = [
     "AgentDefaults",
     "AgentPhase",
     "AgentsConfig",
+    "CicdConfig",
     "ConfigError",
     "ConnectionProfileConfig",
     "ManualModelConfig",
@@ -1346,6 +1539,8 @@ __all__ = [
     "DictationConfig",
     "DocumentSegmentationConfig",
     "EgressPolicyConfig",
+    "JenkinsConfig",
+    "KubernetesConfig",
     "LLMLoggerConfig",
     "LoggerConfig",
     "LoggerGlobalFile",
@@ -1357,6 +1552,7 @@ __all__ = [
     "ProviderConfig",
     "ProvidersConfig",
     "ResolvedAgentSettings",
+
     "ToolsConfig",
     "WorkspaceConfig",
     "credential_variables",

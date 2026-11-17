@@ -29,6 +29,7 @@ import { useSystemDarkMode } from "../../app/useSystemDarkMode";
 import { languageFor } from "../inspector/inspectorFormat";
 
 import styles from "./TeamPage.module.css";
+import { DeliveryPanel } from "./DeliveryPanel";
 
 const LocalMonacoEditor = lazy(() => import("../workbench/LocalMonacoEditor"));
 
@@ -136,6 +137,7 @@ interface CreateForm {
   name: string;
   parent: string;
   external: boolean;
+  taskId: string;
 }
 
 interface TeamPageProps {
@@ -209,6 +211,7 @@ export function TeamPage({
   const [editParent, setEditParent] = useState("");
   const [editExternal, setEditExternal] = useState(false);
   const [editWorkspace, setEditWorkspace] = useState("");
+  const [editTaskId, setEditTaskId] = useState("");
   const [editCodebases, setEditCodebases] = useState("");
   const [editDesigns, setEditDesigns] = useState("");
   const [editReferences, setEditReferences] = useState<string[]>([]);
@@ -524,6 +527,7 @@ export function TeamPage({
         name: "组织",
         parent: "",
         external: false,
+        taskId: "",
       });
       return;
     }
@@ -539,7 +543,14 @@ export function TeamPage({
         .pop()?.id ??
       "";
     setCreateError(null);
-    setCreateForm({ kind, slug: "", name: "", parent, external: false });
+    setCreateForm({
+      kind,
+      slug: "",
+      name: "",
+      parent,
+      external: false,
+      taskId: "",
+    });
   };
 
   const submitCreate = async () => {
@@ -566,6 +577,7 @@ export function TeamPage({
             ? createForm.parent
             : undefined,
         external: createForm.external,
+        taskId: createForm.taskId.trim() || undefined,
         shared: true,
       });
       setCreateForm(null);
@@ -729,6 +741,7 @@ export function TeamPage({
         parent: editParent,
         external: editExternal,
         workspace: editWorkspace.trim(),
+        taskId: editTaskId.trim(),
         codebases: editCodebases
           .split("\n")
           .map((line) => line.trim())
@@ -1277,6 +1290,7 @@ export function TeamPage({
                       setEditParent(selectedEntity.parent ?? "");
                       setEditExternal(selectedEntity.external);
                       setEditWorkspace(selectedEntity.workspace ?? "");
+                      setEditTaskId(selectedEntity.taskId ?? "");
                       setEditCodebases(
                         (selectedEntity.codebases ?? []).join("\n"),
                       );
@@ -1616,6 +1630,8 @@ export function TeamPage({
                       <dd>{selectedEntity.parent ?? "—"}</dd>
                       <dt>{t("team.workspace", "工作区")}</dt>
                       <dd>{selectedEntity.workspace ?? "—"}</dd>
+                      <dt>{t("team.taskId", "任务 ID")}</dt>
+                      <dd>{selectedEntity.taskId ?? "—"}</dd>
                       <dt>{t("team.references", "引用")}</dt>
                       <dd>
                         {(selectedEntity.references ?? []).length > 0
@@ -1654,6 +1670,9 @@ export function TeamPage({
               </button>
             </div>
           )}
+          {activeDetail ? (
+            <DeliveryPanel runtime={runtime} entityId={activeDetail.entity.id} />
+          ) : null}
         </main>
       </div>
 
@@ -1930,6 +1949,19 @@ export function TeamPage({
                   ))}
               </select>
             </label>
+            {selectedEntity.kind === "org" ? null : (
+              <label className={styles.wide}>
+                <span>{t("team.taskId", "任务 ID")}</span>
+                <input
+                  value={editTaskId}
+                  placeholder={t(
+                    "team.taskIdHint",
+                    "公司任务 ID，例如 TASK-2026-001",
+                  )}
+                  onChange={(event) => setEditTaskId(event.target.value)}
+                />
+              </label>
+            )}
             {selectedEntity.kind === "project" ||
             selectedEntity.kind === "product" ? (
               <>
@@ -2122,6 +2154,21 @@ export function TeamPage({
                 }
               />
             </label>
+            {createForm.kind === "org" ? null : (
+              <label className={styles.wide}>
+                <span>{t("team.taskId", "任务 ID")}</span>
+                <input
+                  value={createForm.taskId}
+                  placeholder={t(
+                    "team.taskIdHint",
+                    "公司任务 ID，例如 TASK-2026-001",
+                  )}
+                  onChange={(event) =>
+                    setCreateForm({ ...createForm, taskId: event.target.value })
+                  }
+                />
+              </label>
+            )}
             {createForm.kind === "org" ? null : (
             <label>
               <span>{t("team.parent", "父层")}</span>

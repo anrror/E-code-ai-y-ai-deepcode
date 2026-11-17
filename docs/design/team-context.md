@@ -74,6 +74,7 @@ org 也可直接拥有 product（PaaS 产品）
 | `external` | 外部团队维护，只读镜像 | batch / product |
 | `archived` | 历史资产，可检索、带 `[historical]` 标注、非当前标准 | product |
 | `workspace` | 绑定本地目录（task 用） | task |
+| `task_id` | 公司任务 ID，写入装配块用于会话归因；不参与路由 | 任意层（通常 project/product/task） |
 | `references` | 引用的产品/能力，一跳 | project / product |
 | `designs` | 设计文档路径（指针，不是正文） | product / project |
 | `codebases` | 代码库路径或 URL（指针） | product / project |
@@ -437,6 +438,7 @@ project/files/read         {projectId, path, maxBytes}
 - **产品可归属也可引用**：业务线可直接拥有产品，项目可挂在产品下（line → product → project）；引用（`references`）只提供一跳上下文，不覆盖本层。
 - **层信息可编辑**：名称、上级、外部标记、关联面板项目、代码路径、文档路径；层可删除（有子层先处理子层，有知识需确认）。
 - **环境变量**：项目与产品层可维护多套环境（dev/staging/…），`KEY=VALUE` 存于层目录 `environments/<env>.yaml`，文件权限 0600，**不进入模型上下文**；当前只做存储与“当前环境”标记，命令注入尚未接入。
+- **公司任务 ID**：在团队上下文的层 `entity.yaml` 中配置 `task_id`（也接受 `taskId`），按主链最近层取值并进入上下文头（`task-id="…"`）；引用产品不改变归属。
 - **代码/文档查看**：项目与产品层配置的本地路径可在层内浏览（根目录限定、拒绝路径穿越与二进制），编辑器只读。
 - **预览装配包含上下级**：向上走父链（到组织红线），向下广度遍历子层（产品下的项目、项目下的批次/版本/任务），再合并一跳引用；预览文本含每层的代码/文档/工作区指针，并按 chain / sub-layer / referenced 标注。
 - **侧栏项目可见性**：`~/.deepcode/team/visibility.yaml` 记录隐藏项目；Team 页项目节点上的眼睛开关与“侧栏项目”对话框都可修改，侧栏据此过滤。

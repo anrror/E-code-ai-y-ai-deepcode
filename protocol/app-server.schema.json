@@ -5538,6 +5538,11 @@
           "type": "string",
           "maxLength": 500
         },
+        "taskId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^$|^[A-Za-z0-9][A-Za-z0-9._:@/#+-]*$"
+        },
         "references": {
           "type": "array",
           "maxItems": 50,
@@ -5736,6 +5741,11 @@
         "workspace": {
           "type": "string",
           "maxLength": 1000
+        },
+        "taskId": {
+          "type": "string",
+          "maxLength": 128,
+          "pattern": "^$|^[A-Za-z0-9][A-Za-z0-9._:@/#+-]*$"
         },
         "references": {
           "type": "array",
@@ -6031,6 +6041,9 @@
             "string",
             "null"
           ]
+        },
+        "taskId": {
+          "type": "string"
         },
         "knowledgeCount": {
           "type": "integer"
@@ -7540,6 +7553,144 @@
           "required": [
             "processId"
           ]
+        },
+        "integrations/read": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "integrations/save": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            },
+            "jenkins": {
+              "type": "object"
+            },
+            "k8s": {
+              "type": "object"
+            },
+            "clearJenkins": {
+              "type": "boolean"
+            },
+            "clearK8s": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "jenkins/status": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "jenkins/trigger": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            },
+            "parameters": {
+              "type": "object"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "jenkins/console": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            },
+            "build": {
+              "type": "integer"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "k8s/pods": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "k8s/logs": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            },
+            "pod": {
+              "type": "string"
+            },
+            "container": {
+              "type": "string"
+            },
+            "tail": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 2000
+            }
+          },
+          "required": [
+            "entityId",
+            "pod"
+          ]
+        },
+        "k8s/deployments": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
+        },
+        "k8s/restart": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "entityId": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "entityId"
+          ]
         }
       },
       "required": [
@@ -8501,6 +8652,18 @@
                 "null"
               ]
             },
+            "taskId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "taskIdSource": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
             "inChain": {
               "type": "array",
               "items": {
@@ -8516,6 +8679,8 @@
           },
           "required": [
             "bind",
+            "taskId",
+            "taskIdSource",
             "inChain",
             "entities"
           ]
@@ -8548,6 +8713,18 @@
           "additionalProperties": false,
           "properties": {
             "task": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "taskId": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "taskIdSource": {
               "type": [
                 "string",
                 "null"
@@ -8586,6 +8763,8 @@
           },
           "required": [
             "task",
+            "taskId",
+            "taskIdSource",
             "chain",
             "referenced",
             "entryCount",
@@ -9353,6 +9532,42 @@
           "required": [
             "stopped"
           ]
+        },
+        "integrations/read": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "integrations/save": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "jenkins/status": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "jenkins/trigger": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "jenkins/console": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "k8s/pods": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "k8s/logs": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "k8s/deployments": {
+          "type": "object",
+          "additionalProperties": true
+        },
+        "k8s/restart": {
+          "type": "object",
+          "additionalProperties": true
         }
       },
       "required": [

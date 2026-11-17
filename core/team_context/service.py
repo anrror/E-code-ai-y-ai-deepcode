@@ -17,6 +17,7 @@ from core.team_context.assembler import (
     assemble,
     referenced_entities,
     resolve_chain,
+    resolve_task_id,
 )
 from core.team_context.catalog import (
     CATALOG_RELATIVE,
@@ -37,12 +38,15 @@ from core.team_context.models import (
     TeamContextError,
     TeamEntity,
 )
+from core.task_identity import normalize_task_id
 
 
 class TeamContextService:
     """File-backed team context for one workspace."""
     def __init__(
-        self, workspace: str | Path | None, home: str | Path | None = None
+        self,
+        workspace: str | Path | None,
+        home: str | Path | None = None,
     ) -> None:
         self.workspace = Path(workspace) if workspace is not None else None
         if home is None:
@@ -61,6 +65,8 @@ class TeamContextService:
 
         catalog = self.catalog()
         bound = catalog.bind_for(self.workspace)
+        chain = resolve_chain(catalog, bound)
+        task_id, task_id_source = resolve_task_id(chain)
         counts: dict[str, int] = {}
         drafts: dict[str, int] = {}
         for entry in catalog.knowledge.values():
@@ -74,7 +80,7 @@ class TeamContextService:
         ):
             entities.append(
                 {
-                    **entity.to_mapping(),
+                    **_entity_view(entity),
                     "configured": True,
                     "knowledgeCount": counts.get(entity.id, 0),
                     "draftCount": drafts.get(entity.id, 0),
@@ -83,9 +89,9 @@ class TeamContextService:
             )
         return {
             "bind": bound,
-            "inChain": [
-                entity.id for entity in resolve_chain(catalog, bound)
-            ],
+            "taskId": task_id,
+            "taskIdSource": task_id_source,
+            "inChain": [entity.id for entity in chain],
             "entities": entities,
         }
 
@@ -110,7 +116,7 @@ class TeamContextService:
         ]
         return {
             "entity": {
-                **entity.to_mapping(),
+                **_entity_view(entity),
                 "configured": True,
                 "knowledgeCount": len(entries),
                 "draftCount": sum(
@@ -131,6 +137,7 @@ class TeamContextService:
         parent: str | None = None,
         external: bool = False,
         workspace: str | None = None,
+        task_id: str | None = None,
         references: list[str] | None = None,
         designs: list[str] | None = None,
         codebases: list[str] | None = None,
@@ -191,6 +198,9 @@ class TeamContextService:
             payload["external"] = True
         if workspace:
             payload["workspace"] = workspace.strip()
+        normalized_task_id = _normalized_task_id(task_id)
+        if normalized_task_id:
+            payload["task_id"] = normalized_task_id
         for key, values in (
             ("references", references),
             ("designs", designs),
@@ -214,6 +224,7 @@ class TeamContextService:
         parent: str | None = None,
         external: bool | None = None,
         workspace: str | None = None,
+        task_id: str | None = None,
         references: list[str] | None = None,
         designs: list[str] | None = None,
         codebases: list[str] | None = None,
@@ -271,6 +282,11 @@ class TeamContextService:
                 if workspace is not None
                 else current.workspace
             ),
+            task_id=(
+                _normalized_task_id(task_id)
+                if task_id is not None
+                else current.task_id
+            ),
             references=(
                 tuple(references) if references is not None else current.references
             ),
@@ -300,6 +316,8 @@ class TeamContextService:
         )
         return {
             "task": result.task,
+            "taskId": result.task_id,
+            "taskIdSource": result.task_id_source,
             "chain": [entity.id for entity in result.chain],
             "referenced": [entity.id for entity in result.referenced],
             "entryCount": len(result.entries),
@@ -890,3 +908,26 @@ def _safe_env_name(name: str) -> str:
     if not cleaned:
         raise TeamContextError("an environment needs a name")
     return cleaned
+
+
+def _normalized_task_id(value: str | None) -> str | None:
+    try:
+        return normalize_task_id(value)
+    except ValueError as exc:
+        raise TeamContextError(str(exc)) from exc
+
+
+def _entity_view(entity: TeamEntity) -> dict[str, Any]:
+    """The wire projection of one layer.
+
+    ``TeamEntity.to_mapping`` is the on-disk shape (``task_id``, because it is
+    written to ``entity.yaml``). The RPC contract is camelCase, so the company
+    task id is renamed here; emitting both spellings would contradict the
+    schema's ``additionalProperties: false``.
+    """
+
+    data = entity.to_mapping()
+    task_id = data.pop("task_id", None)
+    if task_id:
+        data["taskId"] = task_id
+    return data

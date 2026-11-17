@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
+from core.task_identity import normalize_task_id
+
 ENTITY_KINDS = ("org", "line", "product", "project", "batch", "version", "task")
 KNOWLEDGE_TYPES = (
     "redline",
@@ -55,6 +57,9 @@ class TeamEntity:
     parent: str | None = None
     external: bool = False
     workspace: str | None = None
+    # Company-assigned identifier for the work this layer belongs to. It is
+    # reported in the assembled team context and never used for routing.
+    task_id: str | None = None
     # Multi-reference: projects cite products (and other capabilities) without
     # copying them, so a product stays single-owned.
     references: tuple[str, ...] = ()
@@ -80,19 +85,37 @@ class TeamEntity:
             raise TeamContextError(f"entity {self.id} cannot be its own parent")
         if self.kind == "org" and self.parent:
             raise TeamContextError("org entities are roots and cannot have a parent")
+        if self.task_id is not None:
+            try:
+                normalize_task_id(self.task_id)
+            except ValueError as exc:
+                raise TeamContextError(
+                    f"entity {self.id} has an invalid task id: {exc}"
+                ) from exc
 
     @classmethod
     def from_mapping(cls, raw: Any) -> TeamEntity:
         if not isinstance(raw, dict):
             raise TeamContextError("each entity must be a mapping")
         try:
+            raw_task_id = raw.get("task_id") or raw.get("taskId")
+            try:
+                task_id = normalize_task_id(raw_task_id)
+            except ValueError as exc:
+                raise TeamContextError(
+                    f"entity {raw.get('id') or raw.get('kind')!r} has an invalid "
+                    f"task_id: {exc}"
+                ) from exc
             return cls(
                 id=str(raw["id"]).strip(),
                 kind=str(raw["kind"]).strip(),
                 name=str(raw.get("name") or raw["id"]).strip(),
                 parent=(str(raw["parent"]).strip() if raw.get("parent") else None),
                 external=bool(raw.get("external", False)),
-                workspace=(str(raw["workspace"]).strip() if raw.get("workspace") else None),
+                workspace=(
+                    str(raw["workspace"]).strip() if raw.get("workspace") else None
+                ),
+                task_id=task_id,
                 references=_string_tuple(raw.get("references")),
                 designs=_string_tuple(raw.get("designs")),
                 codebases=_string_tuple(raw.get("codebases")),
@@ -109,6 +132,8 @@ class TeamEntity:
             data["external"] = True
         if self.workspace:
             data["workspace"] = self.workspace
+        if self.task_id:
+            data["task_id"] = self.task_id
         if self.references:
             data["references"] = list(self.references)
         if self.designs:

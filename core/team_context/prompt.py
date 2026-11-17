@@ -14,7 +14,9 @@ _USAGE = (
     "Team context comes from the organization's catalog. Red lines are "
     "non-negotiable; drafts and external references are unverified, so confirm "
     "them with tools or a human before treating them as team facts. Use the "
-    "team_context tool to search the catalog or record a draft finding."
+    "team_context tool to search the catalog or record a draft finding. When a "
+    "company-assigned task id is present, keep it attached to work you report "
+    "so the Session can be attributed to that task."
 )
 
 
@@ -39,6 +41,6 @@ def team_context_preamble(
     except Exception:
         logger.exception("team context could not be assembled for %s", workspace)
         return ""
-    if not assembled.entries:
+    if not assembled.entries and not assembled.task_id:
         return ""
     return f"{assembled.text}\n\n{_USAGE}"

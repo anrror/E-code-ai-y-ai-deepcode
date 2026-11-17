@@ -47,6 +47,11 @@ class AssembledContext:
     external_excluded: int = 0
     blocked_overrides: tuple[str, ...] = ()
     truncated: bool = False
+    # Company-assigned identity, resolved from explicit configuration or the
+    # nearest layer on the chain. It identifies the Session for reporting; it
+    # is not an internal team-context entity id.
+    task_id: str | None = None
+    task_id_source: str | None = None
 
 
 def resolve_chain(catalog: Catalog, start_id: str | None) -> tuple[TeamEntity, ...]:
@@ -62,6 +67,22 @@ def resolve_chain(catalog: Catalog, start_id: str | None) -> tuple[TeamEntity, .
         chain.append(current)
         current = catalog.entities.get(current.parent) if current.parent else None
     return tuple(chain)
+
+
+def resolve_task_id(
+    chain: Sequence[TeamEntity],
+) -> tuple[str | None, str | None]:
+    """The company task id for this Session and where it came from.
+
+    The nearest layer on the ownership chain that declares ``task_id`` wins
+    (task -> version -> batch -> project -> line -> org). A referenced product
+    never relabels the Session.
+    """
+
+    for entity in chain:
+        if entity.task_id:
+            return entity.task_id, entity.id
+    return None, None
 
 
 def referenced_entities(
@@ -216,11 +237,13 @@ def _render(
     instructions: Sequence[tuple[str, str]],
     *,
     max_chars: int,
+    task_id: str | None = None,
+    task_id_source: str | None = None,
 ) -> tuple[str, bool]:
-    header = (
-        f'<team-context task="{task or "unbound"}" '
-        f'chain="{" > ".join(entity.id for entity in chain)}"'
-    )
+    header = f'<team-context task="{task or "unbound"}"'
+    if task_id:
+        header += f' task-id="{task_id}"'
+    header += f' chain="{" > ".join(entity.id for entity in chain)}"'
     if referenced:
         header += f' referenced="{" ".join(entity.id for entity in referenced)}"'
     if descendants:
@@ -239,6 +262,14 @@ def _render(
         body.append(text)
         used += len(text) + 1
         return True
+
+    if task_id:
+        source = (
+            f" (from {task_id_source})"
+            if task_id_source and task_id_source != "config"
+            else ""
+        )
+        append(f"task id (company-assigned): {task_id}{source}")
 
     if instructions:
         append("layer instructions (a nearer layer is read later and wins):")
@@ -327,6 +358,7 @@ def assemble(
 
     start = task or catalog.bind
     chain = resolve_chain(catalog, start)
+    company_task_id, company_task_id_source = resolve_task_id(chain)
     descendants = descendant_entities(catalog, start)
     referenced = referenced_entities(catalog, chain)
     entries, excluded, blocked = _ordered_entries(
@@ -363,6 +395,8 @@ def assemble(
         catalog,
         blocks,
         max_chars=max_chars,
+        task_id=company_task_id,
+        task_id_source=company_task_id_source,
     )
     included = tuple(
         entry for entry in entries if entry.statement and entry.statement in text
@@ -377,4 +411,6 @@ def assemble(
         external_excluded=excluded,
         blocked_overrides=blocked,
         truncated=truncated,
+        task_id=company_task_id,
+        task_id_source=company_task_id_source,
     )

@@ -19,6 +19,7 @@ from app_server.protocol.retry import retry_capabilities
 from app_server.protocol.timeouts import timeout_capabilities
 from core.agent_presets import METADATA_KEY as PRESET_METADATA_KEY
 from core.agent_presets import list_agent_presets
+from core.application import jenkins_service, k8s_service
 from core.application.application import DeepCodeApplication
 from core.application.errors import (
     NoActiveTurnError,
@@ -74,6 +75,11 @@ from core.domain.thread import ThreadMode
 from core.domain.thread_goal import KEEP_TIME_BUDGET, GoalCheck
 from core.process_registry import registry
 from core.skills.models import MAX_SELECTED_SKILLS, SkillScope
+from core.team_context.integrations import (
+    IntegrationError,
+    read_integrations,
+    save_integrations,
+)
 from core.team_context.models import TeamContextError
 from core.version import __version__
 
@@ -344,6 +350,15 @@ class Dispatcher:
             rpc_methods.PROCESS_LIST: self._process_list,
             rpc_methods.PROCESS_READ: self._process_read,
             rpc_methods.PROCESS_STOP: self._process_stop,
+            rpc_methods.INTEGRATIONS_READ: self._integrations_read,
+            rpc_methods.INTEGRATIONS_SAVE: self._integrations_save,
+            rpc_methods.JENKINS_STATUS: self._jenkins_status,
+            rpc_methods.JENKINS_TRIGGER: self._jenkins_trigger,
+            rpc_methods.JENKINS_CONSOLE: self._jenkins_console,
+            rpc_methods.K8S_PODS: self._k8s_pods,
+            rpc_methods.K8S_LOGS: self._k8s_logs,
+            rpc_methods.K8S_DEPLOYMENTS: self._k8s_deployments,
+            rpc_methods.K8S_RESTART: self._k8s_restart,
             rpc_methods.GIT_DISCARD: self._git_discard,
             rpc_methods.GIT_WORKTREE_CREATE: self._git_worktree_create,
             rpc_methods.GIT_WORKTREE_REMOVE: self._git_worktree_remove,
@@ -1706,6 +1721,7 @@ class Dispatcher:
             "parent",
             "external",
             "workspace",
+            "taskId",
             "references",
             "designs",
             "codebases",
@@ -1719,6 +1735,11 @@ class Dispatcher:
             parent=params.string("parent", required=False) or None,
             external=params.boolean("external", default=False),
             workspace=params.string("workspace", required=False) or None,
+            task_id=(
+                params.string("taskId", required=False, allow_empty=True)
+                if "taskId" in params.values
+                else None
+            ),
             references=list(params.string_array("references")),
             designs=list(params.string_array("designs")),
             codebases=list(params.string_array("codebases")),
@@ -1734,6 +1755,7 @@ class Dispatcher:
             "parent",
             "external",
             "workspace",
+            "taskId",
             "references",
             "designs",
             "codebases",
@@ -1749,6 +1771,11 @@ class Dispatcher:
             ),
             workspace=params.string(
                 "workspace", required=False, allow_empty=True
+            ),
+            task_id=(
+                params.string("taskId", required=False, allow_empty=True)
+                if "taskId" in params.values
+                else None
             ),
             references=(
                 list(params.string_array("references"))
@@ -2015,6 +2042,88 @@ class Dispatcher:
         thread_id = str(params.string("threadId"))
         revision = str(params.string("revision"))
         return {"text": self.application.git.show(thread_id, revision)}
+
+    def _integrations_read(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        entity_id = str(params.string("entityId"))
+        try:
+            return read_integrations(entity_id)
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _integrations_save(self, params: Params) -> dict[str, Any]:
+        params.only(
+            "entityId", "jenkins", "k8s", "clearJenkins", "clearK8s"
+        )
+        entity_id = str(params.string("entityId"))
+        payload = {
+            "jenkins": params.object("jenkins"),
+            "k8s": params.object("k8s"),
+            "clearJenkins": params.boolean("clearJenkins"),
+            "clearK8s": params.boolean("clearK8s"),
+        }
+        try:
+            return save_integrations(entity_id, payload)
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _jenkins_status(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        try:
+            return jenkins_service.status(str(params.string("entityId")))
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _jenkins_trigger(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "parameters")
+        try:
+            return jenkins_service.trigger(
+                str(params.string("entityId")), params.object("parameters")
+            )
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _jenkins_console(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "build")
+        try:
+            return jenkins_service.console(
+                str(params.string("entityId")), params.optional_integer("build")
+            )
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _k8s_pods(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        try:
+            return k8s_service.pods(str(params.string("entityId")))
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _k8s_logs(self, params: Params) -> dict[str, Any]:
+        params.only("entityId", "pod", "container", "tail")
+        try:
+            return k8s_service.logs(
+                str(params.string("entityId")),
+                str(params.string("pod")),
+                container=params.string("container", required=False),
+                tail=params.optional_integer("tail", minimum=1, maximum=2000) or 200,
+            )
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _k8s_deployments(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        try:
+            return k8s_service.deployments(str(params.string("entityId")))
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
+
+    def _k8s_restart(self, params: Params) -> dict[str, Any]:
+        params.only("entityId")
+        try:
+            return k8s_service.restart(str(params.string("entityId")))
+        except IntegrationError as exc:
+            raise InvalidParams(str(exc)) from exc
 
     def _process_list(self, params: Params) -> dict[str, Any]:
         params.only("workspace")

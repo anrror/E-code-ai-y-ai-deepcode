@@ -151,6 +151,48 @@ Precedence and safety:
 5. the block is capped (`6000` characters by default) and drops the weakest
    entries first, never silently mid-line.
 
+## Company task id
+
+A company's planning system can attach its own task id to a product, project,
+or task layer. DeepCode treats it as opaque metadata: it is reported in the
+team-context block, never used to resolve a layer or a permission.
+
+Declare it on the layer that owns the work, so every Session bound to that layer
+(or one of its descendants) inherits it:
+
+```yaml
+# .deepcode/team/project/changan/entity.yaml
+name: Changan Lead Center
+parent: line://auto-outsourcing
+task_id: TASK-2026-001
+```
+
+The same field works on a product, batch, version, or task layer. `taskId` is
+accepted as an alias. If several layers in the chain declare one, the nearest
+wins:
+
+```text
+task → version → batch → project → line → org
+```
+
+In Desktop and Web, open **Team → 编辑层信息 → 任务 ID**; the same value is
+accepted by `team/create` and `team/entity/update` as `taskId`, and an empty
+value clears it.
+
+The block then carries both the internal layer id and the company id:
+
+```text
+<team-context task="task://LEAD-1234" task-id="TASK-2026-001" chain="…">
+task id (company-assigned): TASK-2026-001 (from project://changan)
+```
+
+A referenced product never relabels a Session: it informs the project, it does
+not become its owner. `team_context(action="assemble")` returns the same value
+as `taskId` plus `taskIdSource` (the entity id).
+
+For statistics, the `task-id` attribute and the `task id (company-assigned):`
+line are stable for the Session.
+
 ## The `team_context` tool
 
 | Action | What it does |

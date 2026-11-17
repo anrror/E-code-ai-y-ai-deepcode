@@ -46,10 +46,17 @@ kept in `~/.deepcode/credentials.json`, not in `deepcode_config.json`.
 | `agents.categories` | object (`{}`) | Named model routes for `spawn_agent(category=...)`. Each entry needs `model` and `connection`. See [Sub-agent routing and ordering](#sub-agent-routing-and-ordering). |
 | `goal.completionVerifier` | `"off"` / `"rule"` / `"reviewer"` (`"off"`) | With `"rule"`, a claim that a Goal is complete is turned back while the latest check failed or no work was done. `"reviewer"` adds an independent review: a second agent reads the changes and re-runs the checks before the Goal is recorded complete. A Goal's confirmed checks run in every mode. Also in Desktop under **Settings → General → Goal completion checks**. See [Goals](goals-and-headless.md#check-completion-claims). |
 | `goal.maxRejections` | integer ≥ 1 (`3`) | After this many rejected completion claims in a row with no file changes in between, the Goal is marked blocked (and after 10 rejected claims in all). |
+
 | `providers.egress` | object | Limits which hosts receive model requests; see below. |
 | `mcpServers` | object | MCP servers for the agent. See the [MCP guide](../integrations/MCP.md). |
 | `skills.disabled` | list of Skill ids | Skills that are not offered to the agent. |
 | `dictation` | object (absent = off) | Voice input. See [Voice dictation](dictation.md). |
+
+### Company task id
+
+The company task id is configured in the team context, not in this file. Add
+`task_id` to the product, project, or task layer's `entity.yaml`; see
+[Company task id](team-context.md#company-task-id).
 
 ### Permission rules
 

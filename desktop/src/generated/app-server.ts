@@ -236,6 +236,48 @@ export interface MethodParams {
   "process/stop"?: {
     processId: string;
   };
+  "integrations/read"?: {
+    entityId: string;
+  };
+  "integrations/save"?: {
+    entityId: string;
+    jenkins?: {
+      [k: string]: unknown;
+    };
+    k8s?: {
+      [k: string]: unknown;
+    };
+    clearJenkins?: boolean;
+    clearK8s?: boolean;
+  };
+  "jenkins/status"?: {
+    entityId: string;
+  };
+  "jenkins/trigger"?: {
+    entityId: string;
+    parameters?: {
+      [k: string]: unknown;
+    };
+  };
+  "jenkins/console"?: {
+    entityId: string;
+    build?: number;
+  };
+  "k8s/pods"?: {
+    entityId: string;
+  };
+  "k8s/logs"?: {
+    entityId: string;
+    pod: string;
+    container?: string;
+    tail?: number;
+  };
+  "k8s/deployments"?: {
+    entityId: string;
+  };
+  "k8s/restart"?: {
+    entityId: string;
+  };
 }
 export interface InitializeParams {
   protocolVersion: "1.0";
@@ -820,6 +862,7 @@ export interface TeamCreateParams {
   parent?: string;
   external?: boolean;
   workspace?: string;
+  taskId?: string;
   /**
    * @maxItems 50
    */
@@ -841,6 +884,7 @@ export interface TeamEntityUpdateParams {
   parent?: string;
   external?: boolean;
   workspace?: string;
+  taskId?: string;
   /**
    * @maxItems 50
    */
@@ -1234,6 +1278,8 @@ export interface MethodResults {
   };
   "team/tree": {
     bind: string | null;
+    taskId: string | null;
+    taskIdSource: string | null;
     inChain: string[];
     entities: TeamEntityView[];
   };
@@ -1244,6 +1290,8 @@ export interface MethodResults {
   };
   "team/preview": {
     task: string | null;
+    taskId: string | null;
+    taskIdSource: string | null;
     chain: string[];
     referenced: string[];
     entryCount: number;
@@ -1435,6 +1483,33 @@ export interface MethodResults {
   };
   "process/stop"?: {
     stopped: boolean;
+  };
+  "integrations/read"?: {
+    [k: string]: unknown;
+  };
+  "integrations/save"?: {
+    [k: string]: unknown;
+  };
+  "jenkins/status"?: {
+    [k: string]: unknown;
+  };
+  "jenkins/trigger"?: {
+    [k: string]: unknown;
+  };
+  "jenkins/console"?: {
+    [k: string]: unknown;
+  };
+  "k8s/pods"?: {
+    [k: string]: unknown;
+  };
+  "k8s/logs"?: {
+    [k: string]: unknown;
+  };
+  "k8s/deployments"?: {
+    [k: string]: unknown;
+  };
+  "k8s/restart"?: {
+    [k: string]: unknown;
   };
 }
 export interface InitializeResult {
@@ -2816,6 +2891,7 @@ export interface TeamEntityView {
   designs?: string[];
   codebases?: string[];
   workspace?: string | null;
+  taskId?: string;
   knowledgeCount: number;
   draftCount: number;
   hasInstructions: boolean;
