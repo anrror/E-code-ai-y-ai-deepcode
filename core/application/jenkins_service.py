@@ -10,6 +10,7 @@ import httpx
 from core.team_context.integrations import IntegrationError, jenkins_settings
 
 TIMEOUT = 20.0
+_CONSOLE_LIMIT = 200_000
 JOB_QUOTE = quote
 
 
@@ -47,7 +48,12 @@ def _crumb(client: httpx.Client) -> dict[str, str]:
         return {}
     if response.status_code != 200:
         return {}
-    payload = response.json()
+    try:
+        payload = response.json()
+    except ValueError:
+        # A reverse proxy can answer 200 with HTML; no crumb is better than a
+        # crash before the build is even triggered.
+        return {}
     field = payload.get("crumbRequestField")
     crumb = payload.get("crumb")
     return {field: crumb} if field and crumb else {}
@@ -83,8 +89,10 @@ def status(entity_id: str, home: Any = None) -> dict[str, Any]:
     }
 
 
-def trigger(entity_id: str, params: dict[str, str] | None = None) -> dict[str, Any]:
-    settings = jenkins_settings(entity_id, home=None)
+def trigger(
+    entity_id: str, params: dict[str, str] | None = None, home: Any = None
+) -> dict[str, Any]:
+    settings = jenkins_settings(entity_id, home)
     params = {key: str(value) for key, value in (params or {}).items()}
     with _client(settings) as client:
         crumb = _crumb(client)
@@ -115,19 +123,27 @@ def _build_from_location(location: str) -> int | None:
     return int(tail) if tail.isdigit() else None
 
 
-def console(entity_id: str, build: int | None = None) -> dict[str, Any]:
-    settings = jenkins_settings(entity_id, home=None)
+def console(
+    entity_id: str, build: int | None = None, home: Any = None
+) -> dict[str, Any]:
+    settings = jenkins_settings(entity_id, home)
     number = build
     if number is None:
-        info = status(entity_id)
+        info = status(entity_id, home)
         number = info["lastBuild"]["number"]
     if not number:
         raise IntegrationError("this job has no build yet")
     with _client(settings) as client:
-        response = client.get(f"{_job_path(settings['job'])}/{number}/consoleText")
-        if response.status_code >= 400:
-            raise _error(response)
-        text = response.text
-    if len(text) > 200_000:
-        text = text[-200_000:]
+        # Stream instead of buffering: a runaway build can produce a console log
+        # far larger than memory, and only the tail is ever shown.
+        with client.stream("GET", f"{_job_path(settings['job'])}/{number}/consoleText") as response:
+            if response.status_code >= 400:
+                response.read()
+                raise _error(response)
+            tail = bytearray()
+            for chunk in response.iter_bytes():
+                tail.extend(chunk)
+                if len(tail) > _CONSOLE_LIMIT * 2:
+                    del tail[:-_CONSOLE_LIMIT]
+            text = bytes(tail[-_CONSOLE_LIMIT:]).decode("utf-8", "replace")
     return {"build": number, "text": text}

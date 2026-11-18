@@ -8,9 +8,11 @@ Cluster credentials never leave this module.
 from __future__ import annotations
 
 import base64
+import hashlib
 import os
 from pathlib import Path
 from typing import Any
+from urllib.parse import quote
 
 import httpx
 import yaml
@@ -36,7 +38,16 @@ def _pick(items: list[dict[str, Any]], name: str | None) -> dict[str, Any]:
         for item in items:
             if item.get("name") == name:
                 return item
+        # Falling back to the first entry would silently target a different
+        # cluster than the one the user configured.
+        raise IntegrationError(f"kubeconfig has no entry named {name!r}")
     return items[0] if items else {}
+
+
+def _seg(value: str) -> str:
+    """One URL path segment: a pod or namespace name cannot escape the path."""
+
+    return quote(str(value), safe="")
 
 
 def _resolve_cluster(settings: dict[str, str]) -> dict[str, Any]:
@@ -79,7 +90,10 @@ def _resolve_cluster(settings: dict[str, str]) -> dict[str, Any]:
     token = user.get("token")
     if not token and user.get("tokenFile"):
         token_path = Path(str(user["tokenFile"])).expanduser()
-        token = token_path.read_text(encoding="utf-8").strip()
+        try:
+            token = token_path.read_text(encoding="utf-8").strip()
+        except OSError as exc:
+            raise IntegrationError(f"kubeconfig tokenFile is unreadable: {exc}") from exc
     if token:
         headers["Authorization"] = f"Bearer {token}"
     if not token and not cert:
@@ -91,14 +105,25 @@ def _resolve_cluster(settings: dict[str, str]) -> dict[str, Any]:
 
 
 def _tmp_pem(encoded: str, suffix: str) -> str:
-    if not hasattr(_tmp_pem, "_dir"):
-        target = Path(os.environ.get("TEMP", "/tmp")) / "deepcode-k8s"
-        target.mkdir(parents=True, exist_ok=True)
-        _tmp_pem._dir = target  # type: ignore[attr-defined]
-    directory: Path = _tmp_pem._dir  # type: ignore[attr-defined]
-    path = directory / f"{abs(hash(encoded))}.{suffix}"
+    """Materialise kubeconfig-embedded PEM data as a private temp file.
+
+    The name must be stable across processes (hash() of a str is salted per
+    process, so the old version left a new copy of the client key on every
+    launch), and the file must never be readable by other users on the box.
+    """
+
+    target = Path(os.environ.get("TEMP", "/tmp")) / "deepcode-k8s"
+    target.mkdir(parents=True, exist_ok=True)
+    digest = hashlib.sha256(encoded.encode("ascii", "replace")).hexdigest()[:16]
+    path = target / f"{digest}.{suffix}"
     if not path.exists():
-        path.write_bytes(base64.b64decode(encoded))
+        fd = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+        with os.fdopen(fd, "wb") as handle:
+            handle.write(base64.b64decode(encoded))
+        try:
+            os.chmod(path, 0o600)
+        except OSError:
+            pass
     return str(path)
 
 
@@ -136,7 +161,7 @@ def pods(entity_id: str, home: Any = None) -> dict[str, Any]:
     if settings["labelSelector"]:
         params["labelSelector"] = settings["labelSelector"]
     with _client(resolved) as client:
-        response = client.get(f"/api/v1/namespaces/{namespace}/pods", params=params)
+        response = client.get(f"/api/v1/namespaces/{_seg(namespace)}/pods", params=params)
         if response.status_code >= 400:
             raise _failure(response)
         items = response.json().get("items") or []
@@ -175,7 +200,7 @@ def logs(
         params["container"] = container
     with _client(resolved) as client:
         response = client.get(
-            f"/api/v1/namespaces/{namespace}/pods/{pod}/log", params=params
+            f"/api/v1/namespaces/{_seg(namespace)}/pods/{_seg(pod)}/log", params=params
         )
         if response.status_code >= 400:
             raise _failure(response)
@@ -190,7 +215,7 @@ def deployments(entity_id: str, home: Any = None) -> dict[str, Any]:
     resolved = _resolve_cluster(settings)
     namespace = resolved["namespace"]
     with _client(resolved) as client:
-        response = client.get(f"/apis/apps/v1/namespaces/{namespace}/deployments")
+        response = client.get(f"/apis/apps/v1/namespaces/{_seg(namespace)}/deployments")
         if response.status_code >= 400:
             raise _failure(response)
         items = response.json().get("items") or []
@@ -227,7 +252,7 @@ def restart(entity_id: str, home: Any = None) -> dict[str, Any]:
     }
     with _client(resolved) as client:
         response = client.patch(
-            f"/apis/apps/v1/namespaces/{namespace}/deployments/{deployment}",
+            f"/apis/apps/v1/namespaces/{_seg(namespace)}/deployments/{_seg(deployment)}",
             json=body,
             headers={"Content-Type": "application/strategic-merge-patch+json"},
         )
