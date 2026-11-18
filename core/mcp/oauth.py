@@ -13,13 +13,12 @@ import uuid
 import webbrowser
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 from urllib.parse import parse_qs, urlsplit
 
 from loguru import logger
-from mcp.client.auth import OAuthClientProvider
-from mcp.shared.auth import OAuthClientInformationFull, OAuthClientMetadata, OAuthToken
 from pydantic import AnyHttpUrl, AnyUrl
 
 from core.file_lock import exclusive_file_lock
@@ -30,6 +29,30 @@ from core.private_storage import (
     open_existing_private_file,
     open_private_file,
 )
+
+if TYPE_CHECKING:  # annotations only; the SDK loads on first real use below
+    from mcp.client.auth import OAuthClientProvider
+    from mcp.shared.auth import (
+        OAuthClientInformationFull,
+        OAuthClientMetadata,
+        OAuthToken,
+    )
+
+
+@lru_cache(maxsize=1)
+def _mcp_auth_modules() -> tuple[Any, Any]:
+    """Load the MCP SDK auth surface on first use.
+
+    Importing ``mcp.client.auth`` pulls the full SDK (httpx, anyio, crypto)
+    and costs ~1.4s of process startup. ``core.mcp`` is imported at startup by
+    the config layer, but most launches never authorize an MCP server, so the
+    cost is deferred until a provider is actually built.
+    """
+
+    import mcp.client.auth as client_auth
+    import mcp.shared.auth as shared_auth
+
+    return client_auth, shared_auth
 
 MCP_OAUTH_CALLBACK_PATH = "/auth/mcp/callback"
 _STORE_VERSION = 1
@@ -90,7 +113,7 @@ class McpOAuthCredentialStore:
         if not isinstance(raw, dict):
             return None
         try:
-            return OAuthToken.model_validate(raw)
+            return _mcp_auth_modules()[1].OAuthToken.model_validate(raw)
         except (TypeError, ValueError):
             return None
 
@@ -103,7 +126,7 @@ class McpOAuthCredentialStore:
         if not isinstance(raw, dict):
             return None
         try:
-            return OAuthClientInformationFull.model_validate(raw)
+            return _mcp_auth_modules()[1].OAuthClientInformationFull.model_validate(raw)
         except (TypeError, ValueError):
             return None
 
@@ -276,14 +299,14 @@ async def create_mcp_oauth_provider(
         redirect_handler = authorization_required
         callback_handler = missing_callback
 
-    metadata = OAuthClientMetadata(
+    metadata = _mcp_auth_modules()[1].OAuthClientMetadata(
         redirect_uris=[AnyUrl(redirect_uri)],
         token_endpoint_auth_method="none",
         client_name="DeepCode",
         client_uri=AnyHttpUrl("https://github.com/HKUDS/DeepCode"),
         software_id="https://github.com/HKUDS/DeepCode",
     )
-    return OAuthClientProvider(
+    return _mcp_auth_modules()[0].OAuthClientProvider(
         url,
         metadata,
         storage,
