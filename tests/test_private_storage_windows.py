@@ -172,3 +172,74 @@ def test_windows_open_created_file_restricts_once(monkeypatch, tmp_path: Path) -
         fd = ps.open_private_file(tmp_path / "fresh.jsonl", os.O_CREAT | os.O_RDWR)
         os.close(fd)
     assert len(calls) == 1, "created once, restricted once, never again"
+
+
+# --- ACL fast-path check ---------------------------------------------------
+# ``_windows_acl_is_restricted`` lets startup skip three icacls process spawns
+# per private path. Its verdict must never claim a permissive ACL is already
+# hardened; these tests pin that boundary on the real filesystem.
+
+
+def test_acl_check_only_passes_a_hardened_path(tmp_path: Path) -> None:
+    import core.private_storage as ps
+
+    target = tmp_path / "lax.txt"
+    target.write_text("x", encoding="utf-8")
+    assert ps._windows_acl_is_restricted(target) is False, (
+        "an inherited, unrestricted ACL must not pass the fast path"
+    )
+
+    ps._restrict_windows_acl(target)
+    assert ps._windows_acl_is_restricted(target) is True, (
+        "the state produced by the rewrite must pass the fast path"
+    )
+
+
+def test_acl_check_accepts_a_file_inheriting_a_hardened_parent(tmp_path: Path) -> None:
+    import core.private_storage as ps
+
+    directory = ensure_private_directory(tmp_path / "state")
+    child = directory / "deepcode.sqlite3-wal"
+    child.write_text("x", encoding="utf-8")
+
+    # SQLite side files are created by the library, not by open_private_file;
+    # they inherit the hardened parent and must not trigger a rewrite.
+    assert ps._windows_acl_is_restricted(child) is True
+
+
+def test_acl_check_rejects_an_inherited_broad_principal(tmp_path: Path) -> None:
+    import core.private_storage as ps
+
+    lax = tmp_path / "lax-dir"
+    lax.mkdir()
+    subprocess.run(
+        ["icacls", os.fspath(lax), "/grant", "*S-1-5-32-545:(OI)(CI)F"],
+        capture_output=True,
+        check=True,
+    )
+    child = lax / "inherited-users.txt"
+    child.write_text("x", encoding="utf-8")
+
+    assert ps._windows_acl_is_restricted(child) is False, (
+        "an inherited BUILTIN\\Users ACE must force the rewrite"
+    )
+    ps._restrict_windows_acl(child)
+    assert ps._windows_acl_is_restricted(child) is True
+    _assert_no_dangerous_aces(child)
+
+
+def test_acl_check_rejects_a_deny_ace_for_the_owner(tmp_path: Path) -> None:
+    import core.private_storage as ps
+
+    target = tmp_path / "denied.txt"
+    target.write_text("x", encoding="utf-8")
+    ps._restrict_windows_acl(target)
+    subprocess.run(
+        ["icacls", os.fspath(target), "/deny", f"{_windows_identity()}:(W)"],
+        capture_output=True,
+        check=True,
+    )
+
+    assert ps._windows_acl_is_restricted(target) is False, (
+        "a deny ACE for the owner needs the rewrite"
+    )

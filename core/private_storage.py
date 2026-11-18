@@ -15,6 +15,7 @@ from __future__ import annotations
 
 import os
 import stat
+import struct
 import subprocess
 import threading
 from functools import lru_cache
@@ -137,6 +138,228 @@ def _run_icacls(executable: str, path: Path, *arguments: str) -> bool:
     return bool(succeeded and succeeded[0])
 
 
+_INHERITED_ACE = 0x10
+_ACCESS_ALLOWED_ACE_TYPE = 0
+_ACCESS_DENIED_ACE_TYPE = 1
+_FILE_ALL_ACCESS = 0x001F01FF
+_SE_FILE_OBJECT = 1
+_DACL_SECURITY_INFORMATION = 0x00000004
+
+
+def _sid_bytes_at(block: bytes, start: int, end: int) -> bytes | None:
+    """Return the SID stored at ``start`` when it fits inside ``end``."""
+
+    if start + 8 > end:
+        return None
+    length = 8 + 4 * block[start + 1]
+    if start + length > end:
+        return None
+    return block[start:start + length]
+
+
+@lru_cache(maxsize=1)
+def _windows_current_user_sid() -> bytes | None:
+    """The current process user's SID as raw bytes, or ``None``."""
+
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
+        advapi32.OpenProcessToken.argtypes = (
+            wintypes.HANDLE,
+            wintypes.DWORD,
+            ctypes.POINTER(wintypes.HANDLE),
+        )
+        advapi32.OpenProcessToken.restype = wintypes.BOOL
+        advapi32.GetTokenInformation.argtypes = (
+            wintypes.HANDLE,
+            ctypes.c_int,
+            ctypes.c_void_p,
+            wintypes.DWORD,
+            ctypes.POINTER(wintypes.DWORD),
+        )
+        advapi32.GetTokenInformation.restype = wintypes.BOOL
+        advapi32.GetLengthSid.argtypes = (ctypes.c_void_p,)
+        advapi32.GetLengthSid.restype = wintypes.DWORD
+
+        token = wintypes.HANDLE()
+        # TOKEN_QUERY = 0x0008
+        if not advapi32.OpenProcessToken(
+            kernel32.GetCurrentProcess(), 0x0008, ctypes.byref(token)
+        ):
+            return None
+        try:
+            size = wintypes.DWORD(0)
+            advapi32.GetTokenInformation(token, 1, None, 0, ctypes.byref(size))
+            if size.value <= 0:
+                return None
+            buffer = ctypes.create_string_buffer(size.value)
+            if not advapi32.GetTokenInformation(
+                token, 1, buffer, size.value, ctypes.byref(size)
+            ):
+                return None
+            # TOKEN_USER starts with SID_AND_ATTRIBUTES{Sid; Attributes}.
+            psid = ctypes.c_void_p.from_buffer(buffer).value
+            if not psid:
+                return None
+            length = advapi32.GetLengthSid(psid)
+            if length <= 0:
+                return None
+            return ctypes.string_at(psid, length)
+        finally:
+            kernel32.CloseHandle(token)
+    except (AttributeError, OSError, TypeError, ValueError):
+        return None
+
+
+@lru_cache(maxsize=1)
+def _windows_broad_sid_bytes() -> frozenset[bytes] | None:
+    """The well-known broad principals this module removes, as raw SID bytes."""
+
+    if os.name != "nt":
+        return None
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
+        advapi32.ConvertStringSidToSidW.argtypes = (
+            wintypes.LPCWSTR,
+            ctypes.POINTER(ctypes.c_void_p),
+        )
+        advapi32.ConvertStringSidToSidW.restype = wintypes.BOOL
+        advapi32.GetLengthSid.argtypes = (ctypes.c_void_p,)
+        advapi32.GetLengthSid.restype = wintypes.DWORD
+        kernel32.LocalFree.argtypes = (ctypes.c_void_p,)
+        kernel32.LocalFree.restype = ctypes.c_void_p
+
+        resolved = set()
+        for text in ("S-1-1-0", "S-1-5-11", "S-1-5-32-545"):
+            psid = ctypes.c_void_p()
+            if not advapi32.ConvertStringSidToSidW(text, ctypes.byref(psid)):
+                return None
+            try:
+                length = advapi32.GetLengthSid(psid)
+                if length <= 0:
+                    return None
+                resolved.add(ctypes.string_at(psid, length))
+            finally:
+                kernel32.LocalFree(psid)
+        return frozenset(resolved)
+    except (AttributeError, OSError, TypeError, ValueError):
+        return None
+
+
+def _windows_acl_is_restricted(path: Path) -> bool:
+    """True when ``path`` already carries the restriction this module writes.
+
+    The rule matches what ``_restrict_windows_acl`` actually achieves: none of
+    the broad principals (Everyone, Authenticated Users, BUILTIN\\Users) and
+    full control for the current user. SYSTEM, Administrators and OWNER RIGHTS
+    survive an icacls rewrite on a freshly created object — ``/grant:r``
+    materialises the inherited entries as explicit ones before
+    ``/inheritance:r`` runs — so treating them as "needs repair" would rewrite
+    every SQLite side file on every launch for no change in effective access.
+
+    The check is deliberately strict — an unparsable ACL, an object ACE, a NULL
+    DACL, or any unexpected revision returns False so the icacls rewrite runs.
+    """
+
+    if os.name != "nt":
+        return False
+    user_sid = _windows_current_user_sid()
+    broad_sids = _windows_broad_sid_bytes()
+    if user_sid is None or broad_sids is None:
+        return False
+    try:
+        import ctypes
+        from ctypes import wintypes
+
+        kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+        advapi32 = ctypes.WinDLL("advapi32", use_last_error=True)
+        advapi32.GetNamedSecurityInfoW.argtypes = (
+            wintypes.LPWSTR,
+            ctypes.c_int,
+            wintypes.DWORD,
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_void_p),
+            ctypes.POINTER(ctypes.c_void_p),
+        )
+        advapi32.GetNamedSecurityInfoW.restype = wintypes.DWORD
+        kernel32.LocalFree.argtypes = (ctypes.c_void_p,)
+        kernel32.LocalFree.restype = ctypes.c_void_p
+
+        dacl = ctypes.c_void_p()
+        descriptor = ctypes.c_void_p()
+        status = advapi32.GetNamedSecurityInfoW(
+            os.fspath(path),
+            _SE_FILE_OBJECT,
+            _DACL_SECURITY_INFORMATION,
+            None,
+            None,
+            ctypes.byref(dacl),
+            None,
+            ctypes.byref(descriptor),
+        )
+        if status != 0:
+            return False
+        try:
+            if not dacl.value:
+                return False  # a NULL DACL grants everyone full access
+            header = ctypes.string_at(dacl.value, 8)
+            revision, _sbz1, acl_size, ace_count, _sbz2 = struct.unpack(
+                "<BBHHH", header
+            )
+            if revision != 2 or ace_count == 0 or acl_size < 8:
+                return False
+            block = ctypes.string_at(dacl.value, acl_size)
+            cursor = 8
+            user_has_full = False
+            for _ in range(ace_count):
+                if cursor + 4 > acl_size:
+                    return False
+                ace_type, ace_flags, ace_size = struct.unpack_from(
+                    "<BBH", block, cursor
+                )
+                if ace_size < 4 or cursor + ace_size > acl_size:
+                    return False
+                if ace_type in (
+                    _ACCESS_ALLOWED_ACE_TYPE,
+                    _ACCESS_DENIED_ACE_TYPE,
+                ):
+                    if ace_size < 16:
+                        return False
+                    mask = struct.unpack_from("<I", block, cursor + 4)[0]
+                    sid = _sid_bytes_at(block, cursor + 8, cursor + ace_size)
+                    if sid is None:
+                        return False
+                    if sid in broad_sids:
+                        return False
+                    if sid == user_sid:
+                        if ace_type == _ACCESS_DENIED_ACE_TYPE:
+                            return False  # a deny ACE for the owner needs repair
+                        if (mask & _FILE_ALL_ACCESS) == _FILE_ALL_ACCESS:
+                            user_has_full = True
+                elif ace_type in (2, 3):
+                    pass  # system audit/alarm ACEs grant nothing
+                else:
+                    return False  # object or unknown ACE: let icacls decide
+                cursor += ace_size
+            return user_has_full
+        finally:
+            if descriptor.value:
+                kernel32.LocalFree(descriptor)
+    except (AttributeError, OSError, TypeError, ValueError):
+        return False
+
+
 def _restrict_windows_acl(path: Path, *, recursive: bool = False) -> None:
     """Restrict ``path`` to the current user, failing safe.
 
@@ -150,6 +373,13 @@ def _restrict_windows_acl(path: Path, *, recursive: bool = False) -> None:
     accessible to the caller; the previous strip-first order could leave a
     path with no usable ACE and make it unopenable.
     """
+
+    # Re-hardening an already-correct ACL costs three icacls process spawns
+    # (~150ms each) on every startup, which dominated container construction.
+    # Reading the ACL costs one syscall; anything this check cannot classify
+    # falls through to the proven icacls path below.
+    if not recursive and _windows_acl_is_restricted(path):
+        return
 
     identity = _windows_identity()
     executable = _windows_icacls()
