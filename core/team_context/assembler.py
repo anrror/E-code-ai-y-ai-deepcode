@@ -16,6 +16,7 @@ Precedence follows the design document:
 
 from __future__ import annotations
 
+import os
 from collections.abc import Sequence
 from dataclasses import dataclass
 
@@ -36,6 +37,16 @@ _CONFIDENCE_RANK = {"high": 0, "medium": 1, "low": 2}
 DEFAULT_MAX_CHARS = 6000
 
 
+def _same_path(left: str, right: str) -> bool:
+    """Compare two filesystem paths the way the host does (case-insensitive on
+    Windows, tolerant of a trailing separator or ``..``)."""
+
+    def normalize(value: str) -> str:
+        return os.path.normcase(os.path.abspath(os.path.expanduser(value)))
+
+    return normalize(left) == normalize(right)
+
+
 @dataclass(frozen=True, slots=True)
 class AssembledContext:
     task: str | None
@@ -47,6 +58,12 @@ class AssembledContext:
     external_excluded: int = 0
     blocked_overrides: tuple[str, ...] = ()
     truncated: bool = False
+    # True when the block carries anything worth injecting: body content
+    # (instructions, knowledge, pointers, a task id, an ownership summary) or a
+    # real ownership chain, which the header itself names even when the summary
+    # line would only repeat it. False only for a single layer bound to the
+    # workspace, where the block would tell the agent nothing new.
+    has_body: bool = False
     # Company-assigned identity, resolved from explicit configuration or the
     # nearest layer on the chain. It identifies the Session for reporting; it
     # is not an internal team-context entity id.
@@ -106,7 +123,9 @@ def referenced_entities(
     return tuple(result)
 
 
-def descendant_entities(catalog: Catalog, start_id: str | None) -> tuple[TeamEntity, ...]:
+def descendant_entities(
+    catalog: Catalog, start_id: str | None
+) -> tuple[TeamEntity, ...]:
     """Every layer below ``start``, breadth first.
 
     A preview of a product or a line must show the projects and batches that
@@ -200,6 +219,15 @@ def _is_historical(entity: TeamEntity | None) -> bool:
     return bool(entity and entity.archived)
 
 
+def _describe_layer(entity: TeamEntity) -> str:
+    """``id`` plus the display name when it says more than the id's slug."""
+
+    slug = entity.id.split("://", 1)[-1]
+    if entity.name.casefold() == slug.casefold():
+        return entity.id
+    return f"{entity.id} ({entity.name})"
+
+
 def _label(
     entry: KnowledgeEntry,
     catalog: Catalog,
@@ -239,7 +267,8 @@ def _render(
     max_chars: int,
     task_id: str | None = None,
     task_id_source: str | None = None,
-) -> tuple[str, bool]:
+    workspace: str | None = None,
+) -> tuple[str, bool, bool]:
     header = f'<team-context task="{task or "unbound"}"'
     if task_id:
         header += f' task-id="{task_id}"'
@@ -319,6 +348,17 @@ def _render(
             continue
         if not (entity.designs or entity.codebases or entity.workspace):
             continue
+        # A layer whose only pointer is the workspace being assembled tells the
+        # agent nothing it does not already know (the workspace is its cwd), so
+        # it would be pure prompt noise. Keep the pointer when the layer also
+        # names documents or codebases.
+        if (
+            workspace
+            and entity.workspace
+            and not (entity.codebases or entity.designs)
+            and _same_path(entity.workspace, workspace)
+        ):
+            continue
         seen_pointers.add(entity.id)
         pointers.append(entity)
     if pointers and not truncated:
@@ -344,17 +384,34 @@ def _render(
             if not append("- " + " | ".join(parts)):
                 break
 
-    return "\n".join([header, *body, footer]), truncated
+    # A chain with no knowledge, instructions, or pointers would render as an
+    # empty element: the header names the layers but not what they are. Emit the
+    # ownership line only when it says something the header does not — the
+    # header already carries ``chain="a > b > c"``, so repeating the same ids
+    # verbatim is noise. A lone layer bound to the workspace says nothing the
+    # agent does not already know, so it stays silent.
+    if not body and not truncated and len(chain) >= 2:
+        summary = " > ".join(_describe_layer(entity) for entity in chain)
+        header_chain = " > ".join(entity.id for entity in chain)
+        if summary != header_chain:
+            append("ownership (nearest first): " + summary)
+
+    return "\n".join([header, *body, footer]), truncated, bool(body) or len(chain) >= 2
 
 
 def assemble(
     catalog: Catalog,
     *,
     task: str | None = None,
+    workspace: str | None = None,
     include_external: bool = True,
     max_chars: int = DEFAULT_MAX_CHARS,
 ) -> AssembledContext:
-    """Render the context block for ``task`` (or the catalog binding)."""
+    """Render the context block for ``task`` (or the catalog binding).
+
+    ``workspace`` is the directory the caller's agent works in; a layer that
+    only points back at it is omitted from the pointer list.
+    """
 
     start = task or catalog.bind
     chain = resolve_chain(catalog, start)
@@ -386,7 +443,7 @@ def assemble(
         for entity in referenced
         if entity.id in catalog.instructions
     )
-    text, truncated = _render(
+    text, truncated, has_body = _render(
         start,
         chain,
         referenced,
@@ -397,6 +454,7 @@ def assemble(
         max_chars=max_chars,
         task_id=company_task_id,
         task_id_source=company_task_id_source,
+        workspace=workspace,
     )
     included = tuple(
         entry for entry in entries if entry.statement and entry.statement in text
@@ -411,6 +469,7 @@ def assemble(
         external_excluded=excluded,
         blocked_overrides=blocked,
         truncated=truncated,
+        has_body=has_body,
         task_id=company_task_id,
         task_id_source=company_task_id_source,
     )

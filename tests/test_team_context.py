@@ -372,6 +372,8 @@ def test_each_layer_is_configured_by_its_own_directory(tmp_path: Path) -> None:
     assert "Task instruction: run pytest -q" in text
     assert text.index("Company red line") < text.index("Task instruction")
     assert "retries twice" in text
+    # The header already names the chain; an ownership summary would repeat it.
+    assert "ownership (nearest first)" not in text
 
     service = TeamContextService(workspace, home=tmp_path / "home")
     added = service.add(

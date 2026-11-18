@@ -151,6 +151,19 @@ Precedence and safety:
 5. the block is capped (`6000` characters by default) and drops the weakest
    entries first, never silently mid-line.
 
+A bound workspace whose layers carry no instructions, knowledge, or pointers
+still names its ownership chain in one line:
+
+```text
+<team-context task="product://deepcodex" chain="product://deepcodex > line://ai-tools > org://default">
+ownership (nearest first): product://deepcodex > line://ai-tools > org://default (Org)
+</team-context>
+```
+
+The line is omitted once the block has real content, because the header already
+names the chain. A single layer that owns nothing but the workspace renders no
+body at all, so an unconfigured project adds nothing to the system prompt.
+
 ## Company task id
 
 A company's planning system can attach its own task id to a product, project,

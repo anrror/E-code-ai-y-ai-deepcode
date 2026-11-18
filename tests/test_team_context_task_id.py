@@ -87,6 +87,98 @@ def test_without_a_bound_layer_the_preamble_stays_empty(tmp_path: Path) -> None:
     assert team_context_preamble(workspace, home=tmp_path / "home") == ""
 
 
+def test_an_ownership_chain_is_injected_without_knowledge(tmp_path: Path) -> None:
+    """A bound product under a line and an org is team context on its own."""
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    home = tmp_path / "home"
+    team = home / ".deepcode" / "team"
+    layers = {
+        "company/default": {"name": "Org"},
+        "line/ai-tools": {"name": "AI tools", "parent": "org://default"},
+        "product/deepcodex": {
+            "name": "DeepCodeX",
+            "parent": "line://ai-tools",
+            "workspace": str(workspace),
+        },
+    }
+    for relative, meta in layers.items():
+        directory = team / relative
+        directory.mkdir(parents=True)
+        (directory / "entity.yaml").write_text(
+            yaml.safe_dump(meta, allow_unicode=True), encoding="utf-8"
+        )
+
+    preamble = team_context_preamble(workspace, home=home)
+
+    assert 'task="product://deepcodex"' in preamble
+    assert "product://deepcodex > line://ai-tools > org://default" in preamble
+    # The header carries the ids; the body says what they are, including a
+    # display name that differs from the id's slug.
+    assert (
+        "ownership (nearest first): "
+        "product://deepcodex > line://ai-tools (AI tools) > org://default (Org)"
+    ) in preamble
+    # A pointer back at the agent's own workspace is noise, not context.
+    assert "layer pointers" not in preamble
+
+
+def test_a_lone_layer_instruction_still_reaches_the_model(tmp_path: Path) -> None:
+    """Instructions are content, even without a chain or knowledge entries."""
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    directory = _write_layer(
+        workspace, "project", "demo", {"name": "Demo", "workspace": str(workspace)}
+    )
+    (directory / "AGENTS.md").write_text("Run pytest -q", encoding="utf-8")
+
+    preamble = team_context_preamble(workspace, home=tmp_path / "home")
+
+    assert "Run pytest -q" in preamble
+    # One layer has no ownership chain to summarize.
+    assert "ownership (nearest first)" not in preamble
+
+
+def test_a_lone_layer_pointer_still_reaches_the_model(tmp_path: Path) -> None:
+    """A design pointer is real context, not workspace noise."""
+
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    _write_layer(
+        workspace,
+        "product",
+        "deepcodex",
+        {
+            "name": "DeepCodeX",
+            "workspace": str(workspace),
+            "designs": ["docs/design.md"],
+        },
+    )
+
+    preamble = team_context_preamble(workspace, home=tmp_path / "home")
+
+    assert "docs/design.md" in preamble
+    assert "ownership (nearest first)" not in preamble
+
+
+def test_a_lone_unconfigured_project_stays_silent(tmp_path: Path) -> None:
+    workspace = tmp_path / "workspace"
+    workspace.mkdir()
+    home = tmp_path / "home"
+    directory = home / ".deepcode" / "team" / "project" / "demo"
+    directory.mkdir(parents=True)
+    (directory / "entity.yaml").write_text(
+        yaml.safe_dump(
+            {"name": "Demo", "workspace": str(workspace)}, allow_unicode=True
+        ),
+        encoding="utf-8",
+    )
+
+    assert team_context_preamble(workspace, home=home) == ""
+
+
 def test_the_nearest_chain_layer_wins_and_a_reference_does_not_relabel() -> None:
     entities = {
         "org://o": TeamEntity(id="org://o", kind="org", name="Org", task_id="ORG-1"),

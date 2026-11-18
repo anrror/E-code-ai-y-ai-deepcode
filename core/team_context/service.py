@@ -311,6 +311,7 @@ class TeamContextService:
         result = assemble(
             catalog,
             task=resolved,
+            workspace=str(self.workspace) if self.workspace else None,
             include_external=include_external,
             max_chars=max_chars,
         )

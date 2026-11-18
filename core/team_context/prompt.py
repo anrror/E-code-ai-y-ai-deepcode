@@ -26,7 +26,7 @@ def team_context_preamble(
     *,
     max_chars: int = DEFAULT_MAX_CHARS,
 ) -> str:
-    """The team context block, or ``""`` when the workspace declares no task.
+    """The team context block, or ``""`` when the workspace declares nothing.
 
     Prompt assembly must never fail a session: a malformed catalog is logged
     and skipped, exactly like an unreadable instruction file.
@@ -37,10 +37,19 @@ def team_context_preamble(
         task = catalog.bind_for(workspace)
         if not task:
             return ""
-        assembled = assemble(catalog, task=task, max_chars=max_chars)
+        assembled = assemble(
+            catalog,
+            task=task,
+            workspace=str(workspace),
+            max_chars=max_chars,
+        )
     except Exception:
         logger.exception("team context could not be assembled for %s", workspace)
         return ""
-    if not assembled.entries and not assembled.task_id:
+    # Prompt noise is worse than silence: a single layer that owns nothing but
+    # the workspace renders no body, so an unconfigured project stays silent.
+    # Anything more — an ownership chain, instructions, knowledge, pointers, or
+    # a company task id — is real team context and must reach the model.
+    if not assembled.has_body:
         return ""
     return f"{assembled.text}\n\n{_USAGE}"
