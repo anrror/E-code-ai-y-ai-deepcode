@@ -43,7 +43,24 @@ def _write(home: Path | None, data: dict[str, Any]) -> None:
     path = integrations_path(home)
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = yaml.safe_dump(data, allow_unicode=True, sort_keys=False)
-    path.write_text(payload, encoding="utf-8")
+    # A half-written file would lose the stored Jenkins token, and the desktop
+    # app reads this file on every integration RPC. Write a private temp file,
+    # fsync it, then swap it in atomically. os.open with 0o600 closes the
+    # window where the token sat in a world-readable file before chmod.
+    tmp = path.with_name(f"{path.name}.tmp-{os.getpid()}")
+    fd = os.open(tmp, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as handle:
+            handle.write(payload)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            tmp.unlink()
+        except OSError:
+            pass
+        raise
     try:
         os.chmod(path, 0o600)
     except OSError:
