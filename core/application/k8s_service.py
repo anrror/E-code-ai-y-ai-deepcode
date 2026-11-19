@@ -45,9 +45,18 @@ def _pick(items: list[dict[str, Any]], name: str | None) -> dict[str, Any]:
 
 
 def _seg(value: str) -> str:
-    """One URL path segment: a pod or namespace name cannot escape the path."""
+    """One URL path segment: a pod or namespace name cannot escape the path.
 
-    return quote(str(value), safe="")
+    ``quote(..., safe="")`` escapes separators but leaves "." and ".." intact,
+    and a segment that is exactly ".." makes the HTTP client normalise it away
+    — the request then addresses a different resource. Escaping the dots keeps
+    the segment literal.
+    """
+
+    text = str(value)
+    if text in (".", ".."):
+        return text.replace(".", "%2E")
+    return quote(text, safe="")
 
 
 def _resolve_cluster(settings: dict[str, str]) -> dict[str, Any]:
