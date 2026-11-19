@@ -1,6 +1,7 @@
 # 新增测试的深度测评
 
-**对象**：会话中补写的 3 个测试文件（共 26 个测试）
+**对象**：会话中补写的 3 个项目测试文件（当时 26 个，现 28 个）
+**数据时效**：本文数值为本轮测评时的快照；后续追加 2 个测试（PEM 创建模式、跨进程稳定）。
 **目的**：验证这些测试是否真的有效，还是「通过但无效」
 **方法**：变异测试 + 重复执行 + 跨进程验证 + 手工注入缺陷
 
@@ -119,11 +120,11 @@ except OSError:
 ### 5.1 重复执行
 
 ```
-run 1: 23 passed, 1 skipped
-run 2: 23 passed, 1 skipped
-run 3: 23 passed, 1 skipped
-run 4: 23 passed, 1 skipped
-run 5: 23 passed, 1 skipped
+run 1: 26 passed, 2 skipped
+run 2: 26 passed, 2 skipped
+run 3: 26 passed, 2 skipped
+run 4: 26 passed, 2 skipped
+run 5: 26 passed, 2 skipped
 ```
 
 ### 5.2 高负载
