@@ -447,7 +447,52 @@ e2e:
       只有 3 个是真实问题；另外 19 个是噪音（12 环境、5 flaky、2 测试写错）。
 ```
 
-### 5.5 环节 7 的关键：教训回流
+### 5.5 测试报告（环节 7 的产出物）
+
+跑完测试必须产出报告。没有报告等于「跑完了但没人知道能不能发」。
+
+**报告第一段是结论，不是通过率。** 依据 IEEE 829-1998 §11 与 ISO/IEC/IEEE 29119-3:2021 §7.4。
+
+> "A pass rate without context is noise. 95% pass rate could mean 5 tests failed out of 100, all cosmetic. Or it could mean 50 tests failed out of 1,000, including payment flow."
+
+三种结论与 CI 退出码：
+
+| 结论 | 退出码 | 触发条件 |
+|---|---|---|
+| `ship` | 0 | 所有闸门通过，无未缓解风险 |
+| `ship_with_conditions` | 1 | 有 high 缺陷待跟踪，或高风险用例缺需求锚点 |
+| `hold` | 2 | critical 缺陷未修复、覆盖无解释收缩、**或根本没有任何测试证据** |
+
+**关键设计：没有测试数据时必须 `hold`**。空状态返回 `ship` 是危险假阳性——什么都没跑不等于没问题（实测中正是先犯了这个错误才修）。
+
+报告八段（**顺序是读取顺序，不是标准顺序**）：
+
+| # | 段落 | 标准依据 |
+|---|---|---|
+| 1 | 结论 | IEEE Evaluation 提前 |
+| 2 | 范围与覆盖（含**没测什么**） | IEEE Comprehensiveness |
+| 3 | 结果（按层表格） | 实践 |
+| 4 | 失败与残余风险 | ISO 29119-3 Residual risks |
+| 5 | 覆盖账本 | **本方案特有** |
+| 6 | 偏差与阻碍 | ISO 29119-3 Factors that blocked progress |
+| 7 | 依据（文件链接，不贴日志） | 实践 |
+| 8 | 批准 | IEEE Approvals |
+
+**为什么不照抄标准顺序**：IEEE 829 把 Evaluation 放第 6 段（从事实到结论），符合文档规范但违反阅读习惯。决策者需要 3 秒内知道结论。本设计首尾都给结论：开头是判断，结尾是依据。
+
+**刻意不包含的指标**（都是虚荣指标）：
+
+| 不包含 | 原因 |
+|---|---|
+| 总测试数 | "Twelve hundred tests executed tells you team was busy. It doesn't tell you whether payment flow works." |
+| 自动化率 | 与质量无关 |
+| 通过率（作为首段） | 脱离上下文无意义 |
+| 执行耗时 | 除非超预算 |
+| 每个用例明细 | 属于附录 |
+
+判据：**报告里每一个数字都必须能改变一个决策。**
+
+### 5.6 环节 7 的关键：教训回流
 
 ```
 lessons learned → 必须回流到风险登记表
