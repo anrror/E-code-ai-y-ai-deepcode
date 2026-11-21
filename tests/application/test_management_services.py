@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.config_store import ConfigStore
 from core.application.errors import (
     ApplicationError,
@@ -58,7 +58,7 @@ def test_extension_inventory_matches_agent_skill_and_hook_discovery(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    skill_dir = workspace / ".deepcode" / "skills" / "review"
+    skill_dir = workspace / ".dfcode" / "skills" / "review"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
         "---\n"
@@ -73,7 +73,7 @@ def test_extension_inventory_matches_agent_skill_and_hook_discovery(
     malformed.mkdir(parents=True)
     (malformed / "SKILL.md").write_text("missing frontmatter", encoding="utf-8")
     _write_json(
-        workspace / ".deepcode" / "hooks.json",
+        workspace / ".dfcode" / "hooks.json",
         {
             "hooks": {
                 "PreToolUse": [
@@ -91,7 +91,7 @@ def test_extension_inventory_matches_agent_skill_and_hook_discovery(
             }
         },
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -134,7 +134,7 @@ def test_untrusted_project_exposes_skill_metadata_but_not_instructions(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    skill_dir = workspace / ".deepcode" / "skills" / "review"
+    skill_dir = workspace / ".dfcode" / "skills" / "review"
     skill_dir.mkdir(parents=True)
     (skill_dir / "SKILL.md").write_text(
         "---\n"
@@ -144,7 +144,7 @@ def test_untrusted_project_exposes_skill_metadata_but_not_instructions(
         "PRIVATE-PROJECT-INSTRUCTIONS\n",
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     try:
         inventory = application.skills.list(project.id)
@@ -167,10 +167,10 @@ def test_mcp_inventory_redacts_secrets_and_mutates_explicit_scope(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "mcpServers": {
                 "demo": {
@@ -184,7 +184,7 @@ def test_mcp_inventory_redacts_secrets_and_mutates_explicit_scope(
             }
         },
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     try:
         inventory = application.mcp.list(project.id)
@@ -224,7 +224,7 @@ def test_mcp_inventory_redacts_secrets_and_mutates_explicit_scope(
             "project-server",
         }
         project_config = json.loads(
-            (workspace / "deepcode_config.json").read_text(encoding="utf-8")
+            (workspace / "dfcode_config.json").read_text(encoding="utf-8")
         )
         assert (
             project_config["mcpServers"]["project-server"]["url"]
@@ -233,7 +233,7 @@ def test_mcp_inventory_redacts_secrets_and_mutates_explicit_scope(
         assert (
             "project-server"
             not in json.loads(
-                (home / "deepcode_config.json").read_text(encoding="utf-8")
+                (home / "dfcode_config.json").read_text(encoding="utf-8")
             )["mcpServers"]
         )
 
@@ -255,9 +255,9 @@ def test_mcp_upsert_replaces_header_and_url_parameter_maps(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     remote = {"type": "streamableHttp", "url": "https://mcp.example.test/rpc"}
     try:
@@ -282,7 +282,7 @@ def test_mcp_upsert_replaces_header_and_url_parameter_maps(
                 "envUrlParams": {"key": "API_KEY"},
             },
         )
-        stored = json.loads((home / "deepcode_config.json").read_text())
+        stored = json.loads((home / "dfcode_config.json").read_text())
         assert stored["mcpServers"]["remote"]["envHttpHeaders"] == {
             "X-Team": "TEAM_HEADER"
         }
@@ -303,9 +303,9 @@ def test_mcp_upsert_replaces_credential_bindings(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     local = {"type": "stdio", "command": "python3"}
     try:
@@ -330,7 +330,7 @@ def test_mcp_upsert_replaces_credential_bindings(
                 "credentialEnv": {"API_KEY": {"credentialRef": "provider:openrouter"}},
             },
         )
-        stored = json.loads((home / "deepcode_config.json").read_text())
+        stored = json.loads((home / "dfcode_config.json").read_text())
         assert stored["mcpServers"]["local"]["credentialEnv"] == {
             "API_KEY": {"credentialRef": "provider:openrouter"}
         }
@@ -350,11 +350,11 @@ def test_mcp_inventory_includes_plugin_servers_with_effective_user_policy(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     plugin = resolve_plugin(_write_mcp_plugin(tmp_path / "review-tools"))
     registration = LocalPluginRegistry(home / "plugins" / "registry.json").add(plugin)
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "pluginMcpServers": {
                 "review-tools/context": {
@@ -365,7 +365,7 @@ def test_mcp_inventory_includes_plugin_servers_with_effective_user_policy(
         },
     )
 
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -396,10 +396,10 @@ def test_mcp_presets_add_disabled_and_real_probe_reports_capabilities(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     fixture = Path(__file__).parents[1] / "fixtures" / "mcp_runtime_server.py"
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "mcpServers": {
                 "fixture": {
@@ -411,7 +411,7 @@ def test_mcp_presets_add_disabled_and_real_probe_reports_capabilities(
             }
         },
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -426,7 +426,7 @@ def test_mcp_presets_add_disabled_and_real_probe_reports_capabilities(
         configured = application.mcp.add_preset("context7", project_id=project.id)
         context7 = next(item for item in configured.servers if item.name == "context7")
         assert context7.configuration_state == "disabled"
-        stored = json.loads((home / "deepcode_config.json").read_text())
+        stored = json.loads((home / "dfcode_config.json").read_text())
         assert stored["mcpServers"]["context7"]["enabled"] is False
         with pytest.raises(InvalidArgumentError, match="already configured"):
             application.mcp.add_preset("context7", project_id=project.id)
@@ -458,20 +458,20 @@ def test_settings_layering_and_scoped_updates_do_not_copy_project_overrides(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(tmp_path)
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "agents": {"defaults": {"model": "openai/user"}},
             "providers": {"openai": {"apiKey": "user-secret"}},
         },
     )
     _write_json(
-        workspace / "deepcode_config.json",
+        workspace / "dfcode_config.json",
         {"agents": {"defaults": {"model": "openai/project"}}},
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     try:
         effective = application.settings.read(project.id)
@@ -502,7 +502,7 @@ def test_settings_layering_and_scoped_updates_do_not_copy_project_overrides(
         )
         assert project_result["security"]["permissions"] == rules
         project_raw = json.loads(
-            (workspace / "deepcode_config.json").read_text(encoding="utf-8")
+            (workspace / "dfcode_config.json").read_text(encoding="utf-8")
         )
         assert project_raw == {
             "agents": {"defaults": {"model": "openai/project"}},
@@ -522,7 +522,7 @@ def test_settings_layering_and_scoped_updates_do_not_copy_project_overrides(
             "sandbox": True,
         }
         user_raw = json.loads(
-            (home / "deepcode_config.json").read_text(encoding="utf-8")
+            (home / "dfcode_config.json").read_text(encoding="utf-8")
         )
         assert user_raw["agents"]["defaults"]["model"] == "openai/user"
         assert "project" not in json.dumps(user_raw)
@@ -540,16 +540,16 @@ def test_project_settings_are_written_to_the_file_they_are_read_from(
     package = repository / "package"
     home.mkdir()
     package.mkdir(parents=True)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     # The project is a folder inside a repository whose config applies to it.
     _write_json(
-        repository / "deepcode_config.json",
+        repository / "dfcode_config.json",
         {
             "agents": {"defaults": {"model": "openai/repository"}},
             "security": {"accessPreset": "read_only"},
         },
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(package), trust_state=TrustState.TRUSTED)
     try:
         effective = application.settings.read(project.id)
@@ -567,9 +567,9 @@ def test_project_settings_are_written_to_the_file_they_are_read_from(
         assert updated["agents"]["defaults"]["model"] == "openai/repository"
         assert updated["security"]["permissions"] == rules
         assert updated["projectAccessPreset"] == "read_only"
-        assert not (package / "deepcode_config.json").exists()
+        assert not (package / "dfcode_config.json").exists()
         assert json.loads(
-            (repository / "deepcode_config.json").read_text(encoding="utf-8")
+            (repository / "dfcode_config.json").read_text(encoding="utf-8")
         ) == {
             "agents": {"defaults": {"model": "openai/repository"}},
             "security": {"accessPreset": "read_only", "permissions": rules},
@@ -587,12 +587,12 @@ def test_project_mcp_servers_are_written_to_the_file_they_are_read_from(
     package = repository / "package"
     home.mkdir()
     package.mkdir(parents=True)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     _write_json(
-        repository / "deepcode_config.json",
+        repository / "dfcode_config.json",
         {"mcpServers": {"shared": {"type": "stdio", "command": "python3"}}},
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(package), trust_state=TrustState.TRUSTED)
     try:
         updated = application.mcp.upsert(
@@ -603,7 +603,7 @@ def test_project_mcp_servers_are_written_to_the_file_they_are_read_from(
         )
 
         assert {server.name for server in updated.servers} == {"shared", "added"}
-        assert not (package / "deepcode_config.json").exists()
+        assert not (package / "dfcode_config.json").exists()
     finally:
         application.close()
 
@@ -623,8 +623,8 @@ def test_settings_refuse_a_project_default_without_the_sandbox(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -636,7 +636,7 @@ def test_settings_refuse_a_project_default_without_the_sandbox(
                 scope="project",
                 project_id=project.id,
             )
-        assert not (workspace / "deepcode_config.json").exists()
+        assert not (workspace / "dfcode_config.json").exists()
 
         application.settings.update({"security": security}, scope="user")
     finally:
@@ -667,9 +667,9 @@ def test_settings_say_which_project_security_is_ignored(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    _write_json(workspace / "deepcode_config.json", {"security": security})
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    _write_json(workspace / "dfcode_config.json", {"security": security})
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -694,16 +694,16 @@ def test_settings_projects_resolved_access_and_unsets_scope_override(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {"security": {"accessPreset": "ask"}},
     )
     _write_json(
-        workspace / "deepcode_config.json",
+        workspace / "dfcode_config.json",
         {"security": {"accessPreset": "read_only"}},
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -727,7 +727,7 @@ def test_settings_projects_resolved_access_and_unsets_scope_override(
         assert inherited["resolvedDefaultSecuritySource"] == "user"
         assert inherited["resolvedDefaultSecurityProfile"]["accessPreset"] == "ask"
         project_raw = json.loads(
-            (workspace / "deepcode_config.json").read_text(encoding="utf-8")
+            (workspace / "dfcode_config.json").read_text(encoding="utf-8")
         )
         assert "accessPreset" not in project_raw.get("security", {})
     finally:
@@ -740,10 +740,10 @@ def test_settings_projects_environment_legacy_security_without_ui_guessing(
 ) -> None:
     home = tmp_path / "home"
     home.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.setenv("DEEPCODE_PERMISSION_MODE", "full_auto")
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "false")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_PERMISSION_MODE", "full_auto")
+    monkeypatch.setenv("DFCODE_SANDBOX", "false")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
         settings = application.settings.read()
         resolved = settings["resolvedDefaultSecurityProfile"]
@@ -764,15 +764,15 @@ def test_settings_read_keeps_history_available_when_project_directory_is_missing
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "agents": {"defaults": {"model": "openai/user-default"}},
             "providers": {"openai": {"apiKey": "user-secret"}},
         },
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -783,7 +783,7 @@ def test_settings_read_keeps_history_available_when_project_directory_is_missing
         effective = application.settings.read(project.id)
 
         assert effective["agents"]["defaults"]["model"] == "openai/user-default"
-        assert effective["configPath"] == str(home / "deepcode_config.json")
+        assert effective["configPath"] == str(home / "dfcode_config.json")
         assert (
             next(
                 provider
@@ -814,13 +814,13 @@ def test_diagnostics_reports_local_health_without_provider_secrets(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
     _write_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {"providers": {"openai": {"apiKey": "never-expose-this"}}},
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     application.threads.start(project.id, title="Diagnostics")
     try:
@@ -838,12 +838,12 @@ def test_diagnostics_reports_local_health_without_provider_secrets(
 
 
 def test_settings_update_refuses_a_stale_config_revision(tmp_path, monkeypatch):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     from core.application.config_store import ConfigStore
     from core.application.errors import ConflictError
     from core.application.settings_service import SettingsService
 
-    store = ConfigStore(tmp_path / "deepcode_config.json")
+    store = ConfigStore(tmp_path / "dfcode_config.json")
     service = SettingsService(store=store)
 
     first = service.read()
@@ -869,11 +869,11 @@ def test_settings_update_refuses_a_stale_config_revision(tmp_path, monkeypatch):
 
 
 def test_settings_update_sets_the_microcompact_switch(tmp_path, monkeypatch):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     from core.application.config_store import ConfigStore
     from core.application.settings_service import SettingsService
 
-    service = SettingsService(store=ConfigStore(tmp_path / "deepcode_config.json"))
+    service = SettingsService(store=ConfigStore(tmp_path / "dfcode_config.json"))
     assert service.read()["agents"]["defaults"]["microcompact"] is False
     updated = service.update({"agents": {"defaults": {"microcompact": True}}})
     assert updated["agents"]["defaults"]["microcompact"] is True
@@ -886,7 +886,7 @@ def _seed_oauth_mcp_server(home: Path) -> dict:
         "auth": "oauth",
         "enabled": True,
     }
-    _write_json(home / "deepcode_config.json", {"mcpServers": {"demo": dict(entry)}})
+    _write_json(home / "dfcode_config.json", {"mcpServers": {"demo": dict(entry)}})
     return entry
 
 
@@ -898,10 +898,10 @@ def test_mcp_pair_writes_roll_back_settings_on_credential_cleanup_failure(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
     original_entry = _seed_oauth_mcp_server(home)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
 
         def boom(*args: object, **kwargs: object) -> None:
@@ -915,12 +915,12 @@ def test_mcp_pair_writes_roll_back_settings_on_credential_cleanup_failure(
                 patch={"url": "https://new.example.test/rpc"},
                 scope="user",
             )
-        config = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+        config = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
         assert config["mcpServers"]["demo"] == original_entry
 
         with pytest.raises(OSError, match="credential store unavailable"):
             application.mcp.remove(name="demo", scope="user")
-        config = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+        config = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
         assert config["mcpServers"]["demo"] == original_entry
     finally:
         application.close()
@@ -934,7 +934,7 @@ def test_mcp_pair_writes_land_together_and_clean_credential_on_success(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
     _seed_oauth_mcp_server(home)
     deleted: list[tuple[str, str]] = []
@@ -944,19 +944,19 @@ def test_mcp_pair_writes_land_together_and_clean_credential_on_success(
         return True
 
     monkeypatch.setattr(McpOAuthCredentialStore, "delete_endpoint", record)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
         application.mcp.upsert(
             name="demo",
             patch={"url": "https://new.example.test/rpc"},
             scope="user",
         )
-        config = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+        config = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
         assert config["mcpServers"]["demo"]["url"] == "https://new.example.test/rpc"
         assert deleted == [("demo", "https://old.example.test/rpc")]
 
         application.mcp.remove(name="demo", scope="user")
-        config = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+        config = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
         assert "demo" not in config.get("mcpServers", {})
         assert deleted == [
             ("demo", "https://old.example.test/rpc"),
@@ -974,10 +974,10 @@ def test_mcp_pair_rollback_failure_raises_loud_unverified_error(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(workspace)
     _seed_oauth_mcp_server(home)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
 
         def boom(*args: object, **kwargs: object) -> None:

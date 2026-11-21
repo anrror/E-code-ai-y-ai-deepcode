@@ -323,7 +323,7 @@ class FileProcessor:
             # If base_dir is provided, adjust paper_dir to be relative to base_dir
             if base_dir and paper_dir:
                 # If paper_dir is using default location, move it to base_dir
-                if paper_dir.endswith(("deepcode_lab", "agent_folders")):
+                if paper_dir.endswith(("dfcode_lab", "agent_folders")):
                     paper_dir = base_dir
                 else:
                     # Extract the relative part and combine with base_dir

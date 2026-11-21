@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import ThreadMode
 from core.persistence.execution_repository import ItemRepository, TurnRepository
 from core.persistence.workflow_repository import WorkflowRepository
@@ -28,7 +28,7 @@ def test_legacy_import_is_read_only_durable_and_idempotent(tmp_path: Path) -> No
     source_path = legacy_root / session.session_id / "session.jsonl"
     source_before = source_path.read_bytes()
 
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     importer = application.legacy_importer(store)
     imported = importer.import_session(session.session_id, project_id=project.id)
@@ -38,7 +38,7 @@ def test_legacy_import_is_read_only_durable_and_idempotent(tmp_path: Path) -> No
     assert imported.mode is ThreadMode.PAPER
     assert source_path.read_bytes() == source_before
 
-    restarted = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    restarted = DFcodeApplication.open(tmp_path / "state.sqlite3")
     assert restarted.threads.read(imported.id) == imported
     with restarted.database.read() as connection:
         turns = TurnRepository(connection).list_for_thread(imported.id)

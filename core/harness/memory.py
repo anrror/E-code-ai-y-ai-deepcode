@@ -2,13 +2,13 @@
 
 Two layers, aligned with Claude Code:
 
-1. **Project instructions** — ``AGENTS.md`` / ``DEEPCODE.md`` / ``CLAUDE.md``
+1. **Project instructions** — ``AGENTS.md`` / ``DFCODE.md`` / ``CLAUDE.md``
    discovered from the enclosing repo root down to the workspace (so a nested
    subdirectory inherits the project's root instructions), plus a user-global
-   file (``~/.deepcode/AGENTS.md`` or ``~/.claude/CLAUDE.md``). Injected verbatim
+   file (``~/.dfcode/AGENTS.md`` or ``~/.claude/CLAUDE.md``). Injected verbatim
    into the system prompt as standing guidance the agent should always honor.
 
-2. **Persistent memory** — ``<workspace>/.deepcode/memory/``, which the agent
+2. **Persistent memory** — ``<workspace>/.dfcode/memory/``, which the agent
    reads and writes through the :class:`MemoryTool`. ``MEMORY.md`` is the
    index and is auto-loaded into the system prompt on every session, so
    durable facts (decisions, conventions, gotchas) survive across
@@ -45,15 +45,15 @@ from typing import Any
 
 from core.agent_runtime.tools.base import Tool, tool_parameters
 
-_MEMORY_SUBDIR = ".deepcode/memory"
+_MEMORY_SUBDIR = ".dfcode/memory"
 _INDEX_FILE = "MEMORY.md"
-_PROJECT_FILES = ("AGENTS.md", "DEEPCODE.md", "CLAUDE.md")
+_PROJECT_FILES = ("AGENTS.md", "DFCODE.md", "CLAUDE.md")
 # Markers that identify the enclosing project root when the workspace is a
 # subdirectory (mirrors the reference agent walking up to the repo root).
 _PROJECT_ROOT_MARKERS = (".git",)
 # User-level standing instructions that apply across every project (lowest
 # precedence). Native first, then Claude Code interop.
-_USER_GLOBAL_FILES = ((".deepcode", "AGENTS.md"), (".claude", "CLAUDE.md"))
+_USER_GLOBAL_FILES = ((".dfcode", "AGENTS.md"), (".claude", "CLAUDE.md"))
 _MAX_INJECT_CHARS = 8000  # keep the preamble bounded; the tool reads the rest
 # Marker for every clipped read/write in this module, so a truncated value is
 # always visibly truncated rather than silently short.
@@ -63,7 +63,7 @@ _REMINDER_CLOSE = "</system-reminder>"
 _REMINDER_CLOSE_ESCAPED = "&lt;/system-reminder&gt;"
 # Comma-separated glob patterns for instruction files that must not be loaded,
 # for example ``code/CLAUDE.md,**/vendor/**``.
-_INSTRUCTION_EXCLUDE_ENV = "DEEPCODE_INSTRUCTION_EXCLUDES"
+_INSTRUCTION_EXCLUDE_ENV = "DFCODE_INSTRUCTION_EXCLUDES"
 
 
 @lru_cache(maxsize=256)
@@ -231,7 +231,7 @@ def project_instructions(workspace: str | Path) -> str:
                 if body:
                     label = name if directory == workspace else f"{directory}/{name}"
                     collected.append((label, body))
-                break  # one file per directory: AGENTS.md > DEEPCODE.md > CLAUDE.md
+                break  # one file per directory: AGENTS.md > DFCODE.md > CLAUDE.md
     kept = _allocate_instruction_bodies(collected, _MAX_INJECT_CHARS)
     blocks = [
         f"## Project instructions (from {label})\n\n{body}" for label, body in kept
@@ -241,7 +241,7 @@ def project_instructions(workspace: str | Path) -> str:
 
 def user_global_instructions(home: str | Path | None = None) -> str:
     """User-level standing instructions that apply across every project
-    (``~/.deepcode/AGENTS.md`` or ``~/.claude/CLAUDE.md``) — lowest precedence."""
+    (``~/.dfcode/AGENTS.md`` or ``~/.claude/CLAUDE.md``) — lowest precedence."""
     base = Path(home) if home is not None else Path.home()
     for subdir, name in _USER_GLOBAL_FILES:
         candidate = base / subdir / name
@@ -484,8 +484,8 @@ def system_preamble(workspace: str | Path, home: str | Path | None = None) -> st
 # namespace is flat (it refuses subdirectories, so a nested topic would be
 # unreachable through the tool):
 #
-#     <workspace>/.deepcode/memory/MEMORY.md    index: pointers only, injected
-#     <workspace>/.deepcode/memory/<topic>.md   topic: the actual facts
+#     <workspace>/.dfcode/memory/MEMORY.md    index: pointers only, injected
+#     <workspace>/.dfcode/memory/<topic>.md   topic: the actual facts
 #
 # A topic reference is resolved against the memory root and nothing else, and a
 # reference that leaves it is *refused*, never resolved. The index is untrusted
@@ -971,8 +971,8 @@ _MAX_COMPACTION_CHARS = 32_000
 
 def compaction_sink_enabled() -> bool:
     """Whether compaction summaries are deposited into memory (env:
-    ``DEEPCODE_COMPACTION_MEMORY``; default on when unset)."""
-    value = os.environ.get("DEEPCODE_COMPACTION_MEMORY", "").strip().lower()
+    ``DFCODE_COMPACTION_MEMORY``; default on when unset)."""
+    value = os.environ.get("DFCODE_COMPACTION_MEMORY", "").strip().lower()
     if not value:
         return True
     return value not in {"0", "false", "off", "no"}
@@ -1078,7 +1078,7 @@ __all__ = [
     }
 )
 class MemoryTool(Tool):
-    """Read/write persistent memory notes under ``<workspace>/.deepcode/memory``."""
+    """Read/write persistent memory notes under ``<workspace>/.dfcode/memory``."""
 
     def __init__(self, workspace: str):
         self._workspace = workspace
@@ -1092,7 +1092,7 @@ class MemoryTool(Tool):
     def description(self) -> str:
         return (
             "Persistent notes that survive across sessions, stored under "
-            ".deepcode/memory/. actions: list | read | write | append | "
+            ".dfcode/memory/. actions: list | read | write | append | "
             "delete. Keep MEMORY.md as the index of what you know."
         )
 

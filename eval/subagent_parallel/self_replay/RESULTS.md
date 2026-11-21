@@ -21,7 +21,7 @@ targets. Turns are real work: 71–90 model calls per serial run.
 ## Results (n=3 per arm)
 
 Model `deepseek-flash`; tokens are summed from the process LLM ledger
-(`~/.deepcode/logs/llm.jsonl`) inside the run window, so they include every
+(`~/.dfcode/logs/llm.jsonl`) inside the run window, so they include every
 sub-agent call. `agents` is the number of distinct `agent_path` labels.
 
 | arm | run | seconds | tokens | model calls | agents | passed |

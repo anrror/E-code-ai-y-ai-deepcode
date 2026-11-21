@@ -119,7 +119,7 @@ describe("labels in zh-CN", () => {
       ...["read", "search", "list", "run", "edit", "plan"].map((kind) =>
         activityLabel({ kind, label: "Built-in" }, t()),
       ),
-      // DeepCode's own tools outside those kinds (core/harness/tools).
+      // DFcode's own tools outside those kinds (core/harness/tools).
       ...[
         "get_goal",
         "update_goal",

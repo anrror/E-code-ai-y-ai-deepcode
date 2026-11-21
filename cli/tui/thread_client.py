@@ -14,7 +14,7 @@ from cli.project_trust import (
 from cli.tui.domain_events import DurableThreadEventCursor
 from core.agent_presets import METADATA_KEY as PRESET_METADATA_KEY
 from core.application.agent_adapter import ConfiguredAgentSessionFactory
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.interactive_turn_router import (
     InteractiveDelivery,
     InteractiveTurnResult,
@@ -66,7 +66,7 @@ class TuiThreadClient:
             streaming=streaming,
             max_iterations=max_iterations,
         )
-        self.application = DeepCodeApplication.open(
+        self.application = DFcodeApplication.open(
             session_factory=self._factory,
             session_store=self.store,
             host_surface="cli",

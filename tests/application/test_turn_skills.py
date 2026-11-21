@@ -3,7 +3,7 @@ from __future__ import annotations
 import time
 from pathlib import Path
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain.item import ItemKind, ItemStatus
 from core.domain.project import TrustState
 from core.domain.turn import TurnStatus
@@ -39,7 +39,7 @@ class SkillSession:
             skill_id=SKILL_ID,
             name="review",
             revision="sha256:" + ("a" * 64),
-            source="project:deepcode",
+            source="project:dfcode",
             kind=SkillInvocationKind.EXPLICIT,
         )
         yield Event("1", TurnStarted((invocation,)))
@@ -71,7 +71,7 @@ class SkillFactory:
         return self.session
 
 
-def _wait(application: DeepCodeApplication, turn_id: str):
+def _wait(application: DFcodeApplication, turn_id: str):
     deadline = time.monotonic() + 3
     while time.monotonic() < deadline:
         snapshot = application.turns.read(turn_id)
@@ -88,7 +88,7 @@ def test_desktop_turn_persists_selection_and_invocation_ledger(
     workspace.mkdir()
     store = SessionStore(tmp_path / "sessions")
     factory = SkillFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
         session_store=store,
@@ -134,7 +134,7 @@ def test_turn_skill_selection_survives_application_reopen(
     store = SessionStore(tmp_path / "sessions")
     factory = SkillFactory()
     database_path = tmp_path / "state.sqlite3"
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         database_path,
         session_factory=factory,
         session_store=store,
@@ -157,7 +157,7 @@ def test_turn_skill_selection_survives_application_reopen(
     finally:
         application.close()
 
-    reopened = DeepCodeApplication.open(
+    reopened = DFcodeApplication.open(
         database_path,
         session_factory=SkillFactory(),
         session_store=store,
@@ -175,7 +175,7 @@ def test_a_turn_warning_is_saved_as_a_warning_not_a_failure(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=SkillFactory(WarningSkillSession()),
         session_store=SessionStore(tmp_path / "sessions"),

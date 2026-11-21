@@ -74,7 +74,7 @@ def test_provider_cli_writes_shared_connection_without_echoing_key(
 ) -> None:
     home = tmp_path / "home"
     secret = "provider-cli-secret"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.setattr(provider_cli.getpass, "getpass", lambda _prompt: secret)
 
     result = provider_cli.run(
@@ -101,7 +101,7 @@ def test_provider_cli_writes_shared_connection_without_echoing_key(
     assert connection["configured"] is True
     assert secret not in output.out
     assert secret not in output.err
-    assert secret not in (home / "deepcode_config.json").read_text(encoding="utf-8")
+    assert secret not in (home / "dfcode_config.json").read_text(encoding="utf-8")
     assert CredentialStore(home / "credentials.json").get("router-cli") == secret
 
     assert provider_cli.run(["list", "--json"]) == 0
@@ -115,7 +115,7 @@ def test_provider_cli_key_rotation_does_not_reset_connection_fields(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     keys = iter(("first-secret", "rotated-secret"))
     monkeypatch.setattr(provider_cli.getpass, "getpass", lambda _prompt: next(keys))
 
@@ -139,7 +139,7 @@ def test_provider_cli_key_rotation_does_not_reset_connection_fields(
     assert provider_cli.run(["set", "router-cli", "--api-key"]) == 0
     capsys.readouterr()
 
-    profile = json.loads((home / "deepcode_config.json").read_text())["providers"][
+    profile = json.loads((home / "dfcode_config.json").read_text())["providers"][
         "profiles"
     ]["router-cli"]
     assert profile["template"] == "openrouter"

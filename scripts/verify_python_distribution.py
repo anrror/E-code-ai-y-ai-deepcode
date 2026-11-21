@@ -37,14 +37,14 @@ from core.platform_compat import (
     subprocess_text_kwargs,
 )
 
-PACKAGE_NAME = "deepcode-hku"
+PACKAGE_NAME = "dfcode-hku"
 MINIMUM_MCP_VERSION = Version("1.29")
 UNSUPPORTED_MCP_VERSION = Version("2")
 SUPPORTED_PYTHON_VERSIONS = (Version("3.12"), Version("3.13"), Version("3.14"))
 
 
 class DistributionVerificationError(RuntimeError):
-    """The built distribution does not satisfy DeepCode's release contract."""
+    """The built distribution does not satisfy DFcode's release contract."""
 
 
 @dataclass(frozen=True, slots=True)
@@ -65,7 +65,7 @@ class VerifiedArtifacts:
 def _canonical_version() -> str:
     version_file = REPOSITORY_ROOT / "core" / "version.py"
     spec = importlib.util.spec_from_file_location(
-        "deepcode_release_version",
+        "dfcode_release_version",
         version_file,
     )
     if spec is None or spec.loader is None:  # pragma: no cover - static path
@@ -343,7 +343,7 @@ def _run(
 def smoke_installed_wheel(wheel: Path) -> None:
     """Install the wheel with unconstrained dependencies and exercise public CLIs."""
 
-    with tempfile.TemporaryDirectory(prefix="deepcode-wheel-smoke-") as temporary:
+    with tempfile.TemporaryDirectory(prefix="dfcode-wheel-smoke-") as temporary:
         root = Path(temporary)
         environment = root / "venv"
         # POSIX virtual environments should symlink the selected interpreter.
@@ -383,13 +383,13 @@ def smoke_installed_wheel(wheel: Path) -> None:
             ],
             cwd=workspace,
         )
-        _run([str(python), "-m", "deepcode", "--help"], cwd=workspace)
+        _run([str(python), "-m", "dfcode", "--help"], cwd=workspace)
         _run(
             [str(python), "-m", "app_server", "--verify-runtime"],
             cwd=workspace,
         )
         _run(
-            [str(python), "-m", "deepcode", "mcp"],
+            [str(python), "-m", "dfcode", "mcp"],
             cwd=workspace,
             stdin=subprocess.DEVNULL,
             timeout=30,
@@ -399,7 +399,7 @@ def smoke_installed_wheel(wheel: Path) -> None:
 def main(argv: list[str] | None = None) -> int:
     configure_utf8_stdio()
     parser = argparse.ArgumentParser(
-        description="Verify DeepCode Python artifacts and their installed runtime."
+        description="Verify DFcode Python artifacts and their installed runtime."
     )
     parser.add_argument("--dist-dir", type=Path, default=Path("dist"))
     parser.add_argument(

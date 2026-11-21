@@ -1,8 +1,8 @@
 # The terminal UI
 
-Run `deepcode` in your project folder to work from the terminal. Type a task in
+Run `dfcode` in your project folder to work from the terminal. Type a task in
 plain language, then use the commands below to choose a model, attach files,
-and control the conversation. New to DeepCode? Follow
+and control the conversation. New to DFcode? Follow
 [Your first coding task](getting-started.md) for setup.
 
 ## Keys
@@ -59,12 +59,12 @@ its last word has arrived, and lines already printed never change:
   characters, so lines stay full and English words inside stay whole. A
   wrapped list item or quote continues under its own text.
 - Code blocks appear line by line with syntax highlighting. They have no
-  indent and DeepCode never wraps them, so a copied block is exactly what the
+  indent and DFcode never wraps them, so a copied block is exactly what the
   model wrote. Your terminal wraps lines that are too long for the window.
 - A table appears once its last row has arrived, because a later row can
   widen the columns above it.
 - A line that contains a URL is wrapped by your terminal instead of
-  DeepCode, so the address is never split.
+  DFcode, so the address is never split.
 
 The line the model is still writing is shown under the transcript, above the
 status line, until it is complete.
@@ -149,7 +149,7 @@ The bottom line is alive during work — a spinner plus what the agent is on:
 ```
 
 `Run` shows the current tool or command. `Thinking` appears when the provider
-shares reasoning progress; `Working` means DeepCode is waiting for its response
+shares reasoning progress; `Working` means DFcode is waiting for its response
 to begin; `Responding` means the answer is arriving, with its unfinished line
 shown just above. `Queued` says what your message waits for: the current Turn
 in this Session, another Session working in the same folder, or a free slot
@@ -164,4 +164,4 @@ hook refused as `⊘ … declined` with its reason.
 
 Leaving with `Ctrl+D` while a task runs does not stop it: the service keeps
 running it, and the TUI prints the command to come back to it
-(`deepcode --resume <session id>`).
+(`dfcode --resume <session id>`).

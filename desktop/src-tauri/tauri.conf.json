@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "DeepCodeX",
+  "productName": "DFcodeX",
   "version": "0.1.0",
-  "identifier": "ai.deepcode.desktop",
+  "identifier": "ai.dfcode.desktop",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "DeepCodeX",
+        "title": "DFcodeX",
         "width": 1440,
         "height": 900,
         "minWidth": 860,
@@ -38,7 +38,7 @@
       "icons/icon.icns"
     ],
     "resources": {
-      "../build/sidecar/dist/deepcode-app-server/": "app-server/",
+      "../build/sidecar/dist/dfcode-app-server/": "app-server/",
       "../../THIRD_PARTY_NOTICES.md": "THIRD_PARTY_NOTICES.md",
       "../../docs/PRIVACY_AND_DIAGNOSTICS.md": "PRIVACY_AND_DIAGNOSTICS.md"
     }

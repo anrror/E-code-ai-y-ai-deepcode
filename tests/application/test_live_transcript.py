@@ -14,7 +14,7 @@ from pathlib import Path
 
 from core.agent_runtime.context import EnvironmentContext
 from core.agent_runtime.injections import SubagentMessage
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.message_provenance import ClientSurface
 from core.domain.turn import TurnStatus
@@ -154,10 +154,10 @@ def _assert_valid_for_providers(request: list[dict]) -> None:
     assert not pending
 
 
-def _reopen(tmp_path: Path, *script) -> tuple[DeepCodeApplication, _Factory]:
+def _reopen(tmp_path: Path, *script) -> tuple[DFcodeApplication, _Factory]:
     factory = _Factory(_Model(list(script)))
     return (
-        DeepCodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory),
+        DFcodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory),
         factory,
     )
 
@@ -215,7 +215,7 @@ def test_a_crash_during_a_tool_leaves_its_call_on_record(tmp_path: Path) -> None
         application.close()
 
     factory = _Factory(_Model([LLMResponse(content="Did B.")]))
-    resumed = DeepCodeApplication.open(
+    resumed = DFcodeApplication.open(
         tmp_path / "resumed.sqlite3",
         session_factory=factory,
         session_store=SessionStore(crashed),
@@ -332,7 +332,7 @@ def test_a_failure_keeps_what_the_model_did_for_the_next_turn(
 def _rebuilt(tmp_path: Path, application, thread_id: str, name: str):
     """A projection rebuilt from the session file alone, in a fresh database."""
 
-    rebuilt = DeepCodeApplication.open(
+    rebuilt = DFcodeApplication.open(
         tmp_path / f"{name}.sqlite3",
         session_store=SessionStore(application.session_store.root),
     )

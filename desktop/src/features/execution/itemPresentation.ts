@@ -122,7 +122,7 @@ export function presentItem(item: Item, t: TFunction): ItemPresentation {
 
 /**
  * What a tool step did, in words. Built-in tools are named by their kind of
- * activity or, for DeepCode's own tools, by name; any other tool keeps the
+ * activity or, for DFcode's own tools, by name; any other tool keeps the
  * name the service gives it.
  */
 export function activityLabel(

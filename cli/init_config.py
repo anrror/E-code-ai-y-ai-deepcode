@@ -1,10 +1,10 @@
-"""Create DeepCode's user-level configuration directory.
+"""Create DFcode's user-level configuration directory.
 
-The default path is ``$DEEPCODE_HOME`` or ``~/.deepcode``.  Initialization is
+The default path is ``$DFCODE_HOME`` or ``~/.dfcode``.  Initialization is
 safe to run from any workspace: it never copies a repository configuration or
 credentials implicitly.  Users can explicitly import a trusted JSON file with
 ``--from`` and configure secrets separately through Desktop Settings or
-``deepcode provider set``.
+``dfcode provider set``.
 """
 
 from __future__ import annotations
@@ -18,9 +18,9 @@ from pathlib import Path
 from typing import Any
 
 from core.config import (
-    DEEPCODE_HOME_ENV,
-    DeepCodeConfig,
-    deepcode_home,
+    DFCODE_HOME_ENV,
+    DFcodeConfig,
+    dfcode_home,
     home_config_path,
     load_config,
 )
@@ -52,7 +52,7 @@ def _seed(from_path: str | None) -> tuple[dict[str, Any], str]:
         raise ValueError(f"invalid JSON in {source}: {exc}") from exc
     if not isinstance(payload, dict):
         raise TypeError(f"configuration in {source} must be a JSON object")
-    DeepCodeConfig.model_validate(payload)
+    DFcodeConfig.model_validate(payload)
     return payload, str(source)
 
 
@@ -70,20 +70,20 @@ def _has_cloud_credential() -> bool:
 
 def _launch_hint() -> str:
     system = platform.system()
-    home = deepcode_home()
-    custom = os.environ.get(DEEPCODE_HOME_ENV)
+    home = dfcode_home()
+    custom = os.environ.get(DFCODE_HOME_ENV)
     if custom:
-        return f"Configuration directory: {home} (from {DEEPCODE_HOME_ENV})."
+        return f"Configuration directory: {home} (from {DFCODE_HOME_ENV})."
     if system == "Windows":
         return (
             f"Configuration directory: {home}. To relocate it, set "
-            f"{DEEPCODE_HOME_ENV}, for example: "
-            f"setx {DEEPCODE_HOME_ENV} D:\\deepcode"
+            f"{DFCODE_HOME_ENV}, for example: "
+            f"setx {DFCODE_HOME_ENV} D:\\dfcode"
         )
     return (
         f"Configuration directory: {home}. To relocate it, export "
-        f'{DEEPCODE_HOME_ENV}, for example: export {DEEPCODE_HOME_ENV}="'
-        '$HOME/.config/deepcode"'
+        f'{DFCODE_HOME_ENV}, for example: export {DFCODE_HOME_ENV}="'
+        '$HOME/.config/dfcode"'
     )
 
 
@@ -108,25 +108,25 @@ def _replace_private_json(path: Path, payload: dict[str, Any]) -> None:
 
 def _ready_message() -> str:
     if _has_cloud_credential():
-        return "An LLM credential is configured; DeepCode is ready to run."
+        return "An LLM credential is configured; DFcode is ready to run."
     return (
         "Next: add an LLM connection in Desktop Settings, or run "
-        "`deepcode provider set openai --api-key`. Local providers do not "
+        "`dfcode provider set openai --api-key`. Local providers do not "
         "require a cloud API key."
     )
 
 
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode init",
-        description="Initialize DeepCode's private user configuration.",
+        prog="dfcode init",
+        description="Initialize DFcode's private user configuration.",
     )
     parser.add_argument(
         "--from",
         dest="from_path",
         metavar="PATH",
         default=None,
-        help="Explicitly import a trusted DeepCode JSON configuration.",
+        help="Explicitly import a trusted DFcode JSON configuration.",
     )
     parser.add_argument(
         "--force",
@@ -135,7 +135,7 @@ def run(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    ensure_private_directory(deepcode_home())
+    ensure_private_directory(dfcode_home())
     destination = home_config_path()
     if destination.is_file() and not args.force:
         ensure_private_file(destination)

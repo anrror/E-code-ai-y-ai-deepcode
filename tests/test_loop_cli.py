@@ -110,8 +110,8 @@ def _configure(
         "get_runtime",
         lambda: type("R", (), {"config": type("C", (), {"security": None})()})(),
     )
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("core.sessions.store._DEFAULT_STORE", None)
     return provider_options
 
@@ -123,10 +123,10 @@ def _create_idle_goal(
     token_budget: int | None = None,
     tokens_used: int = 0,
 ) -> tuple[str, str]:
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import TrustState
 
-    application = DeepCodeApplication.open()
+    application = DFcodeApplication.open()
     try:
         project = application.projects.add(
             str(workspace),
@@ -340,7 +340,7 @@ def test_loop_resume_blocked_goal_retries_without_new_session(
 
 
 def test_loop_resume_paused_goal_uses_the_same_goal(monkeypatch, tmp_path):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import ThreadGoalStatus
     from core.sessions import SessionStore, ThreadGoalStore
 
@@ -349,7 +349,7 @@ def test_loop_resume_paused_goal_uses_the_same_goal(monkeypatch, tmp_path):
     provider = _Provider("complete")
     _configure(monkeypatch, tmp_path, provider)
     session_id, goal_id = _create_idle_goal(workspace)
-    application = DeepCodeApplication.open()
+    application = DFcodeApplication.open()
     try:
         application.goals.pause(
             session_id,
@@ -472,7 +472,7 @@ def test_loop_resume_budget_limited_goal_after_budget_is_removed(
     monkeypatch,
     tmp_path,
 ):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import ThreadGoalStatus
     from core.sessions import SessionStore, ThreadGoalStore
 
@@ -485,7 +485,7 @@ def test_loop_resume_budget_limited_goal_after_budget_is_removed(
         token_budget=10,
         tokens_used=10,
     )
-    application = DeepCodeApplication.open()
+    application = DFcodeApplication.open()
     try:
         limited = application.goals.read(session_id)
         assert limited is not None
@@ -566,7 +566,7 @@ def test_loop_resume_rejects_missing_goal_and_mutating_creation_options(
     tmp_path,
     capsys,
 ):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import TrustState
     from core.sessions import SessionStore
 
@@ -574,7 +574,7 @@ def test_loop_resume_rejects_missing_goal_and_mutating_creation_options(
     workspace.mkdir()
     provider = _Provider("complete")
     _configure(monkeypatch, tmp_path, provider)
-    application = DeepCodeApplication.open()
+    application = DFcodeApplication.open()
     try:
         project = application.projects.add(
             str(workspace),

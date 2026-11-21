@@ -1,4 +1,4 @@
-"""Headless adapter over the shared DeepCode Project/Thread/Turn runtime."""
+"""Headless adapter over the shared DFcode Project/Thread/Turn runtime."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ from cli.project_trust import (
     set_project_trusted,
 )
 from core.application.agent_adapter import ConfiguredAgentSessionFactory
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.domain.approval import Approval, ApprovalStatus
 from core.domain.common import new_id
 from core.domain.execution_profile import ExecutionSelection
@@ -60,7 +60,7 @@ def run_headless_turn(
         streaming=False,
         max_iterations=options.max_iterations,
     )
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         session_factory=factory,
         host_surface="headless",
         run_automation_scheduler=False,

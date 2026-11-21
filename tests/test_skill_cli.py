@@ -32,7 +32,7 @@ def test_skill_cli_manages_the_shared_catalog(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     source = _write_skill(tmp_path / "source", "review")
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "deepcode-home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "dfcode-home"))
     common = ["--workspace", str(workspace), "--json"]
 
     assert run([*common, "import", str(source), "--scope", "project"]) == 0
@@ -62,7 +62,7 @@ def test_skill_cli_reports_unknown_skill_without_traceback(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "deepcode-home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "dfcode-home"))
 
     result = run(
         [
@@ -95,7 +95,7 @@ def test_skill_cli_list_reports_catalog_warnings(
         "Commit with a clear message.\n",
         encoding="utf-8",
     )
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "deepcode-home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "dfcode-home"))
 
     assert run(["--workspace", str(workspace), "list"]) == 0
     printed = capsys.readouterr()

@@ -20,7 +20,7 @@ command that runs confined to a set of writable roots. Three backends:
   same wrapper pattern as the other backends.
 
 Honest boundary: the reference agent adds seccomp-bpf + Landlock on Linux;
-those are kernel facilities Python cannot install from userspace, so DeepCode
+those are kernel facilities Python cannot install from userspace, so DFcode
 relies on bubblewrap's namespaces (a real, standard isolation primitive) rather
 than faking an equivalent. On Windows, a userspace write-fence (like seatbelt's
 or bubblewrap's) needs disk quotas or an AppContainer/SILO; the Job Object
@@ -274,12 +274,12 @@ _SEATBELT_NETWORK_POLICY = r"""
 """
 
 
-# Paths in a writable root that DeepCode itself acts on later, outside the
-# sandbox: the next session loads the project's hooks (.deepcode/hooks.json,
+# Paths in a writable root that DFcode itself acts on later, outside the
+# sandbox: the next session loads the project's hooks (.dfcode/hooks.json,
 # .claude/settings.json) and config from them. A sandboxed command may not
 # create or change them.
-_CONTROL_DIRS = (".deepcode", ".claude")
-_CONTROL_FILE = "deepcode_config.json"
+_CONTROL_DIRS = (".dfcode", ".claude")
+_CONTROL_FILE = "dfcode_config.json"
 _CONTROL_PATHS = (*_CONTROL_DIRS, _CONTROL_FILE)
 # In a repository that already exists, the parts of .git that make git run a
 # program (hooks, config) or take those from another git dir (commondir,
@@ -381,7 +381,7 @@ def _seatbelt_profile(policy: SandboxPolicy) -> str:
         gits = [os.path.join(root, ".git") for root in roots]
         controls = [path for root in roots for path in _control_paths(root)]
         parts.append("")
-        parts.append("; control paths in the roots: DeepCode acts on them unsandboxed")
+        parts.append("; control paths in the roots: DFcode acts on them unsandboxed")
         parts.append("(deny file-write*")
         parts.extend(
             f"  (literal {_sbpl_string(git)})"
@@ -455,7 +455,7 @@ def _release_placeholder(path: str) -> None:
         try:
             os.rmdir(path)
         except OSError:
-            pass  # DeepCode itself wrote into it meanwhile: it is real now
+            pass  # DFcode itself wrote into it meanwhile: it is real now
 
 
 @dataclass
@@ -465,7 +465,7 @@ class WrappedCommand:
     ``placeholders`` are the empty directories holding bwrap's mounts.
     ``watched`` is a project config file that did not exist: one that does
     after the command was made by it (bwrap could not stop that), and is set
-    aside before DeepCode would load it. Callers run :meth:`cleanup` after
+    aside before DFcode would load it. Callers run :meth:`cleanup` after
     the command.
     """
 
@@ -572,7 +572,7 @@ def wrap_argv_command(
         # KILL_ON_JOB_CLOSE job, spawns the inner command into it suspended,
         # and resumes it — the whole process tree dies with the wrapper. It
         # runs by path, not ``-m``: it needs only the standard library, and a
-        # command's environment does not carry DeepCode's PYTHONPATH.
+        # command's environment does not carry DFcode's PYTHONPATH.
         argv = [*script_command(_WINDOWS_JOB_LAUNCHER), "--", *inner_argv]
         return WrappedCommand(argv=argv, backend=backend)
 
@@ -637,7 +637,7 @@ def sandbox_available() -> bool:
 def sandbox_enabled(configured: bool | None = None) -> bool:
     """Resolve whether command sandboxing is enabled.
 
-    ``DEEPCODE_SANDBOX`` accepts ``0``/``false``/``off``/``no`` to disable;
+    ``DFCODE_SANDBOX`` accepts ``0``/``false``/``off``/``no`` to disable;
     any other *non-empty* value enables it.  When the variable is absent,
     ``configured`` is used, falling back to the legacy default (enabled).
     Keeping environment resolution here preserves the public escape hatch
@@ -647,7 +647,7 @@ def sandbox_enabled(configured: bool | None = None) -> bool:
     The explicit Full Access profile also disables the permission engine's
     sensitive-path protection; legacy sandbox toggles do not.
     """
-    raw = os.environ.get("DEEPCODE_SANDBOX", "").strip().lower()
+    raw = os.environ.get("DFCODE_SANDBOX", "").strip().lower()
     if raw:
         return raw not in ("0", "false", "off", "no")
     return True if configured is None else configured

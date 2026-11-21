@@ -1,7 +1,7 @@
 """Drop-in replacement for ``mcp_agent.workflows.parallel.parallel_llm.ParallelLLM``.
 
 The legacy class fans a prompt out to N agents and reduces the responses
-through a single fan-in agent. We reproduce just the behaviour DeepCode
+through a single fan-in agent. We reproduce just the behaviour DFcode
 relies on: ``await parallel.generate_str(message, request_params)``.
 """
 

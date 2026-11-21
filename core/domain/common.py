@@ -1,4 +1,4 @@
-"""Shared primitives for DeepCode's UI-independent domain model."""
+"""Shared primitives for DFcode's UI-independent domain model."""
 
 from __future__ import annotations
 

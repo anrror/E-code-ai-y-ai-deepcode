@@ -3,32 +3,32 @@
 <table style="border: none; margin: 0 auto; padding: 0; border-collapse: collapse;">
 <tr>
 <td align="center" style="vertical-align: middle; padding: 10px; border: none; width: 250px;">
-  <img src="assets/logo.png" alt="DeepCode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
+  <img src="assets/logo.png" alt="DFcode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
 </td>
 <td align="left" style="vertical-align: middle; padding: 10px 0 10px 30px; border: none;">
-  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗
-    ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝
-    ██║  ██║█████╗  █████╗  ██████╔╝██║     ██║   ██║██║  ██║█████╗
-    ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██║     ██║   ██║██║  ██║██╔══╝
-    ██████╔╝███████╗███████╗██║     ╚██████╗╚██████╔╝██████╔╝███████╗
-    ╚═════╝ ╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
+  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗ ██████╗ ██████╗ ██████╗ ███████╗
+    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝
+    ██║  ██║█████╗  ██║     ██║   ██║██║  ██║█████╗
+    ██║  ██║██╔══╝  ██║     ██║   ██║██║  ██║██╔══╝
+    ██████╔╝██║     ╚██████╗╚██████╔╝██████╔╝███████╗
+    ╚═════╝ ╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
 </td>
 </tr>
 </table>
 
 <div align="center">
-<a href="https://trendshift.io/repositories/14665?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDeepCode | Trendshift" width="250" height="55"/></a>
-<a href="https://trendshift.io/repositories/14665?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/14665/daily?language=Python" alt="HKUDS%2FDeepCode | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/14665?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDFcode | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/14665?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/14665/daily?language=Python" alt="HKUDS%2FDFcode | Trendshift" width="250" height="55"/></a>
 </div>
 
-<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DeepCode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
+<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DFcode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
 
-# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DeepCode_images/title_logo.svg" alt="DeepCode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DeepCode: 开源智能体编程
+# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DFcode_images/title_logo.svg" alt="DFcode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DFcode: 开源智能体编程
 
 ### *基于多智能体系统推进代码生成技术*
 
 <p align="center">
-  <a href="https://hkuds.github.io/DeepCode/" target="_blank"><img alt="官网 — hkuds.github.io/DeepCode" src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-hkuds.github.io%2FDeepCode%20%E2%86%97-06B6D4?style=for-the-badge&labelColor=0B1116" height="36"></a>
+  <a href="https://hkuds.github.io/DFcode/" target="_blank"><img alt="官网 — hkuds.github.io/DFcode" src="https://img.shields.io/badge/%E5%AE%98%E7%BD%91-hkuds.github.io%2FDFcode%20%E2%86%97-06B6D4?style=for-the-badge&labelColor=0B1116" height="36"></a>
 </p>
 
 <!-- <p align="center">
@@ -39,13 +39,13 @@
   <img src="https://img.shields.io/badge/HKU-Data_Intelligence_Lab-f39c12?style=for-the-badge&logo=university&logoColor=white" alt="HKU">
 </p> -->
 <p>
-  <a href="https://github.com/HKUDS/DeepCode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DeepCode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
+  <a href="https://github.com/HKUDS/DFcode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DFcode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
   <img src="https://img.shields.io/badge/🐍Python-3.12%2B-4ecdc4?style=for-the-badge&logo=python&logoColor=white&labelColor=1a1a2e">
-  <a href="https://pypi.org/project/deepcode-hku/"><img src="https://img.shields.io/pypi/v/deepcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a>
+  <a href="https://pypi.org/project/dfcode-hku/"><img src="https://img.shields.io/pypi/v/dfcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a>
 </p>
 <p>
   <a href="https://discord.gg/yF2MmDJyGJ"><img src="https://img.shields.io/badge/💬Discord-社区-7289da?style=for-the-badge&logo=discord&logoColor=white&labelColor=1a1a2e"></a>
-  <a href="https://github.com/HKUDS/DeepCode/issues/11"><img src="https://img.shields.io/badge/💬微信-群组-07c160?style=for-the-badge&logo=wechat&logoColor=white&labelColor=1a1a2e"></a>
+  <a href="https://github.com/HKUDS/DFcode/issues/11"><img src="https://img.shields.io/badge/💬微信-群组-07c160?style=for-the-badge&logo=wechat&logoColor=white&labelColor=1a1a2e"></a>
 </p>
 <div align="center">
   <div style="width: 100%; height: 2px; margin: 20px 0; background: linear-gradient(90deg, transparent, #00d9ff, transparent);"></div>
@@ -68,18 +68,18 @@
 
 ### 🖥️ **界面展示**
 
-#### 🖥️ **DeepCode Desktop**
+#### 🖥️ **DFcode Desktop**
 
 <div align="center">
 
-  <img src="https://github.com/Zongwei9888/Experiment_Images/raw/e389750e733ec2c1b94986cb990036899dcaec52/DeepCode_images/Area.gif" alt="DeepCode Desktop 编程智能体演示" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
+  <img src="https://github.com/Zongwei9888/Experiment_Images/raw/e389750e733ec2c1b94986cb990036899dcaec52/DFcode_images/Area.gif" alt="DFcode Desktop 编程智能体演示" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
 
-*在可视化工作台中使用 DeepCode，管理 Session 和目标，并查看工具活动、代码修改与验证过程。*
+*在可视化工作台中使用 DFcode，管理 Session 和目标，并查看工具活动、代码修改与验证过程。*
 </div>
 
-DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共享后台，
+DFcode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共享后台，
 共用 Project、Session 历史、模型、Skills、权限、Goals 与 Automations。
-分别使用 `deepcode`、`deepcode desktop` 和 `deepcode web` 启动；安装及首次任务
+分别使用 `dfcode`、`dfcode desktop` 和 `dfcode web` 启动；安装及首次任务
 见[快速开始](#快速开始)。
 
 ---
@@ -91,13 +91,13 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 <div style="margin: 20px 0;">
   <a href="https://youtu.be/TxwBHRQoaBw" target="_blank">
     <img src="https://img.youtube.com/vi/TxwBHRQoaBw/maxresdefault.jpg"
-         alt="DeepCode Introduction Video"
+         alt="DFcode Introduction Video"
          width="75%"
          style="border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); transition: transform 0.3s ease;"/>
   </a>
 </div>
 
-*🎯 **观看 DeepCode V2 介绍** - 100 秒看完长程任务、循环工程、Agent Harness 与自我进化*
+*🎯 **观看 DFcode V2 介绍** - 100 秒看完长程任务、循环工程、Agent Harness 与自我进化*
 
 <p>
   <a href="https://youtu.be/TxwBHRQoaBw" target="_blank">
@@ -118,8 +118,8 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 ## 📑 目录
 
 - [📰 最近更新](#最近更新)
-- [🧠 DeepCode 中的 Deep](#deepcode-中的-deep)
-- [💡 为什么选 DeepCode](#为什么选-deepcode)
+- [🧠 DFcode 中的 Deep](#dfcode-中的-deep)
+- [💡 为什么选 DFcode](#为什么选-dfcode)
 - [⚡ 快速开始](#快速开始)
 - [🖥️ 选择客户端](#选择客户端)
 - [📋 运行要求与支持平台](#运行要求与支持平台)
@@ -136,7 +136,7 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 - [📄 许可证](#license)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/overview.zh.png" alt="DeepCode 的整体结构：TUI、桌面、网页和脚本连到同一个本地服务，服务里的智能体运行环境用你选择的模型在你的项目里工作" width="1080" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/overview.zh.png" alt="DFcode 的整体结构：TUI、桌面、网页和脚本连到同一个本地服务，服务里的智能体运行环境用你选择的模型在你的项目里工作" width="1080" />
 </p>
 
 ---
@@ -148,9 +148,9 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
   拿的——五个短任务并行比自己做慢 3.2 倍，真实长任务上慢约 1.25 倍。因此保留类别
   路由与依赖排序，不新增图形调度器（[测量结果](eval/subagent_parallel/README.md)）。
 - **2026-11-02** — Goal 的"完成"更可信：智能体会提出检查清单，你确认后，
-  DeepCode 在接受"完成"之前会自己运行这些命令；可在设置里打开独立审查，逐条核对
+  DFcode 在接受"完成"之前会自己运行这些命令；可在设置里打开独立审查，逐条核对
   每项需求，每次验收结果都显示在 Goal 卡片上。Goal 可以设时间上限；卡住或原地
-  打转会自动停下；预算用完先收尾；DeepCode 重启后 Goal 会暂停。
+  打转会自动停下；预算用完先收尾；DFcode 重启后 Goal 会暂停。
 - **2026-10-31** — Web 端长任务更好读（步骤折叠、Goal 结果卡片、长会话打开更快）；
   被拒绝的工具会说明是拒绝；终端界面中文按字换行、恢复运行中的会话不再重复；
   中文界面不再出现英文；窄窗口下侧栏变成抽屉；Web 与 Desktop 界面更精致：统一字体，
@@ -158,8 +158,8 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 - **2026-10-29** — 可选的 microcompact：总结之前先清掉旧的工具输出
   （`agents.defaults.microcompact`）；Goal 完成前的可选检查
   （`goal.completionVerifier`）；Web 客户端可以浏览文件夹；可选的风险检查
-  （`DEEPCODE_RISK_EVALUATOR=1`）；项目 hook 需要批准
-  （`deepcode hooks status` / `approve`）。审批更清楚：TUI 会说明正在等你批准、
+  （`DFCODE_RISK_EVALUATOR=1`）；项目 hook 需要批准
+  （`dfcode hooks status` / `approve`）。审批更清楚：TUI 会说明正在等你批准、
   将改动什么；"始终允许"只覆盖同一类命令，不再是整个工具；信任文件夹前会先确认。
 
 <details>
@@ -169,11 +169,11 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 - **2026-10-21** — Windows 后台服务不再弹窗、代码可单独设字体，以及社区修复
 - **2026-10-14** — 会话保住历史、沙箱更严，Desktop 与 Web 有了中文界面
 - **2026-10-13** — 流式输出更顺、后台服务自我管理、Web 登录更安全
-- **2026-10-12** — DeepCode v2.3.1：TUI 边输出边渲染 Markdown、Windows 后台服务不再自行退出、`/compact` 能压缩写代码的会话，以及社区修复
+- **2026-10-12** — DFcode v2.3.1：TUI 边输出边渲染 Markdown、Windows 后台服务不再自行退出、`/compact` 能压缩写代码的会话，以及社区修复
 - **2026-10-10** — 更稳的终端界面：回答只显示一次、按键不丢草稿、`/compact` 不再抢跑
-- **2026-09-28** — DeepCode v2.3.0：语音输入、Opper 与 Bedrock、Desktop 细节打磨，以及可选的安全加固
+- **2026-09-28** — DFcode v2.3.0：语音输入、Opper 与 Bedrock、Desktop 细节打磨，以及可选的安全加固
 - **2026-09-09** — TUI、Desktop 与 Web 共用一个本地后台
-- **2026-09-06** — DeepCode v2.2.0：Session 上下文窗口上限、会留下记忆的压缩，以及完整本地化的 Desktop
+- **2026-09-06** — DFcode v2.2.0：Session 上下文窗口上限、会留下记忆的压缩，以及完整本地化的 Desktop
 - **2026-09-03** — Desktop 目录竞态、更诚实的命令筛查、GLM-5.2 与两项依赖升级
 - **2026-08-28** — 社区修复：插件凭据警告与更完整的简体中文 Desktop
 - **2026-08-25** — 命令执行器堵上两个绕过
@@ -190,7 +190,7 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 - **2026-08-09** — Skills 有了真正的运行时契约
 - **2026-08-07** — 思考强度控制、更多模型服务商、可调的 Desktop
 - **2026-08-04** — 让 Skills 在每一种工作方式中保持一致
-- **2026-08-03** — 🎉 DeepCode v2.0 正式发布
+- **2026-08-03** — 🎉 DFcode v2.0 正式发布
 - **2026-07-31** — CLI 与 Desktop 共用统一执行模型
 - **2026-07-21** — 持久化 Goals 与安全的 Session 生命周期
 - **2026-07-20** — Session 级模型控制与共享 Skills
@@ -206,11 +206,11 @@ DeepCode 提供 TUI、Desktop 和 Web 三种客户端，连接同一个本地共
 
 ---
 
-## DeepCode 中的 Deep
+## DFcode 中的 Deep
 
 大多数 Coding Agent 都能生成代码。真正困难的是：理解一个真实项目、在正确的边界内完成修改、根据运行结果持续修正，并让用户清楚地知道结果为什么可信。
 
-DeepCode 是一个面向真实软件工程的开源 Coding Agent。你可以把一个简单修改交给它，也可以给它一个需要持续数十个步骤的目标。它能够理解项目、操作代码、运行工具、验证结果，并在中断、重启或模型切换之后继续工作。
+DFcode 是一个面向真实软件工程的开源 Coding Agent。你可以把一个简单修改交给它，也可以给它一个需要持续数十个步骤的目标。它能够理解项目、操作代码、运行工具、验证结果，并在中断、重启或模型切换之后继续工作。
 
 “Deep”代表四种贯穿任务始终的深度：
 
@@ -221,17 +221,17 @@ DeepCode 是一个面向真实软件工程的开源 Coding Agent。你可以把�
 | **Deep Verification** | 不把一段听起来合理的回答当作完成，而是使用测试、构建、诊断、Diff 和任务产物检查结果。                    |
 | **Deep Continuity**   | 保存对话、决策、工具记录和验证证据，让任务可以跨时间、目录、客户端和模型继续。                           |
 
-DeepCode 最特别的地方可以归纳为三点：
+DFcode 最特别的地方可以归纳为三点：
 
-- **"完成"要经过验收。** 智能体说 Goal 完成时，DeepCode 会自己运行你确认的检查清单；还可以开启独立审查，逐条用证据证明需求。没达标的完成声明会带着缺什么退回给智能体。
+- **"完成"要经过验收。** 智能体说 Goal 完成时，DFcode 会自己运行你确认的检查清单；还可以开启独立审查，逐条用证据证明需求。没达标的完成声明会带着缺什么退回给智能体。
 - **让长任务持续运行，同时始终可控。** Goal 不是一次性的提示词。你可以在运行中补充要求、修订目标、暂停、停止或继续，而不必丢掉已经完成的工作；卡住、预算或时间用完时，它也会自己停下。
 - **每处改动都可以审查。** 修改以 diff 呈现，敏感操作等你批准，每个 Goal 都保留工具调用和验收记录，让你看清结果为什么可信。
 
-DeepCode 的目标不是让 Agent 显得更忙，而是帮助你更可靠地完成真正的软件工程工作。
+DFcode 的目标不是让 Agent 显得更忙，而是帮助你更可靠地完成真正的软件工程工作。
 
 ---
 
-## 为什么选 DeepCode
+## 为什么选 DFcode
 
 - **不止回答一次。** 给 Agent 一个 Goal，它会跨多个回合持续工作并检查结果，
   直到报告完成或受阻；它说完成了，要先通过验收才算数。运行过程中可以补充要求、
@@ -239,7 +239,7 @@ DeepCode 的目标不是让 Agent 显得更忙，而是帮助你更可靠地完�
 - **关掉客户端也不停。** TUI 和 Web 的回合在本地后台服务里运行，而不是在启动它的
   窗口里。关掉 TUI，在浏览器里打开同一个会话，在那里处理待批准的操作。Desktop
   是有意例外：它把 App Server 跑在应用进程里，关窗口就一起停掉。
-- **一个会话，四种客户端。** TUI、Desktop、Web 和 `deepcode exec` 读写同一批
+- **一个会话，四种客户端。** TUI、Desktop、Web 和 `dfcode exec` 读写同一批
   项目、会话、模型、Skills 和权限设置。
 - **能做什么由你决定。** 文件夹要先信任，Agent 才会在里面工作。每个会话使用
   Ask、Read only 或 Full access 之一；Ask 下 shell 命令在系统沙箱里运行；仓库
@@ -247,49 +247,49 @@ DeepCode 的目标不是让 Agent 显得更忙，而是帮助你更可靠地完�
   Anthropic 兼容端点，或本地模型。
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/web-ui.zh.png" alt="一个真实 Goal 完成后的 DeepCode 网页客户端：智能体修好了代码并补了测试，Goal 卡片上是通过的验收结果，逐条列出需求和证据" width="100%" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/web-ui.zh.png" alt="一个真实 Goal 完成后的 DFcode 网页客户端：智能体修好了代码并补了测试，Goal 卡片上是通过的验收结果，逐条列出需求和证据" width="100%" />
 </p>
 
 <p align="center"><sub>一个真实 Goal 完成后的网页客户端：智能体修好两个 bug 并补了测试，
-DeepCode 自己运行了确认过的检查，独立审查逐条证明需求后，Goal 才记为完成。</sub></p>
+DFcode 自己运行了确认过的检查，独立审查逐条证明需求后，Goal 才记为完成。</sub></p>
 
 ## 快速开始
 
 **1. 安装。** 使用 [uv](https://docs.astral.sh/uv/)：
 
 ```console
-uv tool install --python 3.12 deepcode-hku
-deepcode init
+uv tool install --python 3.12 dfcode-hku
+dfcode init
 ```
 
-`deepcode init` 会创建 `~/.deepcode`，并把默认访问权限设为 **Ask**。如果终端
-找不到 `deepcode`，运行 `uv tool update-shell` 后重新打开终端。Windows 上可以用
+`dfcode init` 会创建 `~/.dfcode`，并把默认访问权限设为 **Ask**。如果终端
+找不到 `dfcode`，运行 `uv tool update-shell` 后重新打开终端。Windows 上可以用
 `winget install --id astral-sh.uv --exact` 安装 uv。
 
 **2. 添加模型。** 下面以 OpenRouter 为例，其他[支持的服务商](#模型与服务商)
-用法相同。输入密钥时不会回显，密钥保存在 `~/.deepcode/credentials.json`。
+用法相同。输入密钥时不会回显，密钥保存在 `~/.dfcode/credentials.json`。
 
 ```console
-deepcode provider set my-openrouter --template openrouter --api-key
-deepcode provider models my-openrouter --refresh
-deepcode provider test my-openrouter --model MODEL_ID
+dfcode provider set my-openrouter --template openrouter --api-key
+dfcode provider models my-openrouter --refresh
+dfcode provider test my-openrouter --model MODEL_ID
 ```
 
 把 `MODEL_ID` 换成列表里的模型。在 Desktop 或 Web 中，也可以在
 **设置 → 模型** 里完成同样的操作。
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/settings-models.zh.png" alt="DeepCode 设置里的模型连接" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.2); margin: 15px 0;"/>
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/settings-models.zh.png" alt="DFcode 设置里的模型连接" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.2); margin: 15px 0;"/>
 </div>
 
 **3. 在项目里运行。**
 
 ```console
 cd /path/to/your-project
-deepcode --trust --connection my-openrouter --model MODEL_ID
+dfcode --trust --connection my-openrouter --model MODEL_ID
 ```
 
-每个项目只需要一次 `--trust`。之后在该目录运行 `deepcode`，用 `/model` 切换
+每个项目只需要一次 `--trust`。之后在该目录运行 `dfcode`，用 `/model` 切换
 模型。可以先试这样一个任务：
 
 ```text
@@ -306,12 +306,12 @@ Do not change any files yet.
 
 | 客户端 | 启动命令 | 适合 |
 |---|---|---|
-| **TUI** | `deepcode` | 在终端里工作。见 [The terminal UI](docs/guide/the-tui.md)。 |
-| **Web** | `deepcode web` | 在浏览器里使用完整工作台（diff、文件、终端、Goal），同一次安装即可。见 [Web client](docs/WEB_CLIENT.md)。 |
-| **Desktop** | `deepcode desktop` | 同样的工作台，原生应用。目前需从源码运行，见[下文](#desktop)。 |
-| **无界面** | `deepcode exec "<task>"` | 在脚本或 CI 中运行一个回合；`--json` 以 NDJSON 输出事件。`deepcode loop "<goal>"` 运行 Goal。见 [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md)。 |
+| **TUI** | `dfcode` | 在终端里工作。见 [The terminal UI](docs/guide/the-tui.md)。 |
+| **Web** | `dfcode web` | 在浏览器里使用完整工作台（diff、文件、终端、Goal），同一次安装即可。见 [Web client](docs/WEB_CLIENT.md)。 |
+| **Desktop** | `dfcode desktop` | 同样的工作台，原生应用。目前需从源码运行，见[下文](#desktop)。 |
+| **无界面** | `dfcode exec "<task>"` | 在脚本或 CI 中运行一个回合；`--json` 以 NDJSON 输出事件。`dfcode loop "<goal>"` 运行 Goal。见 [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md)。 |
 
-`deepcode web --no-open` 只打印登录链接，不打开浏览器。链接只能用一次，60 秒
+`dfcode web --no-open` 只打印登录链接，不打开浏览器。链接只能用一次，60 秒
 后失效。
 
 ### Desktop
@@ -321,13 +321,13 @@ Node.js 22+、Rust（stable）以及对应平台的
 [Tauri 2 前置依赖](https://v2.tauri.app/start/prerequisites/)：
 
 ```console
-git clone https://github.com/HKUDS/DeepCode.git
-cd DeepCode
+git clone https://github.com/HKUDS/DFcode.git
+cd DFcode
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 uv tool install --python 3.12 --force .
-deepcode init
-deepcode desktop
+dfcode init
+dfcode desktop
 ```
 
 首次启动会构建应用所需资源，需要几分钟；Desktop 运行期间请保持终端开启。
@@ -344,12 +344,12 @@ Desktop 不使用这个共享进程。它把自己的 App Server 作为子进程
 
 | 要做的事 | 命令 |
 |---|---|
-| 查看是否在运行 | `deepcode service status` |
-| 查看最近日志 | `deepcode service logs --lines 100` |
-| 等当前工作完成后停止 | `deepcode service stop --drain --timeout 60` |
-| 登录系统时自动启动 | `deepcode service install --at-login` |
+| 查看是否在运行 | `dfcode service status` |
+| 查看最近日志 | `dfcode service logs --lines 100` |
+| 等当前工作完成后停止 | `dfcode service stop --drain --timeout 60` |
+| 登录系统时自动启动 | `dfcode service install --at-login` |
 
-升级与备份：[Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md)。
+升级与备份：[Upgrading DFcode](docs/UPGRADE_AND_RESTORE.md)。
 遇到问题：[Troubleshooting](docs/guide/troubleshooting.md)。
 
 ## 运行要求与支持平台
@@ -359,41 +359,41 @@ Desktop 不使用这个共享进程。它把自己的 App Server 作为子进程
 | Python | 3.12 或更高（CI 测试 3.12、3.13、3.14） |
 | 操作系统 | macOS、Linux、Windows |
 | 工具 | Git，用于审阅改动和 worktree。Linux 上的命令沙箱需要 bubblewrap（`bwrap`）。 |
-| 模型 | 一个支持的服务商的 API key，或本地 Ollama、vLLM 服务。模型需要支持工具调用，可用 `deepcode provider test <id> --agent` 检查。 |
+| 模型 | 一个支持的服务商的 API key，或本地 Ollama、vLLM 服务。模型需要支持工具调用，可用 `dfcode provider test <id> --agent` 检查。 |
 | Web 客户端 | 同一台电脑上的新版浏览器 |
 | Desktop | Node.js 22+、Rust 和 Tauri 前置依赖（源码构建） |
 
 ## 核心功能
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/goal-loop.zh.png" alt="一个 Goal 如何走到完成：多个回合的工作、完成声明，然后是规则检查、你确认的检查和独立审查；只要还缺东西，声明就被打回" width="1080" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/goal-loop.zh.png" alt="一个 Goal 如何走到完成：多个回合的工作、完成声明，然后是规则检查、你确认的检查和独立审查；只要还缺东西，声明就被打回" width="1080" />
 </p>
 
 - **在仓库里干活。** 读取、搜索、编辑文件，应用补丁，运行命令和测试，每处改动
   都以 diff 呈现。[Getting started](docs/guide/getting-started.md)
 - **Goal。** 在 TUI 中用 `/goal <objective>`，在 Desktop 和 Web 中用 Goal 面板。
-  Goal 跨回合继续，重启后仍然保留。完成要经过验收：DeepCode 运行你确认的检查清单，
+  Goal 跨回合继续，重启后仍然保留。完成要经过验收：DFcode 运行你确认的检查清单，
   还可以开启独立审查逐条证明需求（设置 → 通用）。token 预算或时间上限可以给它
   设边界。[Goals and automation](docs/guide/goals-and-headless.md)
 - **会话与上下文。** 每个会话连同工具调用、批准记录和 Goal 状态一起保存。
   `/resume`、`/compact` 和会话级上下文上限让长任务能继续下去。
   [Sessions](docs/guide/sessions.md)
 - **项目说明与记忆。** 读取 `AGENTS.md` 和 `CLAUDE.md`，项目笔记保存在
-  `.deepcode/memory/`。[Skills and memory](docs/guide/skills-and-memory.md)
+  `.dfcode/memory/`。[Skills and memory](docs/guide/skills-and-memory.md)
 - **模型与服务商。** 命名连接、按会话选择模型和推理强度，使用前可检查连接。
   [Models and providers](docs/guide/models.md)
 - **Skills 与插件。** 从 `.agents/skills` 和 `~/.agents/skills` 加载可复用的
   说明，内置 8 个 Skills 和一个 Skill 创建器。插件可以打包 Skills 和 MCP 服务器。
   [Skills](docs/guide/skills-and-memory.md) · [Local plugins](docs/LOCAL_PLUGINS.md)
 - **MCP。** 支持 stdio、SSE 和 Streamable HTTP 服务器，内置模板目录和 OAuth
-  登录。`deepcode mcp serve` 把 DeepCode 本身作为 MCP 服务器提供。
+  登录。`dfcode mcp serve` 把 DFcode 本身作为 MCP 服务器提供。
   [MCP guide](docs/integrations/MCP.md)
 - **Agent 预设与子代理。** 预设设定角色并收窄可用工具。子代理可以在独立的 Git
   worktree 里工作，可按路由类别选择模型，并用 `depends_on` 互相等待。
   [Configuration](docs/guide/configuration.md#sub-agent-routing-and-ordering)
 - **团队上下文。** 六层归属链（公司 → 产线 → 项目 → 批次 → 版本 → 任务）配一份
   经过评审的知识目录：公司级红线不可被覆盖，外部批次始终标注「未验证」，每个回合
-  都从每层各自的目录（`.deepcode/team/<层>/<slug>/`，含 `entity.yaml`、
+  都从每层各自的目录（`.dfcode/team/<层>/<slug>/`，含 `entity.yaml`、
   `knowledge.yaml`、`AGENTS.md`）装配同一份上下文。
   [团队上下文](docs/guide/team-context.md)
 - **自动化。** 按计划运行保存好的指令，使用同样的 Agent、权限和历史记录。
@@ -407,13 +407,13 @@ Desktop 不使用这个共享进程。它把自己的 App Server 作为子进程
 内置模板：OpenRouter、Requesty、Opper、Forge、Amazon Bedrock、Anthropic、
 OpenAI、DeepSeek、Gemini、智谱 AI（Zhipu AI）、DashScope、MiniMax、Ollama 和
 vLLM。**Custom** 连接可以指向任何支持 OpenAI Chat Completions、OpenAI Responses
-或 Anthropic Messages API 的端点。`deepcode provider list` 会列出它们以及哪些
+或 Anthropic Messages API 的端点。`dfcode provider list` 会列出它们以及哪些
 已经可用。
 
 ## 安全与数据
 
-- **数据留在你的电脑上。** 设置、会话、状态和日志都在 `~/.deepcode`（或
-  `$DEEPCODE_HOME`）下，项目笔记在 `<project>/.deepcode/memory/`。DeepCode
+- **数据留在你的电脑上。** 设置、会话、状态和日志都在 `~/.dfcode`（或
+  `$DFCODE_HOME`）下，项目笔记在 `<project>/.dfcode/memory/`。DFcode
   没有账号系统，也不发送任何统计数据。
 - **本地服务。** 后台服务只监听 `127.0.0.1`（默认端口 3081，被占用时换一个空闲
   端口）。原生客户端用私有令牌认证，Web 客户端用一次性链接登录。
@@ -423,8 +423,8 @@ vLLM。**Custom** 连接可以指向任何支持 OpenAI Chat Completions、OpenA
   命令；**Read only** 拒绝一切改动；**Full access** 去掉批准和沙箱。你设置的
   `deny` 规则在所有预设下都生效。
 - **Hooks。** 仓库声明的 hook 要经你批准才会运行；改动过的 hook 要等
-  `deepcode hooks approve`。
-- **凭据。** API key 保存在 `~/.deepcode/credentials.json`，只有当前用户可读，
+  `dfcode hooks approve`。
+- **凭据。** API key 保存在 `~/.dfcode/credentials.json`，只有当前用户可读，
   不会返回给任何客户端。shell 命令也看不到这些密钥。
 - **模型服务商会收到什么。** 系统提示词、项目说明、工具定义、对话内容和工具结果
   （文件内容、命令输出）会发送到你所选连接的端点。`providers.egress` 可以限制
@@ -450,27 +450,27 @@ vLLM。**Custom** 连接可以指向任何支持 OpenAI Chat Completions、OpenA
 | MCP 服务器 | [MCP guide](docs/integrations/MCP.md) |
 | 后台服务 | [Local background service](docs/SERVICE_RUNTIME.md) |
 | 团队上下文 | [团队上下文](docs/guide/team-context.md) |
-| 升级与备份 | [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md) |
+| 升级与备份 | [Upgrading DFcode](docs/UPGRADE_AND_RESTORE.md) |
 | 从源码运行 Desktop | [Desktop 指南](desktop/README.md) |
 | Paper2Code | [Paper2Code](docs/paper2code.zh-CN.md) |
 
 ## 研究起源
 
-DeepCode 起源于 Paper2Code：一个把研究论文变成可运行代码的多智能体系统。在
+DFcode 起源于 Paper2Code：一个把研究论文变成可运行代码的多智能体系统。在
 [PaperBench](https://openai.com/index/paperbench/) 的人类专家子集上，它取得
 75.9%，高于论文报告的最佳人类基线（72.4%）。方法见论文
-[DeepCode: Open Agentic Coding](https://arxiv.org/abs/2512.07921)。Paper2Code
+[DFcode: Open Agentic Coding](https://arxiv.org/abs/2512.07921)。Paper2Code
 仍可在 Desktop 和 Web 中使用，见 [Paper2Code](docs/paper2code.zh-CN.md)。
 
 <p align="center">
-  <img src="assets/result_main02.jpg" alt="DeepCode PaperBench 结果" width="920" />
+  <img src="assets/result_main02.jpg" alt="DFcode PaperBench 结果" width="920" />
 </p>
 
 <a id="live-demonstrations"></a>
 
 ## 🎬 实时演示
 
-下面的录像展示了早期 DeepCode 工作流生成的项目结果。它们是输出案例，
+下面的录像展示了早期 DFcode 工作流生成的项目结果。它们是输出案例，
 不是当前 Desktop 界面的截图。
 
 <table align="center" width="100%">
@@ -502,7 +502,7 @@ DeepCode 起源于 Paper2Code：一个把研究论文变成可运行代码的多
 
 **[▶ 观看演示](https://www.youtube.com/watch?v=nFt5mLaMEac)**
 
-<sub>查看早期 DeepCode 生成的图像处理工作流。</sub>
+<sub>查看早期 DFcode 生成的图像处理工作流。</sub>
 
 </td>
 <td width="33%" align="center">
@@ -523,7 +523,7 @@ DeepCode 起源于 Paper2Code：一个把研究论文变成可运行代码的多
 </tr>
 </table>
 
-[DeepCode V2 介绍视频](https://youtu.be/TxwBHRQoaBw)提供更完整的产品说明。
+[DFcode V2 介绍视频](https://youtu.be/TxwBHRQoaBw)提供更完整的产品说明。
 
 ---
 
@@ -534,7 +534,7 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 
 ## 支持
 
-- 问题反馈与功能建议：[GitHub Issues](https://github.com/HKUDS/DeepCode/issues)
+- 问题反馈与功能建议：[GitHub Issues](https://github.com/HKUDS/DFcode/issues)
 - 安全漏洞：[SECURITY.md](SECURITY.md)
 - 社区：飞书群和微信群见
   [HKUDS 主页](https://github.com/HKUDS/.github/blob/main/profile/README.md)
@@ -549,11 +549,11 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 
 *社区增长轨迹*
 
-  <a href="https://star-history.com/#HKUDS/DeepCode&Date">
+  <a href="https://star-history.com/#HKUDS/DFcode&Date">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" />
-      <img src="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" alt="DeepCode 星标历史图" width="900" />
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" />
+      <img src="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" alt="DFcode 星标历史图" width="900" />
     </picture>
   </a>
 
@@ -561,14 +561,14 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 
 ---
 
-### 🚀 准备好使用 DeepCode 了吗？
+### 🚀 准备好使用 DFcode 了吗？
 
 <div align="center">
 
 <p>
   <a href="#快速开始"><img src="https://img.shields.io/badge/🚀_立即开始-00d4ff?style=for-the-badge&logo=rocket&logoColor=white" alt="立即开始" /></a>
-  <a href="https://github.com/HKUDS/DeepCode"><img src="https://img.shields.io/badge/🏛️_在_GitHub_查看-00d4ff?style=for-the-badge&logo=github&logoColor=white" alt="在 GitHub 查看 DeepCode" /></a>
-  <a href="https://github.com/HKUDS/DeepCode/stargazers"><img src="https://img.shields.io/badge/⭐_Star_项目-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star DeepCode" /></a>
+  <a href="https://github.com/HKUDS/DFcode"><img src="https://img.shields.io/badge/🏛️_在_GitHub_查看-00d4ff?style=for-the-badge&logo=github&logoColor=white" alt="在 GitHub 查看 DFcode" /></a>
+  <a href="https://github.com/HKUDS/DFcode/stargazers"><img src="https://img.shields.io/badge/⭐_Star_项目-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star DFcode" /></a>
 </p>
 
 </div>
@@ -580,12 +580,12 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 ## 🙏 致谢
 
 感谢开源社区的每一位——你们的 star、issue、pull request 和讨论，
-共同塑造了 DeepCode 的走向。
+共同塑造了 DFcode 的走向。
 
 <div align="center">
 
-<a href="https://github.com/HKUDS/DeepCode/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/DeepCode&max=999" alt="DeepCode contributors" />
+<a href="https://github.com/HKUDS/DFcode/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HKUDS/DFcode&max=999" alt="DFcode contributors" />
 </a>
 
 </div>
@@ -600,11 +600,11 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 
 ## 📖 引用
 
-如果 DeepCode 对您的研究有所帮助，请引用：
+如果 DFcode 对您的研究有所帮助，请引用：
 
 ```bibtex
-@misc{li2025deepcodeopenagenticcoding,
-  title         = {DeepCode: Open Agentic Coding},
+@misc{li2025dfcodeopenagenticcoding,
+  title         = {DFcode: Open Agentic Coding},
   author        = {Zongwei Li and Zhonghang Li and Zirui Guo and Xubin Ren and Chao Huang},
   year          = {2025},
   eprint        = {2512.07921},
@@ -624,7 +624,7 @@ PR 的贡献者都列在 [CONTRIBUTORS.md](CONTRIBUTORS.md) 中。
 
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-4ecdc4?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="MIT License" /></a>
 
-DeepCode 采用 [MIT License](LICENSE)。<br/>
+DFcode 采用 [MIT License](LICENSE)。<br/>
 版权所有 © 2025 香港大学数据智能实验室。
 
 </div>

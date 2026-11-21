@@ -28,7 +28,7 @@ def test_management_requires_authentication_instance_and_local_origin(tmp_path):
             assert (
                 await client.post("/control/rpc", json=body("status"))
             ).status == 401
-            wrong_instance = {**auth(control), "X-DeepCode-Instance": "wrong"}
+            wrong_instance = {**auth(control), "X-DFcode-Instance": "wrong"}
             assert (
                 await client.post(
                     "/control/rpc", headers=wrong_instance, json=body("status")
@@ -251,7 +251,7 @@ def test_service_exits_cleanly_after_control_stop(tmp_path, log_to_file, detache
 
 def test_cli_launcher_can_exit_while_the_service_remains_available(tmp_path):
     files = ServiceFiles(tmp_path / "state.sqlite3")
-    entry = Path(__file__).resolve().parents[2] / "deepcode.py"
+    entry = Path(__file__).resolve().parents[2] / "dfcode.py"
 
     def cli(command, *arguments):
         result = subprocess.run(
@@ -439,8 +439,8 @@ def test_start_does_not_wait_for_a_status_probe_that_has_already_left(
 def test_same_port_restart_after_server_closes_a_live_connection(tmp_path, monkeypatch):
     import socket
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     files = ServiceFiles(tmp_path / "state.sqlite3")
     try:
         status = start_service(files, port=0, timeout=15)

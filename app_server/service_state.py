@@ -25,7 +25,7 @@ SERVICE_WORKING_DIRECTORY = Path(__file__).resolve().parents[1]
 # A detached start names the instance it launches, so it can tell its own
 # service from a concurrent winner. PIDs cannot: on Windows a venv's python.exe
 # runs the interpreter as a child, so the service's PID is not the launched one.
-LAUNCH_INSTANCE_ENV = "DEEPCODE_SERVICE_INSTANCE"
+LAUNCH_INSTANCE_ENV = "DFCODE_SERVICE_INSTANCE"
 
 
 def launched_instance_id() -> str:
@@ -195,15 +195,15 @@ def service_working_directory(arguments: list[str]) -> Path:
 
 def service_environment(path: str | None = None) -> dict[str, str]:
     """Capture only the deliberate launch environment, never shell credentials."""
-    from core.config import deepcode_home
+    from core.config import dfcode_home
 
     environment = {
-        "DEEPCODE_HOME": str(deepcode_home()),
+        "DFCODE_HOME": str(dfcode_home()),
         "PATH": path if path is not None else os.environ.get("PATH", os.defpath),
     }
-    if os.environ.get("DEEPCODE_SESSIONS_DIR"):
-        environment["DEEPCODE_SESSIONS_DIR"] = str(
-            Path(os.environ["DEEPCODE_SESSIONS_DIR"]).expanduser().resolve()
+    if os.environ.get("DFCODE_SESSIONS_DIR"):
+        environment["DFCODE_SESSIONS_DIR"] = str(
+            Path(os.environ["DFCODE_SESSIONS_DIR"]).expanduser().resolve()
         )
     return environment
 

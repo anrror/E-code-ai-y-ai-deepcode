@@ -197,7 +197,7 @@ def test_code_mode_forwards_frozen_sandbox_choice(monkeypatch):
         captured.append(kwargs["enabled"])
         return real_build(**kwargs)
 
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "1")
+    monkeypatch.setenv("DFCODE_SANDBOX", "1")
     monkeypatch.setattr(code_mode_module, "build_exec_command", capture_build)
     tool = CodeModeTool(
         workspace,

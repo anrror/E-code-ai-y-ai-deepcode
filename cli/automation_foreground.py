@@ -7,7 +7,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any
 
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.errors import (
     ApplicationError,
     ApprovalAlreadyResolvedError,
@@ -36,7 +36,7 @@ class _RunCursor:
     sequence: int
     run: dict[str, Any]
 
-    def replay(self, application: DeepCodeApplication) -> None:
+    def replay(self, application: DFcodeApplication) -> None:
         """Consume every currently committed Run update after ``sequence``."""
 
         while True:
@@ -61,7 +61,7 @@ class _RunCursor:
 
 
 def run_automation_foreground(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     automation_id: str,
     *,
     request_id: str | None,
@@ -140,7 +140,7 @@ def _foreground_settled(run: dict[str, Any]) -> bool:
 
 
 def _pending_approvals(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     run: dict[str, Any],
 ) -> tuple[Approval, ...]:
     active = application.turns.active_for_thread(str(run["threadId"]))
@@ -155,7 +155,7 @@ def _pending_approvals(
 
 
 def _resolve_interactively(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     approval: Approval,
     reader: Callable[[str], str],
 ) -> None:
@@ -196,7 +196,7 @@ def _resolve_interactively(
 
 
 def _interrupt_local_owner(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     run: dict[str, Any],
 ) -> str:
     active = application.turns.active_for_thread(str(run["threadId"]))
@@ -209,7 +209,7 @@ def _interrupt_local_owner(
 
 
 def _raise_approval_required(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     *,
     automation_id: str,
     cursor: _RunCursor,
@@ -219,7 +219,7 @@ def _raise_approval_required(
     application.automations.reconcile_runs()
     cursor.replay(application)
     raise ForegroundApprovalRequiredError(
-        "Automation requires human approval in an interactive DeepCode client",
+        "Automation requires human approval in an interactive DFcode client",
         details={
             "automationId": automation_id,
             "runId": cursor.run["id"],
@@ -234,7 +234,7 @@ def _raise_approval_required(
 
 
 def _result(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     run: dict[str, Any],
 ) -> dict[str, Any]:
     turn_id = run.get("turnId")

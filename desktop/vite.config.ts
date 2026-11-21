@@ -36,7 +36,7 @@ export default defineConfig(({ mode }) => {
       ...(web
         ? [
             {
-              name: "deepcode-web-release",
+              name: "dfcode-web-release",
               generateBundle() {
                 this.emitFile({
                   type: "asset",

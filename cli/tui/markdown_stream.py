@@ -9,7 +9,7 @@ longer change.
   paragraph per source line, so this is block rendering in practice.
 - A code block's lines go out one by one, highlighted when the fence names a
   language. They get no indent beyond the stream's own (``indent``, which an
-  answer does not have) and are never wrapped by DeepCode, so they copy back
+  answer does not have) and are never wrapped by DFcode, so they copy back
   exactly as written.
 - A table is held until its last row: a later row can widen every column.
 - A line that carries a URL is left to the terminal's own soft wrap, so the
@@ -138,7 +138,7 @@ class MarkdownStream:
         if self.indent:
             text = Text(" " * self.indent) + text
         # soft_wrap: the text is already laid out (or deliberately left to
-        # the terminal); DeepCode must not insert newlines into it.
+        # the terminal); DFcode must not insert newlines into it.
         self.console.print(text, style=self.style, soft_wrap=True, highlight=False)
 
     def _code_line(self, line: str) -> None:
@@ -181,7 +181,7 @@ class MarkdownStream:
         elif _URL.search(body):
             self._emit(self._render(markdown, unwrapped), nesting)
         else:
-            # Rich lays the line out unwrapped; the wrapping is DeepCode's.
+            # Rich lays the line out unwrapped; the wrapping is DFcode's.
             rendered = self._render(markdown, unwrapped)
             self._emit(
                 [row for text in rendered for row in _wrap(text, width)], nesting

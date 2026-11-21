@@ -1,6 +1,6 @@
 """Project hook approval: a digest of the hook declarations a project ships.
 
-A project's ``.deepcode/hooks.json`` and ``.claude/settings.json`` are
+A project's ``.dfcode/hooks.json`` and ``.claude/settings.json`` are
 workspace-supplied commands. Trusting a project lets its hooks run, but a later
 change to those declarations (a ``git pull`` that adds or edits a hook) should
 not run silently: the approval is tied to a digest of the declarations, and a
@@ -12,14 +12,14 @@ What the digest covers, and what it does not:
   per matcher group, the matcher and each handler's ``type``, ``command``,
   ``timeout``, ``async`` and ``priority``. Key order, whitespace and other keys
   (descriptions, status messages, unrelated settings) do not change it.
-* It does **not** cover anything a command runs. ``sh .deepcode/check.sh``
+* It does **not** cover anything a command runs. ``sh .dfcode/check.sh``
   keeps its approval when ``check.sh`` changes; approving a hook approves a
   command line, not the files that command reads.
 * Files are named by their path relative to the workspace, so the same
   declarations give the same digest through a symlink, from a git worktree, or
   after the folder moves.
 
-The user's own ``~/.deepcode/hooks.json`` is never part of the digest and is
+The user's own ``~/.dfcode/hooks.json`` is never part of the digest and is
 never gated. The approved digest is stored on the Project record; see
 ``core.application.project_service`` for when it is recorded.
 """

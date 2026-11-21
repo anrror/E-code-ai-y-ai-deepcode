@@ -1,6 +1,6 @@
 """Provider-neutral reasoning capabilities and effort resolution.
 
-The rest of DeepCode deals in semantic effort names.  Provider adapters own
+The rest of DFcode deals in semantic effort names.  Provider adapters own
 the final wire representation; UI and Session code must not grow model-name
 conditionals of their own.
 """

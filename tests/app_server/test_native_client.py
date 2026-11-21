@@ -105,7 +105,7 @@ def test_real_stdio_attachment_exit_preserves_service(tmp_path, shutdown):
                     stdin=asyncio.subprocess.PIPE,
                     stdout=asyncio.subprocess.PIPE,
                     stderr=asyncio.subprocess.PIPE,
-                    env={**os.environ, "DEEPCODE_HOME": str(tmp_path / "home")},
+                    env={**os.environ, "DFCODE_HOME": str(tmp_path / "home")},
                 )
                 requests = [
                     {
@@ -284,14 +284,14 @@ def test_pinned_bundle_survives_source_replacement(tmp_path, monkeypatch):
 
     source = tmp_path / "desktop-app" / "app-server"
     source.mkdir(parents=True)
-    executable = source / "deepcode-app-server"
+    executable = source / "dfcode-app-server"
     executable.write_bytes(b"first binary")
     assets = source / "_internal" / "app_server" / "web_assets"
     assets.mkdir(parents=True)
     (assets / "web-build.json").write_text('{"buildId":"first"}')
     (assets / "index.html").write_text("first page")
     monkeypatch.setattr(sys, "executable", str(executable))
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "private-home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "private-home"))
     first = pinned_service_executable()
     assert first != executable
     assert pinned_service_executable() == first

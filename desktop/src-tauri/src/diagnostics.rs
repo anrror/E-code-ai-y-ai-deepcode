@@ -40,11 +40,11 @@ fn export_report_blocking(
         })?
         .as_millis();
     let contents = report_bytes(status, diagnostics, generated_at_unix_ms)?;
-    let filename = format!("deepcode-diagnostics-{}.json", generated_at_unix_ms / 1000);
+    let filename = format!("dfcode-diagnostics-{}.json", generated_at_unix_ms / 1000);
     let Some(selected) = app
         .dialog()
         .file()
-        .set_title("Export DeepCode diagnostics")
+        .set_title("Export DFcode diagnostics")
         .set_file_name(filename)
         .add_filter("JSON report", &["json"])
         .blocking_save_file()

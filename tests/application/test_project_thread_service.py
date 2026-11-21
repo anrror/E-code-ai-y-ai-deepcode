@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import (
     InvalidArgumentError,
     ThreadNotFoundError,
@@ -22,11 +22,11 @@ def test_project_and_thread_survive_application_restart(tmp_path: Path) -> None:
     workspace.mkdir()
     database_path = tmp_path / "state.sqlite3"
 
-    first = DeepCodeApplication.open(database_path)
+    first = DFcodeApplication.open(database_path)
     project = first.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = first.threads.start(project.id, title="Persistent thread")
 
-    second = DeepCodeApplication.open(database_path)
+    second = DFcodeApplication.open(database_path)
     assert second.projects.read(project.id) == project
     assert second.threads.read(thread.id) == thread
     assert second.threads.list(project.id) == [thread]
@@ -35,7 +35,7 @@ def test_project_and_thread_survive_application_restart(tmp_path: Path) -> None:
 def test_adding_same_canonical_project_is_idempotent(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
 
     first = application.projects.add(str(workspace), display_name="First")
     second = application.projects.add(str(workspace / "."), display_name="Ignored")
@@ -52,7 +52,7 @@ def test_workspace_cannot_escape_project_through_symlink(tmp_path: Path) -> None
     outside.mkdir()
     escape = workspace / "escape"
     escape.symlink_to(outside, target_is_directory=True)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
 
     with pytest.raises(WorkspaceOutOfScopeError):
@@ -66,7 +66,7 @@ def test_workspace_cannot_escape_project_through_symlink(tmp_path: Path) -> None
 def test_thread_mutation_and_replay_have_monotonic_sequences(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Original")
     renamed = application.threads.rename(thread.id, "Renamed")
@@ -87,7 +87,7 @@ def test_thread_mutation_and_replay_have_monotonic_sequences(tmp_path: Path) -> 
 def test_thread_and_authoritative_event_commit_atomically(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
 
     with patch(
@@ -103,7 +103,7 @@ def test_thread_and_authoritative_event_commit_atomically(tmp_path: Path) -> Non
 def test_fork_stays_in_project_and_records_parent(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     source = application.threads.start(project.id, title="Source")
     fork = application.threads.fork(source.id)
@@ -134,7 +134,7 @@ def test_live_event_broker_is_bounded_and_reports_loss() -> None:
     assert broker.drain(token).events == ()
 
 
-def _session_file(application: DeepCodeApplication, thread_id: str) -> Path:
+def _session_file(application: DFcodeApplication, thread_id: str) -> Path:
     return application.session_store.root / thread_id / "session.jsonl"
 
 
@@ -149,7 +149,7 @@ def test_a_session_that_cannot_be_read_keeps_its_thread_history(
         pytest.skip("file permissions don't stop this user reading")
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Original")
     application.threads.rename(thread.id, "Renamed")
@@ -186,7 +186,7 @@ def test_a_turn_is_refused_while_its_session_cannot_be_read(tmp_path: Path) -> N
     # a failed Turn in the thread's history and no word to the user.
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="Original")
     path = _session_file(application, thread.id)
@@ -205,7 +205,7 @@ def test_a_turn_is_refused_while_its_session_cannot_be_read(tmp_path: Path) -> N
 def test_a_session_removed_from_disk_drops_its_thread(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Removed")
 
@@ -227,7 +227,7 @@ def test_list_directories_shows_visible_subfolders_only(
     (root / "notes.txt").write_text("not a folder", encoding="utf-8")
     monkeypatch.setenv("HOME", str(home))
     monkeypatch.setenv("USERPROFILE", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
 
     listing = application.projects.list_directories(str(root))
     assert listing.path == str(root.resolve())
@@ -255,12 +255,12 @@ def test_list_directories_follows_folder_links(tmp_path: Path) -> None:
         (root / "linked").symlink_to(target, target_is_directory=True)
     except OSError:
         pytest.skip("symlinks are not available")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     assert application.projects.list_directories(str(root)).folders == ("linked",)
 
 
 def test_list_directories_rejects_paths_it_cannot_list(tmp_path: Path) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     file_path = tmp_path / "file.txt"
     file_path.write_text("x", encoding="utf-8")
     for bad in ("relative/path", str(tmp_path / "missing"), str(file_path)):
@@ -276,7 +276,7 @@ def test_list_directories_marks_a_long_listing_truncated(
     for name in ("c", "a", "b"):
         (tmp_path / name).mkdir()
     monkeypatch.setattr(project_service, "DIRECTORY_LIST_LIMIT", 2)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     listing = application.projects.list_directories(str(tmp_path))
     assert listing.folders == ("a", "b")
     assert listing.truncated is True

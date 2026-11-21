@@ -4,7 +4,7 @@ Covers the lifecycle contracts introduced by the SessionEnd / PreCompact work:
 
 - ``SessionEnd`` fires exactly once at real session termination
   (``AgentSession.submit(Shutdown)``), never per turn; the session-exit reason
-  doubles as the matcher input (DeepCode shutdown maps to ``other``); a failing
+  doubles as the matcher input (DFcode shutdown maps to ``other``); a failing
   hook is non-fatal and never blocks ``ShutdownComplete``.
 - The ``PreCompact`` hook's ``additional_contexts`` survive a successful
   compaction as a single bounded, provider-agnostic user message, and are
@@ -158,9 +158,9 @@ def test_session_end_discovery_uses_bounded_exit_timeout(tmp_path):
 
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
-    (home / ".deepcode").mkdir(parents=True)
+    (home / ".dfcode").mkdir(parents=True)
     workspace.mkdir()
-    (home / ".deepcode" / "hooks.json").write_text(
+    (home / ".dfcode" / "hooks.json").write_text(
         json.dumps(
             {
                 "hooks": {

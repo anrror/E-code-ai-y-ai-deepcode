@@ -293,7 +293,7 @@ class CodeIndexer:
             return {}
 
     async def _initialize_llm_client(self):
-        """Initialize the LLM client via DeepCode's provider runtime."""
+        """Initialize the LLM client via DFcode's provider runtime."""
         if self.llm_client is not None:
             return self.llm_client, self.llm_client_type
 
@@ -305,7 +305,7 @@ class CodeIndexer:
 
         provider, profile = get_workflow_provider(phase="default")
         self.logger.info(
-            "Using DeepCode provider runtime for indexing: provider=%s model=%s",
+            "Using DFcode provider runtime for indexing: provider=%s model=%s",
             profile.provider_name,
             profile.model,
         )
@@ -316,7 +316,7 @@ class CodeIndexer:
     async def _call_llm(
         self, prompt: str, system_prompt: str = None, max_tokens: int = None
     ) -> str:
-        """Call the LLM for code analysis through DeepCode's provider runtime."""
+        """Call the LLM for code analysis through DFcode's provider runtime."""
         if system_prompt is None:
             system_prompt = self.llm_system_prompt
         if max_tokens is None:
@@ -1370,14 +1370,14 @@ class CodeIndexer:
 async def main():
     """Main function to run the code indexer with full configuration support"""
 
-    # Configuration file path - other settings are read from deepcode_config.json
+    # Configuration file path - other settings are read from dfcode_config.json
     # via the global runtime.
-    config_file = "DeepCode/tools/indexer_config.yaml"
+    config_file = "DFcode/tools/indexer_config.yaml"
 
     # You can override these parameters or let them be read from config
-    code_base_path = "DeepCode/deepcode_lab/papers/1/code_base/"  # Will use config file value if None
+    code_base_path = "DFcode/dfcode_lab/papers/1/code_base/"  # Will use config file value if None
     output_dir = (
-        "DeepCode/deepcode_lab/papers/1/indexes/"  # Will use config file value if None
+        "DFcode/dfcode_lab/papers/1/indexes/"  # Will use config file value if None
     )
 
     # Target structure - this should be customized for your specific project
@@ -1419,7 +1419,7 @@ async def main():
 
     print("🚀 Starting Code Indexer with Enhanced Configuration Support")
     print(f"📋 Configuration file: {config_file}")
-    print("🔑 LLM provider/keys are read from deepcode_config.json")
+    print("🔑 LLM provider/keys are read from dfcode_config.json")
 
     try:
         indexer = CodeIndexer(

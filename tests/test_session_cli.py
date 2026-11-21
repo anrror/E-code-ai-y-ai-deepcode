@@ -4,7 +4,7 @@ import json
 from pathlib import Path
 
 from cli.session_cli import run
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.sessions import SessionStore
 
 
@@ -13,10 +13,10 @@ def _seed(tmp_path: Path, monkeypatch) -> tuple[SessionStore, str]:
     sessions = tmp_path / "sessions"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(sessions))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(sessions))
     store = SessionStore(sessions)
-    application = DeepCodeApplication.open(session_store=store)
+    application = DFcodeApplication.open(session_store=store)
     try:
         project = application.projects.add(str(workspace))
         thread = application.threads.start(project.id, title="CLI deletion")

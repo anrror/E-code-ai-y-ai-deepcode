@@ -5,7 +5,7 @@ This module owns all of the housekeeping that *used* to be scattered across
 (``_process_input_source``), and the head of Phase 2 (resume detection +
 PDF→MD inlining):
 
-* deciding where ``deepcode_lab`` lives (env > yaml > cwd default)
+* deciding where ``dfcode_lab`` lives (env > yaml > cwd default)
 * normalising the user-supplied input string (``file://``, ``~``, URL
   decoding, Windows backslash, relative→absolute)
 * validating it (existence, file size, extension whitelist) so we fail
@@ -76,9 +76,9 @@ async def prepare_workflow_environment(
     catch it and mark the task failed without spending any LLM tokens.
 
     The on-disk task directory is named
-    ``deepcode_lab/tasks/<prefix>_<task_id>/`` where ``<prefix>`` is
+    ``dfcode_lab/tasks/<prefix>_<task_id>/`` where ``<prefix>`` is
     derived from ``task_kind`` (``paper`` / ``chat`` / ``web`` …). Old
-    ``deepcode_lab/papers/<id>/`` directories created by previous releases
+    ``dfcode_lab/papers/<id>/`` directories created by previous releases
     are **not** auto-resumed; users who want to continue an old run need
     to re-submit the input.
     """
@@ -223,11 +223,11 @@ def _maybe_progress(cb: ProgressCallback | None, pct: int, msg: str) -> None:
 
 
 def _load_workspace_config() -> tuple[str | None, int]:
-    """Read ``workspace.{root,maxInputMb}`` from the active deepcode_config.json."""
+    """Read ``workspace.{root,maxInputMb}`` from the active dfcode_config.json."""
     try:
         runtime = get_runtime()
     except Exception as exc:  # pragma: no cover - defensive
-        default_logger.warning("Could not load DeepCode runtime config: {}", exc)
+        default_logger.warning("Could not load DFcode runtime config: {}", exc)
         return None, _DEFAULT_MAX_INPUT_MB
 
     workspace = runtime.config.workspace
@@ -305,7 +305,7 @@ def _validate_input(normalized: str, kind: InputKind, max_mb: int, log: Any) -> 
     if size_mb > max_mb:
         raise ValueError(
             f"input '{normalized}': size {size_mb:.1f}MB exceeds limit {max_mb}MB "
-            f"(raise workspace.maxInputMb in deepcode_config.json to override)"
+            f"(raise workspace.maxInputMb in dfcode_config.json to override)"
         )
 
     suffix = path.suffix.lower()
@@ -327,7 +327,7 @@ def _detect_resume(
     (``paper_`` → ``"paper2code"`` etc.). Returns ``(None, None, False)``
     otherwise. A resume reuses the existing ``task_id`` and skips Phase 2.
 
-    Old-style ``deepcode_lab/papers/<id>/`` paths are intentionally **not**
+    Old-style ``dfcode_lab/papers/<id>/`` paths are intentionally **not**
     resumed — the user opted out of legacy migration, so they must
     re-submit the input to get a fresh ``tasks/paper_<uuid>/`` directory.
     """
@@ -372,7 +372,7 @@ def _ensure_workspace(
     workspace_root.mkdir(parents=True, exist_ok=True)
     (workspace_root / TASKS_DIRNAME).mkdir(parents=True, exist_ok=True)
 
-    probe = workspace_root / ".deepcode_write_probe"
+    probe = workspace_root / ".dfcode_write_probe"
     try:
         probe.write_text("ok", encoding="utf-8")
     except OSError as exc:
@@ -413,7 +413,7 @@ def _ensure_workspace(
 def _register_workspace_for_filesystem_mcp(workspace_root: Path, log: Any) -> None:
     """Make sure the ``filesystem`` MCP server is rooted at the workspace.
 
-    The DeepCode ``filesystem`` MCP server takes its allowed roots as
+    The DFcode ``filesystem`` MCP server takes its allowed roots as
     trailing positional ``args``. We keep the entries that already point
     at the project tree (``.``) and append the resolved workspace + cwd
     if either is missing. This is the single owner of that wiring;

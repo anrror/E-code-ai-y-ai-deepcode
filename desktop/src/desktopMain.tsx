@@ -12,7 +12,7 @@ configureNativeDialogs();
 const root = document.getElementById("root");
 
 if (!root) {
-  throw new Error("DeepCode desktop root element was not found");
+  throw new Error("DFcode desktop root element was not found");
 }
 
 createRoot(root).render(

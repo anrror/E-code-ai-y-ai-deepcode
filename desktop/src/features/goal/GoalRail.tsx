@@ -325,7 +325,7 @@ export function GoalRail({
                         await confirmAction(
                           t(
                             "goal.checks.removeConfirm",
-                            "Remove this Goal's checks? DeepCode stops running them when the Goal is claimed complete.",
+                            "Remove this Goal's checks? DFcode stops running them when the Goal is claimed complete.",
                           ),
                           {
                             confirmLabel: t("goal.checks.remove", "Remove checks"),
@@ -415,7 +415,7 @@ export function GoalRail({
             <textarea
               value={objective}
               onChange={(event) => setObjective(event.target.value)}
-              placeholder={t("goal.describeOutcome", "Describe the complete outcome DeepCode should achieve.")}
+              placeholder={t("goal.describeOutcome", "Describe the complete outcome DFcode should achieve.")}
               rows={4}
               autoFocus
             />

@@ -8,7 +8,7 @@ export const transcriptModes: readonly TranscriptMode[] = [
   "summary",
 ];
 
-const STORAGE_KEY = "deepcode.desktop.transcriptMode";
+const STORAGE_KEY = "dfcode.desktop.transcriptMode";
 
 function isTranscriptMode(value: string | null): value is TranscriptMode {
   return transcriptModes.some((mode) => mode === value);

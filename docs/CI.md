@@ -64,7 +64,7 @@ After changing package requirements, test extras, or the sidecar lock, regenerat
 the CI lock with `uv` and commit the result:
 
 ```sh
-uv pip compile scripts/ci/requirements.in --python-version 3.12 --universal --no-emit-package deepcode-hku --output-file scripts/ci/requirements.lock
+uv pip compile scripts/ci/requirements.in --python-version 3.12 --universal --no-emit-package dfcode-hku --output-file scripts/ci/requirements.lock
 ```
 
 Add `--upgrade` when deliberately refreshing all compatible dependency pins.
@@ -94,12 +94,12 @@ environment above, then run from `desktop/`:
 ```sh
 npm ci
 npx playwright install --with-deps chromium
-DEEPCODE_TEST_PYTHON=python npm run test:web
+DFCODE_TEST_PYTHON=python npm run test:web
 ```
 
 `test:web` first rebuilds the web client (`check:protocol`, `tsc --noEmit`,
 and the web Vite build) and then runs the Playwright suite, which starts the
-local service itself. `DEEPCODE_TEST_PYTHON` names the Python that starts it
+local service itself. `DFCODE_TEST_PYTHON` names the Python that starts it
 and defaults to the repository's `.venv`.
 
 The Windows lifecycle job is the only check that executes the NTFS ACL and

@@ -50,7 +50,7 @@ const readyStatus: SidecarStatus = {
   launchSource: "test",
   serverInfo: {
     protocolVersion: "1.0",
-    serverInfo: { name: "deepcode-app-server", version: "test" },
+    serverInfo: { name: "dfcode-app-server", version: "test" },
     clientInfo: { name: "desktop-test", version: "test" },
     capabilities: {
       methods: [],
@@ -89,7 +89,7 @@ const readOnlySecurityProfile: ExecutionSecurityProfile = {
 };
 
 const desktopSettings: SettingsSnapshot = {
-  configPath: "/tmp/deepcode_config.json",
+  configPath: "/tmp/dfcode_config.json",
   configRevision: "rev-test-1",
   agents: {
     defaults: {
@@ -193,7 +193,7 @@ const creatorSkill = {
   source: "system:system",
   location: "system/bundled/skills/skill-creator",
   originKind: "bundled",
-  originLabel: "DeepCode bundled",
+  originLabel: "DFcode bundled",
   packageId: CREATOR_SKILL_ID,
   revision: `sha256:${"d".repeat(64)}`,
   defaultPrompt:
@@ -208,7 +208,7 @@ const diagnostics: DiagnosticsSnapshot = {
   platform: "macOS-15",
   architecture: "arm64",
   processId: 1234,
-  databasePath: "/tmp/deepcode.sqlite3",
+  databasePath: "/tmp/dfcode.sqlite3",
   databaseSchemaVersion: 5,
   databaseBytes: 4096,
   sessionStorePath: "/tmp/sessions",
@@ -217,9 +217,9 @@ const diagnostics: DiagnosticsSnapshot = {
   threadCount: 2,
   workflowCount: 0,
   automationCount: 1,
-  userConfigPath: "/tmp/deepcode_config.json",
-  projectConfigPath: "/workspace/deepcode/deepcode_config.json",
-  projectPath: "/workspace/deepcode",
+  userConfigPath: "/tmp/dfcode_config.json",
+  projectConfigPath: "/workspace/dfcode/dfcode_config.json",
+  projectPath: "/workspace/dfcode",
   projectTrust: "trusted",
   configError: null,
   checks: [
@@ -349,7 +349,7 @@ class TestRuntime implements ClientRuntime {
               local: false,
             },
           ],
-          configPath: "/tmp/deepcode_config.json",
+          configPath: "/tmp/dfcode_config.json",
           credentialPath: "/tmp/credentials.json",
         } as unknown as MethodResults[M];
       case "model/list": {
@@ -432,7 +432,7 @@ class TestRuntime implements ClientRuntime {
             },
           ],
           templates: [],
-          configPath: "/tmp/deepcode_config.json",
+          configPath: "/tmp/dfcode_config.json",
           credentialPath: "/tmp/credentials.json",
         } as unknown as MethodResults[M];
       }
@@ -449,7 +449,7 @@ class TestRuntime implements ClientRuntime {
             {
               id: "credential",
               status: "passed",
-              detail: "Credential loaded from DeepCode private storage",
+              detail: "Credential loaded from DFcode private storage",
               latencyMs: null,
               modelCount: null,
               modelId: null,
@@ -480,7 +480,7 @@ class TestRuntime implements ClientRuntime {
           removed: true,
           connections: [],
           templates: [],
-          configPath: "/tmp/deepcode_config.json",
+          configPath: "/tmp/dfcode_config.json",
           credentialPath: "/tmp/credentials.json",
         } as unknown as MethodResults[M];
       case "project/list":
@@ -637,8 +637,8 @@ class TestRuntime implements ClientRuntime {
       case "mcp/list":
         return {
           servers: [],
-          userConfigPath: "/tmp/deepcode_config.json",
-          projectConfigPath: "/workspace/deepcode/deepcode_config.json",
+          userConfigPath: "/tmp/dfcode_config.json",
+          projectConfigPath: "/workspace/dfcode/dfcode_config.json",
         } as unknown as MethodResults[M];
       case "diagnostics/read":
         return { diagnostics } as MethodResults[M];
@@ -1049,7 +1049,7 @@ class TestRuntime implements ClientRuntime {
       case "git/status":
         return {
           status: {
-            repositoryRoot: "/workspace/deepcode",
+            repositoryRoot: "/workspace/dfcode",
             branch: null,
             upstream: null,
             ahead: 0,
@@ -1070,7 +1070,7 @@ class TestRuntime implements ClientRuntime {
             command,
             timeoutSeconds: 60,
             source: "project",
-            sourcePath: ".deepcode/hooks.json",
+            sourcePath: ".dfcode/hooks.json",
             displayOrder: index,
             statusMessage: null,
           })),
@@ -1109,7 +1109,7 @@ class TestRuntime implements ClientRuntime {
 
   async exportDiagnostics(snapshot: DiagnosticsSnapshot) {
     this.diagnosticsExports.push(snapshot);
-    return "/tmp/deepcode-diagnostics-test.json";
+    return "/tmp/dfcode-diagnostics-test.json";
   }
 
   async openPath(path: string) {
@@ -1167,8 +1167,8 @@ class TestRuntime implements ClientRuntime {
 
 const project: Project = {
   id: "project-1",
-  canonicalPath: "/workspace/deepcode",
-  displayName: "DeepCode",
+  canonicalPath: "/workspace/dfcode",
+  displayName: "DFcode",
   trustState: "trusted",
   settings: {},
   createdAt: "2026-07-16T00:00:00Z",
@@ -1957,7 +1957,7 @@ describe("desktop command center", () => {
       await screen.findByRole("heading", { name: "Repository caretaker" }),
     ).toBeTruthy();
     expect(
-      screen.getByText(/runs while a compatible DeepCode runtime is active/),
+      screen.getByText(/runs while a compatible DFcode runtime is active/),
     ).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Run now" }));
@@ -2362,7 +2362,7 @@ describe("desktop command center", () => {
 
   it("lets plain Enter queue while busy when the preference says queue", async () => {
     localStorage.setItem(
-      "deepcode.desktop.composer.v1",
+      "dfcode.desktop.composer.v1",
       JSON.stringify({ busyEnter: "queue" }),
     );
     __resetComposerBehaviorForTests();
@@ -2607,7 +2607,7 @@ describe("desktop command center", () => {
     );
     fireEvent.click(openButton);
     await waitFor(() =>
-      expect(runtime.openedPaths).toEqual(["/tmp/deepcode_config.json"]),
+      expect(runtime.openedPaths).toEqual(["/tmp/dfcode_config.json"]),
     );
   });
 
@@ -2630,7 +2630,7 @@ describe("desktop command center", () => {
     fireEvent.click(screen.getByRole("button", { name: "Export report" }));
     expect(
       await screen.findByText(
-        "Sanitized diagnostics saved to /tmp/deepcode-diagnostics-test.json",
+        "Sanitized diagnostics saved to /tmp/dfcode-diagnostics-test.json",
       ),
     ).toBeTruthy();
     expect(runtime.diagnosticsExports).toEqual([diagnostics]);
@@ -2803,7 +2803,7 @@ describe("desktop command center", () => {
     fireEvent.click(screen.getByRole("button", { name: "Settings" }));
     const scope = await screen.findByRole("combobox", { name: "Write to" });
     expect(
-      screen.getByText(/project's deepcode_config\.json asks for Full access/),
+      screen.getByText(/project's dfcode_config\.json asks for Full access/),
     ).toBeTruthy();
     const fullAccess = () =>
       within(
@@ -3129,7 +3129,7 @@ describe("desktop command center", () => {
     await screen.findByRole("heading", { name: "Application updates" });
     fireEvent.click(screen.getByRole("button", { name: "Check for updates" }));
 
-    expect(await screen.findByText(/DeepCode 0.2.0 is available/)).toBeTruthy();
+    expect(await screen.findByText(/DFcode 0.2.0 is available/)).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Install 0.2.0" }));
     await waitFor(() => expect(runtime.updateInstallCount).toBe(1));
   });
@@ -3165,7 +3165,7 @@ describe("desktop command center", () => {
       ...project,
       id: "project-recovered-history",
       canonicalPath:
-        "/tmp/.deepcode/sessions/.missing-workspaces/session-77f8ff1b",
+        "/tmp/.dfcode/sessions/.missing-workspaces/session-77f8ff1b",
       displayName: "session-77f8ff1b",
     };
     const recoveredThread: Thread = {
@@ -3257,7 +3257,7 @@ describe("desktop command center", () => {
       ...runtime.settingsState,
       resolvedDefaultSecurityProfile: fullAccessSecurityProfile,
     };
-    runtime.projectHooks = ["sh .deepcode/check.sh", "npm run lint"];
+    runtime.projectHooks = ["sh .dfcode/check.sh", "npm run lint"];
     render(<App runtime={runtime} />);
 
     const trigger = await screen.findByRole("button", { name: "Trust folder" });
@@ -3805,7 +3805,7 @@ describe("desktop command center", () => {
       [project],
       [thread],
       [],
-      ["/workspace/deepcode/src/App.tsx", "/tmp/outside.txt"],
+      ["/workspace/dfcode/src/App.tsx", "/tmp/outside.txt"],
     );
     render(<App runtime={runtime} />);
 
@@ -3976,7 +3976,7 @@ describe("a Session whose file can't be read", () => {
     // "Start with a task."
     const runtime = new TestRuntime([project], [thread], recoveryEvents);
     runtime.unreadable.add(thread.id);
-    localStorage.setItem("deepcode.desktop.selectedThread", thread.id);
+    localStorage.setItem("dfcode.desktop.selectedThread", thread.id);
     render(<App runtime={runtime} />);
 
     await screen.findByRole("heading", {

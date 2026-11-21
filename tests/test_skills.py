@@ -96,9 +96,9 @@ def test_parse_missing_description_raises(tmp_path):
 # -- discovery + precedence ------------------------------------------------
 
 
-def test_discover_from_deepcode_and_claude(tmp_path):
+def test_discover_from_dfcode_and_claude(tmp_path):
     ws = tmp_path / "ws"
-    _write_skill(ws / ".deepcode/skills", "alpha")
+    _write_skill(ws / ".dfcode/skills", "alpha")
     _write_skill(ws / ".claude/skills", "beta")
     reg = discover_skills(ws, include_user=False, include_system=False)
     assert set(reg.names()) == {"alpha", "beta"}
@@ -108,7 +108,7 @@ def test_discover_from_canonical_agents_roots_and_legacy_roots(tmp_path):
     ws, home = tmp_path / "ws", tmp_path / "home"
     _write_skill(ws / ".agents/skills", "project-canonical")
     _write_skill(home / ".agents/skills", "user-canonical")
-    _write_skill(ws / ".deepcode/skills", "legacy-deepcode")
+    _write_skill(ws / ".dfcode/skills", "legacy-dfcode")
     _write_skill(home / ".claude/skills", "legacy-claude")
 
     reg = discover_skills(ws, home=home, include_system=False)
@@ -116,25 +116,25 @@ def test_discover_from_canonical_agents_roots_and_legacy_roots(tmp_path):
     assert set(reg.names()) == {
         "project-canonical",
         "user-canonical",
-        "legacy-deepcode",
+        "legacy-dfcode",
         "legacy-claude",
     }
 
 
 def test_project_overrides_user(tmp_path):
     ws, home = tmp_path / "ws", tmp_path / "home"
-    _write_skill(ws / ".deepcode/skills", "dup", description="PROJECT")
-    _write_skill(home / ".deepcode/skills", "dup", description="USER")
+    _write_skill(ws / ".dfcode/skills", "dup", description="PROJECT")
+    _write_skill(home / ".dfcode/skills", "dup", description="USER")
     reg = discover_skills(ws, home=home, include_system=False)
     assert reg.get("dup").description == "PROJECT"
 
 
-def test_deepcode_beats_claude_same_name(tmp_path):
+def test_dfcode_beats_claude_same_name(tmp_path):
     ws = tmp_path / "ws"
-    _write_skill(ws / ".deepcode/skills", "dup", description="DEEPCODE")
+    _write_skill(ws / ".dfcode/skills", "dup", description="DFCODE")
     _write_skill(ws / ".claude/skills", "dup", description="CLAUDE")
     reg = discover_skills(ws, include_user=False)
-    assert reg.get("dup").description == "DEEPCODE"
+    assert reg.get("dup").description == "DFCODE"
 
 
 def test_include_user_false_is_hermetic(tmp_path):
@@ -166,8 +166,8 @@ def test_include_user_false_is_hermetic(tmp_path):
 
 def test_malformed_skill_recorded_not_fatal(tmp_path):
     ws = tmp_path / "ws"
-    _write_skill(ws / ".deepcode/skills", "good")
-    bad = ws / ".deepcode/skills" / "bad"
+    _write_skill(ws / ".dfcode/skills", "good")
+    bad = ws / ".dfcode/skills" / "bad"
     bad.mkdir(parents=True)
     (bad / "SKILL.md").write_text("garbage, no frontmatter")
     reg = discover_skills(ws, include_user=False, include_system=False)
@@ -181,7 +181,7 @@ def test_malformed_skill_recorded_not_fatal(tmp_path):
 def test_skill_tool_loads_and_reports_unknown(tmp_path):
     ws = tmp_path / "ws"
     _write_skill(
-        ws / ".deepcode/skills",
+        ws / ".dfcode/skills",
         "deploy",
         description="deploy the app",
         body="1. build\n2. ship",
@@ -201,7 +201,7 @@ def test_skill_tool_loads_and_reports_unknown(tmp_path):
 
 def test_skills_preamble(tmp_path):
     ws = tmp_path / "ws"
-    _write_skill(ws / ".deepcode/skills", "x", description="do x")
+    _write_skill(ws / ".dfcode/skills", "x", description="do x")
     pre = skills_preamble(discover_skills(ws, include_user=False))
     assert "Available skills" in pre and "**x**: do x" in pre
     assert skills_preamble(SkillRegistry()) == ""  # no skills → nothing injected
@@ -215,7 +215,7 @@ def test_wired_into_default_coding_tools(tmp_path):
     assert "skill" in set(default_coding_tools(str(tmp_path)).tool_names)
 
     # A project skill → the `skill` tool appears (hermetic: project-only scan).
-    _write_skill(tmp_path / ".deepcode/skills", "y")
+    _write_skill(tmp_path / ".dfcode/skills", "y")
     assert "skill" in set(default_coding_tools(str(tmp_path)).tool_names)
 
 

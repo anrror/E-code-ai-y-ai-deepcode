@@ -327,7 +327,7 @@ describe("AutomationsPage", () => {
     await screen.findByRole("heading", { name: "Repository caretaker" });
     expect(
       screen.getByText(
-        /scheduled work runs while a compatible DeepCode runtime is active/,
+        /scheduled work runs while a compatible DFcode runtime is active/,
       ),
     ).toBeTruthy();
 

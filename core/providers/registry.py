@@ -1,7 +1,7 @@
 """Provider registry — single source of truth for LLM provider metadata.
 
 Pruned port of ``nanobot.providers.registry``. Includes only the providers
-DeepCode actively supports today; add new entries by appending a
+DFcode actively supports today; add new entries by appending a
 :class:`ProviderSpec` to :data:`PROVIDERS`.
 
 Adding a new provider:

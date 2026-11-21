@@ -1,18 +1,18 @@
 # Changelog
 
-Notable changes to DeepCode, newest first. Each date has one entry.
+Notable changes to DFcode, newest first. Each date has one entry.
 Released versions are named in the entry title; the version on PyPI is
-[deepcode-hku](https://pypi.org/project/deepcode-hku/). 中文版见
+[dfcode-hku](https://pypi.org/project/dfcode-hku/). 中文版见
 [CHANGELOG_ZH.md](CHANGELOG_ZH.md).
 
 ## 2026-11-02 · Goals that are checked before they count as complete
 
-- **A checklist DeepCode runs itself.** Early in a Goal the agent proposes a
+- **A checklist DFcode runs itself.** Early in a Goal the agent proposes a
   checklist: each requirement with the command that proves it. Nothing runs
   until you confirm it (Desktop and Web: **Use these checks** on the Goal
-  card; TUI: `/goal checks confirm`; `deepcode loop --test-cmd` and
+  card; TUI: `/goal checks confirm`; `dfcode loop --test-cmd` and
   `--check`). From then on, whenever the agent says the Goal is complete,
-  DeepCode runs those commands itself, with the agent's own command rights,
+  DFcode runs those commands itself, with the agent's own command rights,
   and turns the claim back with the output of one that fails. A pipeline
   cannot hide a failure, and a command several checks share runs once.
 - **An independent reviewer, switched on in Settings.** Settings → General →
@@ -21,7 +21,7 @@ Released versions are named in the entry title; the version on PyPI is
   and re-runs the checks before the Goal is recorded complete.
 - **Every check is kept.** The Goal card shows the latest result next to the
   Goal's status; opened, it lists each requirement with its finding and
-  evidence, the commands DeepCode ran, and earlier checks. `/goal show`
+  evidence, the commands DFcode ran, and earlier checks. `/goal show`
   prints the same in the TUI.
 - **Goals that stop on their own.** A Goal can have a time limit as well as
   a token budget, and either holds inside a Turn: the agent gets one last
@@ -30,7 +30,7 @@ Released versions are named in the entry title; the version on PyPI is
   last three automatic Turns had no step that succeeded. The agent can
   report a Goal blocked only from its third Turn, unless you declined an
   approval, and a claim made while its sub-agents still run waits for them.
-- **A restart pauses the Goal.** If DeepCode restarts while a Goal is
+- **A restart pauses the Goal.** If DFcode restarts while a Goal is
   active, the Goal waits for you to resume it instead of spending tokens
   unattended. Goals that an Automation runs continue.
 - **Fixes.** An opened Goal card with a long review scrolls inside the card
@@ -72,7 +72,7 @@ Released versions are named in the entry title; the version on PyPI is
   tint rather than a raised card, and the header buttons have no borders.
   Settings and management pages lose a layer of labels and nested cards.
   The Latest button, the goal bar, error notes and empty states are lighter.
-- DeepCode now requires Rich 13.4 or later.
+- DFcode now requires Rich 13.4 or later.
 
 ## 2026-10-29 · Lighter compaction, checked Goal completion, and folder browsing on the Web
 
@@ -90,12 +90,12 @@ Released versions are named in the entry title; the version on PyPI is
   as it works, edits files with its edit tools, checks its changes before
   calling them done, keeps a progress file on long tasks, and leaves your own
   uncommitted work and git history alone.
-- **Optional extra risk check.** With `DEEPCODE_RISK_EVALUATOR=1`, a tool
+- **Optional extra risk check.** With `DFCODE_RISK_EVALUATOR=1`, a tool
   call that would run without asking is screened first, and a risky one asks
   for approval instead. Off by default; Full Access skips it. (#257)
 - **Approve project hooks.** Hooks a repository declares run only once
   approved; trusting a project approves its current hooks, and a later change
-  waits for `deepcode hooks approve`. `deepcode hooks status` shows where
+  waits for `dfcode hooks approve`. `dfcode hooks status` shows where
   things stand. (#282)
 - **Fixes.** A Goal on DeepSeek with thinking on Auto no longer fails with
   "reasoning_content must be passed back", and the model picker's notes wrap
@@ -123,7 +123,7 @@ Released versions are named in the entry title; the version on PyPI is
   (Claude Code's `disallowedTools`), and `/preset` shows what is removed. (#283)
 - **Hook files need approval.** File tools ask before writing the files hooks
   are loaded from, except under Full Access. (#271)
-- **Unpinned MCP packages are flagged.** `deepcode mcp list` marks npx and uvx
+- **Unpinned MCP packages are flagged.** `dfcode mcp list` marks npx and uvx
   servers whose package has no fixed version. (#275)
 - **Community fixes.** Anthropic prompt caching now covers the latest message
   (#280); the monitor's JSON mode reports failures in its exit code, Responses
@@ -152,11 +152,11 @@ Released versions are named in the entry title; the version on PyPI is
   model reads it, so a crash mid-turn no longer loses the turn, a resumed
   session gives the model the history it had, and a line a crash cut short no
   longer breaks the session.
-- **A tighter sandbox.** Agent commands no longer see the model keys DeepCode
-  uses (`DEEPCODE_BASH_FULL_ENV=1` still hands over everything). Credential
+- **A tighter sandbox.** Agent commands no longer see the model keys DFcode
+  uses (`DFCODE_BASH_FULL_ENV=1` still hands over everything). Credential
   files and private keys in `~/.ssh` stay out of reach, while `git` over SSH
   works through your SSH agent. A command can no longer plant hooks or loosen
-  the next command's sandbox, and DeepCode's own `git` calls run no program a
+  the next command's sandbox, and DFcode's own `git` calls run no program a
   repository names. A repository's config can no longer turn the sandbox off
   or choose Full access; that is a user setting.
 - **Tools that don't stall.** `apply_patch` applies all of its hunks or none;
@@ -184,20 +184,20 @@ Released versions are named in the entry title; the version on PyPI is
   other programs on your computer could receive.
 - **Clearer problems, tidier projects.** An update that could not be saved
   shows as a warning instead of a failed task, logs keep the full traceback,
-  and DeepCode no longer leaves a `logs/` folder in your project.
+  and DFcode no longer leaves a `logs/` folder in your project.
 
-## 2026-10-12 · DeepCode v2.3.1: Markdown answers in the TUI, a Windows service that stays up, `/compact` for coding sessions, and community fixes
+## 2026-10-12 · DFcode v2.3.1: Markdown answers in the TUI, a Windows service that stays up, `/compact` for coding sessions, and community fixes
 
 - **Answers render as Markdown while they stream.** Headings, lists, bold
   text and tables are formatted as each line completes; code blocks are not
-  indented or wrapped by DeepCode, links show their address, and the line
+  indented or wrapped by DFcode, links show their address, and the line
   still being written is previewed above the status line. `/raw` prints
   answers exactly as written, for copying. The reasoning card now comes
   before the answer, and `Ctrl+O` mid-answer no longer repeats or drops
   lines. See [The terminal UI](docs/guide/the-tui.md).
 - **The Windows service stays up.** On a Windows install in a virtual
   environment, the background service no longer stops right after it starts,
-  whether the TUI, `deepcode service start`, or `deepcode web` launched it.
+  whether the TUI, `dfcode service start`, or `dfcode web` launched it.
 - **`/compact` handles coding sessions.** Tool-call arguments, such as the file
   a `write_file` call carries, now count when compaction picks what to keep and
   checks that the summary is smaller. Sessions that wrote large files compact
@@ -231,7 +231,7 @@ Released versions are named in the entry title; the version on PyPI is
   in the TUI, `/new` follows your defaults, and `/goal clear out …` sets a new
   objective instead of clearing the Goal.
 
-## 2026-09-28 · DeepCode v2.3.0: voice dictation, Opper and Bedrock, Desktop polish, and opt-in hardening
+## 2026-09-28 · DFcode v2.3.0: voice dictation, Opper and Bedrock, Desktop polish, and opt-in hardening
 
 - **Dictate your prompt.** Add a `dictation` block to your config and the
   Desktop and Web composer gains a microphone. See
@@ -243,22 +243,22 @@ Released versions are named in the entry title; the version on PyPI is
   VS Code color theme, and choose from fonts that are actually installed.
   (#238, #207, #239)
 - **Opt-in hardening.** `providers.egress` limits which hosts receive your
-  prompts, `DEEPCODE_COMMAND_SCREEN=strict` screens risky commands,
-  `DEEPCODE_BASH_SCRUB_ENV=1` keeps provider keys out of shell commands, and
-  `DEEPCODE_KEYRING=1` reads keys from the OS keychain. (#229, #230, #232,
+  prompts, `DFCODE_COMMAND_SCREEN=strict` screens risky commands,
+  `DFCODE_BASH_SCRUB_ENV=1` keeps provider keys out of shell commands, and
+  `DFCODE_KEYRING=1` reads keys from the OS keychain. (#229, #230, #232,
   #246)
 - **Leaner memory and clearer signals.** `MEMORY.md` can be a short index of
   topic files, `mcp list` flags servers worth a second look, and the agent is
   reminded when a call keeps returning the same result. (#233, #241, #247)
 - **Steadier everywhere.** The state database keeps its locks when several
-  DeepCode processes share it, and a round of Windows fixes landed. (#210,
+  DFcode processes share it, and a round of Windows fixes landed. (#210,
   #235, #236, #237)
 
 ## 2026-09-09 · TUI, Desktop, and Web share one local background service
 
-- **Choose your interface.** Run `deepcode` for the TUI, `deepcode desktop`
-  for the native app, or `deepcode web` to open the workbench in your browser.
-  All three connect to the same local service; Web needs no DeepCode account.
+- **Choose your interface.** Run `dfcode` for the TUI, `dfcode desktop`
+  for the native app, or `dfcode web` to open the workbench in your browser.
+  All three connect to the same local service; Web needs no DFcode account.
 - **Continue the same task across interfaces.** Closing a client leaves running
   work in the background. Reconnect from another interface to follow the same
   conversation, review tool activity, and respond to approvals. The computer
@@ -268,16 +268,16 @@ Released versions are named in the entry title; the version on PyPI is
   response, and test streaming and tool calls before using a custom server.
   See [Models and providers](docs/guide/models.md).
 - **Manage your background service and prepare for upgrades.** Use
-  `deepcode service` commands to check status, read logs, or stop after current
+  `dfcode service` commands to check status, read logs, or stop after current
   work finishes. Create a runtime snapshot before upgrading and restore it when
   needed; keep project files in your usual version control or backup.
-  See [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md).
+  See [Upgrading DFcode](docs/UPGRADE_AND_RESTORE.md).
 
 Start with the updated [Quick start](README.md#quick-start) and
 [first coding task tutorial](docs/guide/getting-started.md).
-([#212](https://github.com/HKUDS/DeepCode/pull/212))
+([#212](https://github.com/HKUDS/DFcode/pull/212))
 
-## 2026-09-06 · DeepCode v2.2.0: Session context-window caps, compaction that leaves a memory, and a fully localized Desktop
+## 2026-09-06 · DFcode v2.2.0: Session context-window caps, compaction that leaves a memory, and a fully localized Desktop
 
 - **Cap a Session's context window.** `/context 64k` in the TUI or the
   preset next to the Desktop model picker narrows the model's published
@@ -390,7 +390,7 @@ Start with the updated [Quick start](README.md#quick-start) and
 - **A removed model row takes its own capacities with it** rather than leaving
   them on the row that survived — which then saved them onto the wrong model.
 - **Automated runs keep their tools.** A default agent preset chosen for
-  interactive chatting no longer narrows `deepcode exec` and goal runs behind
+  interactive chatting no longer narrows `dfcode exec` and goal runs behind
   your back.
 - **The provider section says it is user-scoped**, instead of letting the
   dialog's project write scope imply otherwise.
@@ -429,7 +429,7 @@ Start with the updated [Quick start](README.md#quick-start) and
   models as its manual list, an environment-provided key locks the paste
   field instead of silently outranking it, and connection rows show the
   discovered model count.
-- **`deepcode chat` reads like a terminal app, not a log.** A restyled
+- **`dfcode chat` reads like a terminal app, not a log.** A restyled
   transcript — brand-gradient banner, status-colored tool cards with result
   elbows, block spacing, word-boundary wrapping — plus streaming that
   survives the prompt redraw with real colors instead of `?[36m` litter.
@@ -487,7 +487,7 @@ Start with the updated [Quick start](README.md#quick-start) and
   in the canonical session log, so a resumed session rebuilds exactly the
   history the model saw.
 - **Open a session as a different agent.** Named agent presets bundle a
-  persona and a tool face — `deepcode exec --preset code-reader`, `/preset`
+  persona and a tool face — `dfcode exec --preset code-reader`, `/preset`
   in the TUI, or the picker beside the Desktop model control — while the
   model route and permissions stay independent knobs. A preset is one
   markdown agent file in the `.claude/agents`/`.agents` dialect, so
@@ -516,13 +516,13 @@ Start with the updated [Quick start](README.md#quick-start) and
 
 ## 2026-08-12 · Reviewed upstream core Skills, a managed MCP catalog, OAuth, and real connection checks
 
-- **Start with reviewed upstream Skills.** DeepCode now bundles eight pinned,
+- **Start with reviewed upstream Skills.** DFcode now bundles eight pinned,
   provenance-tracked Agent Skills from OpenAI, Codex, and Anthropic for Skill
   authoring, code review, security analysis, frontend design, MCP construction,
   and web application testing. They use the same catalog and Turn runtime as
   project, user, and Plugin Skills.
 
-- **Start from reviewed templates without hidden execution.** DeepCode bundles
+- **Start from reviewed templates without hidden execution.** DFcode bundles
   a validated catalog based on Nanobot's current 16 MCP templates. Adding
   one copies ordinary user configuration in a disabled state; it never silently
   runs `npx`, Docker, or a remote server.
@@ -542,7 +542,7 @@ Start with the updated [Quick start](README.md#quick-start) and
   identities, timeouts, cancellation, and session-owned cleanup.
 - **Keep credentials and authority explicit.** Executable config layers replace
   whole entries, child processes receive a minimal environment, provider keys
-  stay in private DeepCode connections, and MCP policy can only narrow global
+  stay in private DFcode connections, and MCP policy can only narrow global
   trust, read-only, approval, and sandbox decisions.
 - **Run Agent Plugins 1.0 MCP components without format forks.** Valid
   `mcp.json` servers join the same runtime only when an Agent Session starts,
@@ -564,7 +564,7 @@ Start with the updated [Quick start](README.md#quick-start) and
   installable and take precedence over a same-named Plugin Skill. Plugins are
   an optional packaging source, never a replacement Skill lifecycle.
 - **Use one portable package contract.** Local Plugins use the Agent Plugins
-  1.0.0 root manifest and fixed `skills/` layout; experimental DeepCode
+  1.0.0 root manifest and fixed `skills/` layout; experimental DFcode
   manifests are no longer accepted. Hooks, Apps, Marketplaces, downloads, and
   updates remain inert.
 
@@ -576,7 +576,7 @@ Start with the updated [Quick start](README.md#quick-start) and
   precedence and identity, and future providers no longer need filesystem
   shortcuts to fit the runtime.
 - **Compose Skills without hiding missing capabilities.** Skills can declare
-  tool and Skill dependencies; DeepCode expands them in order, detects cycles,
+  tool and Skill dependencies; DFcode expands them in order, detects cycles,
   and fails before the first model request when a requirement is unavailable.
 - **Reveal only what the task needs.** The Agent can search and read bounded
   package resources progressively, with revision, traversal, symlink, and size
@@ -608,27 +608,27 @@ Start with the updated [Quick start](README.md#quick-start) and
 
 ## 2026-08-04 · Skills that work wherever you do
 
-- **Keep reusable expertise close to your work.** DeepCode discovers Skills
+- **Keep reusable expertise close to your work.** DFcode discovers Skills
   from the current project as well as your personal collection, while keeping
-  existing DeepCode and Claude-compatible Skill locations working.
-- **Use the same Skill from CLI or Desktop.** Select it for a task and DeepCode
+  existing DFcode and Claude-compatible Skill locations working.
+- **Use the same Skill from CLI or Desktop.** Select it for a task and DFcode
   carries its identity and version with the Turn, so the Session shows which
   guidance shaped the result.
-- **Create Skills without leaving DeepCode.** The built-in Skill Creator helps
+- **Create Skills without leaving DFcode.** The built-in Skill Creator helps
   you scaffold and validate focused, reusable workflows from either interface.
 - **Stay focused as your library grows.** Context-aware discovery keeps the
   Agent prompt concise while the complete Skill catalog remains available to
   browse and manage.
 
-## 2026-08-03 · 🎉 DeepCode v2.0 is here
+## 2026-08-03 · 🎉 DFcode v2.0 is here
 
-DeepCode v2.0 introduces a new general-purpose Coding Agent framework for
+DFcode v2.0 introduces a new general-purpose Coding Agent framework for
 building, fixing, understanding, and improving real software projects.
 
-- **Take on real repository work.** DeepCode can explore a codebase, edit
+- **Take on real repository work.** DFcode can explore a codebase, edit
   files, run commands and tests, review changes, and carry a task through to a
   working result.
-- **Keep complex goals moving with Loop Engineering.** Give DeepCode a goal and
+- **Keep complex goals moving with Loop Engineering.** Give DFcode a goal and
   it can continue through understanding, implementation, verification, and
   repair instead of stopping after one plausible answer.
 - **Stay in control while the Agent works.** Add requirements, correct its
@@ -640,12 +640,12 @@ building, fixing, understanding, and improving real software projects.
 - **Build Automations around the way you work.** Turn any natural-language
   instruction into a project-specific task: run it on demand or on a recurring
   interval, then edit, pause, resume, and review every result. Use it for the
-  work you want DeepCode to keep taking care of, from regression checks and
+  work you want DFcode to keep taking care of, from regression checks and
   test repair to documentation upkeep and repository maintenance.
 - **Work your way.** Use Desktop or CLI, bring your own models and Skills, and
   delegate focused work without changing the underlying Agent workflow.
 
-DeepCode v2.0 is built to help you spend less time supervising every step and
+DFcode v2.0 is built to help you spend less time supervising every step and
 more time shipping software you are proud of. We cannot wait to see what you
 build! 🚀
 
@@ -671,7 +671,7 @@ build! 🚀
 
 ## 2026-07-08 · General coding agent, durable Sessions, and memory
 
-- Session history survives restarts, project instructions can live in `AGENTS.md` or `DEEPCODE.md`, and persistent notes remain with the workspace.
+- Session history survives restarts, project instructions can live in `AGENTS.md` or `DFCODE.md`, and persistent notes remain with the workspace.
 
 - The free-form TUI, native file and shell tools, headless execution, context compaction, and cross-directory resume established the current product foundation.
 

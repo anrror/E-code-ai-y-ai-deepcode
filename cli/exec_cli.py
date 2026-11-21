@@ -1,4 +1,4 @@
-"""``deepcode exec`` — one headless Turn on the shared Session runtime."""
+"""``dfcode exec`` — one headless Turn on the shared Session runtime."""
 
 from __future__ import annotations
 
@@ -116,7 +116,7 @@ def _run(args: argparse.Namespace, *, shared_service: bool = True) -> int:
     workspace = os.path.abspath(args.workspace) if args.workspace is not None else None
     if not args.json:
         print(
-            f"deepcode exec · workspace={workspace or '(stored Session workspace)'} "
+            f"dfcode exec · workspace={workspace or '(stored Session workspace)'} "
             f"· access={args.access or 'inherit'}",
             file=sys.stderr,
             flush=True,
@@ -194,7 +194,7 @@ def _run(args: argparse.Namespace, *, shared_service: bool = True) -> int:
 
 def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode exec",
+        prog="dfcode exec",
         description="Run one durable coding Turn headlessly.",
     )
     parser.add_argument(
@@ -239,7 +239,7 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
         "--connection",
         "-c",
         default=None,
-        help="Use a named LLM connection from `deepcode provider list`.",
+        help="Use a named LLM connection from `dfcode provider list`.",
     )
     add_reasoning_effort_argument(parser)
     add_access_preset_argument(parser)
@@ -250,7 +250,7 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
         metavar="ID",
         help=(
             "Agent preset for a new Session (persona + tool face); "
-            "see `deepcode exec` docs or the TUI /preset list."
+            "see `dfcode exec` docs or the TUI /preset list."
         ),
     )
     parser.add_argument(

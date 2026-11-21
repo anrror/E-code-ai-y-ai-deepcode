@@ -1,29 +1,29 @@
 # 更新记录
 
-DeepCode 的主要变化，最新的在前，每天一条。正式版本号写在条目标题里，
-PyPI 上的包名是 [deepcode-hku](https://pypi.org/project/deepcode-hku/)。
+DFcode 的主要变化，最新的在前，每天一条。正式版本号写在条目标题里，
+PyPI 上的包名是 [dfcode-hku](https://pypi.org/project/dfcode-hku/)。
 English: [CHANGELOG.md](CHANGELOG.md).
 
 ## 2026-11-02 · Goal 先验收，再算完成
 
-- **DeepCode 自己运行的检查清单。** Goal 开始不久，智能体会提出检查清单：每项需求
+- **DFcode 自己运行的检查清单。** Goal 开始不久，智能体会提出检查清单：每项需求
   配上能证明它的命令。你确认之前什么都不会运行（Desktop 与 Web：在 Goal 卡片上点
-  "采用这些检查"；TUI：`/goal checks confirm`；`deepcode loop` 的 `--test-cmd` 与
-  `--check`）。确认之后，智能体每次说 Goal 完成，DeepCode 都会以智能体自己的命令
+  "采用这些检查"；TUI：`/goal checks confirm`；`dfcode loop` 的 `--test-cmd` 与
+  `--check`）。确认之后，智能体每次说 Goal 完成，DFcode 都会以智能体自己的命令
   权限运行这些命令，有一条没过就带着它的输出打回。管道藏不住失败；多条检查共用的
   命令只运行一次。
 - **在设置里打开独立审查。** 设置 → 通用 → 目标完成验收：关闭、规则检查或独立审查。
   独立审查由另一个只读的智能体对照工作区逐条核对需求、重新运行检查，通过后 Goal
   才记为完成。
 - **每次验收都有记录。** Goal 卡片在状态旁显示最近一次验收结论；展开后可以看到每项
-  需求的结论和证据、DeepCode 运行过的命令，以及更早的验收。TUI 里 `/goal show`
+  需求的结论和证据、DFcode 运行过的命令，以及更早的验收。TUI 里 `/goal show`
   显示同样的内容。
 - **Goal 会自己停下。** 除了 token 预算，Goal 还可以设时间上限，两者在回合中途都
   生效：智能体最后再回答一次（不能用工具），说明做完了什么、还剩什么。工具调用一直
   没有新结果的回合会停下；最近三个自动回合都没有一步成功的 Goal 也会停下。智能体
   要从第三个回合起才能报"受阻"，除非你拒绝了它请求的操作；它派出的子智能体还没
   跑完时说完成，会被要求先等结果。
-- **重启后 Goal 暂停。** DeepCode 重启时如果有进行中的 Goal，它会等你继续，不会在
+- **重启后 Goal 暂停。** DFcode 重启时如果有进行中的 Goal，它会等你继续，不会在
   无人看着时花 token。Automation 运行的 Goal 照常继续。
 - **修复。** 展开的 Goal 卡片验收内容很长时，在卡片内部滚动，不再把卡片标题挤出窗口；
   独立审查用 Goal 的语言写结论；设置 → 模型里的服务商名称不再被截断；README 换上
@@ -50,7 +50,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
   路径。输入框的每个控件各占一行。工具步骤每步一行，并省掉重复的进入会话文件夹的
   `cd`。侧栏的选中项是一块浅底色，不再是凸起的卡片；页头按钮去掉边框。设置和管理页
   少一层标签和嵌套卡片。"最新"按钮、目标条、错误提示和空状态都更轻。
-- DeepCode 现在需要 Rich 13.4 或更高版本。
+- DFcode 现在需要 Rich 13.4 或更高版本。
 
 ## 2026-10-29 · 更轻的上下文压缩、目标完成前先检查、Web 端可浏览文件夹
 
@@ -63,10 +63,10 @@ English: [CHANGELOG.md](CHANGELOG.md).
   供点选，不再只有一个路径输入框。
 - **代理的工作规则更清楚。** 干活时会说明正在做什么；用编辑工具改文件；改完先验证
   再说完成；长任务会维护进度文件；不碰你未提交的改动和 git 历史。
-- **可选的额外风险检查。** 设置 `DEEPCODE_RISK_EVALUATOR=1` 后，原本无需询问就会执行的
+- **可选的额外风险检查。** 设置 `DFCODE_RISK_EVALUATOR=1` 后，原本无需询问就会执行的
   工具调用会先过一遍检查，有风险的改为请你确认。默认关闭，Full Access 下不生效。(#257)
 - **项目 hook 需要批准。** 仓库里声明的 hook 要批准后才会运行；信任项目时会批准当前的
-  hook，之后若有改动，要运行 `deepcode hooks approve` 才会恢复，`deepcode hooks status`
+  hook，之后若有改动，要运行 `dfcode hooks approve` 才会恢复，`dfcode hooks status`
   可查看状态。(#282)
 - **修复。** DeepSeek 思考设为 Auto 时，设定目标不再报"reasoning_content 必须回传"；
   模型选择框里的说明文字能正常换行，不再被控件盖住。
@@ -87,7 +87,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
   `disallowedTools`），`/preset` 会显示去掉了哪些工具。(#283)
 - **写 hook 文件要先确认。** 文件工具写入 hook 配置所在的文件前会先询问，Full
   Access 下除外。(#271)
-- **标出未锁版本的 MCP 包。** `deepcode mcp list` 会标出包没有固定版本的 npx、
+- **标出未锁版本的 MCP 包。** `dfcode mcp list` 会标出包没有固定版本的 npx、
   uvx 服务器。(#275)
 - **社区修复。** Anthropic 提示缓存覆盖到最新一条消息 (#280)；monitor 的 JSON
   模式用退出码报告失败、Responses 接口的工具调用 id 跨轮保持不变、验证时用项目
@@ -110,10 +110,10 @@ English: [CHANGELOG.md](CHANGELOG.md).
   出错的回合会保留已经写出的内容。每条消息在模型读到时就写进会话文件，所以
   回合中途崩溃不会丢掉这个回合，恢复的会话交给模型的历史和当时一致，被崩溃
   截断的一行也不会再弄坏整个会话。
-- **沙箱更严。** Agent 运行的命令看不到 DeepCode 使用的模型密钥
-  （`DEEPCODE_BASH_FULL_ENV=1` 仍会把全部环境交给命令）。凭据文件和 `~/.ssh`
+- **沙箱更严。** Agent 运行的命令看不到 DFcode 使用的模型密钥
+  （`DFCODE_BASH_FULL_ENV=1` 仍会把全部环境交给命令）。凭据文件和 `~/.ssh`
   里的私钥无法读取，而通过 SSH 的 `git` 借助你的 SSH agent 照常工作。命令不能
-  再植入 hook 或放宽下一条命令的沙箱，DeepCode 自己调用的 `git` 也不会运行仓库
+  再植入 hook 或放宽下一条命令的沙箱，DFcode 自己调用的 `git` 也不会运行仓库
   指定的程序。仓库的配置不能再关闭沙箱或选择 Full access，这只能由用户设置。
 - **工具不再卡住。** `apply_patch` 要么应用全部改动块，要么一个都不应用；
   `read`、`glob` 和 `grep` 不会再卡住其他会话；停止回合会结束它启动的进程；
@@ -134,17 +134,17 @@ English: [CHANGELOG.md](CHANGELOG.md).
   新版客户端会在旧版服务空闲时把它换成新版本。
 - **Web 登录更安全。** 浏览器登录凭证不再放在 cookie 里，本机其他程序收不到。
 - **问题更清楚，项目更干净。** 没能保存的更新显示为警告，而不是任务失败；日志
-  保留完整的报错堆栈；DeepCode 不再在你的项目里留下 `logs/` 文件夹。
+  保留完整的报错堆栈；DFcode 不再在你的项目里留下 `logs/` 文件夹。
 
-## 2026-10-12 · DeepCode v2.3.1：TUI 边输出边渲染 Markdown、Windows 后台服务不再自行退出、`/compact` 能压缩写代码的会话，以及社区修复
+## 2026-10-12 · DFcode v2.3.1：TUI 边输出边渲染 Markdown、Windows 后台服务不再自行退出、`/compact` 能压缩写代码的会话，以及社区修复
 
 - **回答边输出边渲染成 Markdown。** 标题、列表、粗体和表格在每行写完时排好；
-  代码块不缩进，DeepCode 也不会给它折行；链接显示完整地址；还没写完的那一行
+  代码块不缩进，DFcode 也不会给它折行；链接显示完整地址；还没写完的那一行
   先在状态行上方预览。`/raw` 按原文输出，方便复制。推理卡片现在显示在回答之前，
   回答途中按 `Ctrl+O` 也不会再重复或丢行。参见[终端界面指南](docs/guide/the-tui.md)。
-- **Windows 后台服务不再自行退出。** 在 Windows 上把 DeepCode 装在虚拟环境里时，
-  后台服务刚启动就会退出。现在无论由 TUI、`deepcode service start` 还是
-  `deepcode web` 启动，都能正常运行。
+- **Windows 后台服务不再自行退出。** 在 Windows 上把 DFcode 装在虚拟环境里时，
+  后台服务刚启动就会退出。现在无论由 TUI、`dfcode service start` 还是
+  `dfcode web` 启动，都能正常运行。
 - **`/compact` 能压缩写代码的会话。** 压缩时，工具调用的参数（比如 `write_file`
   写入的整个文件）也会计入：既用于决定保留哪些消息，也用于判断摘要是否更短。
   写过大文件的会话不再被拒绝压缩，提示里的替换字数也准确了。（#258）
@@ -169,7 +169,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
 - **设置及时生效，Goal 更安全。** 修改默认模型或权限后，TUI 会显示最新值；
   `/new` 跟随默认设置；`/goal clear out …` 会设为新目标，而不是清掉当前 Goal。
 
-## 2026-09-28 · DeepCode v2.3.0：语音输入、Opper 与 Bedrock、Desktop 细节打磨，以及可选的安全加固
+## 2026-09-28 · DFcode v2.3.0：语音输入、Opper 与 Bedrock、Desktop 细节打磨，以及可选的安全加固
 
 - **用语音输入提示词。** 在配置中加入 `dictation` 后，Desktop 与 Web 的输入框
   会出现麦克风。参见[语音输入指南](docs/guide/dictation.md)。（#240）
@@ -178,35 +178,35 @@ English: [CHANGELOG.md](CHANGELOG.md).
 - **Desktop 细节打磨。** 拖动会话区边缘即可调宽，可以导入 VS Code 配色主题，
   字体选择只列出本机已安装的字体。（#238、#207、#239）
 - **可选的安全加固。** `providers.egress` 限定哪些主机能收到提示词，
-  `DEEPCODE_COMMAND_SCREEN=strict` 拦截高风险命令，`DEEPCODE_BASH_SCRUB_ENV=1`
-  不把服务商密钥交给 shell 命令，`DEEPCODE_KEYRING=1` 从系统钥匙串读取密钥。
+  `DFCODE_COMMAND_SCREEN=strict` 拦截高风险命令，`DFCODE_BASH_SCRUB_ENV=1`
+  不把服务商密钥交给 shell 命令，`DFCODE_KEYRING=1` 从系统钥匙串读取密钥。
   （#229、#230、#232、#246）
 - **更轻的记忆与更清楚的提示。** `MEMORY.md` 可以是一份主题文件的简短索引，
   `mcp list` 会标出值得再看一眼的 server，同一调用反复返回相同结果时 Agent
   会收到提醒。（#233、#241、#247）
-- **各平台更稳定。** 多个 DeepCode 进程共用状态数据库时不再丢失锁，另有一批
+- **各平台更稳定。** 多个 DFcode 进程共用状态数据库时不再丢失锁，另有一批
   Windows 修复。（#210、#235、#236、#237）
 
 ## 2026-09-09 · TUI、Desktop 与 Web 共用一个本地后台
 
-- **选择你习惯的界面。** 运行 `deepcode` 启动 TUI，`deepcode desktop`
-  打开桌面应用，或用 `deepcode web` 在浏览器中打开工作台。三种界面连接
-  同一个本地后台，Web 无需注册 DeepCode 账号。
+- **选择你习惯的界面。** 运行 `dfcode` 启动 TUI，`dfcode desktop`
+  打开桌面应用，或用 `dfcode web` 在浏览器中打开工作台。三种界面连接
+  同一个本地后台，Web 无需注册 DFcode 账号。
 - **换个界面，继续同一个任务。** 关闭客户端后，正在执行的任务继续在后台
   运行。你可以从其他界面重新连接，查看同一段对话、工具活动并处理审批。
   任务继续执行需要电脑保持唤醒，遇到审批时仍需你确认。
 - **配置模型，并验证它能否正常工作。** 保存的云端或本地模型连接可在三种
   界面中使用。你可以查看可用模型、发送简短请求检查响应，并在使用自定义
   模型服务前验证流式输出和工具调用。参见[模型与服务商指南](docs/guide/models.md)。
-- **管理后台，为升级做好准备。** 使用 `deepcode service` 命令查看状态和
+- **管理后台，为升级做好准备。** 使用 `dfcode service` 命令查看状态和
   日志，或等待当前任务完成后停止服务。升级前可以创建运行时数据快照，
   需要时再恢复；项目文件仍使用你原有的版本管理或备份方式。
   参见[升级与恢复指南](docs/UPGRADE_AND_RESTORE.md)。
 
 从更新后的[快速开始](README_ZH.md#快速开始)和[第一个编程任务教程](docs/guide/getting-started.md)
-开始使用。（[#212](https://github.com/HKUDS/DeepCode/pull/212)）
+开始使用。（[#212](https://github.com/HKUDS/DFcode/pull/212)）
 
-## 2026-09-06 · DeepCode v2.2.0：Session 上下文窗口上限、会留下记忆的压缩，以及完整本地化的 Desktop
+## 2026-09-06 · DFcode v2.2.0：Session 上下文窗口上限、会留下记忆的压缩，以及完整本地化的 Desktop
 
 - **给 Session 的上下文窗口设上限。** TUI 里的 `/context 64k` 或 Desktop 模型
   选择器旁的预设，可以把模型公布的窗口收窄给后续 Turn 使用；上限会冻结进每个
@@ -296,7 +296,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
 - **删除模型行时带走它自己的容量参数**，而不是留在幸存的那一行上——那样
   会把它们保存到错误的模型。
 - **自动化运行保留自己的工具。** 为交互聊天选择的默认 agent 预设，不再
-  在背后收窄 `deepcode exec` 与 goal 运行的工具面。
+  在背后收窄 `dfcode exec` 与 goal 运行的工具面。
 - **服务商区块明确标注为用户级作用域**，而不是让对话框的项目写入作用域
   造成误解。
 
@@ -324,7 +324,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
 - **管理每个连接实际提供的模型。** 服务商编辑器可以从连接端点抓取实时
   模型列表并把选中的模型采纳为手动列表；环境提供的密钥会锁定粘贴框而不是
   悄悄压过它；连接行显示发现的模型数量。
-- **`deepcode chat` 读起来像终端应用，而不是日志。** 重新设计的对话记录
+- **`dfcode chat` 读起来像终端应用，而不是日志。** 重新设计的对话记录
   ——品牌渐变横幅、按状态着色并带结果折线的工具卡片、块间距、按词边界
   换行——加上能在提示重绘后存活的真彩色流式输出，而不是 `?[36m` 垃圾。
 - **Desktop 设置变成对话框。** 左栏是通用 / 模型 / 插件 / Agent
@@ -367,7 +367,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
   每条消息——goal 更新、恢复提示、注入的结果——现在都落入规范 Session
   日志，恢复后的 Session 重建的正是模型看到过的历史。
 - **以另一个 agent 身份打开 Session。** 命名的 agent 预设把人设与工具面
-  打包在一起——`deepcode exec --preset code-reader`、TUI 里的 `/preset`，
+  打包在一起——`dfcode exec --preset code-reader`、TUI 里的 `/preset`，
   或 Desktop 模型控件旁的选择器——模型路由与权限仍是独立旋钮。一个预设就
   是一个 `.claude/agents`/`.agents` 方言的 markdown agent 文件，为其他
   harness 写的定义可以原样加载；解析出的组合会快照进 Session 记录，对话
@@ -389,12 +389,12 @@ English: [CHANGELOG.md](CHANGELOG.md).
 
 ## 2026-08-12 · 经审查的上游核心 Skills、MCP 模板目录、OAuth 与真实连接测试
 
-- **从经审查的上游 Skills 起步。** DeepCode 现在内置八个钉定版本、可追溯
+- **从经审查的上游 Skills 起步。** DFcode 现在内置八个钉定版本、可追溯
   来源的 Agent Skills，来自 OpenAI、Codex 与 Anthropic，覆盖 Skill 编写、
   代码审查、安全分析、前端设计、MCP 构建与 Web 应用测试。它们与项目级、
   用户级和 Plugin Skills 使用同一套目录与 Turn 运行时。
 
-- **预装模板，但不偷偷执行。** DeepCode 内置基于 Nanobot 当前 16 个 MCP
+- **预装模板，但不偷偷执行。** DFcode 内置基于 Nanobot 当前 16 个 MCP
   模板整理的校验目录。添加模板只会复制一份默认禁用的普通配置，不会自动运行
   `npx`、Docker 或连接远程服务。
 - **所有入口共用一套管理逻辑。** Desktop、TUI、管理 CLI 与 App Server
@@ -409,7 +409,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
   CLI 与 Desktop 现在共享一套通用的 stdio/SSE/Streamable HTTP 客户端运行时，
   带有有界发现、稳定的工具身份、超时、取消以及由 Session 拥有的清理。
 - **让凭据与权限保持显式。** 可执行的配置层整体替换条目，子进程只拿到
-  最小环境，服务商密钥留在私有的 DeepCode 连接里，MCP 策略只能收窄全局的
+  最小环境，服务商密钥留在私有的 DFcode 连接里，MCP 策略只能收窄全局的
   信任、只读、审批与沙箱决定。
 - **不分叉格式地运行 Agent Plugins 1.0 的 MCP 组件。** 合法的 `mcp.json`
   服务器只在 Agent Session 启动时加入同一运行时，获得隔离的 `PLUGIN_ROOT` /
@@ -426,7 +426,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
 - **保留独立的 Skills。** 项目级与用户级 Skills 仍可独立安装，并优先于同名
   的 Plugin Skill。Plugins 是可选的打包来源，从不取代 Skill 的生命周期。
 - **使用同一份可移植的包契约。** 本地 Plugins 使用 Agent Plugins 1.0.0 的根
-  清单与固定的 `skills/` 布局；实验性的 DeepCode 清单不再被接受。Hooks、
+  清单与固定的 `skills/` 布局；实验性的 DFcode 清单不再被接受。Hooks、
   Apps、Marketplaces、下载与更新保持惰性。
 
 ## 2026-08-09 · Skills 有了真正的运行时契约
@@ -435,7 +435,7 @@ English: [CHANGELOG.md](CHANGELOG.md).
   现在都留在拥有该 Skill 的 provider 里，目录只保存元数据。本地 Skills 保持
   原有的优先级与身份，未来的 provider 不再需要文件系统捷径来适配运行时。
 - **组合 Skills 而不隐藏缺失的能力。** Skills 可以声明工具与 Skill 依赖；
-  DeepCode 按顺序展开、检测环路，并在某项要求不可用时于第一次模型请求前
+  DFcode 按顺序展开、检测环路，并在某项要求不可用时于第一次模型请求前
   失败。
 - **只暴露任务需要的部分。** Agent 可以渐进地搜索并读取有界的包资源，
   版本、遍历、符号链接与大小检查都在共享的 provider 契约上执行。
@@ -460,24 +460,24 @@ English: [CHANGELOG.md](CHANGELOG.md).
 
 ## 2026-08-04 · 让 Skills 在每一种工作方式中保持一致
 
-- **让可复用经验跟随项目。** DeepCode 既能发现当前项目中的 Skills，
-  也能使用个人 Skill 集合，并继续兼容现有 DeepCode 与 Claude 风格目录。
+- **让可复用经验跟随项目。** DFcode 既能发现当前项目中的 Skills，
+  也能使用个人 Skill 集合，并继续兼容现有 DFcode 与 Claude 风格目录。
 - **在 CLI 与 Desktop 中使用同一个 Skill。** 为任务选择 Skill 后，
-  DeepCode 会把它的身份和版本保留在 Turn 中，方便在 Session 中追溯
+  DFcode 会把它的身份和版本保留在 Turn 中，方便在 Session 中追溯
   哪些指导影响了结果。
-- **不离开 DeepCode 也能创建 Skill。** 内置 Skill Creator 可在两端
+- **不离开 DFcode 也能创建 Skill。** 内置 Skill Creator 可在两端
   帮助创建和验证聚焦、可复用的工作流。
 - **Skill 库增长后依然保持专注。** 上下文感知的发现机制会控制
   Agent 上下文中的信息量，同时保留完整的 Skill 浏览与管理能力。
 
-## 2026-08-03 · 🎉 DeepCode v2.0 正式发布
+## 2026-08-03 · 🎉 DFcode v2.0 正式发布
 
-DeepCode v2.0 带来一套全新的通用型 Coding Agent 框架，面向真实软件项目的
+DFcode v2.0 带来一套全新的通用型 Coding Agent 框架，面向真实软件项目的
 开发、修复、理解与持续改进。
 
-- **直接完成真实仓库任务。** DeepCode 可以理解代码库、修改文件、运行命令
+- **直接完成真实仓库任务。** DFcode 可以理解代码库、修改文件、运行命令
   与测试、检查变化，并把需求推进到真正可以工作的结果。
-- **通过 Loop Engineering 持续完成复杂目标。** 给出一个 Goal，DeepCode
+- **通过 Loop Engineering 持续完成复杂目标。** 给出一个 Goal，DFcode
   可以持续理解、实现、验证和修复，而不是生成一段看似合理的回答就停止。
 - **Agent 工作时，你始终掌握方向。** 随时补充要求、纠正方向、切换模型、
   停止、恢复或修改 Goal，不必丢掉已经完成的工作。
@@ -486,11 +486,11 @@ DeepCode v2.0 带来一套全新的通用型 Coding Agent 框架，面向真实�
 - **让 Automation 适应你的工作方式。** 用自然语言把任意要求变成某个项目
   专属的任务：既可随时手动运行，也可按固定间隔自动执行，还能修改、暂停、
   恢复并查看每次结果。无论是回归检查、测试修复、文档同步还是仓库维护，
-  都可以交给 DeepCode 持续处理。
+  都可以交给 DFcode 持续处理。
 - **按照自己的方式工作。** 自由选择 Desktop 或 CLI，使用自己的模型与
   Skills，并委派聚焦任务，而不必改变底层 Agent 工作流。
 
-DeepCode v2.0 希望让你少花时间逐步盯着 Agent，多花时间完成真正值得发布的
+DFcode v2.0 希望让你少花时间逐步盯着 Agent，多花时间完成真正值得发布的
 软件。期待看到你用它创造出的作品！🚀
 
 ## 2026-07-31 · CLI 与 Desktop 共用统一执行模型
@@ -515,7 +515,7 @@ DeepCode v2.0 希望让你少花时间逐步盯着 Agent，多花时间完成真
 
 ## 2026-07-08 · 通用 Coding Agent、持久化 Sessions 与记忆
 
-- Session 历史可以跨重启恢复；项目长期指令可以写入 `AGENTS.md` 或 `DEEPCODE.md`，持久笔记跟随工作区保存。
+- Session 历史可以跨重启恢复；项目长期指令可以写入 `AGENTS.md` 或 `DFCODE.md`，持久笔记跟随工作区保存。
 
 - 自由对话式 TUI、原生文件与 Shell 工具、无头执行、上下文压缩和跨目录恢复，建立了当前产品基础。
 

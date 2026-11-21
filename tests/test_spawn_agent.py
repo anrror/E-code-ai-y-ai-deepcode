@@ -423,7 +423,7 @@ def test_build_wires_one_atomic_profile_into_engine_tools_and_control(
         "get_runtime",
         lambda: type("Runtime", (), {"config": object()})(),
     )
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "1")
+    monkeypatch.setenv("DFCODE_SANDBOX", "1")
     security = ExecutionSecurityProfile.for_preset(ExecutionAccessPreset.FULL_ACCESS)
 
     session, _model, engine = agent_setup.build_agent_session(

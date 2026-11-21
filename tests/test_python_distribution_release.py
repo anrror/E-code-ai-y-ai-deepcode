@@ -16,7 +16,7 @@ SCRIPT = REPOSITORY_ROOT / "scripts" / "verify_python_distribution.py"
 
 def _load_script():
     spec = importlib.util.spec_from_file_location(
-        "deepcode_test_verify_python_distribution",
+        "dfcode_test_verify_python_distribution",
         SCRIPT,
     )
     if spec is None or spec.loader is None:  # pragma: no cover - static path
@@ -37,7 +37,7 @@ def _metadata(
     mcp: str = "mcp>=1.29,<2",
 ):
     return release.DistributionMetadata(
-        name="deepcode-hku",
+        name="dfcode-hku",
         version=version,
         requires_python=requires_python,
         requires_dist=(mcp, "httpx>=0.27"),

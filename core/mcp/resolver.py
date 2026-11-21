@@ -22,7 +22,7 @@ from core.mcp.models import (
     validate_server_name,
 )
 
-_CONFIG_FILENAME = "deepcode_config.json"
+_CONFIG_FILENAME = "dfcode_config.json"
 _MAX_CONFIG_BYTES = 4 * 1024 * 1024
 
 
@@ -36,11 +36,11 @@ class McpConfigResolver:
 
     def __init__(self, user_config_path: str | Path | None = None) -> None:
         if user_config_path is None:
-            configured_home = os.environ.get("DEEPCODE_HOME")
+            configured_home = os.environ.get("DFCODE_HOME")
             home = (
                 Path(configured_home).expanduser()
                 if configured_home
-                else Path.home() / ".deepcode"
+                else Path.home() / ".dfcode"
             )
             user_config_path = home / _CONFIG_FILENAME
         self.user_config_path = (

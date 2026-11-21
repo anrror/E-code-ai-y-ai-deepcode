@@ -79,7 +79,7 @@ describe("persistence", () => {
   });
 
   it("falls back to defaults when storage holds garbage", () => {
-    localStorage.setItem("deepcode.desktop.appearance.v1", "{not json");
+    localStorage.setItem("dfcode.desktop.appearance.v1", "{not json");
     expect(readAppearance()).toEqual(APPEARANCE_DEFAULTS);
   });
 });

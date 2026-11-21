@@ -9,7 +9,7 @@ what ``/usr/bin/sandbox-exec`` does on macOS and ``bwrap`` does on Linux:
 The launcher:
 
 1. Creates a Windows Job Object with ``JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE``
-   so that when this wrapper exits (or the parent DeepCode process dies) the
+   so that when this wrapper exits (or the parent DFcode process dies) the
    whole child process tree is terminated — no orphaned shells/compilers
    survive.
 2. Spawns the inner command *suspended* via ``CreateProcessW``, assigns it to
@@ -207,21 +207,21 @@ def _passthrough(argv: list[str]) -> int:
         proc = subprocess.run(argv, capture_output=False)
         return proc.returncode
     except OSError as exc:
-        print(f"deepcode-windows-sandbox: failed to start: {exc}", file=sys.stderr)
+        print(f"dfcode-windows-sandbox: failed to start: {exc}", file=sys.stderr)
         return 127
 
 
 def main() -> int:
     if not _win32():
         print(
-            "deepcode-windows-sandbox: only runs on Windows",
+            "dfcode-windows-sandbox: only runs on Windows",
             file=sys.stderr,
         )
         return 2
     argv = sys.argv[1:]
     if not argv:
         print(
-            "deepcode-windows-sandbox: usage: windows_sandbox.py -- <cmd> [args...]",
+            "dfcode-windows-sandbox: usage: windows_sandbox.py -- <cmd> [args...]",
             file=sys.stderr,
         )
         return 2

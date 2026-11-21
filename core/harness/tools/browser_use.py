@@ -17,8 +17,8 @@ from typing import Any
 
 from core.agent_runtime.tools.base import Tool, ToolResult, tool_parameters
 
-_SHOT_DIR = Path(os.path.expanduser("~")) / ".deepcode" / "browser-shots"
-_PROFILE_DIR = Path(os.path.expanduser("~")) / ".deepcode" / "browser-profile"
+_SHOT_DIR = Path(os.path.expanduser("~")) / ".dfcode" / "browser-shots"
+_PROFILE_DIR = Path(os.path.expanduser("~")) / ".dfcode" / "browser-profile"
 _MAX_TEXT = 20_000
 _CALL_TIMEOUT = 45
 

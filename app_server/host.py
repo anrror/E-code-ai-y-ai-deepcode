@@ -11,7 +11,7 @@ from app_server.config_watch import ConfigFileWatcher
 from app_server.peer import RpcPeer
 from app_server.protocol import notifications
 from app_server.protocol.codec import DEFAULT_MAX_MESSAGE_BYTES
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 
 
 class ServiceHost:
@@ -23,7 +23,7 @@ class ServiceHost:
 
     def __init__(
         self,
-        application: DeepCodeApplication,
+        application: DFcodeApplication,
         *,
         max_message_bytes: int = DEFAULT_MAX_MESSAGE_BYTES,
         notification_capacity: int = 256,

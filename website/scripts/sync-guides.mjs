@@ -8,7 +8,7 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const source = join(here, "..", "..", "docs", "guide");
 const target = join(here, "..", "src", "content", "docs", "guide");
-const repoBlob = "https://github.com/HKUDS/DeepCode/blob/main";
+const repoBlob = "https://github.com/HKUDS/DFcode/blob/main";
 
 function transform(name, raw) {
   // Title = the first H1; Starlight renders it, so drop the heading itself.

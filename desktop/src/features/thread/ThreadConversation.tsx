@@ -222,7 +222,7 @@ export function ThreadConversation({
             <p>
               {t(
                 "thread.empty.body",
-                "Describe the outcome, the constraints, and how DeepCode should verify the result.",
+                "Describe the outcome, the constraints, and how DFcode should verify the result.",
               )}
             </p>
             <small>

@@ -467,7 +467,7 @@ def test_configure_completion_verifier_rejects_non_positive_max() -> None:
 def test_max_rejections_below_one_is_a_config_error(tmp_path) -> None:
     from core.config import ConfigError, load_config
 
-    path = tmp_path / "deepcode_config.json"
+    path = tmp_path / "dfcode_config.json"
     path.write_text(
         json.dumps({"goal": {"completionVerifier": "rule", "maxRejections": 0}})
     )

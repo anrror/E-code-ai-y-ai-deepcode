@@ -1,6 +1,6 @@
-# Using DeepCode
+# Using DFcode
 
-New to DeepCode? Start with [Your first coding task](getting-started.md). You
+New to DFcode? Start with [Your first coding task](getting-started.md). You
 will connect a model, write and test a small program, and learn how to continue
 the conversation later.
 
@@ -8,9 +8,9 @@ Once installed, choose the interface you prefer:
 
 | Where you want to work | Command |
 |---|---|
-| In your terminal | `deepcode` |
-| In the desktop app | `deepcode desktop` |
-| In your browser | `deepcode web` |
+| In your terminal | `dfcode` |
+| In the desktop app | `dfcode desktop` |
+| In your browser | `dfcode web` |
 
 Your projects and conversations are available across all three interfaces.
 For installation options, see the [quick start](../../README.md#quick-start).
@@ -31,5 +31,5 @@ For installation options, see the [quick start](../../README.md#quick-start).
 | Fix a startup or connection problem | [Troubleshooting](troubleshooting.md) |
 
 Looking to reproduce a paper? See the [Paper2Code guide](../paper2code.md).
-Developers extending DeepCode can find architecture and integration references
+Developers extending DFcode can find architecture and integration references
 in [`docs/`](../).

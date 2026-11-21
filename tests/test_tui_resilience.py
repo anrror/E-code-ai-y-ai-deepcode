@@ -117,7 +117,7 @@ def _app(client: _Client) -> tuple[tui_app.TuiApp, io.StringIO]:
 
 def test_interrupt_failure_is_reported_not_raised() -> None:
     client = _Client()
-    client.interrupt_error = _ServiceDown("The DeepCode service is not running.")
+    client.interrupt_error = _ServiceDown("The DFcode service is not running.")
     app, _ = _app(client)
 
     assert app.stop_turn().startswith("Could not stop the Turn:")

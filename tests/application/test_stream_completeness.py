@@ -16,7 +16,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application import turn_projection
 from core.application.live_items import LiveDelta
 from core.domain import TrustState
@@ -60,10 +60,10 @@ class _Factory:
         return _Session(self.script)
 
 
-def _application(tmp_path: Path, script) -> tuple[DeepCodeApplication, str]:
+def _application(tmp_path: Path, script) -> tuple[DFcodeApplication, str]:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=_Factory(script)
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)

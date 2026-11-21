@@ -43,7 +43,7 @@ from core.providers.reasoning import infer_reasoning_capabilities  # noqa: E402
     ],
 )
 def test_shipping_models_advertise_reasoning(model_id: str) -> None:
-    """Every reasoning-capable model DeepCode seeds must say so.
+    """Every reasoning-capable model DFcode seeds must say so.
 
     Each id here returned ``None`` before the resolver moved into the catalog,
     which is what left the effort picker empty.

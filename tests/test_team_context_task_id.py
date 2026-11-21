@@ -35,7 +35,7 @@ def _write_layer(
     knowledge: list[dict] | None = None,
 ) -> Path:
     directory_name = "company" if kind == "org" else kind
-    directory = workspace / ".deepcode" / "team" / directory_name / slug
+    directory = workspace / ".dfcode" / "team" / directory_name / slug
     directory.mkdir(parents=True)
     (directory / "entity.yaml").write_text(
         yaml.safe_dump(meta, allow_unicode=True), encoding="utf-8"
@@ -93,12 +93,12 @@ def test_an_ownership_chain_is_injected_without_knowledge(tmp_path: Path) -> Non
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     home = tmp_path / "home"
-    team = home / ".deepcode" / "team"
+    team = home / ".dfcode" / "team"
     layers = {
         "company/default": {"name": "Org"},
         "line/ai-tools": {"name": "AI tools", "parent": "org://default"},
-        "product/deepcodex": {
-            "name": "DeepCodeX",
+        "product/dfcodex": {
+            "name": "DFcodeX",
             "parent": "line://ai-tools",
             "workspace": str(workspace),
         },
@@ -112,13 +112,13 @@ def test_an_ownership_chain_is_injected_without_knowledge(tmp_path: Path) -> Non
 
     preamble = team_context_preamble(workspace, home=home)
 
-    assert 'task="product://deepcodex"' in preamble
-    assert "product://deepcodex > line://ai-tools > org://default" in preamble
+    assert 'task="product://dfcodex"' in preamble
+    assert "product://dfcodex > line://ai-tools > org://default" in preamble
     # The header carries the ids; the body says what they are, including a
     # display name that differs from the id's slug.
     assert (
         "ownership (nearest first): "
-        "product://deepcodex > line://ai-tools (AI tools) > org://default (Org)"
+        "product://dfcodex > line://ai-tools (AI tools) > org://default (Org)"
     ) in preamble
     # A pointer back at the agent's own workspace is noise, not context.
     assert "layer pointers" not in preamble
@@ -149,9 +149,9 @@ def test_a_lone_layer_pointer_still_reaches_the_model(tmp_path: Path) -> None:
     _write_layer(
         workspace,
         "product",
-        "deepcodex",
+        "dfcodex",
         {
-            "name": "DeepCodeX",
+            "name": "DFcodeX",
             "workspace": str(workspace),
             "designs": ["docs/design.md"],
         },
@@ -167,7 +167,7 @@ def test_a_lone_unconfigured_project_stays_silent(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     home = tmp_path / "home"
-    directory = home / ".deepcode" / "team" / "project" / "demo"
+    directory = home / ".dfcode" / "team" / "project" / "demo"
     directory.mkdir(parents=True)
     (directory / "entity.yaml").write_text(
         yaml.safe_dump(

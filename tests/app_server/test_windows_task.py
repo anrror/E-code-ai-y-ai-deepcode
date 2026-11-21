@@ -18,7 +18,7 @@ def test_task_definition_has_user_scope_unlimited_duration_and_safe_arguments(tm
         "directory": str(tmp_path),
     }
     root = ET.fromstring(
-        task_definition(value, "S-1-5-21-123", "DeepCode-test", configuration)
+        task_definition(value, "S-1-5-21-123", "DFcode-test", configuration)
     )
     ns = {"t": TASK_NS}
     assert (
@@ -50,7 +50,7 @@ def test_supervisor_configuration_rejects_environment_injection(tmp_path):
         "schemaVersion": 1,
         "database": str(tmp_path / "state.sqlite3"),
         "port": 3081,
-        "environment": {"DEEPCODE_HOME": str(tmp_path), "PATH": "/bin"},
+        "environment": {"DFCODE_HOME": str(tmp_path), "PATH": "/bin"},
     }
     with os.fdopen(open_private_file(path, os.O_CREAT | os.O_WRONLY), "w") as stream:
         json.dump(value, stream)

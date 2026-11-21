@@ -23,9 +23,9 @@ from pathlib import Path
 
 _GIT_ENV_ID = (
     "-c",
-    "user.name=DeepCode Eval",
+    "user.name=DFcode Eval",
     "-c",
-    "user.email=eval@deepcode.local",
+    "user.email=eval@dfcode.local",
 )
 
 

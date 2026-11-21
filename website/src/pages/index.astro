@@ -1,5 +1,5 @@
 ---
-// The DeepCode landing page. Hand-crafted single file by design (the
+// The DFcode landing page. Hand-crafted single file by design (the
 // terminal-as-editorial treatment); the teaching guides live under /guide/.
 const base = import.meta.env.BASE_URL.endsWith("/")
   ? import.meta.env.BASE_URL
@@ -13,14 +13,14 @@ const guides = `${base}guide/`;
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="DeepCode — open agentic coding with a durable session record, one live writer per session, and measured context discipline."
+      content="DFcode — open agentic coding with a durable session record, one live writer per session, and measured context discipline."
     />
-    <title>DeepCode</title>
+    <title>DFcode</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>✳</text></svg>" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;450;500;600&display=swap">
     <style is:global>
-  /* DeepCode — the terminal as the page. One committed dark world:
+  /* DFcode — the terminal as the page. One committed dark world:
      every color painted explicitly, no theme borrowing. */
   :root{
     --ground:#0b1116;
@@ -243,13 +243,13 @@ const guides = `${base}guide/`;
 <main>
   <div class="wrap">
     <header class="top">
-      <div class="brand"><span class="mark">✳</span> DeepCode</div>
+      <div class="brand"><span class="mark">✳</span> DFcode</div>
       <nav class="links" aria-label="Site">
         <a href="#surfaces">Surfaces</a>
         <a href="#runtime">Runtime</a>
         <a href="#learns">Skills</a>
         <a href="#start">Quickstart</a>
-        <a href="https://github.com/HKUDS/DeepCode">GitHub ↗</a>
+        <a href="https://github.com/HKUDS/DFcode">GitHub ↗</a>
       </nav>
     </header>
 
@@ -263,23 +263,23 @@ const guides = `${base}guide/`;
           sessions, skills, and memory stay on your machine.
         </p>
         <div class="ctas">
-          <span class="install"><span class="p">$</span> pip install deepcode-hku
-            <button type="button" data-copy="pip install deepcode-hku">copy</button>
+          <span class="install"><span class="p">$</span> pip install dfcode-hku
+            <button type="button" data-copy="pip install dfcode-hku">copy</button>
           </span>
-          <a class="ghlink" href="https://github.com/HKUDS/DeepCode">github.com/HKUDS/DeepCode →</a>
+          <a class="ghlink" href="https://github.com/HKUDS/DFcode">github.com/HKUDS/DFcode →</a>
         </div>
       </div>
 
-      <div class="term" aria-label="DeepCode terminal session replay">
+      <div class="term" aria-label="DFcode terminal session replay">
         <div class="bar" aria-hidden="true">
           <span class="dot"></span><span class="dot"></span><span class="dot"></span>
-          <span>deepcode · ~/proj/app</span>
+          <span>dfcode · ~/proj/app</span>
         </div>
         <div class="screen" id="replay">
           <div class="row t-logo">██████<span class="tr">  ·──○</span></div>
           <div class="row t-logo">██<span class="tr">       ○──·</span></div>
           <div class="row t-logo">██████<span class="tr">  ·──○</span></div>
-          <div class="row t-dim">DeepCode · open agentic coding</div>
+          <div class="row t-dim">DFcode · open agentic coding</div>
           <div class="row t-dim">deepseek/deepseek-v4-pro · ~/proj/app</div>
           <div class="row">&nbsp;</div>
           <div class="row t-user">fix the failing auth test, then run the suite</div>
@@ -331,11 +331,11 @@ const guides = `${base}guide/`;
         <div class="cell">
           <h3><span class="g">⚙</span>Headless</h3>
           <p>One-shot execution that streams structured events for scripts and
-          CI. <code>deepcode exec --json</code></p>
+          CI. <code>dfcode exec --json</code></p>
         </div>
         <div class="cell">
           <h3><span class="g">◈</span>MCP &amp; automations</h3>
-          <p>Expose DeepCode as an MCP server, schedule goal-driven runs, and
+          <p>Expose DFcode as an MCP server, schedule goal-driven runs, and
           let a goal loop work an objective against a real test command.</p>
         </div>
       </div>
@@ -349,7 +349,7 @@ const guides = `${base}guide/`;
         <div class="sect-sub">engineering you can measure</div>
         <h2 class="big">The context the model sees is a discipline,<br>not an accident.</h2>
         <p style="max-width:42rem;color:var(--ink-soft);margin-bottom:2.6rem">
-          DeepCode treats the request as something derived from the session
+          DFcode treats the request as something derived from the session
           record — append-only, reconstructable, and priced by what the
           provider actually reports. These numbers are from the changelog, not
           the brochure.
@@ -406,7 +406,7 @@ const guides = `${base}guide/`;
         <div class="learn">
           <h3>Memory &amp; instructions</h3>
           <p>Reads <code>AGENTS.md</code> from repo root to workspace and keeps
-          durable notes under <code>.deepcode/memory/</code>, indexed and
+          durable notes under <code>.dfcode/memory/</code>, indexed and
           injected each session.</p>
         </div>
         <div class="learn">
@@ -433,13 +433,13 @@ const guides = `${base}guide/`;
       </div>
       <div class="qs rv" role="figure" aria-label="Install commands">
         <div><span class="c"># install</span></div>
-        <div class="cmd">pip install deepcode-hku</div>
+        <div class="cmd">pip install dfcode-hku</div>
         <div>&nbsp;</div>
         <div><span class="c"># set up providers once (OpenAI · Anthropic · OpenRouter · DeepSeek · Ollama …)</span></div>
-        <div class="cmd">deepcode init</div>
+        <div class="cmd">dfcode init</div>
         <div>&nbsp;</div>
         <div><span class="c"># converse in any project directory</span></div>
-        <div class="cmd">deepcode</div>
+        <div class="cmd">dfcode</div>
       </div>
     </div>
   </section>
@@ -447,12 +447,12 @@ const guides = `${base}guide/`;
   <footer>
     <div class="wrap cols">
       <div>
-        <div class="fbrand"><span class="mark">✳</span> DeepCode</div>
+        <div class="fbrand"><span class="mark">✳</span> DFcode</div>
         <p>Built by <a href="https://github.com/HKUDS">HKUDS</a>, the Data
         Intelligence Lab at the University of Hong Kong. MIT licensed.</p>
       </div>
       <nav aria-label="Footer">
-        <a href="https://github.com/HKUDS/DeepCode">GitHub</a>
+        <a href="https://github.com/HKUDS/DFcode">GitHub</a>
         <a href="https://arxiv.org/abs/2512.07921">Paper</a>
         <a href={guides}>Guides</a>
       </nav>

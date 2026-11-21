@@ -1,8 +1,8 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://deepcode.dev/schema/app-server-v1.json",
-  "title": "DeepCode App Server Protocol",
-  "description": "Canonical JSON-RPC data contracts for the DeepCode desktop client.",
+  "$id": "https://dfcode.dev/schema/app-server-v1.json",
+  "title": "DFcode App Server Protocol",
+  "description": "Canonical JSON-RPC data contracts for the DFcode desktop client.",
   "type": "object",
   "additionalProperties": false,
   "properties": {
@@ -2462,7 +2462,7 @@
           "type": "string",
           "enum": [
             "agents",
-            "deepcode",
+            "dfcode",
             "claude",
             "system"
           ]
@@ -2647,7 +2647,7 @@
           "type": "string",
           "enum": [
             "agents",
-            "deepcode",
+            "dfcode",
             "claude",
             "system"
           ]
@@ -4606,7 +4606,7 @@
           "items": {
             "type": "string"
           },
-          "description": "An argument list DeepCode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer."
+          "description": "An argument list DFcode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer."
         }
       },
       "required": [
@@ -4629,7 +4629,7 @@
           "items": {
             "type": "string"
           },
-          "description": "An argument list DeepCode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer."
+          "description": "An argument list DFcode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer."
         }
       },
       "required": [

@@ -75,7 +75,7 @@ class WebSurface:
         if self.build() is None or not (self.assets / "index.html").is_file():
             return web.Response(
                 status=503,
-                text="DeepCode web assets are missing or incompatible. Reinstall a complete release, or run npm ci and npm run build:web in desktop/ before starting this service.",
+                text="DFcode web assets are missing or incompatible. Reinstall a complete release, or run npm ci and npm run build:web in desktop/ before starting this service.",
             )
         return web.FileResponse(self.assets / "index.html")
 
@@ -134,7 +134,7 @@ class WebSurface:
             )[:100]
             or "attachment"
         )
-        filename = f"deepcode-upload-{secrets.token_hex(12)}-{name}"
+        filename = f"dfcode-upload-{secrets.token_hex(12)}-{name}"
         async with self._uploads, self._upload_lock:
             directory = (
                 os.open(context.root, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
@@ -153,8 +153,8 @@ class WebSurface:
                     lambda: sum(
                         path.stat().st_size
                         for path in itertools.chain(
-                            context.root.glob("deepcode-upload-*"),
-                            context.root.glob(".deepcode-upload-*.part"),
+                            context.root.glob("dfcode-upload-*"),
+                            context.root.glob(".dfcode-upload-*.part"),
                         )
                         if path.is_file() and not path.is_symlink()
                     )

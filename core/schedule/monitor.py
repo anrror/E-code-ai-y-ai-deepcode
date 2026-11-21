@@ -20,14 +20,14 @@ Design principles (derived from Hermes cron/monitor.py):
 
 Boundaries: a monitored URL passes the same public-host policy as the web
 tools (no loopback/private addresses, http(s) only); a monitored script passes
-the destructive-command screen; the state store lives under the DeepCode home
-(``deepcode_home()/state/monitor.sqlite3``) and is user-private.
+the destructive-command screen; the state store lives under the DFcode home
+(``dfcode_home()/state/monitor.sqlite3``) and is user-private.
 
 Usage::
 
     from core.schedule.monitor import MonitorStore, monitor_gate
 
-    store = MonitorStore()  # default: <deepcode home>/state/monitor.sqlite3
+    store = MonitorStore()  # default: <dfcode home>/state/monitor.sqlite3
     outcome = monitor_gate("my-job", store=store,
                            monitor_script="git diff --stat")
     if outcome.changed:
@@ -37,10 +37,10 @@ Usage::
     else:
         pass                                   # silent tick, skip LLM
 
-From a shell (for cron or ``deepcode schedule``)::
+From a shell (for cron or ``dfcode schedule``)::
 
     python -m core.schedule.monitor --job-id prices --url https://example.com/p --json
-    # exit 0 and "changed": true  -> feed context_block to `deepcode exec`
+    # exit 0 and "changed": true  -> feed context_block to `dfcode exec`
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ from datetime import UTC, datetime
 from difflib import unified_diff
 from pathlib import Path
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.harness.command_guard import screen_command
 from core.network.safe_http import (
     ResponseTooLargeError,
@@ -303,7 +303,7 @@ def check_monitor(
 
 def default_monitor_store_path() -> Path:
     """The user-private default location of the monitor state database."""
-    return deepcode_home() / "state" / "monitor.sqlite3"
+    return dfcode_home() / "state" / "monitor.sqlite3"
 
 
 class MonitorStore:
@@ -312,7 +312,7 @@ class MonitorStore:
     The table ``monitor_jobs`` stores per-job: last seen hash, previous-output
     snapshot, and ISO-8601 timestamp. Defaults to
     :func:`default_monitor_store_path`; the directory and file are kept
-    user-private like the rest of the DeepCode state.
+    user-private like the rest of the DFcode state.
     """
 
     def __init__(self, db_path: str | Path | None = None) -> None:
@@ -458,7 +458,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument(
         "--db",
         default="",
-        help="Path to the monitor state database (default: <deepcode home>/state/monitor.sqlite3)",
+        help="Path to the monitor state database (default: <dfcode home>/state/monitor.sqlite3)",
     )
     parser.add_argument("--json", action="store_true", help="JSON output")
 

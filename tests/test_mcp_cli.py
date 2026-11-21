@@ -17,7 +17,7 @@ def test_mcp_cli_manages_the_new_top_level_without_storing_secrets(
     capsys,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
 
     assert (
         run(
@@ -39,7 +39,7 @@ def test_mcp_cli_manages_the_new_top_level_without_storing_secrets(
     added = _json_output(capsys)
     assert added["servers"][0]["credentialEnvKeys"] == ["OPENROUTER_API_KEY"]
 
-    config = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+    config = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
     assert "tools" not in config
     stored = config["mcpServers"]["fixture"]
     assert stored["credentialEnv"]["OPENROUTER_API_KEY"] == {
@@ -64,7 +64,7 @@ def test_project_mcp_cli_requires_explicit_trust_for_mutation(
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
 
     arguments = [
         "add",
@@ -84,7 +84,7 @@ def test_project_mcp_cli_requires_explicit_trust_for_mutation(
     assert run(arguments) == 0
     assert _json_output(capsys)["servers"][0]["source"] == "project"
     project_config = json.loads(
-        (workspace / "deepcode_config.json").read_text(encoding="utf-8")
+        (workspace / "dfcode_config.json").read_text(encoding="utf-8")
     )
     assert "project-tools" in project_config["mcpServers"]
 
@@ -95,7 +95,7 @@ def test_mcp_cli_rejects_literal_sensitive_environment_values(
     capsys,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
 
     assert (
         run(
@@ -111,7 +111,7 @@ def test_mcp_cli_rejects_literal_sensitive_environment_values(
         == 2
     )
     assert "credentialEnv" in capsys.readouterr().err
-    config_path = home / "deepcode_config.json"
+    config_path = home / "dfcode_config.json"
     assert not config_path.exists() or "do-not-store" not in config_path.read_text(
         encoding="utf-8"
     )
@@ -124,7 +124,7 @@ def test_mcp_cli_adds_enables_and_really_probes_mcp_servers(
 ) -> None:
     home = tmp_path / "home"
     fixture = Path(__file__).parent / "fixtures" / "mcp_runtime_server.py"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
 
     assert run(["presets", "--json"]) == 0
     presets = _json_output(capsys)
@@ -162,7 +162,7 @@ def test_mcp_cli_adds_enables_and_really_probes_mcp_servers(
         == 0
     )
     _json_output(capsys)
-    added = json.loads((home / "deepcode_config.json").read_text(encoding="utf-8"))
+    added = json.loads((home / "dfcode_config.json").read_text(encoding="utf-8"))
     assert added["mcpServers"]["fixture"]["enabled"] is False
     assert run(["test", "fixture", "--json"]) == 0
     probe = _json_output(capsys)
@@ -179,12 +179,12 @@ def test_mcp_cli_can_explicitly_enable_a_new_custom_server(
     monkeypatch,
     capsys,
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
 
     assert run(["add", "fixture", "--enable", "--command", "python3"]) == 0
     capsys.readouterr()
     config = json.loads(
-        (tmp_path / "home" / "deepcode_config.json").read_text(encoding="utf-8")
+        (tmp_path / "home" / "dfcode_config.json").read_text(encoding="utf-8")
     )
     assert config["mcpServers"]["fixture"]["enabled"] is True
 
@@ -194,7 +194,7 @@ def test_mcp_cli_returns_failure_for_a_failed_real_probe(
     monkeypatch,
     capsys,
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     assert run(["add", "broken", "--command", "definitely-not-a-command"]) == 0
     capsys.readouterr()
 
@@ -209,9 +209,9 @@ def test_mcp_list_names_concerns_and_states_default_posture_once(
 ) -> None:
     home = tmp_path / "home"
     home.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.delenv("DEEPCODE_TEST_UNSET_TOKEN", raising=False)
-    (home / "deepcode_config.json").write_text(
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.delenv("DFCODE_TEST_UNSET_TOKEN", raising=False)
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "mcpServers": {
@@ -234,7 +234,7 @@ def test_mcp_list_names_concerns_and_states_default_posture_once(
                         "credentialEnv": {
                             "DEMO_API_KEY": {"credentialRef": "provider:openrouter"}
                         },
-                        "requiredEnvVars": ["DEEPCODE_TEST_UNSET_TOKEN"],
+                        "requiredEnvVars": ["DFCODE_TEST_UNSET_TOKEN"],
                     },
                     "retired": {
                         "type": "stdio",
@@ -281,8 +281,8 @@ def test_mcp_list_flags_unpinned_launcher_packages(
 ) -> None:
     home = tmp_path / "home"
     home.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    (home / "deepcode_config.json").write_text(
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "mcpServers": {

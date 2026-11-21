@@ -7,7 +7,7 @@ import pytest
 
 from core.application.agent_adapter import DefaultAgentSessionFactory
 from core.application.session_runtime import SessionRuntimeRegistry
-from core.config import DeepCodeConfig, home_config_path
+from core.config import DFcodeConfig, home_config_path
 from core.domain.execution_profile import ExecutionProfile, ExecutionSelection
 from core.private_storage import atomic_write_private_json
 from core.providers.credentials import CredentialStore
@@ -85,10 +85,10 @@ def test_idle_session_rebuilds_for_frozen_model_compatibility_changes(tmp_path, 
 @pytest.mark.asyncio
 async def test_factory_owned_provider_pool_closes_at_session_end(tmp_path, monkeypatch):
     from core.agent_setup import build_agent_session
-    from core.compat.runtime import DeepCodeRuntime
+    from core.compat.runtime import DFcodeRuntime
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    config = DeepCodeConfig.model_validate(
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    config = DFcodeConfig.model_validate(
         {
             "agents": {"defaults": {"connection": "route", "model": "model"}},
             "providers": {
@@ -121,7 +121,7 @@ async def test_factory_owned_provider_pool_closes_at_session_end(tmp_path, monke
     assert sdk.is_closed()
     await session.aclose()
     # A borrowed/global runtime stays alive until its actual owner closes it.
-    runtime = DeepCodeRuntime(config)
+    runtime = DFcodeRuntime(config)
     borrowed, *_ = build_agent_session(
         workspace=str(tmp_path),
         model="model",

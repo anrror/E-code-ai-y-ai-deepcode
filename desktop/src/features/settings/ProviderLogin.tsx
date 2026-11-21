@@ -63,7 +63,7 @@ export function ProviderLogin({
       <small>
         {t(
           "provider.loginExplanation",
-          "OpenRouter login supplies a user-controlled API key. No refresh token is issued. Sign in on the machine running DeepCode.",
+          "OpenRouter login supplies a user-controlled API key. No refresh token is issued. Sign in on the machine running DFcode.",
         )}
       </small>
       <div className={styles.actions}>

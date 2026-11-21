@@ -476,7 +476,7 @@ def serialize_event(
     """Serialize an event while preserving the legacy CLI wire shape.
 
     ``submission_id`` is an internal correlation field used by the application
-    layer. Existing ``deepcode exec --json`` consumers receive the original
+    layer. Existing ``dfcode exec --json`` consumers receive the original
     ``{"id", "msg"}`` object unless a versioned caller opts in explicitly.
     """
 

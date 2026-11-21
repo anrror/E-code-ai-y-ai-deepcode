@@ -1,6 +1,6 @@
 """Small cross-platform runtime helpers.
 
-DeepCode starts Python, tool, and MCP subprocesses from different entry
+DFcode starts Python, tool, and MCP subprocesses from different entry
 points. On Windows, default console encoding may be GBK/cp936, while tool
 servers and model logs freely emit UTF-8 text. Keep the policy in one place
 so CLI, App Server, and MCP stdio clients inherit the same behavior.
@@ -23,13 +23,13 @@ UTF8_ENV: dict[str, str] = {
 _WINDOWS_SHELL_LAUNCHERS = frozenset(("npx", "npm", "pnpm", "yarn", "bunx"))
 
 # The frozen Desktop build has no separate Python: its executable runs one of
-# DeepCode's own helper scripts, bundled as files, when started as
+# DFcode's own helper scripts, bundled as files, when started as
 # ``<executable> --run-script <script> [args...]`` (see app_server/__main__.py).
 RUN_SCRIPT_FLAG = "--run-script"
 
 
 def script_command(script: str) -> list[str]:
-    """The argv that runs one of DeepCode's own helper scripts."""
+    """The argv that runs one of DFcode's own helper scripts."""
     if getattr(sys, "frozen", False):
         return [sys.executable, RUN_SCRIPT_FLAG, script]
     return [sys.executable, script]

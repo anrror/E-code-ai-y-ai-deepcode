@@ -42,7 +42,7 @@ HOOK_EVENT_NAMES: tuple[str, ...] = (
 # ``Stop`` fire unconditionally, so their matchers are ignored (mirrors the
 # reference). ``SessionEnd`` DOES honour its matcher: the session-exit reason
 # is matched against the ``matcher`` field so hooks can target a specific exit
-# path. DeepCode runtime shutdown uses the compatible ``other`` reason.
+# path. DFcode runtime shutdown uses the compatible ``other`` reason.
 _EVENTS_WITHOUT_MATCHER: frozenset[str] = frozenset({"UserPromptSubmit", "Stop"})
 
 

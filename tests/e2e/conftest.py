@@ -1,9 +1,9 @@
-"""A private DeepCode installation for terminal tests.
+"""A private DFcode installation for terminal tests.
 
-Each test module gets its own DeepCode home, a scripted model, and a real
+Each test module gets its own DFcode home, a scripted model, and a real
 background service process; every TUI a test opens is a real process on a
 pseudo-terminal talking to that service. Nothing here reads or writes the
-user's own ``~/.deepcode``: the child processes get a temporary home and a
+user's own ``~/.dfcode``: the child processes get a temporary home and a
 temporary ``HOME``, and no provider credentials.
 """
 
@@ -45,12 +45,12 @@ def _child_environment(home: Path, user_home: Path) -> dict:
         for name, value in os.environ.items()
         if not name.endswith(_CREDENTIAL_SUFFIXES)
         and name.lower() not in _PROXY_VARIABLES
-        and not name.startswith("DEEPCODE_")
+        and not name.startswith("DFCODE_")
         and not name.startswith("PYTEST_")
     }
     env.update(
-        DEEPCODE_HOME=str(home),
-        DEEPCODE_SESSIONS_DIR=str(home / "sessions"),
+        DFCODE_HOME=str(home),
+        DFCODE_SESSIONS_DIR=str(home / "sessions"),
         HOME=str(user_home),
         NO_PROXY="127.0.0.1,localhost",
         PYTHONPATH=os.pathsep.join(
@@ -87,14 +87,14 @@ def _write_config(home: Path, model: FakeModel) -> None:
         },
     }
     home.mkdir(parents=True, exist_ok=True)
-    (home / "deepcode_config.json").write_text(json.dumps(config, indent=2))
+    (home / "dfcode_config.json").write_text(json.dumps(config, indent=2))
 
 
 class Installation:
     """The service, the scripted model, and a way to open TUIs on them."""
 
     def __init__(self, root: Path) -> None:
-        self.home = root / "deepcode-home"
+        self.home = root / "dfcode-home"
         self.workspace = root / "workspace"
         self.workspace.mkdir(parents=True)
         user_home = root / "user-home"
@@ -102,7 +102,7 @@ class Installation:
         self.model = FakeModel().start()
         _write_config(self.home, self.model)
         self.env = _child_environment(self.home, user_home)
-        self.files = ServiceFiles(self.home / "state" / "deepcode.sqlite3")
+        self.files = ServiceFiles(self.home / "state" / "dfcode.sqlite3")
         self.port = _free_port()
         self.service = None
         self.terminals: list[Terminal] = []
@@ -193,7 +193,7 @@ class Installation:
             [
                 sys.executable,
                 "-m",
-                "deepcode",
+                "dfcode",
                 "--workspace",
                 str(self.workspace),
                 "--trust",
@@ -215,16 +215,16 @@ class Installation:
 
 @pytest.fixture(scope="module")
 def installation(tmp_path_factory):
-    deepcode = Installation(tmp_path_factory.mktemp("e2e"))
+    dfcode = Installation(tmp_path_factory.mktemp("e2e"))
     try:
-        deepcode.start_service()
-        yield deepcode
+        dfcode.start_service()
+        yield dfcode
     finally:
-        deepcode.close()
+        dfcode.close()
 
 
 @pytest.fixture
-def deepcode(installation):
+def dfcode(installation):
     """The module's installation, with a fresh script for this test."""
 
     installation.model.reset()

@@ -10,7 +10,7 @@ The events mirror the natural stream order:
     (text_delta | reasoning_delta | tool_call_start → tool_call_delta* →
      tool_call_end)*  →  usage?  →  (error?)
 
-A *completed* ``LLMResponse`` (the non-streaming path DeepCode uses today)
+A *completed* ``LLMResponse`` (the non-streaming path DFcode uses today)
 converts to the terminal forms via :func:`llm_response_to_events`: whole
 text as one ``TextDelta``, each tool call as a single ``ToolCallEnd``, then
 ``UsageInfo`` — i.e. the same vocabulary, just not chunked. This keeps one

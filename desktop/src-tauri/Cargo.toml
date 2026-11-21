@@ -1,12 +1,12 @@
 [package]
-name = "deepcode-desktop"
+name = "dfcode-desktop"
 version = "0.1.0"
-description = "DeepCode desktop execution workbench"
-authors = ["DeepCode Team"]
+description = "DFcode desktop execution workbench"
+authors = ["DFcode Team"]
 edition = "2021"
 
 [lib]
-name = "deepcode_desktop_lib"
+name = "dfcode_desktop_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]

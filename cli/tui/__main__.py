@@ -1,4 +1,4 @@
-"""``python -m cli.tui`` — launch the interactive DeepCode TUI."""
+"""``python -m cli.tui`` — launch the interactive DFcode TUI."""
 
 from cli.tui.app import main
 

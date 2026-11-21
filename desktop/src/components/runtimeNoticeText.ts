@@ -15,29 +15,29 @@ function browserReport(
     case "AUTH_REQUIRED":
       return [
         t("runtime.browserAuthRequired", "Browser access required"),
-        t("runtime.browserAuthHelp", "Run deepcode web in your terminal to open a new browser access link. No DeepCode account is needed."),
+        t("runtime.browserAuthHelp", "Run dfcode web in your terminal to open a new browser access link. No DFcode account is needed."),
       ];
     case "CONNECTION_LOST":
       return [
-        t("runtime.connectionLost", "Connection to DeepCode lost"),
+        t("runtime.connectionLost", "Connection to DFcode lost"),
         serviceOffline
           ? t("runtime.connectionLostOffline", "The service is unavailable. Reconnect when it is ready.")
           : t("runtime.connectionLostHelp", "Connection lost; the service may still be running."),
       ];
     case "RESPONSE_TIMEOUT":
       return [
-        t("runtime.responseTimeout", "No response from DeepCode"),
+        t("runtime.responseTimeout", "No response from DFcode"),
         t("runtime.responseTimeoutHelp", "The response timed out; the task may still be running."),
       ];
     case "RESULT_UNKNOWN":
       return [
         t("runtime.resultUnknown", "The last action may have gone through"),
-        t("runtime.resultUnknownHelp", "The connection dropped before DeepCode answered. Check the Session before trying again."),
+        t("runtime.resultUnknownHelp", "The connection dropped before DFcode answered. Check the Session before trying again."),
       ];
     case "NOT_CONNECTED":
     case "DISCONNECTED":
       return [
-        t("runtime.notConnected", "Not connected to DeepCode"),
+        t("runtime.notConnected", "Not connected to DFcode"),
         t("runtime.notConnectedHelp", "The request was not sent. Reconnect and try again."),
       ];
     case "CLIENT_BUSY":

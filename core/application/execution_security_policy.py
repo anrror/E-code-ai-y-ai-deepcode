@@ -110,7 +110,7 @@ class ExecutionSecurityPolicy:
             )
 
         raw_environment_mode = (
-            os.environ.get("DEEPCODE_PERMISSION_MODE", "").strip().lower()
+            os.environ.get("DFCODE_PERMISSION_MODE", "").strip().lower()
         )
         if raw_environment_mode:
             try:
@@ -165,7 +165,7 @@ class ExecutionSecurityPolicy:
     ) -> ExecutionSecurityProfile:
         config = security_config or load_config_for_workspace(workspace).security
         sandbox = bool(getattr(config, "sandbox", True))
-        raw_sandbox = os.environ.get("DEEPCODE_SANDBOX", "").strip().lower()
+        raw_sandbox = os.environ.get("DFCODE_SANDBOX", "").strip().lower()
         if raw_sandbox:
             sandbox = raw_sandbox not in {"0", "false", "no", "off"}
         return ExecutionSecurityProfile.from_legacy(

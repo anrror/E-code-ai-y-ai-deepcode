@@ -227,8 +227,8 @@ jobs:
         with:
           projectPath: desktop
           tagName: ${{ env.RELEASE_TAG }}
-          releaseName: DeepCode Desktop __VERSION__
-          releaseBody: Signed DeepCode Desktop release. Keep the previous installer until the upgraded database and workflows have been verified.
+          releaseName: DFcode Desktop __VERSION__
+          releaseBody: Signed DFcode Desktop release. Keep the previous installer until the upgraded database and workflows have been verified.
           releaseDraft: true
           prerelease: false
           generateReleaseNotes: true
@@ -236,8 +236,8 @@ jobs:
           updaterJsonPreferNsis: true
           uploadUpdaterSignatures: true
           uploadWorkflowArtifacts: true
-          workflowArtifactNamePattern: deepcode-[platform]-[arch]-[bundle]
-          releaseAssetNamePattern: DeepCode_[version]_[platform]_[arch][setup][ext]
+          workflowArtifactNamePattern: dfcode-[platform]-[arch]-[bundle]
+          releaseAssetNamePattern: DFcode_[version]_[platform]_[arch][setup][ext]
           args: >-
             --bundles ${{ matrix.bundles }}
             --config build/release/tauri.release.conf.json

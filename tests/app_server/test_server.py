@@ -16,7 +16,7 @@ import pytest
 from app_server.connection import ConnectionState
 from app_server.dispatcher import Dispatcher, Params
 from app_server.server import AppServer
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import NoActiveTurnError, TurnNotSteerableError
 from core.application.event_service import EventBroker
 from core.application.goal_extension import (
@@ -59,7 +59,7 @@ def _messages(sink: io.BytesIO) -> list[dict[str, Any]]:
 def test_server_requires_initialize_and_emits_live_thread_event(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     source = io.BytesIO(
         _request(1, "project/list", {})
@@ -91,7 +91,7 @@ def test_server_requires_initialize_and_emits_live_thread_event(tmp_path: Path) 
 
 
 def test_notification_errors_do_not_produce_responses(tmp_path: Path) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     source = io.BytesIO(
         json.dumps({"jsonrpc": "2.0", "method": "unknown", "params": {}}).encode()
         + b"\n"
@@ -158,7 +158,7 @@ def test_turn_steer_reports_typed_no_active_error_without_implicit_queue(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Strict steer")
     source = io.BytesIO(
@@ -309,7 +309,7 @@ def test_thread_list_and_resume_use_the_shared_session_store(tmp_path: Path) -> 
     source_path = store.root / session_a.session_id / "session.jsonl"
     source_before = source_path.read_bytes()
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -348,7 +348,7 @@ def test_thread_delete_removes_the_shared_session_through_json_rpc(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=sessions,
     )
@@ -392,7 +392,7 @@ def test_thread_goal_protocol_uses_the_canonical_session_ledger(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=sessions,
     )
@@ -504,7 +504,7 @@ def test_thread_goal_protocol_edits_and_resumes_the_same_identity(
     # Resuming starts the Goal's next Turn. Held, it can't settle (and, with
     # no model configured here, block the Goal) before the replies are read.
     factory = _HeldGoalFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=factory
     )
     try:
@@ -585,7 +585,7 @@ def test_thread_goal_get_reads_the_goal_and_its_outcome_together(
     # it was with the outcome that Turn just recorded.
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
         project = application.projects.add(
             str(workspace), trust_state=TrustState.TRUSTED
@@ -628,7 +628,7 @@ def test_thread_goal_get_judges_settlement_by_the_outcome_it_reports(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     factory = _HeldGoalFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=factory
     )
     try:
@@ -684,11 +684,11 @@ def test_thread_goal_get_judges_settlement_by_the_outcome_it_reports(
 def test_settings_and_thread_model_are_real_shared_configuration(
     tmp_path: Path, monkeypatch
 ) -> None:
-    home = tmp_path / "deepcode-home"
+    home = tmp_path / "dfcode-home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Model selection")
     source = io.BytesIO(
@@ -726,7 +726,7 @@ def test_settings_and_thread_model_are_real_shared_configuration(
     assert responses[3]["result"]["settings"]["permissionModeExplicit"] is True
     assert responses[4]["result"]["thread"]["model"] == "gpt-5-mini"
 
-    persisted = json.loads((home / "deepcode_config.json").read_text())
+    persisted = json.loads((home / "dfcode_config.json").read_text())
     assert persisted["security"]["permissionMode"] == "plan"
     canonical = application.session_store.get_session(thread.id)
     assert canonical is not None
@@ -738,7 +738,7 @@ def test_session_access_rpc_requires_full_access_acknowledgement_and_persists(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Session access")
     source = io.BytesIO(
@@ -811,9 +811,9 @@ def test_settings_full_access_default_requires_acknowledgement(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    home = tmp_path / "deepcode-home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    home = tmp_path / "dfcode-home"
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     source = io.BytesIO(
         _request(
             1,
@@ -848,7 +848,7 @@ def test_settings_full_access_default_requires_acknowledgement(
         assert responses[2]["error"]["code"] == -32602
         assert "riskAcknowledged must be true" in responses[2]["error"]["message"]
         assert responses[3]["result"]["settings"]["userAccessPreset"] == "full_access"
-        persisted = json.loads((home / "deepcode_config.json").read_text())
+        persisted = json.loads((home / "dfcode_config.json").read_text())
         assert persisted["security"]["accessPreset"] == "full_access"
     finally:
         application.close()
@@ -858,12 +858,12 @@ def test_connection_and_model_protocol_is_shared_secret_safe_state(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    home = tmp_path / "deepcode-home"
+    home = tmp_path / "dfcode-home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     monkeypatch.delenv("OPENROUTER_API_KEY", raising=False)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Connection selection")
     secret = "rpc-secret-that-must-not-be-returned"
@@ -981,7 +981,7 @@ def test_connection_and_model_protocol_is_shared_secret_safe_state(
     assert responses[8]["thread"]["contextWindow"] is None
     assert responses[9]["removed"] is True
 
-    persisted = json.loads((home / "deepcode_config.json").read_text())
+    persisted = json.loads((home / "dfcode_config.json").read_text())
     assert secret not in json.dumps(persisted)
     assert "router-rpc" not in persisted.get("providers", {}).get("profiles", {})
     canonical = application.session_store.get_session(thread.id)
@@ -996,11 +996,11 @@ def test_management_methods_round_trip_real_project_state(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    home = tmp_path / "deepcode-home"
+    home = tmp_path / "dfcode-home"
     workspace = tmp_path / "workspace"
-    skill_dir = workspace / ".deepcode" / "skills" / "review"
+    skill_dir = workspace / ".dfcode" / "skills" / "review"
     skill_dir.mkdir(parents=True)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     (skill_dir / "SKILL.md").write_text(
         "---\n"
         "name: review\n"
@@ -1010,7 +1010,7 @@ def test_management_methods_round_trip_real_project_state(
         "Report concrete evidence.\n",
         encoding="utf-8",
     )
-    hooks_path = workspace / ".deepcode" / "hooks.json"
+    hooks_path = workspace / ".dfcode" / "hooks.json"
     hooks_path.write_text(
         json.dumps(
             {
@@ -1033,7 +1033,7 @@ def test_management_methods_round_trip_real_project_state(
         encoding="utf-8",
     )
     home.mkdir()
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "providers": {"openai": {"apiKey": "never-return-this"}},
@@ -1051,7 +1051,7 @@ def test_management_methods_round_trip_real_project_state(
         ),
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -1151,7 +1151,7 @@ def test_management_methods_round_trip_real_project_state(
             skill for skill in responses[2]["skills"] if skill["name"] == "review"
         )
         assert review_info["originKind"] == "local"
-        assert review_info["originLabel"] == "project:deepcode"
+        assert review_info["originLabel"] == "project:dfcode"
         assert review_info["providerKind"] == "local"
         assert review_info["providerId"] == "local"
         assert review_info["configurableScopes"] == ["project", "user"]
@@ -1200,10 +1200,10 @@ def test_mcp_presets_and_real_probe_round_trip_through_app_server(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    home = tmp_path / "deepcode-home"
+    home = tmp_path / "dfcode-home"
     fixture = Path(__file__).resolve().parents[1] / "fixtures" / "mcp_runtime_server.py"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     source = io.BytesIO(
         _request(
             1,
@@ -1281,7 +1281,7 @@ def test_skill_file_change_invalidates_catalog_and_notifies_client(
         "Use the first workflow.\n",
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -1371,7 +1371,7 @@ def test_plugin_protocol_registers_and_contributes_skills(
         ),
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -1449,7 +1449,7 @@ def test_json_rpc_automation_lifecycle_uses_a_real_goal_thread(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_AutomationFactory(),
         run_automation_scheduler=True,
@@ -1606,7 +1606,7 @@ def test_json_rpc_automation_lifecycle_uses_a_real_goal_thread(
 def test_live_event_is_pushed_while_server_waits_for_input(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     input_read_fd, input_write_fd = os.pipe()
     output_read_fd, output_write_fd = os.pipe()
@@ -1740,7 +1740,7 @@ class _ApprovalFactory:
 def test_json_rpc_turn_approval_and_terminal_replay(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=_ApprovalFactory()
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -1884,7 +1884,7 @@ def test_directory_list_browses_folders_on_the_service_machine(
     root = tmp_path / "root"
     (root / "project").mkdir(parents=True)
     (root / "README.md").write_text("x", encoding="utf-8")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     initialize = _request(
         1,
         "initialize",

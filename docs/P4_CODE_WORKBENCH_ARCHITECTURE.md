@@ -14,7 +14,7 @@ P4 在 P2/P3 的 Thread、Turn、Item、Approval 与本地 stdio App Server
   原子小范围编辑。截断内容不返回可写 revision，活动 Turn 期间禁止编辑。
 - `GitService` 只返回结构化 status/diff。每个 Diff 带 revision；逐文件
   discard 必须提交该 revision，并在后端重新计算后才允许执行。
-- `WorktreeService` 只管理确定性 sibling 目录、专属 `deepcode/<threadId>`
+- `WorktreeService` 只管理确定性 sibling 目录、专属 `dfcode/<threadId>`
   分支和匹配的 ownership manifest。脏 worktree 的清理必须显式 force，
   活动 Turn 或终端会阻止清理。
 - `TerminalService` 管理 Thread-owned Unix PTY、窗口大小、进程组和退出通知。
@@ -64,5 +64,5 @@ App Server 与 Rust bridge 的单条消息上限均为 1 MiB。文件读取/写�
 - React TypeScript、ESLint、5 项 Vitest 和 production build 通过；慢旧 Thread
   请求不能覆盖当前 Inspector。
 - Rust fmt、2 项单元测试和 clippy `-D warnings` 通过。
-- PyInstaller sidecar 与 macOS arm64 `DeepCode.app` release bundle 构建通过；
+- PyInstaller sidecar 与 macOS arm64 `DFcode.app` release bundle 构建通过；
   从 bundle 内 sidecar 实测 file/read、git/diff、PTY 和 graceful shutdown。

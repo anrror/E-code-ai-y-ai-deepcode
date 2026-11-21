@@ -128,7 +128,7 @@ def test_transaction_rolls_back_the_whole_write(tmp_path: Path) -> None:
 def test_repositories_round_trip_every_p1_entity(tmp_path: Path) -> None:
     database = Database(tmp_path / "state.sqlite3")
     database.initialize()
-    project = Project(canonical_path=str(tmp_path), display_name="DeepCode")
+    project = Project(canonical_path=str(tmp_path), display_name="DFcode")
     thread = Thread(
         project_id=project.id,
         title="P1",
@@ -402,10 +402,10 @@ def test_an_existing_database_is_not_restricted_again_on_every_open(
     )
     monkeypatch.setattr(database_module, "_hardened_files", set())
 
-    database = Database(tmp_path / "state" / "deepcode.sqlite3")
+    database = Database(tmp_path / "state" / "dfcode.sqlite3")
     database.initialize()
 
-    assert hardened.count("deepcode.sqlite3") == 1
+    assert hardened.count("dfcode.sqlite3") == 1
 
     for _ in range(5):
         with database.read():
@@ -413,4 +413,4 @@ def test_an_existing_database_is_not_restricted_again_on_every_open(
         with database.transaction():
             pass
 
-    assert hardened.count("deepcode.sqlite3") == 1, "an existing file is repaired once"
+    assert hardened.count("dfcode.sqlite3") == 1, "an existing file is repaired once"

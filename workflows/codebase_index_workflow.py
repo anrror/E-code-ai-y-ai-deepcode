@@ -711,7 +711,7 @@ async def main():
     logger = logging.getLogger(__name__)
 
     # Test parameters
-    paper_dir = "./deepcode_lab/papers/1"
+    paper_dir = "./dfcode_lab/papers/1"
     initial_plan_path = os.path.join(paper_dir, "initial_plan.txt")
 
     # Run workflow

@@ -30,7 +30,7 @@ DESKTOP_IMPACT_FILES = frozenset(
     {
         ".github/workflows/desktop-ci.yml",
         "__init__.py",
-        "deepcode.py",
+        "dfcode.py",
         "requirements.txt",
         "rust-toolchain.toml",
         "scripts/ci_scope.py",

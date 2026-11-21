@@ -5,13 +5,13 @@ from __future__ import annotations
 import threading
 import time
 
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.domain.turn import TurnStatus
 from core.persistence.execution_repository import TurnRepository
 
 
 class ServiceLifecycle:
-    def __init__(self, application: DeepCodeApplication) -> None:
+    def __init__(self, application: DFcodeApplication) -> None:
         self.application = application
         self._paused = False
         self._scheduler_was_active = False

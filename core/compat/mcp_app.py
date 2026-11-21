@@ -7,7 +7,7 @@ Legacy callers used::
         agent_app.context.config.mcp.servers["filesystem"].args.append(cwd)
         ...
 
-Our replacement loads the DeepCode runtime (config + logger), exposes the
+Our replacement loads the DFcode runtime (config + logger), exposes the
 same ``context.config.mcp.servers`` namespace, and is a no-op on
 ``__aexit__`` because we no longer hold a single app-wide MCP connection
 pool. Each :class:`core.compat.Agent` opens / closes its own MCP servers.
@@ -20,7 +20,7 @@ from dataclasses import dataclass
 from typing import Any, AsyncIterator
 
 from core.compat.runtime import (
-    DeepCodeRuntime,
+    DFcodeRuntime,
     _ContextNamespace,
     get_runtime,
 )
@@ -30,7 +30,7 @@ from core.compat.runtime import (
 class _AgentApp:
     """Object yielded from :meth:`MCPApp.run`. Mirrors the old surface."""
 
-    runtime: DeepCodeRuntime
+    runtime: DFcodeRuntime
     name: str
 
     @property
@@ -50,15 +50,15 @@ class MCPApp:
     name:
         Logical name of the app. Currently informational only.
     settings:
-        Optional path to ``deepcode_config.json``. When provided we re-load
-        the DeepCode runtime from that file; otherwise the global runtime
+        Optional path to ``dfcode_config.json``. When provided we re-load
+        the DFcode runtime from that file; otherwise the global runtime
         is reused.
     """
 
-    def __init__(self, name: str = "deepcode", settings: str | None = None) -> None:
+    def __init__(self, name: str = "dfcode", settings: str | None = None) -> None:
         self.name = name
         self._settings_path = settings
-        self._runtime: DeepCodeRuntime | None = None
+        self._runtime: DFcodeRuntime | None = None
         self._agent_app: _AgentApp | None = None
 
     @asynccontextmanager
@@ -66,7 +66,7 @@ class MCPApp:
         """Async context manager that yields the legacy ``agent_app`` shape."""
         try:
             if self._settings_path is not None:
-                self._runtime = DeepCodeRuntime.load(config_path=self._settings_path)
+                self._runtime = DFcodeRuntime.load(config_path=self._settings_path)
             else:
                 self._runtime = get_runtime()
             self._agent_app = _AgentApp(runtime=self._runtime, name=self.name)

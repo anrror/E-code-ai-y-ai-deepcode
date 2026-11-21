@@ -1,4 +1,4 @@
-"""Logs with no task or workspace of their own go to the DeepCode home.
+"""Logs with no task or workspace of their own go to the DFcode home.
 
 They used to go to ``logs/`` in the current directory: every TUI session
 left ``logs/server-<date>.jsonl`` in the user's project, and the service,
@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 from loguru import logger
 
-from core.config import LoggerConfig, deepcode_home
+from core.config import LoggerConfig, dfcode_home
 from core.observability import log_llm_call, setup_logging
 
 
@@ -36,7 +36,7 @@ def test_the_tui_keeps_its_log_out_of_the_project(project: Path):
     assert not (project / "logs").exists()
     written = "".join(
         path.read_text(encoding="utf-8")
-        for path in (deepcode_home() / "logs").glob("server-*.jsonl")
+        for path in (dfcode_home() / "logs").glob("server-*.jsonl")
     )
     assert "/control/rpc" in written
 
@@ -45,4 +45,4 @@ def test_an_llm_call_outside_a_task_is_logged_in_the_home(project: Path):
     log_llm_call(provider="openai", model="gpt-x", phase="probe", duration_ms=1)
 
     assert not (project / "logs").exists()
-    assert (deepcode_home() / "logs" / "llm.jsonl").is_file()
+    assert (dfcode_home() / "logs" / "llm.jsonl").is_file()

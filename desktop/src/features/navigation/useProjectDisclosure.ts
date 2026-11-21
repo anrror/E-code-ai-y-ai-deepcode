@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-const STORAGE_KEY = "deepcode.desktop.projectDisclosure.v2";
+const STORAGE_KEY = "dfcode.desktop.projectDisclosure.v2";
 
 type DisclosureOverrides = Record<string, boolean>;
 

@@ -77,8 +77,8 @@ class WorktreeService:
                 details={"projectPath": str(project_root), "gitRoot": str(base)},
             )
         self._git(base, "rev-parse", "--verify", "HEAD")
-        branch = f"deepcode/{thread_id}"
-        worktrees_root = base.parent / f".{base.name}.deepcode-worktrees"
+        branch = f"dfcode/{thread_id}"
+        worktrees_root = base.parent / f".{base.name}.dfcode-worktrees"
         expected_path = (worktrees_root / thread_id).resolve(strict=False)
         path = (
             Path(thread.worktree_path).resolve(strict=False)
@@ -176,11 +176,11 @@ class WorktreeService:
             )
         path = Path(thread.worktree_path).resolve(strict=False)
         expected_path = (
-            base.parent / f".{base.name}.deepcode-worktrees" / thread_id
+            base.parent / f".{base.name}.dfcode-worktrees" / thread_id
         ).resolve(strict=False)
         if path != expected_path:
             raise ConflictError("stored worktree path is outside the managed location")
-        expected_branch = f"deepcode/{thread_id}"
+        expected_branch = f"dfcode/{thread_id}"
         manifest = self._manifest_path(base, thread_id)
         if not path.exists():
             if disposition == "keep":
@@ -251,8 +251,8 @@ class WorktreeService:
     def _manifest_path(base: Path, thread_id: str) -> Path:
         return (
             base.parent
-            / f".{base.name}.deepcode-worktrees"
-            / ".deepcode-manifests"
+            / f".{base.name}.dfcode-worktrees"
+            / ".dfcode-manifests"
             / f"{thread_id}.json"
         )
 

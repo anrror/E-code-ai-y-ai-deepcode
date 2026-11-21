@@ -10,7 +10,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import WorkflowInteractionError
 from core.application.workflow_adapter import (
     ArtifactSpec,
@@ -68,7 +68,7 @@ class ScriptedWorkflowRunner:
         await callbacks.progress(
             "testing", 95, 100, "Running verification", {"taskId": request.run_id}
         )
-        output = request.workspace / ".deepcode" / "workflows" / "result.md"
+        output = request.workspace / ".dfcode" / "workflows" / "result.md"
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_text("verified output\n", encoding="utf-8")
         artifact_path = self.outside_artifact or output
@@ -115,10 +115,10 @@ class RejectTaskStore(SessionStore):
 
 def _application(
     tmp_path: Path, runner: ScriptedWorkflowRunner
-) -> tuple[DeepCodeApplication, str, Path]:
+) -> tuple[DFcodeApplication, str, Path]:
     workspace = tmp_path / "workspace"
     workspace.mkdir(parents=True)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", workflow_runner=runner
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -130,8 +130,8 @@ def _shared_applications(
     tmp_path: Path,
     owner_runner: ScriptedWorkflowRunner,
 ) -> tuple[
-    DeepCodeApplication,
-    DeepCodeApplication,
+    DFcodeApplication,
+    DFcodeApplication,
     ScriptedWorkflowRunner,
     str,
 ]:
@@ -139,7 +139,7 @@ def _shared_applications(
     workspace.mkdir(parents=True)
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
-    owner = DeepCodeApplication.open(
+    owner = DFcodeApplication.open(
         database_path,
         workflow_runner=owner_runner,
         session_store=SessionStore(session_root),
@@ -153,7 +153,7 @@ def _shared_applications(
         )
         thread = owner.threads.start(project.id, title="Shared Workflow")
         observer_runner = ScriptedWorkflowRunner()
-        observer = DeepCodeApplication.open(
+        observer = DFcodeApplication.open(
             database_path,
             workflow_runner=observer_runner,
             session_store=SessionStore(session_root),
@@ -166,7 +166,7 @@ def _shared_applications(
     return owner, observer, observer_runner, thread.id
 
 
-def _wait_for(application: DeepCodeApplication, run_id: str, status: WorkflowStatus):
+def _wait_for(application: DFcodeApplication, run_id: str, status: WorkflowStatus):
     deadline = time.monotonic() + 5
     while time.monotonic() < deadline:
         snapshot = application.workflows.read(run_id)
@@ -178,7 +178,7 @@ def _wait_for(application: DeepCodeApplication, run_id: str, status: WorkflowSta
     )
 
 
-def _wait_for_claims_released(application: DeepCodeApplication) -> None:
+def _wait_for_claims_released(application: DFcodeApplication) -> None:
     # Settlement commits the terminal status and the claim's release together,
     # and only then does the worker forget the claim in memory, so a reader
     # can see the status a moment before active_claims empties.
@@ -259,7 +259,7 @@ def test_completed_workflow_projects_progress_and_bounded_artifact(
         assert completed.run.result == {"status": "completed", "testsPassed": True}
         assert completed.run.progress_current == completed.run.progress_total == 100
         assert [artifact.storage_path for artifact in completed.artifacts] == [
-            ".deepcode/workflows/result.md"
+            ".dfcode/workflows/result.md"
         ]
         preview = application.workflows.read_artifact(completed.artifacts[0].id)
         assert preview.content == "verified output\n"
@@ -328,22 +328,22 @@ def test_workflow_uses_selected_workspace_config_not_server_cwd(
     home.mkdir()
     workspace.mkdir()
     unrelated.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    (home / "deepcode_config.json").write_text(
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    (home / "dfcode_config.json").write_text(
         json.dumps({"agents": {"defaults": {"model": "openai/user"}}}),
         encoding="utf-8",
     )
-    (workspace / "deepcode_config.json").write_text(
+    (workspace / "dfcode_config.json").write_text(
         json.dumps({"agents": {"defaults": {"model": "openai/project"}}}),
         encoding="utf-8",
     )
-    (unrelated / "deepcode_config.json").write_text(
+    (unrelated / "dfcode_config.json").write_text(
         json.dumps({"agents": {"defaults": {"model": "openai/wrong-cwd"}}}),
         encoding="utf-8",
     )
     monkeypatch.chdir(unrelated)
     runner = RuntimeCapturingRunner()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         workflow_runner=runner,
     )
@@ -374,8 +374,8 @@ def test_workflow_freezes_session_model_for_every_paper2code_phase(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    (home / "deepcode_config.json").write_text(
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "providers": {
@@ -399,7 +399,7 @@ def test_workflow_freezes_session_model_for_every_paper2code_phase(
         encoding="utf-8",
     )
     runner = PhaseProfileCapturingRunner()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         workflow_runner=runner,
     )
@@ -446,7 +446,7 @@ def test_workflow_session_persistence_failure_settles_durable_state(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     store = RejectTaskStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
         workflow_runner=ScriptedWorkflowRunner(),
@@ -605,7 +605,7 @@ def test_interaction_response_cas_rejects_stale_and_duplicate_responses(
         resolved: list[WorkflowRun] = []
         errors: list[WorkflowInteractionError] = []
 
-        def resolve(application: DeepCodeApplication, source: str) -> None:
+        def resolve(application: DFcodeApplication, source: str) -> None:
             barrier.wait()
             try:
                 resolved.append(
@@ -924,7 +924,7 @@ def test_remote_process_requests_workflow_cancel_from_claim_owner(
     )
     _wait_for(owner, started.run.id, WorkflowStatus.RUNNING)
     observer_runner = ScriptedWorkflowRunner(hang=True)
-    observer = DeepCodeApplication.open(
+    observer = DFcodeApplication.open(
         owner.database.path,
         workflow_runner=observer_runner,
         session_store=owner.session_store,
@@ -1086,7 +1086,7 @@ def test_open_recovers_workflow_before_generic_turn_recovery(tmp_path: Path) -> 
             )
         )
 
-    recovered = DeepCodeApplication.open(database_path, workflow_runner=runner)
+    recovered = DFcodeApplication.open(database_path, workflow_runner=runner)
     try:
         run = recovered.workflows.list_for_thread(thread_id)[0]
         snapshot = recovered.workflows.read(run.id)

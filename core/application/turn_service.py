@@ -245,7 +245,7 @@ class TurnService:
         # One string shared with the registry, so "is that holder me?" is
         # exact equality rather than pid parsing.
         self.holder_label = holder_label or (
-            f"another DeepCode process (pid {os.getpid()})"
+            f"another DFcode process (pid {os.getpid()})"
         )
         self.session_runtimes = SessionRuntimeRegistry(
             session_store,
@@ -1095,7 +1095,7 @@ class TurnService:
             f"session is being run by {holder or 'another process'}: {thread_id}",
             user_message=(
                 "This Session is currently running a turn in "
-                f"{holder or 'another DeepCode process'}. Wait for it to "
+                f"{holder or 'another DFcode process'}. Wait for it to "
                 "finish there, or continue in that window."
             ),
         )
@@ -1289,7 +1289,7 @@ class TurnService:
             return self.registry.call(lambda: self.compact_live_context(thread_id))
         except ExecutionRegistryClosed as exc:
             raise ConflictError(
-                "Compaction is unavailable while DeepCode is shutting down."
+                "Compaction is unavailable while DFcode is shutting down."
             ) from exc
 
     def interrupt(

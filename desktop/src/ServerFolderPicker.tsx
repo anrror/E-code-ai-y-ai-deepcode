@@ -169,7 +169,7 @@ export function ServerFolderPicker({
       <p>
         {t(
           "browser.picker.body",
-          "Choose a folder on the machine running DeepCode, or type its path. It opens as untrusted until you choose to trust it.",
+          "Choose a folder on the machine running DFcode, or type its path. It opens as untrusted until you choose to trust it.",
         )}
       </p>
       <label htmlFor="server-folder">

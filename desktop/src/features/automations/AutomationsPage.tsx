@@ -239,11 +239,11 @@ export function AutomationsPage({
               {automations.inventory?.schedulerActive
                 ? t(
                     "automations.schedulerActive",
-                    "Scheduler active · scheduled work runs while a compatible DeepCode runtime is active",
+                    "Scheduler active · scheduled work runs while a compatible DFcode runtime is active",
                   )
                 : t(
                     "automations.schedulerUnavailable",
-                    "Scheduler unavailable · start a scheduler-enabled DeepCode runtime to run scheduled work",
+                    "Scheduler unavailable · start a scheduler-enabled DFcode runtime to run scheduled work",
                   )}
             </span>
           </div>

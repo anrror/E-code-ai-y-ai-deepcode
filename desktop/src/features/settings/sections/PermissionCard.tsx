@@ -155,7 +155,7 @@ export function PermissionCard({
         <p className={styles.note} role="status">
           {t(
             "settings.permissions.ignored",
-            "This project's deepcode_config.json asks for {{what}}. DeepCode ignores that: a project's settings file comes with its repository. Choose Full access in user settings or for one Session.",
+            "This project's dfcode_config.json asks for {{what}}. DFcode ignores that: a project's settings file comes with its repository. Choose Full access in user settings or for one Session.",
             {
               what: ignored
                 .map((name) =>

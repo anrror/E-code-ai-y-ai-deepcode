@@ -2,14 +2,14 @@
 
 | File | Used by | Content |
 | --- | --- | --- |
-| `overview.png`, `overview.zh.png` | `README.md`, `README_ZH.md` | How DeepCode fits together: clients, the local service, the agent harness, your project and the model |
+| `overview.png`, `overview.zh.png` | `README.md`, `README_ZH.md` | How DFcode fits together: clients, the local service, the agent harness, your project and the model |
 | `goal-loop.png`, `goal-loop.zh.png` | `README.md`, `README_ZH.md` | How a Goal reaches complete: Turns of work, the completion check and the stops |
 | `web-ui.png`, `web-ui.zh.png` | `README.md`, `README_ZH.md` | The Web client after a real Goal, with the Goal card open on its completion check |
 | `settings-models.png`, `settings-models.zh.png` | `README.md`, `README_ZH.md` | Settings → Models: model connections and the agent model |
 | `framework2.png` | `docs/paper2code.md` | The Paper2Code architecture: blueprint generation, iterative coding, verification and repair |
 
 The READMEs load these images through absolute
-`raw.githubusercontent.com/HKUDS/DeepCode/main/...` URLs so they also render
+`raw.githubusercontent.com/HKUDS/DFcode/main/...` URLs so they also render
 on PyPI. A new image therefore appears only after it reaches `main`.
 
 ## Diagrams
@@ -22,7 +22,7 @@ product: change the text when the behaviour it describes changes.
 
 ## Screenshots
 
-Capture real product states with an isolated `DEEPCODE_HOME`, a throwaway
+Capture real product states with an isolated `DFCODE_HOME`, a throwaway
 project and no API keys, personal paths, account identifiers, environment
 variables of your own (start the service without them) or private conversation
 content on screen. Keep each image under 2 MB, use the light theme, and do not
@@ -30,11 +30,11 @@ use decorative mockups.
 
 `web-ui` and `settings-models` were taken on 2026-11-02 at 1440×900 with a
 device scale factor of 1.5, in English and in Chinese (the interface language
-is stored under `deepcode.desktop.locale.v1` in local storage). A real model
+is stored under `dfcode.desktop.locale.v1` in local storage). A real model
 (Volcengine Ark `glm-5.3-flash`) worked a Goal on a small inventory project
 with two planted bugs: it proposed a checklist, the checklist was confirmed,
 and with `goal.completionVerifier` set to `reviewer` the Goal completed after
-DeepCode ran the checks and the independent review proved each requirement.
+DFcode ran the checks and the independent review proved each requirement.
 The default access was then set to Ask and the Goal card opened on its
 completion check.
 

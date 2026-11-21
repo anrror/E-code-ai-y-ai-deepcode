@@ -49,7 +49,7 @@ def model_error_detail(response: Any) -> str:
     if response.error_kind == "timeout":
         return "The model verification request timed out"
     if response.error_kind == "connection":
-        return "DeepCode could not connect to the model endpoint"
+        return "DFcode could not connect to the model endpoint"
     return "The provider rejected the model verification request"
 
 
@@ -120,7 +120,7 @@ async def verify_agent(provider: LLMProvider, profile: ExecutionProfile) -> list
                     {
                         "type": "function",
                         "function": {
-                            "name": "deepcode_probe",
+                            "name": "dfcode_probe",
                             "description": "Return a verification nonce. Call once with value 7.",
                             "parameters": {
                                 "type": "object",
@@ -136,7 +136,7 @@ async def verify_agent(provider: LLMProvider, profile: ExecutionProfile) -> list
                 messages = [
                     {
                         "role": "user",
-                        "content": "Call deepcode_probe once with value 7, then reply with exactly the nonce returned by the tool.",
+                        "content": "Call dfcode_probe once with value 7, then reply with exactly the nonce returned by the tool.",
                     }
                 ]
                 first = await request(
@@ -149,7 +149,7 @@ async def verify_agent(provider: LLMProvider, profile: ExecutionProfile) -> list
                     raise ValueError("Expected one completed tool call")
                 call = first.tool_calls[0]
                 if (
-                    call.name != "deepcode_probe"
+                    call.name != "dfcode_probe"
                     or call.arguments != {"value": 7}
                     or not call.id
                 ):

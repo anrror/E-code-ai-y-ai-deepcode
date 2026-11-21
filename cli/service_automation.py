@@ -96,7 +96,7 @@ def run_automation_service(automation_id, *, request_id, interactive):
                     approval = from_view(Approval, value)
                     if not interactive:
                         raise ForegroundApprovalRequiredError(
-                            "Automation requires human approval in an interactive DeepCode client",
+                            "Automation requires human approval in an interactive DFcode client",
                             details={
                                 "automationId": automation_id,
                                 "runId": run_id,

@@ -13,7 +13,7 @@ from contextlib import contextmanager
 from datetime import UTC, datetime
 from pathlib import Path
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.file_lock import exclusive_file_lock
 from core.persistence.migrations import (
     LATEST_SCHEMA_VERSION,
@@ -30,7 +30,7 @@ from core.private_storage import (
 
 
 def default_database_path() -> Path:
-    return deepcode_home() / "state" / "deepcode.sqlite3"
+    return dfcode_home() / "state" / "dfcode.sqlite3"
 
 
 # Database files whose ACLs this process already repaired — see
@@ -124,7 +124,7 @@ class Database:
         with exclusive_file_lock(self._migration_lock_path()):
             if self.restore_marker.exists():
                 raise RuntimeError(
-                    "A state restore is pending. Resume it with deepcode service restore before starting the application."
+                    "A state restore is pending. Resume it with dfcode service restore before starting the application."
                 )
             had_existing_database = self._has_existing_database()
             installed = self.schema_version()

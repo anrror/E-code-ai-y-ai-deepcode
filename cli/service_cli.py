@@ -321,8 +321,8 @@ def _logs(files: ServiceFiles, *, lines: int, follow: bool) -> None:
 
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode service",
-        description="Start, inspect, and stop the local DeepCode background service.",
+        prog="dfcode service",
+        description="Start, inspect, and stop the local DFcode background service.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
     for name in (
@@ -454,7 +454,7 @@ def run(argv: list[str] | None = None) -> int:
                 print(f"File: {result['path']}")
                 if args.command == "install":
                     print(
-                        "Starts with the user session. Run 'deepcode service start' to start now."
+                        "Starts with the user session. Run 'dfcode service start' to start now."
                     )
                 if args.command == "doctor":
                     for check in result["checks"]:
@@ -503,7 +503,7 @@ def run(argv: list[str] | None = None) -> int:
         if args.json:
             print(json.dumps(result, ensure_ascii=False))
         else:
-            print(f"DeepCode service: {result['phase']}")
+            print(f"DFcode service: {result['phase']}")
             if "url" in result:
                 print(f"Management endpoint: {result['url']} · PID {result['pid']}")
                 print(

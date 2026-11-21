@@ -43,7 +43,7 @@ function server(overrides: Partial<Server>): Server {
 }
 
 // Names and protocols stay as they are.
-const KEPT = new Set(["HTTP", "SSE", "API", "MCP", "DeepCode"]);
+const KEPT = new Set(["HTTP", "SSE", "API", "MCP", "DFcode"]);
 const english = (text: string) => (text.match(/[A-Za-z]{2,}/g) ?? []).filter((w) => !KEPT.has(w));
 
 beforeEach(() => {

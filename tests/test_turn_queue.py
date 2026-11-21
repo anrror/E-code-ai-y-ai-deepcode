@@ -5,7 +5,7 @@ import threading
 import time
 from dataclasses import replace
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import (
     Item,
     ItemKind,
@@ -80,7 +80,7 @@ def _wait_for(predicate, timeout: float = 3.0) -> None:
 
 def _application(tmp_path, *, block_after_first: bool = False):
     factory = _QueueFactory(block_after_first=block_after_first)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -191,7 +191,7 @@ def test_user_queue_precedes_goal_continuation_and_interrupt_keeps_goal_active(
 
 def test_queued_turn_survives_process_recovery(tmp_path) -> None:
     database_path = tmp_path / "state.sqlite3"
-    bootstrap = DeepCodeApplication.open(database_path)
+    bootstrap = DFcodeApplication.open(database_path)
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     project = bootstrap.projects.add(
@@ -239,7 +239,7 @@ def test_queued_turn_survives_process_recovery(tmp_path) -> None:
 
     factory = _QueueFactory()
     factory.release_first.set()
-    recovered = DeepCodeApplication.open(
+    recovered = DFcodeApplication.open(
         database_path,
         session_factory=factory,
     )
@@ -257,7 +257,7 @@ def test_queued_turn_survives_process_recovery(tmp_path) -> None:
 def test_crash_recovery_does_not_replay_unknown_goal_work(tmp_path) -> None:
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
-    bootstrap = DeepCodeApplication.open(
+    bootstrap = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
     )
@@ -305,7 +305,7 @@ def test_crash_recovery_does_not_replay_unknown_goal_work(tmp_path) -> None:
         )
 
     factory = _QueueFactory()
-    recovered = DeepCodeApplication.open(
+    recovered = DFcodeApplication.open(
         database_path,
         session_factory=factory,
         session_store=SessionStore(session_root),

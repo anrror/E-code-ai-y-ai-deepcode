@@ -9,7 +9,7 @@ from types import SimpleNamespace
 import pytest
 
 from cli import automation_cli
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.automation_service import (
     AutomationCreation,
     AutomationExecution,
@@ -446,7 +446,7 @@ def test_human_output_discloses_pagination_and_live_runtime(
         == 0
     )
     output = capsys.readouterr().out
-    assert "DeepCode background service is running" in output
+    assert "DFcode background service is running" in output
     assert "continue with --offset 8" in output
 
     application.closed = False
@@ -466,7 +466,7 @@ def test_human_output_discloses_pagination_and_live_runtime(
         )
         == 0
     )
-    assert "DeepCode background service is running" in capsys.readouterr().out
+    assert "DFcode background service is running" in capsys.readouterr().out
 
     application.closed = False
     assert (
@@ -488,7 +488,7 @@ def test_real_cli_run_keeps_its_runtime_alive_until_the_goal_settles(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
 
-    seed = DeepCodeApplication.open(
+    seed = DFcodeApplication.open(
         database_path,
         session_store=session_store,
         session_factory=_ImmediateFactory(),
@@ -508,8 +508,8 @@ def test_real_cli_run_keeps_its_runtime_alive_until_the_goal_settles(
     finally:
         seed.close()
 
-    def open_application() -> DeepCodeApplication:
-        return DeepCodeApplication.open(
+    def open_application() -> DFcodeApplication:
+        return DFcodeApplication.open(
             database_path,
             session_store=session_store,
             session_factory=_ImmediateFactory(),
@@ -623,7 +623,7 @@ def test_cli_rejects_pausing_a_manual_definition(
     tmp_path: Path,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         run_automation_scheduler=False,
     )
@@ -657,7 +657,7 @@ def test_cli_rejects_pausing_a_manual_definition(
 def test_launcher_routes_automation_without_replacing_legacy_schedule(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    import deepcode
+    import dfcode
 
     received: list[str] = []
     monkeypatch.setattr(
@@ -667,11 +667,11 @@ def test_launcher_routes_automation_without_replacing_legacy_schedule(
     )
     monkeypatch.setattr(
         "sys.argv",
-        ["deepcode", "automation", "list", "--json"],
+        ["dfcode", "automation", "list", "--json"],
     )
 
     with pytest.raises(SystemExit) as raised:
-        deepcode.main()
+        dfcode.main()
 
     assert raised.value.code == 17
     assert received == ["list", "--json"]

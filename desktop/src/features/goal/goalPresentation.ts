@@ -96,7 +96,7 @@ export function outcomeDecider(
     case "agent":
       return t("goal.decidedBy.agent", "Decided by the agent");
     case "runtime":
-      return t("goal.decidedBy.runtime", "Decided by DeepCode");
+      return t("goal.decidedBy.runtime", "Decided by DFcode");
     case "migration":
       return t("goal.decidedBy.migration", "Carried over from an earlier version");
   }

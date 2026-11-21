@@ -53,7 +53,7 @@ def test_default_automation_run_uses_service_and_keeps_its_receipt(
 ):
     import json
     from cli import automation_cli
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import TrustState
     from core.domain.automation import AutomationScheduleKind
     from tests.test_exec_cli import _patch
@@ -62,7 +62,7 @@ def test_default_automation_run_uses_service_and_keeps_its_receipt(
     _patch(monkeypatch, _Provider("complete"))
     workspace = tmp_path / "project"
     workspace.mkdir()
-    app = DeepCodeApplication.open()
+    app = DFcodeApplication.open()
     try:
         project = app.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
         created = app.automations.create(
@@ -93,7 +93,7 @@ def test_schedule_memory_maintenance_submits_a_service_turn(
 ):
     import asyncio
     from cli.schedule_cli import _autodream_task
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import TrustState
     from core.providers.base import LLMResponse
     from tests.test_exec_cli import _patch, _ScriptedProvider
@@ -104,10 +104,10 @@ def test_schedule_memory_maintenance_submits_a_service_turn(
             [LLMResponse(content="memory reviewed", finish_reason="stop")]
         ),
     )
-    memory = tmp_path / ".deepcode/memory"
+    memory = tmp_path / ".dfcode/memory"
     memory.mkdir(parents=True)
     (memory / "MEMORY.md").write_text("An existing note.\n")
-    app = DeepCodeApplication.open()
+    app = DFcodeApplication.open()
     try:
         app.projects.add(str(tmp_path), trust_state=TrustState.TRUSTED)
     finally:
@@ -121,15 +121,15 @@ def test_cancelled_mcp_waiter_detaches_without_cancelling_the_task(
     tmp_path, monkeypatch, shared_cli_service
 ):
     import asyncio
-    from cli.mcp_server import _handle_deepcode
-    from core.application import DeepCodeApplication
+    from cli.mcp_server import _handle_dfcode
+    from core.application import DFcodeApplication
     from core.domain import TrustState
     from tests.test_exec_cli import _patch
     from tests.test_loop_cli import _BlockingProvider
 
     provider = _BlockingProvider()
     _patch(monkeypatch, provider)
-    app = DeepCodeApplication.open()
+    app = DFcodeApplication.open()
     try:
         app.projects.add(str(tmp_path), trust_state=TrustState.TRUSTED)
     finally:
@@ -137,7 +137,7 @@ def test_cancelled_mcp_waiter_detaches_without_cancelling_the_task(
 
     async def scenario():
         call = asyncio.create_task(
-            _handle_deepcode(
+            _handle_dfcode(
                 {"prompt": "finish after detach", "workspace": str(tmp_path)}
             )
         )

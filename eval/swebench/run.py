@@ -7,7 +7,7 @@ Two modes:
   rate. Use this to sanity-check the whole loop with a live model.
 
 * ``--mode predict`` — the official Verified path. Load the deterministic
-  50-subset, generate a ``model_patch`` per instance with ``deepcode exec``,
+  50-subset, generate a ``model_patch`` per instance with ``dfcode exec``,
   and write ``predictions.jsonl`` in the SWE-bench schema. Scoring is then run
   with the official Docker harness (command printed at the end) — we do not
   reimplement it.
@@ -67,7 +67,7 @@ def _run_predict(model: str, limit: int, out: Path, scratch: Path) -> int:
                 print(f"  [skip] {inst.instance_id}: {exc}", flush=True)
                 prediction = {
                     "instance_id": inst.instance_id,
-                    "model_name_or_path": model or "deepcode",
+                    "model_name_or_path": model or "dfcode",
                     "model_patch": "",
                 }
             prediction.pop("_completed", None)
@@ -114,7 +114,7 @@ def main(argv: list[str] | None = None) -> int:
         f"  python -m swebench.harness.run_evaluation \\\n"
         f"    --dataset_name {_DATASET} \\\n"
         f"    --predictions_path {out} \\\n"
-        f"    --max_workers 4 --run_id deepcode-p2"
+        f"    --max_workers 4 --run_id dfcode-p2"
     )
     return 0
 

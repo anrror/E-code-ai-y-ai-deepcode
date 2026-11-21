@@ -64,7 +64,7 @@ def _write(path: Path, payload: dict) -> Path:
 
 
 def _project_hooks(workspace: Path) -> Path:
-    return workspace / ".deepcode" / "hooks.json"
+    return workspace / ".dfcode" / "hooks.json"
 
 
 # -- digest ------------------------------------------------------------------
@@ -123,17 +123,17 @@ def test_files_appearing_breaking_or_moving_change_the_digest(
     assert declaration_digest(str(tmp_path)) == empty  # stable without files
 
     _write(_project_hooks(tmp_path), _DECLARATION_V1)
-    in_deepcode = declaration_digest(str(tmp_path))
-    assert in_deepcode != empty
+    in_dfcode = declaration_digest(str(tmp_path))
+    assert in_dfcode != empty
 
     # The same declarations in the Claude-compatible file are another file.
     _project_hooks(tmp_path).unlink()
     _write(tmp_path / ".claude" / "settings.json", _DECLARATION_V1)
-    assert declaration_digest(str(tmp_path)) not in {empty, in_deepcode}
+    assert declaration_digest(str(tmp_path)) not in {empty, in_dfcode}
 
     (tmp_path / ".claude" / "settings.json").write_text("{not json", "utf-8")
     broken = declaration_digest(str(tmp_path))
-    assert broken not in {empty, in_deepcode}
+    assert broken not in {empty, in_dfcode}
 
 
 def test_digest_does_not_depend_on_the_path_the_workspace_is_opened_by(
@@ -170,7 +170,7 @@ def test_gate_skips_unapproved_project_hooks_with_one_warning(
     home = tmp_path / "home"
     _write(_project_hooks(workspace), _DECLARATION_V1)
     _write(
-        home / ".deepcode" / "hooks.json",
+        home / ".dfcode" / "hooks.json",
         {"hooks": {"Stop": [{"hooks": [{"command": "echo user"}]}]}},
     )
 
@@ -187,7 +187,7 @@ def test_gate_skips_unapproved_project_hooks_with_one_warning(
         assert gated.project_hooks_skipped
         assert len(gated.warnings) == 1
         assert "not run" in gated.warnings[0]
-        assert "deepcode hooks approve" in gated.warnings[0]
+        assert "dfcode hooks approve" in gated.warnings[0]
 
     approved = discover_hooks(
         str(workspace),
@@ -203,7 +203,7 @@ def test_gate_is_silent_when_the_project_declares_no_hooks(tmp_path: Path) -> No
     workspace.mkdir()
     home = tmp_path / "home"
     _write(
-        home / ".deepcode" / "hooks.json",
+        home / ".dfcode" / "hooks.json",
         {"hooks": {"Stop": [{"hooks": [{"command": "echo user"}]}]}},
     )
     result = discover_hooks(
@@ -221,9 +221,9 @@ def test_gate_is_silent_when_the_project_declares_no_hooks(tmp_path: Path) -> No
 
 @pytest.fixture
 def projects(tmp_path: Path):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
 
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
         yield application.projects
     finally:
@@ -326,7 +326,7 @@ class _Profile:
 
 def _write_connection(home: Path) -> None:
     home.mkdir(parents=True, exist_ok=True)
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "agents": {
@@ -344,7 +344,7 @@ def _write_connection(home: Path) -> None:
 
 
 def _marker_hook(workspace: Path, marker: Path, *, tag: str) -> None:
-    script = workspace / ".deepcode" / "mark.py"
+    script = workspace / ".dfcode" / "mark.py"
     script.parent.mkdir(parents=True, exist_ok=True)
     script.write_text(
         "import sys\n"
@@ -400,14 +400,14 @@ def test_project_hooks_run_on_turns_only_once_approved(
     from app_server.dispatcher import Dispatcher
     from app_server.protocol.models import Request
     from core import agent_setup
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.application.agent_adapter import ConfiguredAgentSessionFactory
     from core.harness.permissions import PermissionMode
     from core.sessions import SessionStore
 
     home = tmp_path / "home"
     _write_connection(home)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.setattr(
         agent_setup,
         "get_workflow_provider",
@@ -422,7 +422,7 @@ def test_project_hooks_run_on_turns_only_once_approved(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     marker = tmp_path / "hook-ran.log"
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=ConfiguredAgentSessionFactory(
             default_permission_mode=PermissionMode.DEFAULT, streaming=False

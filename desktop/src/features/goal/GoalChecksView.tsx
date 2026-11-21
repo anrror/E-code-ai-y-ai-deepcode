@@ -64,7 +64,7 @@ export function GoalCheckProposal({
           <small>
             {t(
               "goal.checks.proposedNote",
-              "Once you use them, DeepCode runs each command itself whenever the Goal is claimed complete, and turns the claim back if one fails.",
+              "Once you use them, DFcode runs each command itself whenever the Goal is claimed complete, and turns the claim back if one fails.",
             )}
           </small>
         </div>
@@ -108,7 +108,7 @@ export function GoalConfirmedChecks({
         <small>
           {t(
             "goal.checks.confirmedNote",
-            "DeepCode runs these commands before it accepts completion.",
+            "DFcode runs these commands before it accepts completion.",
           )}
         </small>
       </header>

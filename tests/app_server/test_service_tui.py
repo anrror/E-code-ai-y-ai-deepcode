@@ -80,12 +80,12 @@ def test_real_service_cli_process(tmp_path, monkeypatch, mode):
     import os
     import sys
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path))
 
     async def scenario():
         factory = PausedFactory()
         async with control_server(
-            tmp_path, database_name="state/deepcode.sqlite3", session_factory=factory
+            tmp_path, database_name="state/dfcode.sqlite3", session_factory=factory
         ) as (control, _):
             files, lease = publish(control)
             workspace = tmp_path / "workspace"
@@ -96,7 +96,7 @@ def test_real_service_cli_process(tmp_path, monkeypatch, mode):
                     command = [
                         sys.executable,
                         "-m",
-                        "deepcode",
+                        "dfcode",
                         "exec",
                         "finish after exec exits",
                         "--detach",

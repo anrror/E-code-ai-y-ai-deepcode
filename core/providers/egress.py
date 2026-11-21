@@ -23,7 +23,7 @@ Layering
 - :func:`evaluate_provider_egress` is the pure kernel: no I/O, no environment,
   no config import. It is the part worth testing exhaustively.
 - :func:`resolve_egress_policy` / :func:`egress_mode` are the thin impure edge
-  that reads the environment and the DEEPCODE config.
+  that reads the environment and the DFCODE config.
 
 Fail-closed semantics, inherited from :func:`is_domain_allowed`: an *empty*
 allow-list means "no allow-list configured", i.e. every host is allowed unless
@@ -35,7 +35,7 @@ upgrade. Configure an allow-list to get a closed policy.
 Modes
 -----
 
-``DEEPCODE_EGRESS_MODE=warn`` exists so an operator can roll the policy out
+``DFCODE_EGRESS_MODE=warn`` exists so an operator can roll the policy out
 against a live configuration without breaking it: every decision is computed and
 logged, but nothing is blocked. Use it to discover which endpoints a setup
 actually talks to, then switch to ``enforce`` (the default). ``warn`` is
@@ -59,9 +59,9 @@ ENFORCE = "enforce"
 WARN = "warn"
 EGRESS_MODES: tuple[str, ...] = (ENFORCE, WARN)
 
-MODE_ENV = "DEEPCODE_EGRESS_MODE"
-ALLOW_ENV = "DEEPCODE_EGRESS_ALLOW_DOMAINS"
-BLOCK_ENV = "DEEPCODE_EGRESS_BLOCK_DOMAINS"
+MODE_ENV = "DFCODE_EGRESS_MODE"
+ALLOW_ENV = "DFCODE_EGRESS_ALLOW_DOMAINS"
+BLOCK_ENV = "DFCODE_EGRESS_BLOCK_DOMAINS"
 
 _ALLOWED_SCHEMES = frozenset({"http", "https"})
 
@@ -163,7 +163,7 @@ def _policy_field(source: Any, *names: str) -> Any:
 
 
 def _policy_from_config(config_or_none: Any) -> EgressPolicy:
-    """Read ``providers.egress`` if the object looks like a DEEPCODE config.
+    """Read ``providers.egress`` if the object looks like a DFCODE config.
 
     Tolerant by design: a ``None``, a partially built config, or a plain dict
     (tests, JSON round-trips) must not raise — a broken policy read would turn
@@ -207,7 +207,7 @@ def resolve_egress_policy(config_or_none: Any = None) -> EgressPolicy:
     un-block a host the config blocks, which keeps a stray shell variable from
     silently re-opening a closed policy.
 
-    ``DEEPCODE_EGRESS_MODE`` wins over the config mode; an unrecognized value
+    ``DFCODE_EGRESS_MODE`` wins over the config mode; an unrecognized value
     falls back to ``enforce`` (see :func:`egress_mode`).
     """
 
@@ -326,9 +326,9 @@ def describe_denial(
     return (
         f"Model egress blocked for provider '{provider}' (phase '{phase}'): "
         f"{decision.reason}. api_base={api_base!r}. "
-        "To allow it, add the domain to DEEPCODE_EGRESS_ALLOW_DOMAINS "
+        "To allow it, add the domain to DFCODE_EGRESS_ALLOW_DOMAINS "
         "(comma-separated) or providers.egress.allowedDomains in "
-        "deepcode_config.json; if it is blocked, remove it from "
+        "dfcode_config.json; if it is blocked, remove it from "
         f"{BLOCK_ENV} / providers.egress.blockedDomains. "
         f"Set {MODE_ENV}=warn to log denials without blocking. "
         f"(effective policy: allowed={list(policy.allowed_domains)}, "

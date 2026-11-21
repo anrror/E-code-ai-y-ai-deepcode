@@ -3,7 +3,7 @@
 The flow mirrors what a real SWE-bench prediction run does:
 
 1. Check the repo out at ``base_commit`` into a scratch workspace.
-2. Run ``deepcode exec`` there with the issue as the prompt (the agent edits
+2. Run ``dfcode exec`` there with the issue as the prompt (the agent edits
    files with the native tools).
 3. Capture ``git diff`` of the workspace as the ``model_patch``, emitted in
    the SWE-bench predictions schema
@@ -89,7 +89,7 @@ def capture_patch(workspace: str | Path) -> str:
 
 
 def default_exec_runner(workspace: str, prompt: str, model: str) -> bool:
-    """Drive ``deepcode exec`` as a subprocess; True if the turn completed.
+    """Drive ``dfcode exec`` as a subprocess; True if the turn completed.
 
     Uses the current interpreter so the harness's environment (proxy, deps,
     config) flows through. Reads the final NDJSON event's stop_reason.
@@ -146,7 +146,7 @@ def generate_prediction(
     patch = capture_patch(workspace)
     return {
         "instance_id": instance.instance_id,
-        "model_name_or_path": model or "deepcode",
+        "model_name_or_path": model or "dfcode",
         "model_patch": patch,
         "_completed": completed,
     }

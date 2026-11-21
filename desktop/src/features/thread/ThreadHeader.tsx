@@ -56,7 +56,7 @@ export function ThreadHeader({
   const title = thread?.title ?? t("thread.startThread", "Start a local coding Session");
   const root = recoveredHistory
     ? t("thread.previousSessions", "Previous Sessions")
-    : (project?.displayName ?? "DeepCode");
+    : (project?.displayName ?? "DFcode");
   const workspace = thread ? workspaceLabel(thread, project, t) : null;
   return (
     <header className={styles.header}>

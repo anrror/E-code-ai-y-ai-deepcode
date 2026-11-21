@@ -1,6 +1,6 @@
 """Conversational sub-agents: soft interrupt, follow-ups, transcripts.
 
-The dsh continuable-subagent shape under test, in DeepCode form:
+The dsh continuable-subagent shape under test, in DFcode form:
 
 - ``interrupt_agent`` stops only the CURRENT turn (dsh's keepInbox): the
   child parks idle with its conversation intact, and ``send_message`` gives

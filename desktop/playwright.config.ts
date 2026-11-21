@@ -4,15 +4,15 @@ export default defineConfig({
   testDir: "./e2e",
   workers: 1,
   reporter: [["list"], ["json", { outputFile: "test-results/results.json" }]],
-  timeout: process.env.DEEPCODE_WEB_LIVE === "1" ? 360000 : 90000,
+  timeout: process.env.DFCODE_WEB_LIVE === "1" ? 360000 : 90000,
   use: {
     actionTimeout: 10000,
     headless: true,
     viewport: { width: 1440, height: 1000 },
     screenshot: "only-on-failure",
     trace: "retain-on-failure",
-    launchOptions: process.env.DEEPCODE_CHROME_PATH
-      ? { executablePath: process.env.DEEPCODE_CHROME_PATH }
+    launchOptions: process.env.DFCODE_CHROME_PATH
+      ? { executablePath: process.env.DFCODE_CHROME_PATH }
       : {},
   },
 });

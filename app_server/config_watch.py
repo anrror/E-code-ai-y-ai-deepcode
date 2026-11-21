@@ -37,7 +37,7 @@ class ConfigFileWatcher:
             return
         self._thread = threading.Thread(
             target=self._run,
-            name="deepcode-config-watch",
+            name="dfcode-config-watch",
             daemon=True,
         )
         try:

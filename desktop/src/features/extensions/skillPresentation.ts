@@ -5,19 +5,19 @@ import type { SkillInfo } from "../../generated/app-server";
 
 const SOURCE_FOLDERS: Record<SkillInfo["sourceRoot"], string> = {
   agents: ".agents",
-  deepcode: ".deepcode",
+  dfcode: ".dfcode",
   claude: ".claude",
   system: "",
 };
 
 /**
  * Where a Skill comes from, in words: the settings and folder of a local
- * Skill, DeepCode itself, or the provider that supplies it (by its id).
+ * Skill, DFcode itself, or the provider that supplies it (by its id).
  */
 export function skillOriginLabel(skill: SkillInfo, t: TFunction): string {
   switch (skill.originKind) {
     case "bundled":
-      return t("skills.origin.bundled", "Built into DeepCode");
+      return t("skills.origin.bundled", "Built into DFcode");
     case "provider":
       return skill.originLabel;
     case "local": {

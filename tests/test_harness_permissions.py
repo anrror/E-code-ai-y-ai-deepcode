@@ -42,7 +42,7 @@ def test_denylist_blocks_ssh_read_even_in_full_auto():
 def test_denylist_blocks_env_and_config_and_pem():
     engine = PermissionEngine(mode=PermissionMode.FULL_AUTO, cwd="/home/u/proj")
     assert _decide(engine, "read_file", file_path="/home/u/proj/.env") is DENY
-    assert _decide(engine, "write_file", file_path="deepcode_config.json") is DENY
+    assert _decide(engine, "write_file", file_path="dfcode_config.json") is DENY
     assert _decide(engine, "read_file", file_path="/home/u/proj/server.pem") is DENY
 
 
@@ -109,8 +109,8 @@ def test_writing_a_hook_discovery_file_asks_even_in_full_auto():
     # through full_auto. Reads are checked by the test below.
     engine = PermissionEngine(mode=PermissionMode.FULL_AUTO, cwd="/home/u/proj")
     for raw in (
-        "/home/u/.deepcode/hooks.json",  # user level
-        "/home/u/proj/.deepcode/hooks.json",  # workspace
+        "/home/u/.dfcode/hooks.json",  # user level
+        "/home/u/proj/.dfcode/hooks.json",  # workspace
         "/home/u/proj/.claude/settings.json",  # workspace
     ):
         decision, reason = engine.evaluate("write", {"file_path": raw})
@@ -125,7 +125,7 @@ def test_writing_a_hook_discovery_file_asks_even_in_full_auto():
     assert (
         _decide(engine, "write", file_path="/home/u/proj/.claude/settings.json.") is ASK
     )
-    assert _decide(engine, "write", file_path="/home/u/.deepcode/hooks.json .") is ASK
+    assert _decide(engine, "write", file_path="/home/u/.dfcode/hooks.json .") is ASK
     # A blanket allow rule cannot silence the confirmation…
     allowed = PermissionEngine(
         mode=PermissionMode.FULL_AUTO,
@@ -133,7 +133,7 @@ def test_writing_a_hook_discovery_file_asks_even_in_full_auto():
         cwd="/home/u/proj",
     )
     assert (
-        _decide(allowed, "write", file_path="/home/u/proj/.deepcode/hooks.json") is ASK
+        _decide(allowed, "write", file_path="/home/u/proj/.dfcode/hooks.json") is ASK
     )
     # …and a stricter decision never relaxes into an ask: deny stays deny.
     denied = PermissionEngine(
@@ -142,15 +142,15 @@ def test_writing_a_hook_discovery_file_asks_even_in_full_auto():
         cwd="/home/u/proj",
     )
     assert (
-        _decide(denied, "write", file_path="/home/u/proj/.deepcode/hooks.json") is DENY
+        _decide(denied, "write", file_path="/home/u/proj/.dfcode/hooks.json") is DENY
     )
 
 
 def test_reading_a_hook_discovery_file_is_never_denied_or_asked():
     engine = PermissionEngine(mode=PermissionMode.FULL_AUTO, cwd="/home/u/proj")
     for raw in (
-        "/home/u/.deepcode/hooks.json",
-        "/home/u/proj/.deepcode/hooks.json",
+        "/home/u/.dfcode/hooks.json",
+        "/home/u/proj/.dfcode/hooks.json",
         "/home/u/proj/.claude/settings.json",
     ):
         assert _decide(engine, "read_file", file_path=raw) is ALLOW, raw
@@ -168,7 +168,7 @@ def test_hook_write_ask_never_relaxes_plan_or_read_only_modes():
     # Plan mode denies mutating tools outright — the ask check must not
     # surface a confirmation where no mutation is permitted at all.
     plan = PermissionEngine(mode=PermissionMode.PLAN, cwd="/home/u/proj")
-    assert _decide(plan, "write", file_path="/home/u/proj/.deepcode/hooks.json") is DENY
+    assert _decide(plan, "write", file_path="/home/u/proj/.dfcode/hooks.json") is DENY
     # The read-only preset's mutating-tool denial is likewise an upper bound.
     read_only = PermissionEngine(
         mode=PermissionMode.FULL_AUTO,

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-"""Verify the hash chain of a DeepCode transparency log (``llm.jsonl``).
+"""Verify the hash chain of a DFcode transparency log (``llm.jsonl``).
 
 Why this exists (P1-1 in ``docs/ROUTER_SUPPLY_CHAIN_HARDENING.md``): a
 malicious model "router" between the harness and the provider can rewrite
@@ -191,7 +191,7 @@ def _parse_args(argv: list[str] | None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         prog="verify_transparency_log.py",
         description=(
-            "Verify the append-only hash chain of a DeepCode LLM transparency log."
+            "Verify the append-only hash chain of a DFcode LLM transparency log."
         ),
     )
     parser.add_argument(

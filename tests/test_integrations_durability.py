@@ -41,7 +41,7 @@ def test_temp_file_is_removed_after_a_successful_write(tmp_path: Path) -> None:
 
     save_integrations("project://p", SAMPLE, home=home)
 
-    leftovers = list((home / ".deepcode").glob("*.tmp-*"))
+    leftovers = list((home / ".dfcode").glob("*.tmp-*"))
     assert leftovers == [], f"temp files left behind: {leftovers}"
 
 
@@ -114,7 +114,7 @@ def test_failed_write_keeps_the_previous_document(
     after = integrations_path(home).read_text(encoding="utf-8")
     assert after == before, "a failed write must not alter the stored document"
     # The temp file is cleaned up rather than left holding the token.
-    assert list((home / ".deepcode").glob("*.tmp-*")) == []
+    assert list((home / ".dfcode").glob("*.tmp-*")) == []
 
 
 def test_file_is_owner_only_from_creation(tmp_path: Path) -> None:

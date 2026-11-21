@@ -17,7 +17,7 @@ def _wait_for(condition, timeout: float = 5.0) -> bool:
 
 
 def test_watcher_fires_once_per_content_change(tmp_path: Path) -> None:
-    store = ConfigStore(tmp_path / "deepcode_config.json")
+    store = ConfigStore(tmp_path / "dfcode_config.json")
     seen: list[str] = []
     watcher = ConfigFileWatcher(store, seen.append, interval_seconds=0.05)
     watcher.start()

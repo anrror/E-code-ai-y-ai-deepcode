@@ -14,7 +14,7 @@ from core.application.llm_configuration_service import LLMConfigurationService
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode provider",
+        prog="dfcode provider",
         description="Configure LLM connections and discover their models.",
     )
     commands = parser.add_subparsers(dest="command", required=True)

@@ -10,7 +10,7 @@ from typing import Any
 
 
 def subprocess_group_kwargs() -> dict[str, Any]:
-    """Put a child in a process group owned by DeepCode."""
+    """Put a child in a process group owned by DFcode."""
 
     if os.name == "nt":
         return {"creationflags": subprocess.CREATE_NEW_PROCESS_GROUP}
@@ -18,7 +18,7 @@ def subprocess_group_kwargs() -> dict[str, Any]:
 
 
 async def start_process_group(*argv: str, **kwargs: Any) -> asyncio.subprocess.Process:
-    """``asyncio.create_subprocess_exec`` in a process group owned by DeepCode.
+    """``asyncio.create_subprocess_exec`` in a process group owned by DFcode.
 
     asyncio forks before it has wired the pipes, and a cancel in between makes
     it SIGKILL the direct child only, so whatever that child had already

@@ -2,7 +2,7 @@
 
 Bundled roles live in one backend registry so frontends never infer product
 behavior from a display name.  The mapping is intentionally limited to
-DeepCode-owned system packages; user and provider Skills cannot claim a role.
+DFcode-owned system packages; user and provider Skills cannot claim a role.
 """
 
 from __future__ import annotations

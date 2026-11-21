@@ -110,7 +110,7 @@ describe("TurnBlock", () => {
         activity: {
           kind: "read",
           label: "Read",
-          subject: "deepcode.toml",
+          subject: "dfcode.toml",
         },
       }),
       item("final", 4, "assistant_message", "Repair complete", {
@@ -124,7 +124,7 @@ describe("TurnBlock", () => {
     renderTurn(items);
 
     const commentary = screen.getByText("Progress note");
-    const activity = screen.getByText("deepcode.toml");
+    const activity = screen.getByText("dfcode.toml");
     const finalAnswer = screen.getByText("Repair complete");
     expect(
       commentary.compareDocumentPosition(activity) &
@@ -354,7 +354,7 @@ describe("TurnBlock", () => {
     });
 
     const card = screen.getByRole("region", { name: "Goal blocked" });
-    expect(card.textContent).toContain("Decided by DeepCode");
+    expect(card.textContent).toContain("Decided by DFcode");
     expect(card.textContent).toContain("The API key is missing.");
     // It closes the Turn, after its actions.
     const actions = screen.getByRole("button", { name: /Review changes/ });
@@ -404,7 +404,7 @@ describe("TurnBlock", () => {
     ).toBeTruthy();
   });
 
-  it("names DeepCode's own tool by what it does, once", () => {
+  it("names DFcode's own tool by what it does, once", () => {
     renderTurn([
       item("goal", 1, "tool_call", "get_goal", {
         name: "get_goal",

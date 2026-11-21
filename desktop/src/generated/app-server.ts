@@ -83,9 +83,9 @@ export type TurnPlanUpdatedEvent = Event & {
 export type PlanStepStatus = "pending" | "in_progress" | "completed";
 
 /**
- * Canonical JSON-RPC data contracts for the DeepCode desktop client.
+ * Canonical JSON-RPC data contracts for the DFcode desktop client.
  */
-export interface DeepCodeAppServerProtocol {
+export interface DFcodeAppServerProtocol {
   methodParams: MethodParams;
   methodResults: MethodResults;
   notifications: Notifications;
@@ -660,7 +660,7 @@ export interface GoalSetParams {
 export interface GoalCheckInput {
   requirement: string;
   /**
-   * An argument list DeepCode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer.
+   * An argument list DFcode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer.
    *
    * @maxItems 64
    */
@@ -1766,7 +1766,7 @@ export interface SkillInfo {
   description: string;
   allowedTools: string[];
   scope: "user" | "project" | "system";
-  sourceRoot: "agents" | "deepcode" | "claude" | "system";
+  sourceRoot: "agents" | "dfcode" | "claude" | "system";
   source: string;
   location: string;
   originKind: "local" | "bundled" | "provider";
@@ -1797,7 +1797,7 @@ export interface SkillDetail {
   description: string;
   allowedTools: string[];
   scope: "user" | "project" | "system";
-  sourceRoot: "agents" | "deepcode" | "claude" | "system";
+  sourceRoot: "agents" | "dfcode" | "claude" | "system";
   source: string;
   location: string;
   originKind: "local" | "bundled" | "provider";
@@ -2437,7 +2437,7 @@ export interface Goal {
 export interface GoalCheck {
   requirement: string;
   /**
-   * An argument list DeepCode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer.
+   * An argument list DFcode runs in the workspace without a shell when the Goal is claimed complete; empty when the requirement is left to the reviewer.
    *
    * @maxItems 64
    */

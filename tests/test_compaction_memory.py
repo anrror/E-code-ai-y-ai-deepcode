@@ -33,7 +33,7 @@ def test_write_creates_note_with_summary_and_anchor(tmp_path):
         "Handoff summary: implemented the parser.",
         anchor={"session_key": "s1", "phase": "auto", "at": "2026-08-16T10:00:00"},
     )
-    note = tmp_path / ".deepcode" / "memory" / _COMPACTION_NOTE
+    note = tmp_path / ".dfcode" / "memory" / _COMPACTION_NOTE
     assert note.is_file()
     text = note.read_text(encoding="utf-8")
     assert "Handoff summary: implemented the parser." in text
@@ -45,7 +45,7 @@ def test_write_creates_note_with_summary_and_anchor(tmp_path):
 def test_write_appends_multiple_entries(tmp_path):
     write_compaction_summary(tmp_path, "first summary", anchor={"phase": "auto"})
     write_compaction_summary(tmp_path, "second summary", anchor={"phase": "manual"})
-    note = tmp_path / ".deepcode" / "memory" / _COMPACTION_NOTE
+    note = tmp_path / ".dfcode" / "memory" / _COMPACTION_NOTE
     text = note.read_text(encoding="utf-8")
     assert text.count("## Compaction") == 2
     assert "first summary" in text and "second summary" in text
@@ -53,33 +53,33 @@ def test_write_appends_multiple_entries(tmp_path):
 
 def test_write_without_anchor_still_lands(tmp_path):
     write_compaction_summary(tmp_path, "bare summary")
-    note = tmp_path / ".deepcode" / "memory" / _COMPACTION_NOTE
+    note = tmp_path / ".dfcode" / "memory" / _COMPACTION_NOTE
     assert "bare summary" in note.read_text(encoding="utf-8")
 
 
 def test_write_empty_summary_noop(tmp_path):
     write_compaction_summary(tmp_path, "")
     write_compaction_summary(tmp_path, "   ")
-    assert not (tmp_path / ".deepcode" / "memory" / _COMPACTION_NOTE).exists()
+    assert not (tmp_path / ".dfcode" / "memory" / _COMPACTION_NOTE).exists()
 
 
 def test_write_never_raises_on_bad_workspace(tmp_path):
     # A path that cannot be created (a file in the way) must not raise.
-    blocker = tmp_path / ".deepcode"
+    blocker = tmp_path / ".dfcode"
     blocker.write_text("i am a file", encoding="utf-8")
     write_compaction_summary(tmp_path, "summary")  # should be swallowed
     assert True  # reached = never raised
 
 
 def test_compaction_sink_env_opt_out(monkeypatch, tmp_path):
-    monkeypatch.setenv("DEEPCODE_COMPACTION_MEMORY", "0")
+    monkeypatch.setenv("DFCODE_COMPACTION_MEMORY", "0")
     assert compaction_sink_enabled() is False
     write_compaction_summary(tmp_path, "should not land")
-    assert not (tmp_path / ".deepcode" / "memory" / _COMPACTION_NOTE).exists()
+    assert not (tmp_path / ".dfcode" / "memory" / _COMPACTION_NOTE).exists()
 
 
 def test_compaction_sink_env_default_on(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_COMPACTION_MEMORY", raising=False)
+    monkeypatch.delenv("DFCODE_COMPACTION_MEMORY", raising=False)
     assert compaction_sink_enabled() is True
 
 

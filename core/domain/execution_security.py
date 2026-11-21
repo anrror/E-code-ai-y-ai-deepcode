@@ -11,7 +11,7 @@ from core.domain.execution_permission import ExecutionPermissionMode
 
 
 class ExecutionAccessPreset(StrEnum):
-    """User-facing access choices shared by every DeepCode client."""
+    """User-facing access choices shared by every DFcode client."""
 
     ASK = "ask"
     READ_ONLY = "read_only"

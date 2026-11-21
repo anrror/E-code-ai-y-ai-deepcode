@@ -1,4 +1,4 @@
-"""SWE-bench evaluation harness for DeepCode (P2 exit gate).
+"""SWE-bench evaluation harness for DFcode (P2 exit gate).
 
 P2 exits on "establish a SWE-bench Verified 50-subset baseline".
 SWE-bench measures whether an agent can resolve a real GitHub issue: given
@@ -6,11 +6,11 @@ a repo at a base commit plus the issue text, the agent must produce a patch
 that makes the hidden FAIL_TO_PASS tests pass without breaking the
 PASS_TO_PASS tests.
 
-This harness has two cleanly separated stages, so DeepCode owns only the part
-that is DeepCode's to own and reuses the rest:
+This harness has two cleanly separated stages, so DFcode owns only the part
+that is DFcode's to own and reuses the rest:
 
 1. **Prediction** (:mod:`eval.swebench.predict`) — *this* is the agent's job.
-   Check out the repo at ``base_commit``, run ``deepcode exec`` with the
+   Check out the repo at ``base_commit``, run ``dfcode exec`` with the
    problem statement, and capture ``git diff`` as the ``model_patch``, emitted
    in the exact SWE-bench predictions schema.
 2. **Scoring** — for the official Verified set this is delegated verbatim to

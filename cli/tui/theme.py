@@ -1,8 +1,8 @@
-"""Visual vocabulary for the DeepCode TUI — one place, no magic strings.
+"""Visual vocabulary for the DFcode TUI — one place, no magic strings.
 
 Every color, glyph, and prefix the renderer uses lives here, so the whole
 look can be tuned without touching rendering logic. The design rules are
-borrowed from dsh's terminal palette and adapted to DeepCode's own brand:
+borrowed from dsh's terminal palette and adapted to DFcode's own brand:
 
 - **Roles, not colors.** Consumers name a role (``ACCENT``, ``DIM``,
   ``SUCCESS``…); what the role maps to is this module's business.
@@ -12,7 +12,7 @@ borrowed from dsh's terminal palette and adapted to DeepCode's own brand:
   renders HEAVIER than the default foreground on many light themes.
 - **One truecolor exception**: the startup banner's brand gradient, which
   degrades to flat ``ACCENT`` when the terminal lacks truecolor.
-- DeepCode keeps its own glyph signature — the ``✳`` brand mark, the ``⎿``
+- DFcode keeps its own glyph signature — the ``✳`` brand mark, the ``⎿``
   result elbow, the two-line tool rhythm — where dsh uses a single-header
   card. The shared grammar is status-colored markers over recessed bodies.
 """
@@ -23,9 +23,9 @@ import os
 
 # -- brand ------------------------------------------------------------------
 BRAND_MARK = "✳"
-BRAND_NAME = "DeepCode"
+BRAND_NAME = "DFcode"
 BRAND = f"{BRAND_MARK} {BRAND_NAME}"
-# The banner gradient (DeepCode's sky-cyan ramp, matching the Desktop and
+# The banner gradient (DFcode's sky-cyan ramp, matching the Desktop and
 # logo palette). Only the banner may use these; everything else is ANSI.
 BRAND_GRADIENT = ((14, 165, 233), (6, 182, 212), (78, 205, 196))
 
@@ -190,7 +190,7 @@ def brand_markup() -> str:
 
 
 def wordmark_markup() -> str:
-    """``DeepCode`` alone — the mark above the logo art already says ``✳``."""
+    """``DFcode`` alone — the mark above the logo art already says ``✳``."""
     if supports_truecolor():
         return f"[bold]{gradient_markup(BRAND_NAME)}[/bold]"
     return f"[bold {ACCENT}]{BRAND_NAME}[/]"

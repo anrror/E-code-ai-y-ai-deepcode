@@ -11,7 +11,7 @@ from urllib.error import HTTPError
 import httpx
 import pytest
 
-from core.config import ConnectionProfileConfig, DeepCodeConfig
+from core.config import ConnectionProfileConfig, DFcodeConfig
 from core.domain.execution_profile import ExecutionSelection
 from core.providers.credentials import CredentialStore
 from core.providers.oauth import ProviderOAuthManager
@@ -124,7 +124,7 @@ def test_oauth_route_never_borrows_environment_and_old_turn_cannot_switch_accoun
 ):
     monkeypatch.setenv("OPENROUTER_API_KEY", "ambient-key")
     credentials = CredentialStore(tmp_path / "credentials.json")
-    config = DeepCodeConfig.model_validate(
+    config = DFcodeConfig.model_validate(
         {
             "providers": {
                 "profiles": {

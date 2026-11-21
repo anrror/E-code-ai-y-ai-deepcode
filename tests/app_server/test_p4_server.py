@@ -14,7 +14,7 @@ import pytest
 
 from app_server.server import AppServer
 from app_server.protocol.codec import encode_message
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.persistence.event_repository import EventRepository
 
@@ -51,10 +51,10 @@ def test_p4_file_git_and_terminal_protocol_round_trip(tmp_path: Path) -> None:
     workspace.mkdir()
     subprocess.run(["git", "init", "-q"], cwd=workspace, check=True)
     subprocess.run(
-        ["git", "config", "user.name", "DeepCode Test"], cwd=workspace, check=True
+        ["git", "config", "user.name", "DFcode Test"], cwd=workspace, check=True
     )
     subprocess.run(
-        ["git", "config", "user.email", "deepcode@example.test"],
+        ["git", "config", "user.email", "dfcode@example.test"],
         cwd=workspace,
         check=True,
     )
@@ -62,7 +62,7 @@ def test_p4_file_git_and_terminal_protocol_round_trip(tmp_path: Path) -> None:
     subprocess.run(["git", "add", "readme.txt"], cwd=workspace, check=True)
     subprocess.run(["git", "commit", "-q", "-m", "base"], cwd=workspace, check=True)
 
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="P4 protocol")
     input_read, input_write = os.pipe()
@@ -177,7 +177,7 @@ def test_oversized_result_returns_a_protocol_error_without_stopping_server(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     (workspace / "large.txt").write_text("x" * 10_000, encoding="utf-8")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="Bounded response")
     source = io.BytesIO(
@@ -212,7 +212,7 @@ def test_oversized_result_returns_a_protocol_error_without_stopping_server(
 def test_event_replay_is_split_into_byte_bounded_cursor_pages(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="Paged replay")
     with application.database.transaction() as connection:
@@ -313,7 +313,7 @@ def test_single_replay_event_larger_than_transport_limit_is_reported(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="Single large event")
     with application.database.transaction() as connection:
@@ -352,7 +352,7 @@ def test_single_replay_event_larger_than_transport_limit_is_reported(
 
 
 def test_rejected_small_handshake_does_not_initialize_the_connection(tmp_path):
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     source = io.BytesIO(
         _request(
             1,

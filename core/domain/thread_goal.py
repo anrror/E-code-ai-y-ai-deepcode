@@ -110,7 +110,7 @@ class GoalOutcome:
 class GoalCheck:
     """One requirement on a Goal's checklist.
 
-    ``command`` is an argument list DeepCode runs itself in the workspace,
+    ``command`` is an argument list DFcode runs itself in the workspace,
     without a shell, whenever the agent claims the Goal complete; a non-zero
     exit turns the claim back. An empty command leaves the requirement to the
     completion reviewer.

@@ -1,4 +1,4 @@
-"""Shared CLI adapter for DeepCode's persistent workspace trust boundary."""
+"""Shared CLI adapter for DFcode's persistent workspace trust boundary."""
 
 from __future__ import annotations
 
@@ -8,11 +8,11 @@ from core.application.errors import ProjectNotTrustedError
 from core.domain.project import Project, TrustState
 
 if TYPE_CHECKING:
-    from core.application.application import DeepCodeApplication
+    from core.application.application import DFcodeApplication
 
 
 def open_workspace_project(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     workspace: str,
     *,
     grant_trust: bool,
@@ -24,7 +24,7 @@ def open_workspace_project(
 
 
 def set_project_trusted(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     project: Project,
 ) -> Project:
     if project.trust_state is TrustState.TRUSTED:

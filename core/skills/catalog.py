@@ -60,7 +60,7 @@ _ALLOWED_TOOL_RE = re.compile(r"([^\s(),]+)(?:\((.*)\))?", re.DOTALL)
 class SkillValidationProfile(StrEnum):
     """Validation contract selected by the owner of a Skill package."""
 
-    DEEPCODE_COMPAT = "deepcode-compat"
+    DFCODE_COMPAT = "dfcode-compat"
     AGENT_SKILLS_V1 = "agent-skills-v1"
 
 
@@ -493,7 +493,7 @@ def validate_skill_directory(
     directory: str | Path,
     *,
     scope: SkillScope = SkillScope.USER,
-    source_root: SkillSourceRoot = SkillSourceRoot.DEEPCODE,
+    source_root: SkillSourceRoot = SkillSourceRoot.DFCODE,
 ) -> SkillRecord:
     # Keep the path as given, as discovery does: the Skill ID hashes the
     # catalog path, so resolving a linked root or Skill directory here would
@@ -535,7 +535,7 @@ def read_skill_candidate(
     source_root: SkillSourceRoot,
     trust_boundary: Path | None,
     writable: bool,
-    validation_profile: SkillValidationProfile = SkillValidationProfile.DEEPCODE_COMPAT,
+    validation_profile: SkillValidationProfile = SkillValidationProfile.DFCODE_COMPAT,
 ) -> SkillRecord:
     """Read one Skill candidate while preserving invalid entries.
 

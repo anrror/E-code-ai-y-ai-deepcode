@@ -1,6 +1,6 @@
 """Model-driven concurrent sub-agent delegation (C2).
 
-Replaces the retired deterministic ``deepcode team`` pipeline: the model itself
+Replaces the retired deterministic ``dfcode team`` pipeline: the model itself
 spawns sub-agents that run concurrently, and their results flow back through a
 mailbox. See :class:`~core.harness.agents.control.AgentControl`.
 """

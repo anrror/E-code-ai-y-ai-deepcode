@@ -1,6 +1,6 @@
 # App Server host and connection lifecycle
 
-`ServiceHost` owns one `DeepCodeApplication`; `RpcPeer` owns one client's
+`ServiceHost` owns one `DFcodeApplication`; `RpcPeer` owns one client's
 protocol state and delivery. Desktop's stdio relay, TUI, headless execution and
 the browser authenticate with the [local service](SERVICE_RUNTIME.md).
 

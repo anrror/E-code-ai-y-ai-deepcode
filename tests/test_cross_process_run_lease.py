@@ -87,8 +87,8 @@ def test_submitting_into_anothers_running_turn_is_refused_politely(
     script.write_text(_DRIVER % {"root": str(ROOT)})
     base_env = {
         **__import__("os").environ,
-        "DEEPCODE_HOME": str(tmp_path / "home"),
-        "DEEPCODE_SESSIONS_DIR": str(tmp_path / "sessions"),
+        "DFCODE_HOME": str(tmp_path / "home"),
+        "DFCODE_SESSIONS_DIR": str(tmp_path / "sessions"),
     }
     argv = ["--workspace", str(workspace), "--trust", "--access", "full-access"]
 

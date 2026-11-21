@@ -28,7 +28,7 @@ def config_home(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     home.mkdir()
     monkeypatch.setattr(
         "core.config.home_config_path",
-        lambda: home / "deepcode_config.json",
+        lambda: home / "dfcode_config.json",
     )
     return home
 
@@ -41,7 +41,7 @@ def test_leaves_carry_their_providing_layer(
     config_home: Path, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
     _write(
-        config_home / "deepcode_config.json",
+        config_home / "dfcode_config.json",
         {
             "agents": {"defaults": {"model": "user-model", "temperature": 0.1}},
         },
@@ -49,12 +49,12 @@ def test_leaves_carry_their_providing_layer(
     workspace = tmp_path / "proj"
     workspace.mkdir()
     _write(
-        workspace / "deepcode_config.json",
+        workspace / "dfcode_config.json",
         {"agents": {"defaults": {"model": "project-model"}}},
     )
     monkeypatch.setattr(
         "core.config.project_config_path",
-        lambda ws: Path(ws) / "deepcode_config.json",
+        lambda ws: Path(ws) / "dfcode_config.json",
     )
 
     rows = {r["path"]: r for r in effective_config_layers(workspace)}
@@ -65,7 +65,7 @@ def test_leaves_carry_their_providing_layer(
 
 def test_without_workspace_everything_is_user_layer(config_home: Path) -> None:
     _write(
-        config_home / "deepcode_config.json",
+        config_home / "dfcode_config.json",
         {"tools": {"defaultSearchServer": "filesystem"}},
     )
     rows = effective_config_layers(None)
@@ -75,7 +75,7 @@ def test_without_workspace_everything_is_user_layer(config_home: Path) -> None:
 
 def test_credential_shaped_subtrees_never_echo_values(config_home: Path) -> None:
     _write(
-        config_home / "deepcode_config.json",
+        config_home / "dfcode_config.json",
         {
             # A fixture, not a credential — but any value after "apiKey"
             # looks like one to a secret scanner, hence the inline allow.
@@ -99,7 +99,7 @@ def test_comments_are_skipped_and_long_values_truncated(
     config_home: Path,
 ) -> None:
     _write(
-        config_home / "deepcode_config.json",
+        config_home / "dfcode_config.json",
         {"$comment": "notes", "agents": {"defaults": {"model": "m" * 300}}},
     )
     rows = effective_config_layers(None)

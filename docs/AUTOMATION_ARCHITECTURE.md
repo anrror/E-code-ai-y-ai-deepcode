@@ -5,7 +5,7 @@ Updated: 2026-07-29
 
 ## Product contract
 
-DeepCode Automation schedules ordinary agent work. It is not a second agent
+DFcode Automation schedules ordinary agent work. It is not a second agent
 runtime and it does not reinterpret a task from keywords.
 
 Every accepted Automation Run uses the same durable path as interactive work:
@@ -62,7 +62,7 @@ same interface without changing the Agent runtime or transport clients.
 Only one process may trigger due occurrences for a database at a time.
 `AutomationScheduler` obtains a cross-process leader lease; standby processes
 take over after the owner exits. Scheduler startup is opt-in at the
-composition root: `DeepCodeApplication` and the interactive CLI/TUI default to
+composition root: `DFcodeApplication` and the interactive CLI/TUI default to
 no resident scheduler, while the long-lived App Server explicitly enables it.
 Desktop receives scheduling through that App Server process. Short-lived
 Automation management commands do not create a background scheduler.
@@ -167,7 +167,7 @@ repairs a missing Session through the same method before Goal state is read.
 No Agent Turn is accepted until the canonical Session exists. If the database
 commit succeeds but local materialization fails, create returns
 `AUTOMATION_BOOTSTRAP_PENDING` with the committed Automation and Thread IDs.
-The error is intentionally non-retryable: refresh or reopen DeepCode instead
+The error is intentionally non-retryable: refresh or reopen DFcode instead
 of issuing another create request. Durable events remain authoritative and may
 already be visible through another process.
 
@@ -227,21 +227,21 @@ and changing a paused interval to manual normalizes it to enabled.
 CLI exposes the same service:
 
 ```bash
-deepcode automation list --limit 100 --offset 0
-deepcode automation create "Repository caretaker" \
+dfcode automation list --limit 100 --offset 0
+dfcode automation create "Repository caretaker" \
   --prompt "Inspect the repository, repair failures, and verify the result." \
   --schedule interval \
   --interval-seconds 3600
-deepcode automation run <automation-id>
-deepcode automation runs <automation-id> --limit 100 --offset 0
-deepcode automation disable <automation-id>
-deepcode automation enable <automation-id>
-deepcode automation delete <automation-id>
+dfcode automation run <automation-id>
+dfcode automation runs <automation-id> --limit 100 --offset 0
+dfcode automation disable <automation-id>
+dfcode automation enable <automation-id>
+dfcode automation delete <automation-id>
 ```
 
-`deepcode automation run` waits for the durable Run to settle without imposing
+`dfcode automation run` waits for the durable Run to settle without imposing
 an arbitrary product timeout. Scheduled execution requires a compatible
-scheduler-enabled DeepCode runtime to remain active.
+scheduler-enabled DFcode runtime to remain active.
 
 `automation/list` and `automation/runs` use bounded `limit`/`offset` queries.
 Both return `hasMore` and a nullable `nextOffset`; the CLI also prints the next

@@ -51,10 +51,10 @@ class TeamContextService:
         self.workspace = Path(workspace) if workspace is not None else None
         if home is None:
             # The shared team store sits next to the user's config: honour
-            # DEEPCODE_HOME instead of assuming ~/.deepcode.
-            from core.config import deepcode_home
+            # DFCODE_HOME instead of assuming ~/.dfcode.
+            from core.config import dfcode_home
 
-            home = deepcode_home().parent
+            home = dfcode_home().parent
         self.home = Path(home)
 
     def catalog(self) -> Catalog:
@@ -143,7 +143,7 @@ class TeamContextService:
         codebases: list[str] | None = None,
         shared: bool = False,
     ) -> dict[str, Any]:
-        """Create one layer directory in the workspace (``.deepcode/team``).
+        """Create one layer directory in the workspace (``.dfcode/team``).
 
         A missing layer means "this level adds nothing"; creating one is the
         first write the Team page offers, before any knowledge exists.
@@ -652,7 +652,7 @@ class TeamContextService:
             if entry.status != "deprecated"
         ]
         return {
-            "kind": "deepcode-team-context",
+            "kind": "dfcode-team-context",
             "version": 1,
             "entities": entities,
             "knowledge": knowledge,
@@ -666,7 +666,7 @@ class TeamContextService:
     def import_bundle(self, bundle: dict[str, Any]) -> dict[str, Any]:
         """Merge a snapshot into the global store, skipping what already exists."""
 
-        if bundle.get("kind") != "deepcode-team-context":
+        if bundle.get("kind") != "dfcode-team-context":
             raise TeamContextError("this file is not a team-context snapshot")
         if bundle.get("version") != 1:
             raise TeamContextError("unsupported snapshot version")

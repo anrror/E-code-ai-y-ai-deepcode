@@ -114,7 +114,7 @@ def main() -> None:
     base_url = f"http://127.0.0.1:{args.port}"
     provider = FixtureOAuthProvider()
     server = FastMCP(
-        "deepcode-oauth-fixture",
+        "dfcode-oauth-fixture",
         auth_server_provider=provider,
         auth=AuthSettings(
             issuer_url=base_url,

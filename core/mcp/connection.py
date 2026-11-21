@@ -77,7 +77,7 @@ class McpConnection:
         self._close_event = asyncio.Event()
         self._task = asyncio.create_task(
             self._serve(),
-            name=f"deepcode-mcp-{self.server.server_id}",
+            name=f"dfcode-mcp-{self.server.server_id}",
         )
         timeout = timeout_seconds or self.server.definition.startup_timeout_seconds
         try:
@@ -101,7 +101,7 @@ class McpConnection:
                 arguments=arguments,
                 read_timeout_seconds=timedelta(seconds=timeout),
             ),
-            name=f"deepcode-mcp-call-{self.server.server_id}-{name}",
+            name=f"dfcode-mcp-call-{self.server.server_id}-{name}",
         )
         self._active_calls.add(call)
         try:
@@ -352,7 +352,7 @@ class McpConnection:
         value = self._credential_resolver(connection_id)
         if not value:
             raise McpConfigurationError(
-                f"No credential is configured for DeepCode connection {connection_id!r}"
+                f"No credential is configured for DFcode connection {connection_id!r}"
             )
         return value
 
@@ -492,11 +492,11 @@ def _bounded_instructions(value: Any) -> str | None:
 
 def _open_stderr_log(server: ResolvedMcpServer):
     try:
-        configured_home = os.environ.get("DEEPCODE_HOME")
+        configured_home = os.environ.get("DFCODE_HOME")
         home = (
             Path(configured_home).expanduser()
             if configured_home
-            else Path.home() / ".deepcode"
+            else Path.home() / ".dfcode"
         )
         target = home / "logs" / "mcp"
         target.mkdir(parents=True, exist_ok=True)

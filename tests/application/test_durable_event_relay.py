@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.event_service import (
     DurableEventRelay,
     EventBroker,
@@ -131,7 +131,7 @@ def test_two_applications_share_live_events_without_duplicate_delivery(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     session_root = tmp_path / "sessions"
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
         event_relay_poll_interval=0.01,
@@ -142,7 +142,7 @@ def test_two_applications_share_live_events_without_duplicate_delivery(
         trust_state=TrustState.TRUSTED,
     )
     thread = first.threads.start(project.id, title="Before second process")
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
         event_relay_poll_interval=0.01,

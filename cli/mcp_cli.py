@@ -1,4 +1,4 @@
-"""Manage generic MCP clients or expose DeepCode itself over MCP stdio."""
+"""Manage generic MCP clients or expose DFcode itself over MCP stdio."""
 
 from __future__ import annotations
 
@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.errors import ApplicationError
 from core.application.views import (
     mcp_inventory_view,
@@ -22,11 +22,11 @@ from core.domain.project import TrustState
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode mcp",
-        description="Configure MCP clients. Use 'serve' to expose DeepCode over stdio.",
+        prog="dfcode mcp",
+        description="Configure MCP clients. Use 'serve' to expose DFcode over stdio.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
-    serve = commands.add_parser("serve", help="Expose DeepCode as an MCP stdio server.")
+    serve = commands.add_parser("serve", help="Expose DFcode as an MCP stdio server.")
     serve.add_argument("server_args", nargs=argparse.REMAINDER)
 
     listing = commands.add_parser("list", help="List effective MCP client servers.")
@@ -154,7 +154,7 @@ def run(argv: list[str] | None = None) -> int:
 
         return int(serve(args.server_args) or 0)
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         host_surface="mcp-cli",
         run_automation_scheduler=False,
     )
@@ -261,7 +261,7 @@ def run(argv: list[str] | None = None) -> int:
 
 
 def _project_id(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     workspace: str | None,
     *,
     trust: bool,

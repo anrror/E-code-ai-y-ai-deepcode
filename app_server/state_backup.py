@@ -19,7 +19,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from app_server.service_state import ServiceFiles
-from core.config import deepcode_home, home_config_path
+from core.config import dfcode_home, home_config_path
 from core.file_lock import FileLease
 from core.persistence.database import Database
 from core.private_storage import (
@@ -75,13 +75,13 @@ class StatePaths:
                     "The requested Session directory differs from the recorded service layout"
                 )
             return cls(**fields)
-        home = deepcode_home().resolve()
+        home = dfcode_home().resolve()
         return cls(
             files.database,
             (
                 sessions
                 or Path(
-                    os.environ.get("DEEPCODE_SESSIONS_DIR") or str(home / "sessions")
+                    os.environ.get("DFCODE_SESSIONS_DIR") or str(home / "sessions")
                 )
             )
             .expanduser()
@@ -174,7 +174,7 @@ def _offline(paths: StatePaths, *, extra_sessions=()):
             lease = FileLease.acquire(path, shared=False, blocking=False)
             if lease is None:
                 raise ValueError(
-                    "State is in use. Stop DeepCode services, CLI/TUI and other writers before backing up or restoring."
+                    "State is in use. Stop DFcode services, CLI/TUI and other writers before backing up or restoring."
                 )
             stack.enter_context(lease)
 

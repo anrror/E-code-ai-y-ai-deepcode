@@ -5,7 +5,7 @@ import time
 from collections.abc import Callable
 from pathlib import Path
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.automation_scheduler import automation_scheduler_lease_path
 from core.file_lock import FileLease
 from core.sessions import SessionStore
@@ -25,7 +25,7 @@ def _wait_until(
     raise AssertionError(message)
 
 
-def _leader_count(*applications: DeepCodeApplication) -> int:
+def _leader_count(*applications: DFcodeApplication) -> int:
     return sum(application.automation_scheduler.leader for application in applications)
 
 
@@ -43,7 +43,7 @@ def _hold_scheduler_lease(path: str, ready) -> None:
 def test_application_scheduler_is_opt_in(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions"),
         host_surface="management_cli",
@@ -61,12 +61,12 @@ def test_application_scheduler_is_opt_in(
 def test_one_scheduler_leader_and_live_follower_takeover(tmp_path: Path) -> None:
     database_path = tmp_path / "state.sqlite3"
     session_store = SessionStore(tmp_path / "sessions")
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         database_path,
         session_store=session_store,
         run_automation_scheduler=True,
     )
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         database_path,
         session_store=session_store,
         run_automation_scheduler=True,
@@ -117,10 +117,10 @@ def test_scheduler_leadership_recovers_after_owner_process_is_killed(
         args=(str(lock_path), ready),
     )
     owner.start()
-    application: DeepCodeApplication | None = None
+    application: DFcodeApplication | None = None
     try:
         assert ready.get(timeout=5) is True
-        application = DeepCodeApplication.open(
+        application = DFcodeApplication.open(
             database_path,
             session_store=SessionStore(tmp_path / "sessions"),
             run_automation_scheduler=True,

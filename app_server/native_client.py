@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 
 _RESTART_YOURSELF = (
-    "Finish active work, then run `deepcode service restart` to start the "
+    "Finish active work, then run `dfcode service restart` to start the "
     "service from this installation."
 )
 
@@ -94,7 +94,7 @@ class NativeRpcClient:
                 raise _version_mismatch(
                     record.version,
                     "Its service manager still starts that version; run "
-                    "`deepcode service install --at-login` from this installation.",
+                    "`dfcode service install --at-login` from this installation.",
                 )
         self._session = aiohttp.ClientSession(
             trust_env=False,
@@ -105,7 +105,7 @@ class NativeRpcClient:
                 record.url + "/api/rpc",
                 headers={
                     "Authorization": f"Bearer {token}",
-                    "X-DeepCode-Instance": record.instance_id,
+                    "X-DFcode-Instance": record.instance_id,
                 },
                 max_msg_size=DEFAULT_MAX_MESSAGE_BYTES,
                 heartbeat=20,
@@ -154,13 +154,13 @@ class NativeRpcClient:
             raise _version_mismatch(
                 record.version,
                 "The service has active work, so it was not restarted; reconnect "
-                "when that work finishes, or run `deepcode service restart` to "
+                "when that work finishes, or run `dfcode service restart` to "
                 "wait for it.",
             )
         from cli.service_cli import restart_service
 
         logger.info(
-            "Restarting the idle DeepCode %s service from this installation (%s)",
+            "Restarting the idle DFcode %s service from this installation (%s)",
             record.version,
             __version__,
         )
@@ -225,12 +225,12 @@ class NativeRpcClient:
                 )
             elif known:
                 message = (
-                    f"The DeepCode service did not answer within {budget:g}s; "
+                    f"The DFcode service did not answer within {budget:g}s; "
                     "it may be busy. Try again in a moment."
                 )
             else:
                 message = (
-                    f"The DeepCode service did not confirm this request within "
+                    f"The DFcode service did not confirm this request within "
                     f"{budget:g}s; it may still complete. Check the current "
                     "state before retrying."
                 )

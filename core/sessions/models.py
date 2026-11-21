@@ -6,7 +6,7 @@ These are plain dataclasses (not Pydantic) for two reasons:
    Skipping validation keeps the path predictable.
 2. The on-disk format is intentionally schema-light JSONL so external
    tools (``jq``, ``tail -f``) can consume sessions without importing
-   DeepCode.
+   DFcode.
 
 Each session lives in its own directory under the store root:
 

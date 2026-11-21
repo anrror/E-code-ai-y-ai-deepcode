@@ -19,7 +19,7 @@ from core.providers.profiles import ConnectionResolver
 def _service(
     home: Path,
 ) -> tuple[LLMConfigurationService, ConfigStore, CredentialStore]:
-    config = ConfigStore(home / "deepcode_config.json")
+    config = ConfigStore(home / "dfcode_config.json")
     credentials = CredentialStore(home / "credentials.json")
     service = LLMConfigurationService(
         config_store=config,
@@ -34,7 +34,7 @@ def test_connection_write_separates_and_never_projects_secret(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     secret = "unit-test-secret-that-must-not-leak"
 
@@ -77,13 +77,13 @@ def test_environment_precedence_and_named_local_connection(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     service.upsert(
         {
             "id": "router-team",
             "template": "openrouter",
-            "apiKeyEnv": "DEEPCODE_TEST_ROUTER_KEY",
+            "apiKeyEnv": "DFCODE_TEST_ROUTER_KEY",
             "apiKey": "stored-key",
         }
     )
@@ -94,7 +94,7 @@ def test_environment_precedence_and_named_local_connection(
             "apiBase": "http://127.0.0.1:11434/v1",
         }
     )
-    monkeypatch.setenv("DEEPCODE_TEST_ROUTER_KEY", "environment-key")
+    monkeypatch.setenv("DFCODE_TEST_ROUTER_KEY", "environment-key")
 
     resolver = ConnectionResolver(
         load_config(config_path=config.path),
@@ -116,7 +116,7 @@ def test_only_a_template_s_own_connection_reads_its_environment_key(
     # A gateway set up from the openai template used to be sent the user's
     # OPENAI_API_KEY, in place of the key saved for it.
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     service.upsert(
         {
@@ -156,7 +156,7 @@ def test_endpoint_required_templates_are_not_usable_until_configured(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     resolver = ConnectionResolver(load_config(config_path=config.path), credentials)
 
@@ -196,7 +196,7 @@ def test_partial_update_preserves_profile_and_builtin_legacy_key(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     service.upsert(
         {
@@ -252,7 +252,7 @@ def test_execution_profile_freezes_generation_and_connection_revision(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     service.upsert(
         {
@@ -335,7 +335,7 @@ def test_execution_profile_uses_cached_dynamic_model_limits_without_network(
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     service.upsert(
         {
@@ -377,7 +377,7 @@ def test_connection_verification_distinguishes_manual_catalog_from_failure(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, _config, _credentials = _service(home)
     service.upsert(
         {
@@ -411,7 +411,7 @@ def test_connection_verification_sends_only_a_minimal_real_model_probe(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, _config, _credentials = _service(home)
     service.upsert(
         {
@@ -460,7 +460,7 @@ def test_connection_verification_sends_only_a_minimal_real_model_probe(
                 {
                     "role": "user",
                     "content": (
-                        "Reply with exactly OK. This is a DeepCode connection "
+                        "Reply with exactly OK. This is a DFcode connection "
                         "verification request."
                     ),
                 }
@@ -478,7 +478,7 @@ def test_connection_verification_maps_provider_errors_without_leaking_response(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, _config, _credentials = _service(home)
     secret = "secret-that-must-not-be-returned"
     service.upsert(
@@ -524,7 +524,7 @@ def test_remove_unconfigures_a_builtin_including_its_legacy_literal_key(
     literal made it a lie: the built-in reappeared on the next listing,
     still configured from "legacy_config"."""
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, credentials = _service(home)
     home.mkdir(parents=True, exist_ok=True)
     config.path.write_text(
@@ -559,7 +559,7 @@ def test_model_catalog_auto_survives_an_edit_round_trip(
     """The wire echoes the STORED setting; echoing the resolved kind
     rewrote "auto" to a concrete value on every open-and-save."""
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     service, config, _credentials = _service(home)
 
     first = service.upsert(

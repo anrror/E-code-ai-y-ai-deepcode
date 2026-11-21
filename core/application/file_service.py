@@ -213,7 +213,7 @@ class FileService:
         temporary_name: str | None = None
         try:
             with tempfile.NamedTemporaryFile(
-                mode="wb", dir=file_path.parent, prefix=".deepcode-edit-", delete=False
+                mode="wb", dir=file_path.parent, prefix=".dfcode-edit-", delete=False
             ) as temporary:
                 temporary_name = temporary.name
                 temporary.write(encoded)

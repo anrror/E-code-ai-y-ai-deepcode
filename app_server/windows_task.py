@@ -35,8 +35,8 @@ def task_definition(config: dict, sid: str, label: str, configuration: Path) -> 
 
     root = ET.Element("{" + TASK_NS + "}Task", {"version": "1.4"})
     registration = child(root, "RegistrationInfo")
-    child(registration, "Description", "DeepCode local service " + label)
-    child(registration, "URI", "\\DeepCode\\" + label)
+    child(registration, "Description", "DFcode local service " + label)
+    child(registration, "URI", "\\DFcode\\" + label)
     trigger = child(child(root, "Triggers"), "LogonTrigger")
     child(trigger, "Enabled", "true")
     child(trigger, "UserId", sid)
@@ -86,7 +86,7 @@ class WindowsUserTask:
     def __init__(self, files: ServiceFiles):
         self.files = files
         identity = hashlib.sha256(str(files.database).encode()).hexdigest()[:16]
-        self.label = f"DeepCode-{identity}"
+        self.label = f"DFcode-{identity}"
         self.path = files.directory / "task-configuration.json"
 
     def _run(self, script, *, timeout=20, extra=None):
@@ -94,7 +94,7 @@ class WindowsUserTask:
         encoded = base64.b64encode((prelude + script).encode("utf-16-le")).decode(
             "ascii"
         )
-        environment = {**os.environ, "DEEPCODE_TASK_LABEL": self.label, **(extra or {})}
+        environment = {**os.environ, "DFCODE_TASK_LABEL": self.label, **(extra or {})}
         try:
             result = subprocess.run(
                 [
@@ -143,7 +143,7 @@ class WindowsUserTask:
         script = (
             self._connect()
             + """
-try { $folder=$scheduler.GetFolder('\\DeepCode'); $task=$folder.GetTask($env:DEEPCODE_TASK_LABEL) }
+try { $folder=$scheduler.GetFolder('\\DFcode'); $task=$folder.GetTask($env:DFCODE_TASK_LABEL) }
 catch {
  $failure=$_.Exception
  while ($null -ne $failure) {
@@ -161,10 +161,10 @@ catch {
             ns = {"t": TASK_NS}
             if (
                 root.findtext("t:RegistrationInfo/t:URI", namespaces=ns)
-                != "\\DeepCode\\" + self.label
+                != "\\DFcode\\" + self.label
             ):
                 raise ServiceOperationError(
-                    "Task identity does not match this DeepCode service"
+                    "Task identity does not match this DFcode service"
                 )
             if (
                 root.findtext("t:Principals/t:Principal/t:UserId", namespaces=ns)
@@ -249,7 +249,7 @@ catch {
             self._verify_definition(task, previous)
         if task.get("registered") and previous is None:
             raise ServiceOperationError(
-                "An existing task has no matching DeepCode configuration"
+                "An existing task has no matching DFcode configuration"
             )
         if previous != value and task.get("state") in {2, 4}:
             raise ServiceOperationError(
@@ -278,15 +278,15 @@ catch {
             script = (
                 self._connect()
                 + """
-try { $folder=$scheduler.GetFolder('\\DeepCode') } catch { $folder=$scheduler.GetFolder('\\').CreateFolder('DeepCode') }
-$definition=$scheduler.NewTask(0); $definition.XmlText=[IO.File]::ReadAllText($env:DEEPCODE_TASK_XML)
+try { $folder=$scheduler.GetFolder('\\DFcode') } catch { $folder=$scheduler.GetFolder('\\').CreateFolder('DFcode') }
+$definition=$scheduler.NewTask(0); $definition.XmlText=[IO.File]::ReadAllText($env:DFCODE_TASK_XML)
 $sid=[Security.Principal.WindowsIdentity]::GetCurrent().User.Value
-$null=$folder.RegisterTaskDefinition($env:DEEPCODE_TASK_LABEL,$definition,6,$sid,$null,3)
+$null=$folder.RegisterTaskDefinition($env:DFCODE_TASK_LABEL,$definition,6,$sid,$null,3)
 """
             )
             os.replace(temporary, self.path)
             try:
-                self._run(script, extra={"DEEPCODE_TASK_XML": str(xml_path)})
+                self._run(script, extra={"DFCODE_TASK_XML": str(xml_path)})
             except BaseException:
                 if previous is None:
                     self.path.unlink(missing_ok=True)
@@ -320,13 +320,13 @@ $null=$folder.RegisterTaskDefinition($env:DEEPCODE_TASK_LABEL,$definition,6,$sid
             )
         self._run(
             self._connect()
-            + "$task=$scheduler.GetFolder('\\DeepCode').GetTask($env:DEEPCODE_TASK_LABEL); $task.Enabled=$true; $null=$task.Run($null)"
+            + "$task=$scheduler.GetFolder('\\DFcode').GetTask($env:DFCODE_TASK_LABEL); $task.Enabled=$true; $null=$task.Run($null)"
         )
 
     def unload(self):
         if not self.job()["loaded"]:
             return
-        task = "$task=$scheduler.GetFolder('\\DeepCode').GetTask($env:DEEPCODE_TASK_LABEL); "
+        task = "$task=$scheduler.GetFolder('\\DFcode').GetTask($env:DFCODE_TASK_LABEL); "
         self._run(self._connect() + task + "$task.Enabled=$false")
         try:
             if self.files.running():
@@ -363,7 +363,7 @@ $null=$folder.RegisterTaskDefinition($env:DEEPCODE_TASK_LABEL,$definition,6,$sid
         if self._task().get("registered"):
             self._run(
                 self._connect()
-                + "$scheduler.GetFolder('\\DeepCode').DeleteTask($env:DEEPCODE_TASK_LABEL,0)"
+                + "$scheduler.GetFolder('\\DFcode').DeleteTask($env:DFCODE_TASK_LABEL,0)"
             )
         self.path.unlink(missing_ok=True)
         return {"installed": False, "atLogin": False, "path": str(self.path)}

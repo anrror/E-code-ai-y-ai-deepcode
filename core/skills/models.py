@@ -38,7 +38,7 @@ MUTABLE_SKILL_SCOPES = (SkillScope.PROJECT, SkillScope.USER)
 
 class SkillSourceRoot(StrEnum):
     AGENTS = "agents"
-    DEEPCODE = "deepcode"
+    DFCODE = "dfcode"
     CLAUDE = "claude"
     SYSTEM = "system"
 
@@ -179,7 +179,7 @@ class SkillKey:
         # other's selection. Only the digest crosses the protocol boundary.
         material = "\0".join(
             (
-                "deepcode-skill-v1",
+                "dfcode-skill-v1",
                 self.scope.value,
                 self.source_root.value,
                 str(self.skill_file),
@@ -196,7 +196,7 @@ class SkillKey:
     def display_location(self) -> str:
         root = {
             SkillSourceRoot.AGENTS: ".agents",
-            SkillSourceRoot.DEEPCODE: ".deepcode",
+            SkillSourceRoot.DFCODE: ".dfcode",
             SkillSourceRoot.CLAUDE: ".claude",
             SkillSourceRoot.SYSTEM: "bundled",
         }[self.source_root]
@@ -215,7 +215,7 @@ def _default_origin(key: SkillKey, reference: SkillReference) -> SkillOrigin:
     if key.source_root is SkillSourceRoot.SYSTEM:
         return SkillOrigin(
             kind=SkillOriginKind.BUNDLED,
-            label="DeepCode bundled",
+            label="DFcode bundled",
             location=key.display_location,
         )
     return SkillOrigin(

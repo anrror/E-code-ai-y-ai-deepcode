@@ -63,7 +63,7 @@ def test_desktop_runtime_key_changes_after_credential_rotation(
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     runtime = object()
     monkeypatch.setattr(
         "core.application.agent_adapter.get_runtime",

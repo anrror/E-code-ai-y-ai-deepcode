@@ -6,7 +6,7 @@ import httpx
 import pytest
 from openai import AsyncOpenAI
 
-from core.config import ConnectionProfileConfig, DeepCodeConfig
+from core.config import ConnectionProfileConfig, DFcodeConfig
 from core.domain.execution_profile import ExecutionProfile, ExecutionSelection
 from core.providers.credentials import CredentialStore
 from core.providers.openai_compat import OpenAICompatProvider
@@ -190,7 +190,7 @@ async def test_frozen_route_live_rotation_and_revocation(monkeypatch, tmp_path):
     mock_sdk(monkeypatch, handler)
     credentials = CredentialStore(tmp_path / "credentials.json")
     credentials.set("route", "first-private-key")
-    config = DeepCodeConfig.model_validate(
+    config = DFcodeConfig.model_validate(
         {
             "providers": {
                 "profiles": {

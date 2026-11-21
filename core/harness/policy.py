@@ -2,7 +2,7 @@
 
 Resolution order:
 
-    DEEPCODE_PERMISSION_MODE (env) > explicitly configured mode >
+    DFCODE_PERMISSION_MODE (env) > explicitly configured mode >
     caller-selected default
 
 The legacy CLI selects ``full_auto`` as its default to preserve its public
@@ -40,7 +40,7 @@ __all__ = [
 
 # Opt-in switch for the rules-only risk evaluator (#245). Read here, at the
 # policy layer, and nowhere else: the engine only takes an explicit evaluator.
-_RISK_EVALUATOR_ENV = "DEEPCODE_RISK_EVALUATOR"
+_RISK_EVALUATOR_ENV = "DFCODE_RISK_EVALUATOR"
 _TRUTHY = frozenset({"1", "true", "on", "yes"})
 
 
@@ -57,7 +57,7 @@ def resolve_permission_mode(
 ) -> PermissionMode:
     """Resolve the effective mode: env override > config > client default."""
 
-    raw = os.environ.get("DEEPCODE_PERMISSION_MODE", "").strip().lower()
+    raw = os.environ.get("DFCODE_PERMISSION_MODE", "").strip().lower()
     if not raw:
         raw = _mode_value(config_mode)
     try:
@@ -223,7 +223,7 @@ def build_permission_engine(
         protect_hook_configs=(
             profile.access_preset is not ExecutionAccessPreset.FULL_ACCESS
         ),
-        # Default off; DEEPCODE_RISK_EVALUATOR=1 opts in the rules-only second
+        # Default off; DFCODE_RISK_EVALUATOR=1 opts in the rules-only second
         # look on calls the mode default would allow (#245). Full Access skips
         # it, as it skips origin approval: its approval policy is ``never``, so
         # the evaluator's ``ask`` would become a deny nobody can approve.

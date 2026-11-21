@@ -5,7 +5,7 @@ service by default. An incompatible native client does not kill an existing
 service or silently open another application/database. Complete the platform
 and stability checks before publishing an installation.
 
-A client and the service must run the same DeepCode release. When a TUI or
+A client and the service must run the same DFcode release. When a TUI or
 Desktop that starts the service finds an older release running, for example
 after an update, it restarts that service from its own installation, but only
 while the service has no active or queued tasks and no open terminals; the
@@ -19,11 +19,11 @@ below.
 ## Prepare an upgrade
 
 ```sh
-deepcode service prepare-upgrade --output /safe/path/deepcode-before-upgrade
+dfcode service prepare-upgrade --output /safe/path/dfcode-before-upgrade
 # Update the Python installation or Desktop through its normal installer.
 # If a login item was installed, refresh its executable/environment definition:
-deepcode service install --at-login
-deepcode service start
+dfcode service install --at-login
+dfcode service start
 ```
 
 `prepare-upgrade` drains and stops the selected service, then creates an offline
@@ -36,7 +36,7 @@ reports the failure. It does not claim the upgrade is prepared.
 stopped. The output path must be new and outside the Session/revision directories.
 The service records its actual state layout, so a custom Session directory is
 not guessed from a different CLI environment after shutdown. For older services
-without layout metadata, use the original `DEEPCODE_HOME` and, if needed,
+without layout metadata, use the original `DFCODE_HOME` and, if needed,
 `--sessions PATH`.
 
 Snapshots contain the SQLite database, canonical Sessions, home configuration,
@@ -68,7 +68,7 @@ assumed.
 To restore an entire pre-upgrade state, stop every writer and explicitly run:
 
 ```sh
-deepcode service restore --snapshot /safe/path/deepcode-before-upgrade --replace-data
+dfcode service restore --snapshot /safe/path/dfcode-before-upgrade --replace-data
 ```
 
 This replaces runtime data written after the snapshot. It does not reverse
@@ -97,7 +97,7 @@ measures actual elapsed time and writes live status/samples under a new private
 root. Run it from an isolated, fixed source checkout:
 
 ```sh
-python scripts/foundation_soak.py --root /safe/path/deepcode-soak --seconds 86400
+python scripts/foundation_soak.py --root /safe/path/dfcode-soak --seconds 86400
 ```
 
 The default cadence is 20 seconds, with ten observer connections per cycle. It

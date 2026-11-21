@@ -7,7 +7,7 @@ from typing import BinaryIO
 from app_server.host import ServiceHost
 from app_server.peer import RpcPeer
 from app_server.protocol.codec import DEFAULT_MAX_MESSAGE_BYTES
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 
 
 def serve_stdio(peer: RpcPeer, source: BinaryIO) -> int:
@@ -34,7 +34,7 @@ class AppServer:
 
     def __init__(
         self,
-        application: DeepCodeApplication,
+        application: DFcodeApplication,
         *,
         max_message_bytes: int = DEFAULT_MAX_MESSAGE_BYTES,
     ) -> None:

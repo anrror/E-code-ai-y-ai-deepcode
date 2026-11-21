@@ -67,7 +67,7 @@ HANGS_ONCE_SRC = (
 
 class LazyActivationTests(unittest.IsolatedAsyncioTestCase):
     def setUp(self) -> None:
-        self.tmp = tempfile.mkdtemp(prefix="deepcode-mcp-lazy-")
+        self.tmp = tempfile.mkdtemp(prefix="dfcode-mcp-lazy-")
         self.fake_server = Path(self.tmp) / "fake_mcp_server.py"
         self.fake_server.write_text(FAKE_SERVER_SRC, encoding="utf-8")
 
@@ -110,10 +110,10 @@ class LazyActivationTests(unittest.IsolatedAsyncioTestCase):
             # activation bridge that makes deferred servers reachable.
             self.assertIn("eager1", runtime.skill_capabilities)
             self.assertNotIn("lazy1", runtime.skill_capabilities)
-            self.assertIn("mcp__deepcode_runtime__activate_server", registry.tool_names)
+            self.assertIn("mcp__dfcode_runtime__activate_server", registry.tool_names)
         finally:
             await runtime.aclose()
-        self.assertNotIn("mcp__deepcode_runtime__activate_server", registry.tool_names)
+        self.assertNotIn("mcp__dfcode_runtime__activate_server", registry.tool_names)
 
     async def test_activate_server_registers_tools(self) -> None:
         registry = ToolRegistry()
@@ -124,7 +124,7 @@ class LazyActivationTests(unittest.IsolatedAsyncioTestCase):
         try:
             await runtime.ensure_started()
             result = await registry.execute(
-                "mcp__deepcode_runtime__activate_server", {"server_id": "lazy1"}
+                "mcp__dfcode_runtime__activate_server", {"server_id": "lazy1"}
             )
             self.assertIn("activated", str(result))
             statuses = {s.server_id: s for s in runtime.statuses}
@@ -262,11 +262,11 @@ class LazyActivationTests(unittest.IsolatedAsyncioTestCase):
             self.assertEqual(status.state, "deferred")
             self.assertIn("timed out", status.error or "")
             self.assertNotIn("slow1", later.available_server_ids)
-            activation = registry.get("mcp__deepcode_runtime__activate_server")
+            activation = registry.get("mcp__dfcode_runtime__activate_server")
             self.assertIsNotNone(activation)
             self.assertIn("timed out", activation.description)
             result = await registry.execute(
-                "mcp__deepcode_runtime__activate_server", {"server_id": "slow1"}
+                "mcp__dfcode_runtime__activate_server", {"server_id": "slow1"}
             )
             self.assertIn("activated", str(result))
             self.assertIn("mcp__slow1__echo", registry.tool_names)

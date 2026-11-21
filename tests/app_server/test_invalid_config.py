@@ -20,10 +20,10 @@ def test_an_invalid_mcp_entry_names_itself_and_does_not_block_new_sessions(
 ):
     # One mcpServers entry without its "type" made thread/start answer
     # "internal error", with nothing saying which setting was wrong.
-    config = tmp_path / "deepcode-home" / "deepcode_config.json"
+    config = tmp_path / "dfcode-home" / "dfcode_config.json"
     config.parent.mkdir(parents=True, exist_ok=True)
     config.write_text(json.dumps({"mcpServers": {"slow": {"command": "python"}}}))
-    assert os.environ["DEEPCODE_HOME"] == str(config.parent)
+    assert os.environ["DFCODE_HOME"] == str(config.parent)
 
     async def scenario():
         async with control_server(tmp_path) as (control, _):

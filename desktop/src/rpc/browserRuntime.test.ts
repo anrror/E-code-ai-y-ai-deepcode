@@ -3,7 +3,7 @@ import { BrowserRuntime } from "./browserRuntime";
 
 const handshake = {
   protocolVersion: "1.0",
-  serverInfo: { name: "deepcode", version: "test" },
+  serverInfo: { name: "dfcode", version: "test" },
   clientInfo: { name: "web", version: "1" },
   serviceInfo: { instanceId: "instance-1", frontendBuildId: "build-1" },
   capabilities: {
@@ -20,7 +20,7 @@ type Frame = { id: number; method: string; params: Record<string, unknown> };
 let handle: (socket: Socket, frame: Frame) => void;
 let requests: Frame[];
 let sockets: Socket[];
-const SESSION_KEY = "deepcode.web.session.v1";
+const SESSION_KEY = "dfcode.web.session.v1";
 class Socket {
   static OPEN = 1;
   readyState = 0;
@@ -130,8 +130,8 @@ describe("BrowserRuntime connection and retry contract", () => {
       "Bearer session-1",
     );
     expect(sockets.at(-1)?.protocols).toEqual([
-      "deepcode.rpc",
-      "deepcode.session.session-1",
+      "dfcode.rpc",
+      "dfcode.session.session-1",
     ]);
     await runtime.logout();
     expect(localStorage.getItem(SESSION_KEY)).toBeNull();
@@ -250,7 +250,7 @@ describe("BrowserRuntime connection and retry contract", () => {
     expect(await runtime.status()).toMatchObject({
       phase: "stopped",
       errorCode: "AUTH_REQUIRED",
-      message: expect.stringContaining("deepcode web"),
+      message: expect.stringContaining("dfcode web"),
     });
     await vi.advanceTimersByTimeAsync(30000);
     expect(fetch).toHaveBeenCalledTimes(1);
@@ -263,7 +263,7 @@ describe("BrowserRuntime connection and retry contract", () => {
     localStorage.setItem(SESSION_KEY, "from-another-tab");
     expect(await runtime.restart()).toMatchObject({ phase: "ready", errorCode: null, message: null });
     expect(sockets.at(-1)?.protocols).toContain(
-      "deepcode.session.from-another-tab",
+      "dfcode.session.from-another-tab",
     );
   });
 

@@ -6,7 +6,7 @@ from unittest.mock import patch
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ConflictError, ThreadNotFoundError
 from core.domain import TrustState
 from core.domain.automation import AutomationScheduleKind
@@ -17,11 +17,11 @@ from core.sessions import SessionStore
 from core.sessions.deletion import SessionDeletionJournal
 
 
-def _application(tmp_path: Path) -> tuple[DeepCodeApplication, str, str]:
+def _application(tmp_path: Path) -> tuple[DFcodeApplication, str, str]:
     workspace = tmp_path / "workspace"
     workspace.mkdir(exist_ok=True)
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=sessions,
     )
@@ -34,7 +34,7 @@ def _application(tmp_path: Path) -> tuple[DeepCodeApplication, str, str]:
     return application, project.id, thread.id
 
 
-def _row_count(application: DeepCodeApplication, table: str, thread_id: str) -> int:
+def _row_count(application: DFcodeApplication, table: str, thread_id: str) -> int:
     column = "id" if table == "threads" else "thread_id"
     with application.database.read() as connection:
         row = connection.execute(
@@ -61,7 +61,7 @@ def test_delete_removes_canonical_session_and_sqlite_projection(tmp_path: Path) 
     finally:
         application.close()
 
-    reopened = DeepCodeApplication.open(
+    reopened = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions"),
     )
@@ -78,7 +78,7 @@ def test_delete_projects_a_cli_only_session_created_after_application_start(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=sessions,
     )
@@ -127,7 +127,7 @@ def test_startup_finishes_interrupted_deletion_without_resurrection(
     assert _row_count(application, "threads", thread_id) == 1
     application.close()
 
-    recovered = DeepCodeApplication.open(
+    recovered = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions"),
     )
@@ -245,7 +245,7 @@ def test_cleanup_failure_keeps_tombstone_for_next_startup(tmp_path: Path) -> Non
     finally:
         application.close()
 
-    recovered = DeepCodeApplication.open(
+    recovered = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions"),
     )
@@ -283,7 +283,7 @@ def test_deleting_a_forked_session_cleans_its_managed_worktree(tmp_path: Path) -
         capture_output=True,
     )
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_store=sessions
     )
     try:

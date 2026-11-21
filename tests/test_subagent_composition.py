@@ -1,7 +1,7 @@
 """Per-child sub-agent composition: persona, tool allowlist, output schema.
 
 The dsh capabilities under test (``SubagentCapabilities``: persona,
-toolFilter, outputSchema), in DeepCode form:
+toolFilter, outputSchema), in DFcode form:
 
 - persona and the capture contract ride the system prompt as ADDITIONAL
   sections — the base prompt survives;

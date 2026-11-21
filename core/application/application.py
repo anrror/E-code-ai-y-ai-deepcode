@@ -64,7 +64,7 @@ from core.sessions import (
 from core.skills.host import SkillWorkspaceRegistry
 
 
-class DeepCodeApplication:
+class DFcodeApplication:
     """Own product services without depending on CLI, JSON-RPC, or Tauri."""
 
     def __init__(
@@ -284,10 +284,10 @@ class DeepCodeApplication:
         run_automation_scheduler: bool = False,
         event_relay_poll_interval: float = DEFAULT_RELAY_POLL_INTERVAL,
         event_relay_batch_size: int = DEFAULT_RELAY_BATCH_SIZE,
-    ) -> DeepCodeApplication:
+    ) -> DFcodeApplication:
         database = Database(database_path)
         lease = ApplicationLease.acquire(database.path)
-        application: DeepCodeApplication | None = None
+        application: DFcodeApplication | None = None
         try:
             if lease.recovery_owner:
                 database.initialize()
@@ -379,7 +379,7 @@ class DeepCodeApplication:
             try:
                 operation()
             except Exception as exc:  # noqa: BLE001 - aggregate every cleanup failure
-                exc.add_note(f"DeepCode shutdown stage: {stage}")
+                exc.add_note(f"DFcode shutdown stage: {stage}")
                 errors.append(exc)
 
         attempt("event relay", self.event_relay.close)
@@ -404,7 +404,7 @@ class DeepCodeApplication:
         if self.execution_coordinator.active_claims:
             errors.append(
                 RuntimeError(
-                    "cannot close DeepCode while execution claims remain active"
+                    "cannot close DFcode while execution claims remain active"
                 )
             )
         else:
@@ -440,7 +440,7 @@ class DeepCodeApplication:
         if len(errors) == 1:
             raise errors[0]
         if errors:
-            raise ExceptionGroup("DeepCode application shutdown failed", errors)
+            raise ExceptionGroup("DFcode application shutdown failed", errors)
 
 
 # Every Goal update is kept as an event, so it carries only the latest review,

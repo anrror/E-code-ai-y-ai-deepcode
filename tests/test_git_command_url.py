@@ -31,9 +31,9 @@ def test_extract_preserves_names_ending_in_strip_chars():
 
 def test_extract_strips_only_real_git_suffix():
     urls = GitHubURLExtractor.extract_github_urls(
-        "Download https://github.com/HKUDS/DeepCode.git"
+        "Download https://github.com/HKUDS/DFcode.git"
     )
-    assert urls == ["https://github.com/HKUDS/DeepCode"]
+    assert urls == ["https://github.com/HKUDS/DFcode"]
 
 
 def test_infer_repo_name_keeps_full_name():

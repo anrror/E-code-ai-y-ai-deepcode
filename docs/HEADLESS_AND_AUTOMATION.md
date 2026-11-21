@@ -1,7 +1,7 @@
-# DeepCode Headless and Automation
+# DFcode Headless and Automation
 
 <p align="center">
-  Run the same DeepCode Agent and Session runtime from scripts, CI, and scheduled workflows.
+  Run the same DFcode Agent and Session runtime from scripts, CI, and scheduled workflows.
 </p>
 
 <p align="center">
@@ -13,7 +13,7 @@
 
 ## English
 
-DeepCode is designed to be used through Desktop or the interactive CLI. The
+DFcode is designed to be used through Desktop or the interactive CLI. The
 commands in this guide are advanced integration surfaces for environments where
 opening an interface is inconvenient: CI jobs, shell scripts, scheduled work,
 and administration.
@@ -24,41 +24,41 @@ recovery rules, and evidence as Desktop and CLI.
 
 ### Before you begin
 
-Install and initialize DeepCode, configure a model connection, and open the
-target repository in DeepCode at least once:
+Install and initialize DFcode, configure a model connection, and open the
+target repository in DFcode at least once:
 
 ```console
-uv tool install --python 3.12 deepcode-hku
-deepcode init
+uv tool install --python 3.12 dfcode-hku
+dfcode init
 cd <your-project>
-deepcode
+dfcode
 ```
 
 The first Agent run requires explicit Project trust. Trust confirms which
-workspace DeepCode may operate in; it does not grant unrestricted tool access.
+workspace DFcode may operate in; it does not grant unrestricted tool access.
 
-Use `deepcode <command> --help` whenever you need the complete option list.
+Use `dfcode <command> --help` whenever you need the complete option list.
 
 ### Run one Turn without an interface
 
-`deepcode exec` submits one durable coding Turn and streams its progress to the
+`dfcode exec` submits one durable coding Turn and streams its progress to the
 terminal:
 
 ```console
-deepcode exec "Fix the failing tests and explain the root cause"
+dfcode exec "Fix the failing tests and explain the root cause"
 ```
 
 The current directory becomes the workspace for a new Session. To continue an
 existing canonical Session:
 
 ```console
-deepcode exec "Now add a regression test" --resume <session-id>
+dfcode exec "Now add a regression test" --resume <session-id>
 ```
 
 Useful integration options:
 
 ```console
-deepcode exec "Review this change" \
+dfcode exec "Review this change" \
   --connection <connection-id> \
   --model <model-id> \
   --effort high \
@@ -80,26 +80,26 @@ workspace where unrestricted local execution is intentionally acceptable.
 ### Run a durable Goal headlessly
 
 Desktop and the interactive CLI are the normal places to create and steer a
-Goal. `deepcode loop` is the compatibility entry point for scripts that need a
+Goal. `dfcode loop` is the compatibility entry point for scripts that need a
 durable Goal without keeping an interface open:
 
 ```console
-deepcode loop "Implement the requested feature and verify it"
+dfcode loop "Implement the requested feature and verify it"
 ```
 
 An optional test command tells the Agent what it must run before deciding
-whether the Goal is complete, and DeepCode runs it itself, with the agent's
+whether the Goal is complete, and DFcode runs it itself, with the agent's
 command rights, before it accepts the claim. `--check` adds more such commands:
 
 ```console
-deepcode loop "Implement the requested feature" \
+dfcode loop "Implement the requested feature" \
   --test-cmd "python -m pytest -q" --check "ruff check ."
 ```
 
 Resume the same Goal and canonical Session after the process exits:
 
 ```console
-deepcode loop --resume <session-id>
+dfcode loop --resume <session-id>
 ```
 
 Connection, model, and Thinking overrides affect only the next Turn started by
@@ -115,7 +115,7 @@ The Project must already be trusted.
 Create a manual Automation:
 
 ```console
-deepcode automation create "Security review" \
+dfcode automation create "Security review" \
   --workspace . \
   --prompt "Review the current repository for security regressions." \
   --schedule manual
@@ -124,7 +124,7 @@ deepcode automation create "Security review" \
 Create an interval Automation:
 
 ```console
-deepcode automation create "Repository caretaker" \
+dfcode automation create "Repository caretaker" \
   --workspace . \
   --prompt "Repair failing tests and verify the result." \
   --schedule interval \
@@ -134,13 +134,13 @@ deepcode automation create "Repository caretaker" \
 Manage definitions and Run history:
 
 ```console
-deepcode automation list --workspace .
-deepcode automation update <automation-id> --prompt "Updated instruction"
-deepcode automation enable <automation-id>
-deepcode automation disable <automation-id>
-deepcode automation run <automation-id>
-deepcode automation runs <automation-id> --limit 100 --offset 0
-deepcode automation delete <automation-id>
+dfcode automation list --workspace .
+dfcode automation update <automation-id> --prompt "Updated instruction"
+dfcode automation enable <automation-id>
+dfcode automation disable <automation-id>
+dfcode automation run <automation-id>
+dfcode automation runs <automation-id> --limit 100 --offset 0
+dfcode automation delete <automation-id>
 ```
 
 `automation run` accepts `--request-id <key>` as an idempotency key when a
@@ -158,40 +158,40 @@ Desktop users normally manage connections under **Settings → AI providers**.
 The equivalent administrative commands are:
 
 ```console
-deepcode provider list
-deepcode provider set <connection-id> --template openrouter --api-key
-deepcode provider models <connection-id> --refresh
-deepcode provider test <connection-id>
-deepcode provider test <connection-id> --model <model-id>
-deepcode provider remove <connection-id>
+dfcode provider list
+dfcode provider set <connection-id> --template openrouter --api-key
+dfcode provider models <connection-id> --refresh
+dfcode provider test <connection-id>
+dfcode provider test <connection-id> --model <model-id>
+dfcode provider remove <connection-id>
 ```
 
 `--api-key` prompts without echoing the secret. Use an environment variable
 instead of the credential store when a CI platform manages secrets:
 
 ```console
-deepcode provider set work-openrouter \
+dfcode provider set work-openrouter \
   --template openrouter \
   --api-key-env OPENROUTER_API_KEY
 ```
 
 On a workstation you can keep a key in the operating system keychain instead.
-Install the optional `keyring` package, set `DEEPCODE_KEYRING=1`, and store the
-key under the service `deepcode` with the connection id as the user name:
+Install the optional `keyring` package, set `DFCODE_KEYRING=1`, and store the
+key under the service `dfcode` with the connection id as the user name:
 
 ```console
 python -m pip install keyring
-keyring set deepcode work-openrouter
+keyring set dfcode work-openrouter
 ```
 
-DeepCode reads the keychain only when the credential store has no key for that
+DFcode reads the keychain only when the credential store has no key for that
 connection, and never writes to it; `--api-key` still saves to the credential
 store. Any keychain error falls back to the next source instead of failing.
 
 Connect an OpenAI-compatible gateway:
 
 ```console
-deepcode provider set company-gateway \
+dfcode provider set company-gateway \
   --template custom \
   --adapter openai_compat \
   --api-base https://llm.example.com/v1 \
@@ -205,28 +205,28 @@ machine-readable results.
 
 ### Skill management
 
-DeepCode writes new Skills to the canonical Agent Skills locations and keeps
+DFcode writes new Skills to the canonical Agent Skills locations and keeps
 legacy directories as read-only compatibility inputs:
 
 ```text
 .agents/skills/          project Skills (canonical)
 ~/.agents/skills/        user Skills (canonical)
-.deepcode/skills/        legacy DeepCode compatibility
+.dfcode/skills/        legacy DFcode compatibility
 .claude/skills/          Claude compatibility
-~/.deepcode/skills/      legacy user compatibility
+~/.dfcode/skills/      legacy user compatibility
 ~/.claude/skills/        Claude user compatibility
 ```
 
 Inspect and manage the catalog:
 
 ```console
-deepcode skill list
-deepcode skill show <id-or-name>
-deepcode skill import ./my-skill --scope project
-deepcode skill enable <skill-id> --scope project
-deepcode skill disable <skill-id> --scope project
-deepcode skill remove <skill-id>
-deepcode skill reload
+dfcode skill list
+dfcode skill show <id-or-name>
+dfcode skill import ./my-skill --scope project
+dfcode skill enable <skill-id> --scope project
+dfcode skill disable <skill-id> --scope project
+dfcode skill remove <skill-id>
+dfcode skill reload
 ```
 
 ### Local Plugin management
@@ -238,11 +238,11 @@ continue to work without a Plugin and retain precedence over same-named Plugin
 Skills:
 
 ```console
-deepcode plugin list
-deepcode plugin add ./my-plugin
-deepcode plugin disable <plugin-id>
-deepcode plugin enable <plugin-id>
-deepcode plugin remove <plugin-id> --yes
+dfcode plugin list
+dfcode plugin add ./my-plugin
+dfcode plugin disable <plugin-id>
+dfcode plugin enable <plugin-id>
+dfcode plugin remove <plugin-id> --yes
 ```
 
 Adding and removing only changes the user registry; source files stay in their
@@ -255,9 +255,9 @@ Coding-agent MCP configuration uses the top-level `mcpServers` object, separate
 from the historical Paper2Code `tools.mcpServers` settings:
 
 ```console
-deepcode mcp list
-deepcode mcp add local-tools --approval writes --command python3 server.py
-deepcode mcp remove local-tools
+dfcode mcp list
+dfcode mcp add local-tools --approval writes --command python3 server.py
+dfcode mcp remove local-tools
 ```
 
 `mcp list` flags each server that is disabled, is missing a required
@@ -270,7 +270,7 @@ server. Use `--workspace <path> --scope project --trust` for an explicitly
 trusted project layer. Bind stored user credentials with
 `--credential-env NAME=connection-id`; raw sensitive environment and header
 values are rejected. Desktop's **MCP** workspace uses the same service and
-configuration files. See [OpenSpace with DeepCode](integrations/OPENSPACE.md)
+configuration files. See [OpenSpace with DFcode](integrations/OPENSPACE.md)
 for a real MCP-plus-Skills integration.
 
 Use `--workspace <path>` before the Skill subcommand when its project-level
@@ -284,30 +284,30 @@ Archive and delete Sessions from Desktop whenever possible. For administrative
 scripts, permanent deletion requires an exact Session ID:
 
 ```console
-deepcode session delete <session-id>
+dfcode session delete <session-id>
 ```
 
 Add `--yes` to skip the interactive confirmation or `--json` for a structured
-result. DeepCode refuses deletion while a Session has active work, is open in
+result. DFcode refuses deletion while a Session has active work, is open in
 another CLI, owns a managed worktree, or belongs to an Automation. Repository
 files are never deleted by Session deletion.
 
 ### Scripting contract
 
-- `deepcode exec` exits successfully only when its Turn settles successfully.
-- `deepcode loop` exits successfully only when the Goal is complete.
+- `dfcode exec` exits successfully only when its Turn settles successfully.
+- `dfcode loop` exits successfully only when the Goal is complete.
 - JSON output is intended for machines; human transcripts are presentation,
   not a stable parsing format.
 - Project trust and access presets are separate. `--trust` never implies
   `--access full-access`.
 - CLI, Desktop, and headless commands write to the same canonical Session
-  history under `~/.deepcode/sessions/`.
+  history under `~/.dfcode/sessions/`.
 
 ---
 
 ## 中文
 
-DeepCode 的主要使用方式是 Desktop 或交互式 CLI。本指南中的命令面向不方便
+DFcode 的主要使用方式是 Desktop 或交互式 CLI。本指南中的命令面向不方便
 打开界面的环境，例如 CI、Shell 脚本、定时任务和管理工具。
 
 这些命令不会启动另一套简化 Agent。无界面执行仍使用与 Desktop、CLI 相同的
@@ -315,39 +315,39 @@ Project、规范 Session、模型、Skills、权限、Goal、工具、恢复规�
 
 ### 开始之前
 
-先安装并初始化 DeepCode，配置模型连接，并至少在 DeepCode 中打开一次目标
+先安装并初始化 DFcode，配置模型连接，并至少在 DFcode 中打开一次目标
 仓库：
 
 ```console
-uv tool install --python 3.12 deepcode-hku
-deepcode init
+uv tool install --python 3.12 dfcode-hku
+dfcode init
 cd <你的项目>
-deepcode
+dfcode
 ```
 
-Agent 首次运行需要明确的 Project trust。Trust 只确认 DeepCode 可以在哪个
+Agent 首次运行需要明确的 Project trust。Trust 只确认 DFcode 可以在哪个
 工作区执行，不代表授予无限制工具权限。
 
-需要查看完整参数时，运行 `deepcode <命令> --help`。
+需要查看完整参数时，运行 `dfcode <命令> --help`。
 
 ### 无界面运行一个 Turn
 
-`deepcode exec` 会提交一个持久 Coding Turn，并把进度输出到终端：
+`dfcode exec` 会提交一个持久 Coding Turn，并把进度输出到终端：
 
 ```console
-deepcode exec "修复失败的测试，并解释根本原因"
+dfcode exec "修复失败的测试，并解释根本原因"
 ```
 
 当前目录会成为新 Session 的 workspace。继续已有规范 Session：
 
 ```console
-deepcode exec "现在补充一个回归测试" --resume <session-id>
+dfcode exec "现在补充一个回归测试" --resume <session-id>
 ```
 
 脚本集成常用参数：
 
 ```console
-deepcode exec "检查本次修改" \
+dfcode exec "检查本次修改" \
   --connection <连接ID> \
   --model <模型ID> \
   --effort high \
@@ -368,25 +368,25 @@ deepcode exec "检查本次修改" \
 
 ### 无界面运行持久 Goal
 
-Desktop 和交互式 CLI 是创建、调整 Goal 的主要入口。`deepcode loop` 是为
+Desktop 和交互式 CLI 是创建、调整 Goal 的主要入口。`dfcode loop` 是为
 脚本保留的无界面兼容入口：
 
 ```console
-deepcode loop "实现指定功能并完成验证"
+dfcode loop "实现指定功能并完成验证"
 ```
 
-可选的测试命令会要求 Agent 在判断完成之前运行它；DeepCode 接受完成声明之前
+可选的测试命令会要求 Agent 在判断完成之前运行它；DFcode 接受完成声明之前
 也会以 Agent 自己的命令权限运行一次。`--check` 可以再加更多这样的命令：
 
 ```console
-deepcode loop "实现指定功能" \
+dfcode loop "实现指定功能" \
   --test-cmd "python -m pytest -q" --check "ruff check ."
 ```
 
 进程退出后继续同一个 Goal 与规范 Session：
 
 ```console
-deepcode loop --resume <session-id>
+dfcode loop --resume <session-id>
 ```
 
 连接、模型和 Thinking 覆盖只影响该命令启动的下一个 Turn。
@@ -400,7 +400,7 @@ deepcode loop --resume <session-id>
 创建手动 Automation：
 
 ```console
-deepcode automation create "安全审查" \
+dfcode automation create "安全审查" \
   --workspace . \
   --prompt "检查当前仓库是否存在安全回归。" \
   --schedule manual
@@ -409,7 +409,7 @@ deepcode automation create "安全审查" \
 创建定时 Automation：
 
 ```console
-deepcode automation create "仓库维护" \
+dfcode automation create "仓库维护" \
   --workspace . \
   --prompt "修复失败的测试并验证结果。" \
   --schedule interval \
@@ -419,13 +419,13 @@ deepcode automation create "仓库维护" \
 管理定义与 Run 历史：
 
 ```console
-deepcode automation list --workspace .
-deepcode automation update <automation-id> --prompt "更新后的指令"
-deepcode automation enable <automation-id>
-deepcode automation disable <automation-id>
-deepcode automation run <automation-id>
-deepcode automation runs <automation-id> --limit 100 --offset 0
-deepcode automation delete <automation-id>
+dfcode automation list --workspace .
+dfcode automation update <automation-id> --prompt "更新后的指令"
+dfcode automation enable <automation-id>
+dfcode automation disable <automation-id>
+dfcode automation run <automation-id>
+dfcode automation runs <automation-id> --limit 100 --offset 0
+dfcode automation delete <automation-id>
 ```
 
 调用方可能重试同一请求时，`automation run` 可以传入
@@ -441,37 +441,37 @@ Automation 命令可以添加 `--json` 获取机器可读输出。定义和 Run 
 Desktop 用户通常在 **Settings → AI providers** 中管理连接。对应的管理命令为：
 
 ```console
-deepcode provider list
-deepcode provider set <连接ID> --template openrouter --api-key
-deepcode provider models <连接ID> --refresh
-deepcode provider test <连接ID>
-deepcode provider test <连接ID> --model <模型ID>
-deepcode provider remove <连接ID>
+dfcode provider list
+dfcode provider set <连接ID> --template openrouter --api-key
+dfcode provider models <连接ID> --refresh
+dfcode provider test <连接ID>
+dfcode provider test <连接ID> --model <模型ID>
+dfcode provider remove <连接ID>
 ```
 
 `--api-key` 会以不回显方式输入密钥。由 CI 平台管理密钥时，可以改用环境变量：
 
 ```console
-deepcode provider set work-openrouter \
+dfcode provider set work-openrouter \
   --template openrouter \
   --api-key-env OPENROUTER_API_KEY
 ```
 
 在个人电脑上，也可以把密钥放在操作系统钥匙串里。安装可选的 `keyring` 包，设置
-`DEEPCODE_KEYRING=1`，再以 `deepcode` 为服务名、连接 ID 为用户名保存密钥：
+`DFCODE_KEYRING=1`，再以 `dfcode` 为服务名、连接 ID 为用户名保存密钥：
 
 ```console
 python -m pip install keyring
-keyring set deepcode work-openrouter
+keyring set dfcode work-openrouter
 ```
 
-只有凭据存储里没有该连接的密钥时，DeepCode 才会读取钥匙串，而且从不写入钥匙串；
+只有凭据存储里没有该连接的密钥时，DFcode 才会读取钥匙串，而且从不写入钥匙串；
 `--api-key` 仍然保存到凭据存储。钥匙串出错时会回退到下一个来源，不会导致失败。
 
 接入 OpenAI-compatible 网关：
 
 ```console
-deepcode provider set company-gateway \
+dfcode provider set company-gateway \
   --template custom \
   --adapter openai_compat \
   --api-base https://llm.example.com/v1 \
@@ -484,27 +484,27 @@ Catalog 检查不会发送仓库内容。为 `provider test` 指定 `--model` �
 
 ### Skills 管理
 
-DeepCode 将新 Skill 写入标准 Agent Skills 目录，并把旧目录作为只读兼容来源：
+DFcode 将新 Skill 写入标准 Agent Skills 目录，并把旧目录作为只读兼容来源：
 
 ```text
 .agents/skills/          项目级 Skills（标准目录）
 ~/.agents/skills/        用户级 Skills（标准目录）
-.deepcode/skills/        旧 DeepCode 兼容目录
+.dfcode/skills/        旧 DFcode 兼容目录
 .claude/skills/          Claude 兼容目录
-~/.deepcode/skills/      旧用户级 DeepCode 兼容目录
+~/.dfcode/skills/      旧用户级 DFcode 兼容目录
 ~/.claude/skills/        用户级 Claude 兼容目录
 ```
 
 检查和管理目录：
 
 ```console
-deepcode skill list
-deepcode skill show <ID或名称>
-deepcode skill import ./my-skill --scope project
-deepcode skill enable <skill-id> --scope project
-deepcode skill disable <skill-id> --scope project
-deepcode skill remove <skill-id>
-deepcode skill reload
+dfcode skill list
+dfcode skill show <ID或名称>
+dfcode skill import ./my-skill --scope project
+dfcode skill enable <skill-id> --scope project
+dfcode skill disable <skill-id> --scope project
+dfcode skill remove <skill-id>
+dfcode skill reload
 ```
 
 ### 本地 Plugin 管理
@@ -513,11 +513,11 @@ deepcode skill reload
 `mcp.json` 还可以贡献会话级 MCP server；注册和查看 Plugin 时不会启动进程：
 
 ```console
-deepcode plugin list
-deepcode plugin add ./my-plugin
-deepcode plugin disable <plugin-id>
-deepcode plugin enable <plugin-id>
-deepcode plugin remove <plugin-id> --yes
+dfcode plugin list
+dfcode plugin add ./my-plugin
+dfcode plugin disable <plugin-id>
+dfcode plugin enable <plugin-id>
+dfcode plugin remove <plugin-id> --yes
 ```
 
 添加和移除只会修改用户注册表，不会复制或删除源文件。Manifest 与安全边界见
@@ -529,9 +529,9 @@ Coding Agent 使用顶层 `mcpServers`，与历史 Paper2Code 的
 `tools.mcpServers` 完全分开：
 
 ```console
-deepcode mcp list
-deepcode mcp add local-tools --approval writes --command python3 server.py
-deepcode mcp remove local-tools
+dfcode mcp list
+dfcode mcp add local-tools --approval writes --command python3 server.py
+dfcode mcp remove local-tools
 ```
 
 `mcp list` 会标出已停用、缺少必需环境变量或被传入已存凭据的 server，并在末尾
@@ -541,7 +541,7 @@ deepcode mcp remove local-tools
 `--command` 之后的参数会原样传给 stdio server，因此应放在最后。用户凭据用
 `--credential-env NAME=connection-id` 绑定，不要把 secret 写进 JSON。Desktop
 的 **MCP** 页面使用同一服务。OpenSpace 示例见
-[OpenSpace with DeepCode](integrations/OPENSPACE.md)。
+[OpenSpace with DFcode](integrations/OPENSPACE.md)。
 
 如果需要从当前目录以外的位置解析项目级 Skills，请把
 `--workspace <路径>` 放在 Skill 子命令之前。Skill 可以指导 Agent，但不能授予
@@ -553,19 +553,19 @@ deepcode mcp remove local-tools
 提供完整 ID：
 
 ```console
-deepcode session delete <session-id>
+dfcode session delete <session-id>
 ```
 
 添加 `--yes` 可以跳过交互确认，添加 `--json` 可以获得结构化结果。如果
 Session 正在运行、被另一个 CLI 打开、拥有托管 worktree，或属于 Automation，
-DeepCode 会拒绝删除。删除 Session 永远不会删除项目文件。
+DFcode 会拒绝删除。删除 Session 永远不会删除项目文件。
 
 ### 脚本契约
 
-- `deepcode exec` 仅在 Turn 成功收敛时返回成功退出码。
-- `deepcode loop` 仅在 Goal 完成时返回成功退出码。
+- `dfcode exec` 仅在 Turn 成功收敛时返回成功退出码。
+- `dfcode loop` 仅在 Goal 完成时返回成功退出码。
 - JSON 输出供程序解析；人类可读 transcript 不是稳定的机器协议。
 - Project trust 与权限档位相互独立，`--trust` 不代表
   `--access full-access`。
-- CLI、Desktop 和无界面命令都写入 `~/.deepcode/sessions/` 下的同一份规范
+- CLI、Desktop 和无界面命令都写入 `~/.dfcode/sessions/` 下的同一份规范
   Session 历史。

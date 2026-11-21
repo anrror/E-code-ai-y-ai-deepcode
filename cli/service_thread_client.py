@@ -733,12 +733,12 @@ class ServiceThreadClient:
         answered = code == "INTERNAL_ERROR"
         if time.monotonic() - failing_since >= _RECONNECT_WINDOW_S:
             self._notify_connection(
-                f"The DeepCode service keeps failing to send this Session's "
+                f"The DFcode service keeps failing to send this Session's "
                 f"updates ({exc}). Use /reconnect to try again, or see "
-                "`deepcode service logs`."
+                "`dfcode service logs`."
                 if answered
-                else "Still cannot reach the DeepCode service. Use /reconnect to "
-                "start it again, or check `deepcode service status`."
+                else "Still cannot reach the DFcode service. Use /reconnect to "
+                "start it again, or check `dfcode service status`."
             )
             return False
         if failures == 0:
@@ -746,7 +746,7 @@ class ServiceThreadClient:
                 logger.warning("Could not replay Session events: %s", exc)
             else:
                 self._notify_connection(
-                    f"Lost connection to the DeepCode service ({exc}). Retrying "
+                    f"Lost connection to the DFcode service ({exc}). Retrying "
                     "for up to 2 minutes; tasks it already accepted keep running."
                 )
         return True

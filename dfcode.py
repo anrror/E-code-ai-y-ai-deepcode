@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""DeepCode command-line entry point."""
+"""DFcode command-line entry point."""
 
 import os
 import sys
@@ -37,7 +37,7 @@ def print_banner():
     width = 62
     lines = [
         "",
-        " DeepCode — Open Agentic Coding",
+        " DFcode — Open Agentic Coding",
         "",
         " Agentic code generation with multi-agent LLM systems",
         "",
@@ -54,13 +54,13 @@ def _bootstrap_logging() -> None:
     Without this, loguru keeps its built-in stderr sink at DEBUG level, so
     routine internals reach the terminal — most visibly the "config layer
     absent" line that ``load_config`` emits in any directory without a
-    project-level ``deepcode_config.json`` (#167).
+    project-level ``dfcode_config.json`` (#167).
 
     Order matters and is the reason this is not simply
     ``setup_logging(load_config().logger)``: reading the config is itself
     one of the things that logs. So install a quiet default first, then
-    re-apply only if the user asked for something else. ``DEEPCODE_LOG_LEVEL``
-    wins over both and needs no config file, matching ``deepcode mcp``.
+    re-apply only if the user asked for something else. ``DFCODE_LOG_LEVEL``
+    wins over both and needs no config file, matching ``dfcode mcp``.
 
     Every subcommand below is dispatched from here, so this is the one place
     that has to remember — a per-entrypoint call would be the same four lines
@@ -69,7 +69,7 @@ def _bootstrap_logging() -> None:
     from core.config import LoggerConfig, load_config
     from core.observability import setup_logging
 
-    override = os.environ.get("DEEPCODE_LOG_LEVEL")
+    override = os.environ.get("DFCODE_LOG_LEVEL")
     setup_logging(LoggerConfig(level=override or "INFO", transports=["console"]))
     if override:
         return
@@ -91,26 +91,26 @@ def main():
     # Parse command line arguments
     if len(sys.argv) > 1:
         if sys.argv[1] in {"--version", "-V"}:
-            print(f"DeepCode {__version__}")
+            print(f"DFcode {__version__}")
             return
         if sys.argv[1] == "test":
             # It ran a test_paper.py script that was never part of the
             # package, so it could only fail. Paper2Code runs in the clients.
             print(
-                "`deepcode test` has been removed. Run Paper2Code from the "
-                "desktop or browser client instead: start `deepcode desktop` "
-                "or `deepcode web`, then use /paper.",
+                "`dfcode test` has been removed. Run Paper2Code from the "
+                "desktop or browser client instead: start `dfcode desktop` "
+                "or `dfcode web`, then use /paper.",
                 file=sys.stderr,
             )
             sys.exit(1)
         elif sys.argv[1] == "init":
-            # One-time setup: create the user-level config base (~/.deepcode) so
-            # `deepcode` runs in any directory. Cross-platform (Win/mac/Linux).
+            # One-time setup: create the user-level config base (~/.dfcode) so
+            # `dfcode` runs in any directory. Cross-platform (Win/mac/Linux).
             from cli.init_config import run as init_run
 
             raise SystemExit(init_run(sys.argv[2:]))
         elif sys.argv[1] == "mcp":
-            # Bare/serve exposes DeepCode over stdio; list/add/remove manage the
+            # Bare/serve exposes DFcode over stdio; list/add/remove manage the
             # generic MCP clients shared by CLI and Desktop.
             from cli.mcp_cli import run as mcp_main
 
@@ -182,75 +182,75 @@ def main():
                     [
                         "",
                         "Usage:",
-                        row("deepcode", "Open the terminal coding agent (TUI)"),
-                        row("deepcode desktop", "Open the native desktop client"),
-                        row("deepcode web", "Open the local browser client"),
+                        row("dfcode", "Open the terminal coding agent (TUI)"),
+                        row("dfcode desktop", "Open the native desktop client"),
+                        row("dfcode web", "Open the local browser client"),
                         row(
-                            "deepcode init",
-                            "Set up ~/.deepcode so deepcode runs anywhere",
+                            "dfcode init",
+                            "Set up ~/.dfcode so dfcode runs anywhere",
                         ),
-                        row("deepcode mcp serve", "Expose DeepCode as an MCP server"),
+                        row("dfcode mcp serve", "Expose DFcode as an MCP server"),
                         row(
-                            "deepcode service <command>",
+                            "dfcode service <command>",
                             "Manage the background service",
                         ),
                         row(
-                            "deepcode serve --foreground",
+                            "dfcode serve --foreground",
                             "Run the service in this terminal",
                         ),
-                        row("deepcode mcp <command>", "Connect and manage MCP tools"),
+                        row("dfcode mcp <command>", "Connect and manage MCP tools"),
                         row(
-                            "deepcode skill <command>",
+                            "dfcode skill <command>",
                             "List, inspect, import, and manage Agent Skills",
                         ),
                         row(
-                            "deepcode plugin <command>",
+                            "dfcode plugin <command>",
                             "Register and manage local Agent Plugins",
                         ),
                         row(
-                            "deepcode hooks status|approve",
+                            "dfcode hooks status|approve",
                             "Show and approve a project's hooks",
                         ),
                         row(
-                            "deepcode provider <command>",
+                            "dfcode provider <command>",
                             "Configure LLM connections and models",
                         ),
                         row(
-                            "deepcode session delete <id>",
+                            "dfcode session delete <id>",
                             "Permanently delete a conversation Session",
                         ),
                         row(
-                            "deepcode exec <task>",
+                            "dfcode exec <task>",
                             "Run one headless coding task",
                         ),
                         row(
-                            "deepcode loop <goal>",
+                            "dfcode loop <goal>",
                             "Run a durable Goal on the shared Turn runtime",
                         ),
                         row(
-                            "deepcode loop --resume <session-id>",
+                            "dfcode loop --resume <session-id>",
                             "Continue the same durable Goal and Session",
                         ),
                         row(
-                            "deepcode schedule ...",
+                            "dfcode schedule ...",
                             "Run loop or memory maintenance on a schedule",
                         ),
                         row(
-                            "deepcode automation <command>",
+                            "dfcode automation <command>",
                             "Manage durable Agent Automations",
                         ),
                         "",
                         "Examples:",
-                        row("deepcode --trust", "Start in a project you trust"),
+                        row("dfcode --trust", "Start in a project you trust"),
                         row(
-                            "deepcode --resume <session-id>",
+                            "dfcode --resume <session-id>",
                             "Continue a saved conversation",
                         ),
-                        row("deepcode provider list", "Show model connections"),
-                        row("deepcode service status", "Check the background service"),
+                        row("dfcode provider list", "Show model connections"),
+                        row("dfcode service status", "Check the background service"),
                         "",
-                        "Run 'deepcode <command> --help' for command options.",
-                        "Run 'deepcode chat --help' for TUI options.",
+                        "Run 'dfcode <command> --help' for command options.",
+                        "Run 'dfcode chat --help' for TUI options.",
                         "",
                     ]
                 )
@@ -258,7 +258,7 @@ def main():
             return
         elif sys.argv[1].startswith("-"):
             # Agent flags belong to the default interactive surface, so
-            # `deepcode -c team -m model` behaves exactly like
+            # `dfcode -c team -m model` behaves exactly like
             # `python -m cli.tui -c team -m model`.
             from cli.tui.app import main as tui_main
 
@@ -266,7 +266,7 @@ def main():
         else:
             # Unknown argument — show help hint
             print(f"Unknown option: {sys.argv[1]}")
-            print("Run 'deepcode --help' for usage information.")
+            print("Run 'dfcode --help' for usage information.")
             sys.exit(1)
     else:
         # Default (no arguments) -> interactive coding agent (multi-turn TUI).

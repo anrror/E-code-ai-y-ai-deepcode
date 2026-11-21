@@ -13,10 +13,10 @@ import type {
 
 // The service selects RPC_PROTOCOL; the session rides along as a second
 // subprotocol because browsers cannot set headers on a WebSocket handshake.
-const RPC_PROTOCOL = "deepcode.rpc";
-const SESSION_PROTOCOL = "deepcode.session.";
+const RPC_PROTOCOL = "dfcode.rpc";
+const SESSION_PROTOCOL = "dfcode.session.";
 // Origin-scoped storage: unlike a cookie, it never reaches other local ports.
-const SESSION_KEY = "deepcode.web.session.v1";
+const SESSION_KEY = "dfcode.web.session.v1";
 
 function storedSession(): string | null {
   try {
@@ -128,7 +128,7 @@ export class BrowserRuntime implements ClientRuntime {
       if (response.status === 401)
         throw new BrowserRuntimeError(
           "AUTH_REQUIRED",
-          "Run deepcode web in your terminal to open a new browser access link. No DeepCode account is needed.",
+          "Run dfcode web in your terminal to open a new browser access link. No DFcode account is needed.",
         );
       throw new BrowserRuntimeError(
         "HTTP_ERROR",
@@ -244,7 +244,7 @@ export class BrowserRuntime implements ClientRuntime {
       socket.onopen = () => {
         void this.send("initialize", {
           protocolVersion: "1.0",
-          clientInfo: { name: "deepcode-web", version: "1", surface: "web" },
+          clientInfo: { name: "dfcode-web", version: "1", surface: "web" },
         })
           .then((info) => {
             if (this.socket !== socket || this.stopped) return;
@@ -585,9 +585,9 @@ export class BrowserRuntime implements ClientRuntime {
       new Blob([JSON.stringify(snapshot, null, 2)], {
         type: "application/json",
       }),
-      "deepcode-diagnostics.json",
+      "dfcode-diagnostics.json",
     );
-    return "deepcode-diagnostics.json";
+    return "dfcode-diagnostics.json";
   }
   async openPath(path: string): Promise<void> {
     await navigator.clipboard.writeText(path);
@@ -614,7 +614,7 @@ export class BrowserRuntime implements ClientRuntime {
     this.dispose();
     this.emitStatus(
       "stopped",
-      "Run deepcode web in your terminal to open a new browser access link. No DeepCode account is needed.",
+      "Run dfcode web in your terminal to open a new browser access link. No DFcode account is needed.",
       "AUTH_REQUIRED",
     );
   }

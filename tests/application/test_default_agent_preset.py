@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 from core.agent_presets import METADATA_KEY as PRESET_METADATA_KEY
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 
 _PRESET_BODY = (
@@ -29,14 +29,14 @@ def _workspace_with_preset(tmp_path: Path, *, configured: str | None) -> Path:
     presets.mkdir(parents=True)
     (presets / "reviewer.md").write_text(_PRESET_BODY, encoding="utf-8")
     if configured is not None:
-        (workspace / "deepcode_config.json").write_text(
+        (workspace / "dfcode_config.json").write_text(
             json.dumps({"agents": {"defaults": {"defaultPreset": configured}}}),
             encoding="utf-8",
         )
     return workspace
 
 
-def _stored_preset(application: DeepCodeApplication, thread_id: str):
+def _stored_preset(application: DFcodeApplication, thread_id: str):
     session = application.session_store.get_session(thread_id)
     assert session is not None
     return session.metadata.get(PRESET_METADATA_KEY)
@@ -45,9 +45,9 @@ def _stored_preset(application: DeepCodeApplication, thread_id: str):
 def test_configured_default_preset_is_snapshotted_at_creation(
     tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     workspace = _workspace_with_preset(tmp_path, configured="reviewer")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
 
     thread = application.threads.start(project.id, title="Defaulted")
@@ -61,14 +61,14 @@ def test_configured_default_preset_is_snapshotted_at_creation(
 def test_explicit_preset_choice_wins_over_the_configured_default(
     tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     workspace = _workspace_with_preset(tmp_path, configured="reviewer")
     presets = workspace / ".agents" / "presets"
     (presets / "writer.md").write_text(
         "---\nname: writer\ndescription: Writes docs\ntools: read\n---\nWrite.\n",
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
 
     thread = application.threads.start(
@@ -82,9 +82,9 @@ def test_explicit_preset_choice_wins_over_the_configured_default(
 def test_unresolvable_default_preset_never_blocks_session_creation(
     tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     workspace = _workspace_with_preset(tmp_path, configured="no-such-preset")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
 
     thread = application.threads.start(project.id, title="Still created")
@@ -95,9 +95,9 @@ def test_unresolvable_default_preset_never_blocks_session_creation(
 def test_no_configured_default_keeps_sessions_preset_free(
     tmp_path: Path, monkeypatch
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     workspace = _workspace_with_preset(tmp_path, configured=None)
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
 
     thread = application.threads.start(project.id, title="Plain")
@@ -108,16 +108,16 @@ def test_no_configured_default_keeps_sessions_preset_free(
 def test_non_interactive_runs_do_not_inherit_the_interactive_default(
     tmp_path: Path, monkeypatch
 ) -> None:
-    """`deepcode exec` and goal runs opt out.
+    """`dfcode exec` and goal runs opt out.
 
     A default chosen for safe interactive chatting (a read-only
     composition, say) must not silently strip an automated run's tools —
     the run would simply refuse to edit anything, with nothing on screen
     explaining why. An explicit choice still wins over the opt-out.
     """
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     workspace = _workspace_with_preset(tmp_path, configured="reviewer")
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
 
     inherited = application.threads.start(project.id, title="Interactive")

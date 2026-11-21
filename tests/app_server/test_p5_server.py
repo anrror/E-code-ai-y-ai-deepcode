@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 from app_server.server import AppServer
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.workflow_adapter import ArtifactSpec, WorkflowOutcome
 from core.domain import ThreadMode, TrustState
 
@@ -62,7 +62,7 @@ def _until(reader, predicate) -> dict[str, Any]:
 def test_p5_workflow_interaction_and_artifact_protocol(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", workflow_runner=InteractiveRunner()
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)

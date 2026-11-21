@@ -1,1 +1,1 @@
-"""Prompt templates used by DeepCode's legacy workflow adapters."""
+"""Prompt templates used by DFcode's legacy workflow adapters."""

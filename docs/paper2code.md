@@ -1,26 +1,26 @@
 # Paper2Code
 
-Paper2Code is where DeepCode started: a multi-agent workflow that turns a
-research paper or technical document into a working code base. DeepCode has
+Paper2Code is where DFcode started: a multi-agent workflow that turns a
+research paper or technical document into a working code base. DFcode has
 since grown into a general coding agent, and Paper2Code remains available as a
 dedicated workflow inside it.
 
 The method is described in the paper
-[DeepCode: Open Agentic Coding](https://arxiv.org/abs/2512.07921).
+[DFcode: Open Agentic Coding](https://arxiv.org/abs/2512.07921).
 中文版:[paper2code.zh-CN.md](paper2code.zh-CN.md).
 
 ## Run Paper2Code
 
 Paper2Code runs in the Desktop and Web clients:
 
-1. Start `deepcode desktop` or `deepcode web` and open a trusted project.
+1. Start `dfcode desktop` or `dfcode web` and open a trusted project.
 2. Click **Paper** in the Session header, or type `/paper` in the composer, to
    create a Paper2Code Session.
 3. Add the sources: a document, a URL, a repository, or written requirements.
 4. Review the plan when the workflow asks for it, then follow stage progress.
    Generated files and artifacts appear in the Inspector.
 
-The CLI command `deepcode test` that ran an old Paper2Code script has been
+The CLI command `dfcode test` that ran an old Paper2Code script has been
 removed. The workflow's runtime design is in
 [P5 Paper2Code architecture](P5_PAPER2CODE_ARCHITECTURE.md).
 
@@ -81,7 +81,7 @@ Paper2Code architecture and its order of reasoning.
 
 ## Research results
 
-The original DeepCode study evaluates scientific code reproduction on
+The original DFcode study evaluates scientific code reproduction on
 [PaperBench](https://openai.com/index/paperbench/), which asks agents to
 reproduce 20 ICML 2024 papers across 8,316 gradable components.
 
@@ -107,10 +107,10 @@ reproduce 20 ICML 2024 papers across 8,316 gradable components.
 </table>
 
 <p align="center">
-  <img src="../assets/result_main02.jpg" alt="DeepCode PaperBench results" width="920" />
+  <img src="../assets/result_main02.jpg" alt="DFcode PaperBench results" width="920" />
 </p>
 
-| Evaluation subset       | DeepCode | Reported comparison                   | Difference   |
+| Evaluation subset       | DFcode | Reported comparison                   | Difference   |
 | ----------------------- | -------- | ------------------------------------- | ------------ |
 | Human expert subset     | 75.9%    | Best reported human baseline: 72.4%   | +3.5 points  |
 | Commercial-agent subset | 84.8%    | Best reported commercial agent: 58.7% | +26.1 points |
@@ -126,7 +126,7 @@ scope, models, and baseline details.
 
 ## Earlier demonstrations
 
-These recordings show projects produced by earlier DeepCode workflows. They
+These recordings show projects produced by earlier DFcode workflows. They
 are output demonstrations, not screenshots of the current interface.
 
 <table align="center" width="100%">

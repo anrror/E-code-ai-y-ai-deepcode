@@ -1,6 +1,6 @@
-"""User-private filesystem primitives for DeepCode runtime state.
+"""User-private filesystem primitives for DFcode runtime state.
 
-DeepCode stores transcripts, credentials, execution state, and command history
+DFcode stores transcripts, credentials, execution state, and command history
 under its user data directory.  Callers use these helpers instead of relying on
 the process umask, which is commonly permissive on desktop systems.
 
@@ -131,7 +131,7 @@ def _run_icacls(executable: str, path: Path, *arguments: str) -> bool:
         finally:
             completed.set()
 
-    worker = threading.Thread(target=_attempt, name="deepcode-icacls", daemon=True)
+    worker = threading.Thread(target=_attempt, name="dfcode-icacls", daemon=True)
     worker.start()
     if not completed.wait(_ICACLS_ABANDON_AFTER_SECONDS):
         return False
@@ -529,7 +529,7 @@ def ensure_private_file(path: Path | str) -> None:
 
 
 def harden_private_tree(root: Path | str) -> Path:
-    """Repair a DeepCode-owned tree while refusing to traverse symlinks."""
+    """Repair a DFcode-owned tree while refusing to traverse symlinks."""
 
     base = ensure_private_directory(root)
     if _is_directory_link(base):

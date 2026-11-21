@@ -22,7 +22,7 @@ def sse(event: dict, *, named=False) -> str:
 def test_unsaved_protocol_probe_completes_real_sdk_tool_round_trip(
     tmp_path, monkeypatch, protocol
 ):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path))
     service = LLMConfigurationService(
         config_store=ConfigStore(tmp_path / "config.json"),
         credential_store=CredentialStore(tmp_path / "credentials.json"),
@@ -58,7 +58,7 @@ def test_unsaved_protocol_probe_completes_real_sdk_tool_round_trip(
                             "id": "call",
                             "type": "function",
                             "function": {
-                                "name": "deepcode_probe",
+                                "name": "dfcode_probe",
                                 "arguments": '{"value":7}',
                             },
                         }
@@ -94,7 +94,7 @@ def test_unsaved_protocol_probe_completes_real_sdk_tool_round_trip(
                             "type": "function_call",
                             "id": "fc",
                             "call_id": "call",
-                            "name": "deepcode_probe",
+                            "name": "dfcode_probe",
                             "arguments": '{"value":7}',
                             "status": "completed",
                         },
@@ -174,7 +174,7 @@ def test_unsaved_protocol_probe_completes_real_sdk_tool_round_trip(
 def test_discovery_uses_unsaved_protocol_and_none_auth_without_saving(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path))
     service = LLMConfigurationService(
         config_store=ConfigStore(tmp_path / "config.json"),
         credential_store=CredentialStore(tmp_path / "credentials.json"),
@@ -200,7 +200,7 @@ def test_discovery_uses_unsaved_protocol_and_none_auth_without_saving(
 
 
 def test_a_saved_key_is_only_probed_against_its_saved_base_url(tmp_path, monkeypatch):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path))
     monkeypatch.setenv("OPENAI_API_KEY", "env-private-key")
     service = LLMConfigurationService(
         config_store=ConfigStore(tmp_path / "config.json"),

@@ -26,8 +26,8 @@ it("says where a Skill comes from instead of its raw source", () => {
   const t = i18n.t.bind(i18n);
   expect(skillOriginLabel(skill({}), t)).toBe("当前项目 · .agents");
   expect(skillOriginLabel(skill({ scope: "user", sourceRoot: "claude" }), t)).toBe("用户设置 · .claude");
-  expect(skillOriginLabel(skill({ originKind: "bundled", originLabel: "DeepCode bundled" }), t)).toBe(
-    "DeepCode 内置",
+  expect(skillOriginLabel(skill({ originKind: "bundled", originLabel: "DFcode bundled" }), t)).toBe(
+    "DFcode 内置",
   );
   // A provider is named by its own id.
   expect(skillOriginLabel(skill({ originKind: "provider", originLabel: "executor:acme" }), t)).toBe(

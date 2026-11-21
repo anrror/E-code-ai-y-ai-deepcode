@@ -68,7 +68,7 @@ def test_this_process_is_named_while_it_takes_the_lease(
     """The holder's name is written after the lock is taken. Until then the
     note names the previous holder or no one, so a check in between took this
     process for a stranger and refused its own Turn as "running in another
-    DeepCode process".
+    DFcode process".
     """
     session = store.create_session(title="t", metadata={})
     previous = store.acquire_run_lease(session.session_id, holder="cli (pid 22)")
@@ -118,7 +118,7 @@ def test_holder_is_named_where_a_held_lock_file_cannot_be_read(
     """On Windows a lock keeps the locked file from being read or written
     through any other handle. With the holder's name kept inside the lock
     file, this process's own running Turn read as an unnamed stranger, and a
-    message sent meanwhile was refused as "running in another DeepCode
+    message sent meanwhile was refused as "running in another DFcode
     process".
     """
     session = store.create_session(title="t", metadata={})

@@ -233,7 +233,7 @@ export function DesktopSidebar({
           </svg>
         </span>
         <span className={styles.brandCopy}>
-          <strong>DeepCodeX</strong>
+          <strong>DFcodeX</strong>
           <small>{t("sidebar.localAgent", "Local agent")}</small>
         </span>
         {drawer ? (
@@ -283,7 +283,7 @@ export function DesktopSidebar({
         </>
       ) : null}
 
-      <nav className={styles.destinations} aria-label={t("sidebar.destinations", "DeepCodeX destinations")}>
+      <nav className={styles.destinations} aria-label={t("sidebar.destinations", "DFcodeX destinations")}>
         <button
           type="button"
           data-active={destination === "threads"}

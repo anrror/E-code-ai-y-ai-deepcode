@@ -70,7 +70,7 @@ class SkillCatalogMonitor:
             if self._thread is None:
                 self._thread = threading.Thread(
                     target=self._run,
-                    name="deepcode-skill-monitor",
+                    name="dfcode-skill-monitor",
                     daemon=True,
                 )
                 self._thread.start()

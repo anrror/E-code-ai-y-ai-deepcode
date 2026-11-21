@@ -257,12 +257,12 @@ def test_script_monitor_refuses_destructive_commands() -> None:
     assert not outcome.changed and outcome.error.startswith("Script refused")
 
 
-def test_default_store_lives_under_the_deepcode_home(
+def test_default_store_lives_under_the_dfcode_home(
     tmp_path: Path, monkeypatch
 ) -> None:
     from core.schedule.monitor import MonitorStore, default_monitor_store_path
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     expected = tmp_path / "home" / "state" / "monitor.sqlite3"
     assert default_monitor_store_path() == expected.resolve()
     store = MonitorStore()

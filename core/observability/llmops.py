@@ -16,7 +16,7 @@ This module does exactly that and nothing more:
 Pure over record dicts (the ``to_jsonl`` shape); the CLI entry point reads a
 JSONL file::
 
-    python -m core.observability.llmops ~/.deepcode/logs/llm.jsonl
+    python -m core.observability.llmops ~/.dfcode/logs/llm.jsonl
 """
 
 from __future__ import annotations

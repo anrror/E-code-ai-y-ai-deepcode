@@ -1,4 +1,4 @@
-"""A logged exception keeps its traceback in every log DeepCode writes.
+"""A logged exception keeps its traceback in every log DFcode writes.
 
 The console format used to stop at the message, and the JSONL files stored
 ``repr`` of loguru's exception tuple, whose traceback is dropped when the

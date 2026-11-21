@@ -7,7 +7,7 @@ from pathlib import Path
 import httpx
 import pytest
 
-from core.config import DeepCodeConfig
+from core.config import DFcodeConfig
 from core.providers.catalog_service import CatalogModel, ModelCatalogService
 from core.providers.credentials import CredentialStore
 from core.providers.profiles import ConnectionResolver
@@ -23,7 +23,7 @@ def _connection(
 ):
     credentials = CredentialStore(tmp_path / "credentials.json")
     credentials.set(connection_id, "catalog-test-secret")
-    config = DeepCodeConfig.model_validate(
+    config = DFcodeConfig.model_validate(
         {
             "providers": {
                 "profiles": {

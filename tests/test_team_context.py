@@ -190,7 +190,7 @@ def test_catalog_round_trip_and_workspace_binding(tmp_path: Path) -> None:
     assert loaded.bind == "task://LEAD-1234"
     assert loaded.entities.keys() == catalog.entities.keys()
     raw = yaml.safe_load(
-        (workspace / ".deepcode/team/catalog.yaml").read_text(encoding="utf-8")
+        (workspace / ".dfcode/team/catalog.yaml").read_text(encoding="utf-8")
     )
     assert raw["bind"] == "task://LEAD-1234"
     assert raw["knowledge"][0]["scope"] == "org://auto-sub"
@@ -198,7 +198,7 @@ def test_catalog_round_trip_and_workspace_binding(tmp_path: Path) -> None:
 
 def test_global_catalog_merges_under_the_workspace_layer(tmp_path: Path) -> None:
     home = tmp_path / "home"
-    global_path = home / ".deepcode/team/catalog.yaml"
+    global_path = home / ".dfcode/team/catalog.yaml"
     global_path.parent.mkdir(parents=True)
     global_path.write_text(
         yaml.safe_dump(
@@ -313,14 +313,14 @@ def test_prompt_preamble_is_empty_without_a_binding(tmp_path: Path) -> None:
 
 def test_a_malformed_catalog_does_not_break_prompt_assembly(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    path = workspace / ".deepcode/team/catalog.yaml"
+    path = workspace / ".dfcode/team/catalog.yaml"
     path.parent.mkdir(parents=True)
     path.write_text("entities: [", encoding="utf-8")
     assert team_context_preamble(workspace, home=tmp_path / "home") == ""
 
 def test_each_layer_is_configured_by_its_own_directory(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    team = workspace / ".deepcode/team"
+    team = workspace / ".dfcode/team"
 
     def layer(directory: str, slug: str, meta: dict, *, agents: str = "", knowledge=None):
         target = team / directory / slug
@@ -517,7 +517,7 @@ def test_a_project_references_company_and_line_products(tmp_path: Path) -> None:
 
 def test_unconfigured_layers_are_skipped_and_end_the_chain(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    task_dir = workspace / ".deepcode/team/task/LEAD-1"
+    task_dir = workspace / ".dfcode/team/task/LEAD-1"
     task_dir.mkdir(parents=True)
     (task_dir / "entity.yaml").write_text(
         yaml.safe_dump(
@@ -553,7 +553,7 @@ def test_unconfigured_layers_are_skipped_and_end_the_chain(tmp_path: Path) -> No
 
 def test_a_configured_layer_without_a_parent_still_contributes(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
-    version_dir = workspace / ".deepcode/team/version/v9"
+    version_dir = workspace / ".dfcode/team/version/v9"
     version_dir.mkdir(parents=True)
     (version_dir / "entity.yaml").write_text(
         yaml.safe_dump({"name": "v9"}, allow_unicode=True), encoding="utf-8"
@@ -573,7 +573,7 @@ def test_a_configured_layer_without_a_parent_still_contributes(tmp_path: Path) -
         ),
         encoding="utf-8",
     )
-    task_dir = workspace / ".deepcode/team/task/LEAD-2"
+    task_dir = workspace / ".dfcode/team/task/LEAD-2"
     task_dir.mkdir(parents=True)
     (task_dir / "entity.yaml").write_text(
         yaml.safe_dump(
@@ -623,7 +623,7 @@ def test_create_entity_seeds_a_layer_and_round_trips_knowledge(tmp_path: Path) -
     assert created["entity"]["id"] == "project://changan"
     assert created["entity"]["name"] == "Changan"
     assert (
-        workspace / ".deepcode" / "team" / "project" / "changan" / "entity.yaml"
+        workspace / ".dfcode" / "team" / "project" / "changan" / "entity.yaml"
     ).is_file()
 
     added = service.add(
@@ -683,7 +683,7 @@ def test_org_policy_is_shared_across_projects(tmp_path: Path) -> None:
     )
     assert created["entity"]["id"] == "org://default"
     assert (
-        home / ".deepcode" / "team" / "company" / "default" / "entity.yaml"
+        home / ".dfcode" / "team" / "company" / "default" / "entity.yaml"
     ).is_file()
 
     with pytest.raises(TeamContextError):
@@ -746,7 +746,7 @@ def test_remove_layer_and_deprecate_entry(tmp_path: Path) -> None:
     removed = service.remove_entity("project://changan", force=True)
     assert removed["removed"] == "project://changan"
     assert not (
-        workspace / ".deepcode" / "team" / "project" / "changan"
+        workspace / ".dfcode" / "team" / "project" / "changan"
     ).exists()
 
 def test_project_may_sit_under_a_product(tmp_path: Path) -> None:

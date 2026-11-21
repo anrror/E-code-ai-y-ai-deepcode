@@ -1,4 +1,4 @@
-"""Manage local Plugin registrations consumed by every DeepCode surface."""
+"""Manage local Plugin registrations consumed by every DFcode surface."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from core.skills.host import SkillWorkspaceRegistry
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode plugin",
+        prog="dfcode plugin",
         description=(
             "Register local Plugins whose Skills join the shared Skill runtime."
         ),

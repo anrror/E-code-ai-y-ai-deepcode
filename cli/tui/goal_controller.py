@@ -123,7 +123,7 @@ class TuiGoalController:
             )
             return GoalCommandResult(
                 self._format_checks(updated)
-                + "\nDeepCode runs these commands whenever the Goal is claimed complete."
+                + "\nDFcode runs these commands whenever the Goal is claimed complete."
             )
         if action == "dismiss":
             updated = application.goals.dismiss_proposed_checks(
@@ -169,7 +169,7 @@ class TuiGoalController:
         parts = []
         if goal.checks:
             parts.append(
-                "Checks (DeepCode runs the commands before accepting completion):"
+                "Checks (DFcode runs the commands before accepting completion):"
             )
             parts.extend(lines(goal.checks))
         else:

@@ -1,7 +1,7 @@
 """The credential store's optional OS-keychain read fallback.
 
 ``keyring`` is deliberately not a declared dependency, so the keychain backend is
-opt-in (``DEEPCODE_KEYRING``), consulted only when the credential file holds no
+opt-in (``DFCODE_KEYRING``), consulted only when the credential file holds no
 value for a connection, and never written to — the file stays the source of truth
 and the only write target, which keeps ``revision``'s mtime/size fingerprint
 meaningful. These tests inject a fake ``keyring`` module, which is also how a
@@ -192,8 +192,8 @@ def test_resolution_order_gains_keychain_support(
 ) -> None:
     """Env → credential store (keychain-backed) → legacy config, end to end."""
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    config = ConfigStore(home / "deepcode_config.json")
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    config = ConfigStore(home / "dfcode_config.json")
     credentials = CredentialStore(home / "credentials.json")
     service = LLMConfigurationService(
         config_store=config,

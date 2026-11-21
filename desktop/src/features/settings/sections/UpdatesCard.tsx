@@ -22,7 +22,7 @@ export function UpdatesCard({ runtime }: { runtime: ClientRuntime }) {
   const [updateError, setUpdateError] = useState<string | null>(null);
 
   if (runtime.host?.updates === false) return <section className={styles.section}>
-    <h2>{t("settings.updates.serviceTitle", "Service updates")}</h2><p>{t("settings.updates.serviceBefore", "Update DeepCode on the service machine, then open a fresh link with")} <code>deepcode web</code>{t("settings.updates.serviceAfter", ". Reload this page after updating.")}</p>
+    <h2>{t("settings.updates.serviceTitle", "Service updates")}</h2><p>{t("settings.updates.serviceBefore", "Update DFcode on the service machine, then open a fresh link with")} <code>dfcode web</code>{t("settings.updates.serviceAfter", ". Reload this page after updating.")}</p>
   </section>;
 
   const checkForUpdate = async () => {
@@ -116,7 +116,7 @@ function updateStatusMessage(
     return t("settings.updates.checkingNote", "Checking the configured signed release channel.");
   if (state === "current") return t("settings.updates.upToDate", "This installation is up to date.");
   if (state === "available" && update) {
-    return t("settings.updates.available", "DeepCode {{version}} is available. The package signature is verified before installation.", { version: update.version });
+    return t("settings.updates.available", "DFcode {{version}} is available. The package signature is verified before installation.", { version: update.version });
   }
   if (state === "installing") return updateProgressLabel(progress, t);
   return t("settings.updates.idle", "Updates are checked only when requested. Development builds may not configure a release channel.");

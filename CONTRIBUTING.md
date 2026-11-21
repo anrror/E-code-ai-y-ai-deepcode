@@ -1,4 +1,4 @@
-# Contributing to DeepCode
+# Contributing to DFcode
 
 Thank you for helping. Bug reports, fixes, documentation and new features are
 all welcome. For a larger change, open an issue first so we can agree on the
@@ -13,8 +13,8 @@ You need Git, Python 3.12 or later, [uv](https://docs.astral.sh/uv/) (or pip),
 and Node.js 22 or later.
 
 ```bash
-git clone https://github.com/HKUDS/DeepCode.git
-cd DeepCode
+git clone https://github.com/HKUDS/DFcode.git
+cd DFcode
 
 uv venv --python 3.12
 source .venv/bin/activate          # Windows PowerShell: .\.venv\Scripts\Activate.ps1
@@ -27,18 +27,18 @@ uv pip install --no-deps -e '.[test]'
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 
-deepcode --version
+dfcode --version
 ```
 
-Without `npm run build:web`, `deepcode web` stops with "Web assets are missing
+Without `npm run build:web`, `dfcode web` stops with "Web assets are missing
 or incompatible". Rebuild after changing anything under `desktop/src`.
 
-To keep your development data apart from your everyday DeepCode, point
-`DEEPCODE_HOME` at a scratch folder while you test:
+To keep your development data apart from your everyday DFcode, point
+`DFCODE_HOME` at a scratch folder while you test:
 
 ```bash
-export DEEPCODE_HOME="$PWD/.dev-home"
-deepcode init
+export DFCODE_HOME="$PWD/.dev-home"
+dfcode init
 ```
 
 ### Desktop
@@ -48,11 +48,11 @@ Desktop also needs Rust (stable) and the
 platform. Then run:
 
 ```bash
-deepcode desktop --source .
+dfcode desktop --source .
 ```
 
 The first launch runs `npm ci`, builds the App Server sidecar and opens the app
-with `tauri dev`; keep the terminal open. `deepcode desktop --setup` rebuilds
+with `tauri dev`; keep the terminal open. `dfcode desktop --setup` rebuilds
 those resources. Platform notes, Windows toolchains and the release build are
 in [desktop/README.md](desktop/README.md).
 
@@ -97,7 +97,7 @@ runtime tests.
 |---|---|
 | `core/` | Agent runtime, tools, permissions and sandbox, providers, MCP, Skills, storage |
 | `app_server/` | The local background service and its JSON-RPC protocol |
-| `cli/` | The `deepcode` command and the TUI |
+| `cli/` | The `dfcode` command and the TUI |
 | `desktop/` | The React client shared by Desktop and Web, and the Tauri shell |
 | `workflows/`, `tools/` | The Paper2Code workflow |
 | `tests/` | Python tests |

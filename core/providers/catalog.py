@@ -82,7 +82,7 @@ _REASONING_OPENAI = ModelReasoningCapabilities(
     default_enabled=True,
     supports_summary=True,
 )
-#: Anthropic extended thinking, mapped onto DeepCode's semantic ladder.
+#: Anthropic extended thinking, mapped onto DFcode's semantic ladder.
 _REASONING_ANTHROPIC = ModelReasoningCapabilities(
     supported_efforts=("low", "medium", "high", "max"),
     default_effort="high",
@@ -136,7 +136,7 @@ _BEDROCK_CLAUDE_SONNET_46_IDS = (
 )
 
 # --------------------------------------------------------------------------
-# Seed catalog — exact ids DeepCode targets, curated from models.dev.
+# Seed catalog — exact ids DFcode targets, curated from models.dev.
 # Context/output are the vendor-published limits; costs are list price per 1M.
 # Conservative when a vendor advertises a beta-only larger window (we take the
 # generally-available number) — under-estimating the window only makes
@@ -201,7 +201,7 @@ _SEED: dict[str, ModelInfo] = {
     # Amazon Bedrock Claude Sonnet 4.6 inference IDs. Bedrock publishes a 1M
     # context window for this release. Pricing is deliberately absent because
     # it is account/region/service-tier dependent, and the OpenAI-compatible
-    # surface does not publish DeepCode's semantic reasoning-effort ladder.
+    # surface does not publish DFcode's semantic reasoning-effort ladder.
     **{
         model_id: ModelInfo(model_id, 1_000_000, 64_000)
         for model_id in _BEDROCK_CLAUDE_SONNET_46_IDS

@@ -123,7 +123,7 @@ def _checklist_section(goal: ThreadGoal) -> str:
     if goal.checks:
         lines = [
             "The user confirmed this checklist. When you claim completion, "
-            "DeepCode runs each command itself in the workspace, with your "
+            "DFcode runs each command itself in the workspace, with your "
             "command rights, and turns the claim back if one does not exit 0:"
         ]
         for check in goal.checks:
@@ -154,7 +154,7 @@ def _checklist_section(goal: ThreadGoal) -> str:
         "with the command that proves it where one exists (an argument list "
         "run in the workspace without a shell, such as "
         '["python", "-m", "pytest", "-q", "tests/test_cart.py"]). The user '
-        "confirms the list; then DeepCode runs those commands whenever you "
+        "confirms the list; then DFcode runs those commands whenever you "
         "claim completion. Keep working on the Goal after proposing."
     )
 
@@ -408,7 +408,7 @@ class GoalExtension(GoalRuntimeHandler):
             "goalId": updated.id,
             "proposed": len(clean),
             "note": (
-                "Proposed. The user confirms the checklist; until then DeepCode "
+                "Proposed. The user confirms the checklist; until then DFcode "
                 "does not run it. Keep working on the Goal meanwhile."
             ),
         }
@@ -1091,7 +1091,7 @@ class GoalExtension(GoalRuntimeHandler):
         return recovered
 
     def _pause_after_restart_locked(self, goal: ThreadGoal) -> None:
-        reason = "Paused because DeepCode restarted; resume the Goal to continue."
+        reason = "Paused because DFcode restarted; resume the Goal to continue."
         try:
             updated = self.store.update(
                 goal.thread_id,

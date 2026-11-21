@@ -57,7 +57,7 @@ function microphoneMessage(cause: unknown): string {
   const name = errorName(cause);
   if (name === "NotAllowedError" || name === "SecurityError") {
     return (
-      "Microphone access was denied. Allow it for DeepCode in your system " +
+      "Microphone access was denied. Allow it for DFcode in your system " +
       "settings, then try again."
     );
   }

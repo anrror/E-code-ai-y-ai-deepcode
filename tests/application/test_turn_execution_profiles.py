@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.execution_profile import ExecutionProfile
 from core.domain.turn import TurnStatus
@@ -64,7 +64,7 @@ class ProfileFactory:
 
 def _write_connections(home: Path) -> None:
     home.mkdir(parents=True)
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "agents": {
@@ -95,14 +95,14 @@ def _application(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
     factory: ProfileFactory,
-) -> tuple[DeepCodeApplication, str, SessionStore]:
+) -> tuple[DFcodeApplication, str, SessionStore]:
     home = tmp_path / "home"
     _write_connections(home)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     sessions = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
         session_store=sessions,
@@ -123,7 +123,7 @@ def _application(
 
 
 def _wait(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     status: TurnStatus,
 ):

@@ -282,7 +282,7 @@ class DurableEventRelay:
             self._stop.clear()
             self._thread = threading.Thread(
                 target=self._run,
-                name="deepcode-durable-event-relay",
+                name="dfcode-durable-event-relay",
                 daemon=True,
             )
             self._thread.start()

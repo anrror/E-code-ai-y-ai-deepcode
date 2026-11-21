@@ -16,14 +16,14 @@ Scope, settled in issue #245 (action triage, Option A, rules-only):
   less" — so ``full_auto``'s "rules only" promise degrades to "rules, plus a
   soft ask when the evaluator objects", not a loss of the explicit rules.
 * It is **default off**. With the feature disabled every decision and reason is
-  byte-identical to today's. The opt-in flag ``DEEPCODE_RISK_EVALUATOR`` is
+  byte-identical to today's. The opt-in flag ``DFCODE_RISK_EVALUATOR`` is
   read by the policy layer (:func:`core.harness.policy.build_permission_engine`),
   never here or in the engine, and Full Access never gets an evaluator: its
   approval policy is ``never``, so an ``ask`` there could not be approved.
 * v1 is **rules only** — no model call in the permission path. The built-in
   evaluator reuses the screens :mod:`core.harness.command_guard` already has
   (``screen_all`` → destructive-command always, egress / install under
-  ``DEEPCODE_COMMAND_SCREEN=strict``) rather than inventing a new scorer. A
+  ``DFCODE_COMMAND_SCREEN=strict``) rather than inventing a new scorer. A
   model-based evaluator, with its per-call latency and cost, would be a
   separate proposal.
 
@@ -83,7 +83,7 @@ class CommandGuardRiskEvaluator:
     It inspects only the shell command a call would run and defers entirely to
     :func:`core.harness.command_guard.screen_all`, so the destructive-command
     screen always applies and the egress / install screens apply under
-    ``DEEPCODE_COMMAND_SCREEN=strict`` — the same waiver semantics the sandbox
+    ``DFCODE_COMMAND_SCREEN=strict`` — the same waiver semantics the sandbox
     front door already uses. Non-shell calls and calls without a command carry
     no opinion (``None``).
 

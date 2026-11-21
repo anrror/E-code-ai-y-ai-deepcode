@@ -68,7 +68,7 @@ export function PresetsSection({ runtime, project }: SettingsSectionProps) {
             "settings.presets.noneBefore",
             "No presets discovered. Add markdown presets under",
           )}{" "}
-          <code>.deepcode/agents/</code>{" "}
+          <code>.dfcode/agents/</code>{" "}
           {t("settings.presets.noneAfter", "in the project or your home directory.")}
         </p>
       ) : (

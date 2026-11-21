@@ -10,8 +10,8 @@ from core.application.workflow_adapter import (
     WorkflowCallbacks,
     WorkflowExecutionRequest,
 )
-from core.compat.runtime import DeepCodeRuntime, use_runtime
-from core.config import ConfigError, DeepCodeConfig
+from core.compat.runtime import DFcodeRuntime, use_runtime
+from core.config import ConfigError, DFcodeConfig
 from workflows import agent_orchestration_engine as engine
 from workflows.planning_runtime import extract_yaml_candidate, validate_plan_text
 
@@ -105,10 +105,10 @@ async def test_desktop_workflow_adapter_always_requests_strict_outcomes(
     assert captured["strict_outcomes"] is True
 
 
-def _runtime_with_mcp_servers(*names: str) -> DeepCodeRuntime:
+def _runtime_with_mcp_servers(*names: str) -> DFcodeRuntime:
     servers = {name: {"command": "python", "args": ["-V"]} for name in names}
-    return DeepCodeRuntime(
-        DeepCodeConfig.model_validate({"tools": {"mcpServers": servers}})
+    return DFcodeRuntime(
+        DFcodeConfig.model_validate({"tools": {"mcpServers": servers}})
     )
 
 

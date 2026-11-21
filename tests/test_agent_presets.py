@@ -42,7 +42,7 @@ from core.agent_presets import (
 @pytest.fixture(autouse=True)
 def _hermetic_user_roots(tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
     """Point every user-level root at empty scratch dirs."""
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "deepcode-home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "dfcode-home"))
     monkeypatch.setattr(Path, "home", classmethod(lambda cls: tmp_path / "home"))
 
 
@@ -188,11 +188,11 @@ def test_snapshot_composition_helpers() -> None:
 
 
 def _open_application(tmp_path: Path):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.sessions import SessionStore
 
     store = SessionStore(tmp_path / "sessions")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )

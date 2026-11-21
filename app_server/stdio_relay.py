@@ -32,7 +32,7 @@ def serve_relay(files: ServiceFiles, source: BinaryIO, sink: BinaryIO) -> int:
     broken = threading.Event()  # the service connection failed mid-request
     loop = asyncio.new_event_loop()
     thread = threading.Thread(
-        target=loop.run_forever, name="deepcode-native-rpc", daemon=True
+        target=loop.run_forever, name="dfcode-native-rpc", daemon=True
     )
     thread.start()
     client = NativeRpcClient(files, notify=lambda message: emit(message))
@@ -82,8 +82,8 @@ def serve_relay(files: ServiceFiles, source: BinaryIO, sink: BinaryIO) -> int:
         except (OSError, ValueError):
             failed.set()
 
-    reader = threading.Thread(target=read, name="deepcode-native-stdin", daemon=True)
-    writer = threading.Thread(target=write, name="deepcode-native-stdout", daemon=True)
+    reader = threading.Thread(target=read, name="dfcode-native-stdin", daemon=True)
+    writer = threading.Thread(target=write, name="dfcode-native-stdout", daemon=True)
     reader.start()
     writer.start()
 

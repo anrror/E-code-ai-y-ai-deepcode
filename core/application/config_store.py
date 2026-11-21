@@ -1,4 +1,4 @@
-"""Atomic, cross-process-safe mutation of the user DeepCode configuration."""
+"""Atomic, cross-process-safe mutation of the user DFcode configuration."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from core.config import DeepCodeConfig, home_config_path
+from core.config import DFcodeConfig, home_config_path
 from core.private_storage import (
     atomic_write_private_json,
     ensure_private_directory,
@@ -46,9 +46,9 @@ class ConfigStore:
         try:
             value = json.loads(self.path.read_text(encoding="utf-8"))
         except json.JSONDecodeError as exc:
-            raise ValueError(f"invalid DeepCode config JSON: {exc}") from exc
+            raise ValueError(f"invalid DFcode config JSON: {exc}") from exc
         if not isinstance(value, dict):
-            raise TypeError("DeepCode config must contain a JSON object")
+            raise TypeError("DFcode config must contain a JSON object")
         return value
 
     def revision(self) -> str:
@@ -83,7 +83,7 @@ class ConfigStore:
             updated = transform(_json_copy(current))
             if not isinstance(updated, dict):
                 raise TypeError("config mutation must return a JSON object")
-            DeepCodeConfig.model_validate(updated)
+            DFcodeConfig.model_validate(updated)
             self._replace(updated)
             return updated
 

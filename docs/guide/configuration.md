@@ -1,25 +1,25 @@
 # Configuration
 
 Most settings can be changed in **Settings** in Desktop and Web, with `/model`,
-`/permissions` and other commands in the TUI, or with `deepcode provider` on
+`/permissions` and other commands in the TUI, or with `dfcode provider` on
 the command line. This page lists the settings that live only in the
 configuration file or in environment variables.
 
 ## Where settings live
 
-DeepCode reads two JSON files and merges them:
+DFcode reads two JSON files and merges them:
 
 | Layer | File | Notes |
 |---|---|---|
-| User | `~/.deepcode/deepcode_config.json` | Created by `deepcode init`. Set `DEEPCODE_HOME` to move the whole directory. |
-| Project | `deepcode_config.json` in the project, or the nearest parent folder that has one | Overrides the user file key by key. |
+| User | `~/.dfcode/dfcode_config.json` | Created by `dfcode init`. Set `DFCODE_HOME` to move the whole directory. |
+| Project | `dfcode_config.json` in the project, or the nearest parent folder that has one | Overrides the user file key by key. |
 
 A project file cannot change what belongs to you: it cannot set provider
 endpoints, headers or named connections, the `dictation` endpoint, Full
 access, or turn the command sandbox off. Those keys are ignored when they
 appear in a project file.
 
-`deepcode init` writes a user file that sets the default access to **Ask**:
+`dfcode init` writes a user file that sets the default access to **Ask**:
 
 ```json
 {
@@ -29,9 +29,9 @@ appear in a project file.
 }
 ```
 
-Model connections and their keys are managed with `deepcode provider` or in
+Model connections and their keys are managed with `dfcode provider` or in
 **Settings → AI providers**; see [Models and providers](models.md). Keys are
-kept in `~/.deepcode/credentials.json`, not in `deepcode_config.json`.
+kept in `~/.dfcode/credentials.json`, not in `dfcode_config.json`.
 
 ## Settings reference
 
@@ -97,19 +97,19 @@ A `deny` rule applies under every access preset, including Full access.
 
 An empty `allowedDomains` list allows every host that is not blocked. A blocked
 domain always wins. `mode` is `enforce` (default) or `warn`, which only logs.
-The environment variables `DEEPCODE_EGRESS_ALLOW_DOMAINS`,
-`DEEPCODE_EGRESS_BLOCK_DOMAINS` (comma-separated) and `DEEPCODE_EGRESS_MODE`
+The environment variables `DFCODE_EGRESS_ALLOW_DOMAINS`,
+`DFCODE_EGRESS_BLOCK_DOMAINS` (comma-separated) and `DFCODE_EGRESS_MODE`
 add to these settings. This setting is ignored in a project file.
 
 ## Agent presets
 
 An agent preset is a Markdown file with YAML front matter. The body is added
-to the system prompt; the file name is the preset id. DeepCode looks for
+to the system prompt; the file name is the preset id. DFcode looks for
 presets in these folders, nearest first:
 
 1. `<project>/.agents/presets/` and `<project>/.claude/agents/`
-2. `~/.deepcode/agent-presets/`, `~/.agents/presets/` and `~/.claude/agents/`
-3. The presets that ship with DeepCode (`minimal`, `code-reader`)
+2. `~/.dfcode/agent-presets/`, `~/.agents/presets/` and `~/.claude/agents/`
+3. The presets that ship with DFcode (`minimal`, `code-reader`)
 
 ```markdown
 ---
@@ -181,7 +181,7 @@ spawn_agent(name="review", task="...", category="review",
   instead of starting on a stale workspace.
 
 Every model call a sub-agent makes is labelled with `agent_path` in
-`~/.deepcode/logs/llm.jsonl` — `category:agent-id`, or `inherit:agent-id` /
+`~/.dfcode/logs/llm.jsonl` — `category:agent-id`, or `inherit:agent-id` /
 `explicit:agent-id` when no category was used. The `llmops` summary groups
 tokens by that label (`by_agent_path`), so cost can be attributed to the
 route that spent it.
@@ -196,21 +196,21 @@ kept and a graph scheduler is not built.
 
 | Variable | Default | Effect |
 |---|---|---|
-| `DEEPCODE_HOME` | `~/.deepcode` | Where configuration, credentials, Sessions, state and logs live. |
-| `DEEPCODE_SESSIONS_DIR` | `$DEEPCODE_HOME/sessions` | Where Session files are stored. |
-| `DEEPCODE_RISK_EVALUATOR` | off | `1` screens a tool call that would run without asking; a risky call asks for approval instead. Not used under Full access. |
-| `DEEPCODE_COMMAND_SCREEN` | not set | `strict` adds screens for piping downloads into a shell and for package installs from unusual indexes or with look-alike names. The destructive-command screen is always on. |
-| `DEEPCODE_ALLOW_REMOTE_SCRIPT` | off | `1` lets one deliberate run pass the download-into-shell screen. |
-| `DEEPCODE_BASH_SCRUB_ENV` | off | `1` removes credential-like variables (names containing KEY, TOKEN, SECRET, PASSWORD, CREDENTIAL or AUTH) from the environment of shell commands, hooks and code mode. |
-| `DEEPCODE_BASH_FULL_ENV` | off | `1` gives shell commands the full environment, including the model keys DeepCode itself uses, which are otherwise removed. |
-| `DEEPCODE_KEYRING` | off | `1` also reads connection keys from the OS keychain (service name `deepcode`) when `credentials.json` has none. Needs the `keyring` Python package; DeepCode still writes keys only to `credentials.json`. |
-| `DEEPCODE_EGRESS_ALLOW_DOMAINS`, `DEEPCODE_EGRESS_BLOCK_DOMAINS`, `DEEPCODE_EGRESS_MODE` | not set | See [Model egress](#model-egress). |
-| `DEEPCODE_INSTRUCTION_EXCLUDES` | not set | Comma-separated globs of instruction files not to load, for example `code/CLAUDE.md,**/vendor/**`. |
-| `DEEPCODE_COMPACTION_MEMORY` | on | `0` stops writing compaction summaries into the project memory note `compactions.md`. |
-| `DEEPCODE_LOG_LEVEL` | `INFO` (TUI), `WARNING` (`deepcode mcp serve`) | Log level for those two commands. |
+| `DFCODE_HOME` | `~/.dfcode` | Where configuration, credentials, Sessions, state and logs live. |
+| `DFCODE_SESSIONS_DIR` | `$DFCODE_HOME/sessions` | Where Session files are stored. |
+| `DFCODE_RISK_EVALUATOR` | off | `1` screens a tool call that would run without asking; a risky call asks for approval instead. Not used under Full access. |
+| `DFCODE_COMMAND_SCREEN` | not set | `strict` adds screens for piping downloads into a shell and for package installs from unusual indexes or with look-alike names. The destructive-command screen is always on. |
+| `DFCODE_ALLOW_REMOTE_SCRIPT` | off | `1` lets one deliberate run pass the download-into-shell screen. |
+| `DFCODE_BASH_SCRUB_ENV` | off | `1` removes credential-like variables (names containing KEY, TOKEN, SECRET, PASSWORD, CREDENTIAL or AUTH) from the environment of shell commands, hooks and code mode. |
+| `DFCODE_BASH_FULL_ENV` | off | `1` gives shell commands the full environment, including the model keys DFcode itself uses, which are otherwise removed. |
+| `DFCODE_KEYRING` | off | `1` also reads connection keys from the OS keychain (service name `dfcode`) when `credentials.json` has none. Needs the `keyring` Python package; DFcode still writes keys only to `credentials.json`. |
+| `DFCODE_EGRESS_ALLOW_DOMAINS`, `DFCODE_EGRESS_BLOCK_DOMAINS`, `DFCODE_EGRESS_MODE` | not set | See [Model egress](#model-egress). |
+| `DFCODE_INSTRUCTION_EXCLUDES` | not set | Comma-separated globs of instruction files not to load, for example `code/CLAUDE.md,**/vendor/**`. |
+| `DFCODE_COMPACTION_MEMORY` | on | `0` stops writing compaction summaries into the project memory note `compactions.md`. |
+| `DFCODE_LOG_LEVEL` | `INFO` (TUI), `WARNING` (`dfcode mcp serve`) | Log level for those two commands. |
 
 Provider keys can also come from the provider's own variable, such as
-`OPENROUTER_API_KEY` or `DEEPSEEK_API_KEY`; `deepcode provider list` shows which
+`OPENROUTER_API_KEY` or `DEEPSEEK_API_KEY`; `dfcode provider list` shows which
 connections are ready. A background service started at login does not read
-your shell profile, so set keys with `deepcode provider set` rather than only
+your shell profile, so set keys with `dfcode provider set` rather than only
 in the shell.

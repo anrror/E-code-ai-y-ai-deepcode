@@ -44,7 +44,7 @@ from core.harness.permissions import PermissionMode
 from core.harness.policy import build_permission_engine
 from core.verification import discover_verification_commands, run_verification
 
-# DeepCode-native compat layer (owns the MCP server lifecycle)
+# DFcode-native compat layer (owns the MCP server lifecycle)
 from core.compat import Agent, get_runtime
 from core.llm_runtime import attach_workflow_llm, get_workflow_provider
 
@@ -750,7 +750,7 @@ Requirements:
         try:
             provider, profile = get_workflow_provider(phase="implementation")
             self.logger.info(
-                "Using DeepCode provider runtime: phase=%s provider=%s model=%s",
+                "Using DFcode provider runtime: phase=%s provider=%s model=%s",
                 profile.phase,
                 profile.provider_name,
                 profile.model,
@@ -924,7 +924,7 @@ Requirements:
         # agent can never read/write credential stores even if a plan asks).
         #
         # Mode + rules come from the ``security`` config block, overridable by
-        # DEEPCODE_PERMISSION_MODE. Any non-full_auto mode attaches a terminal
+        # DFCODE_PERMISSION_MODE. Any non-full_auto mode attaches a terminal
         # approver so an `ask` becomes an interactive confirmation. An unknown
         # value falls back to this legacy client's FULL_AUTO default.
         security_cfg = getattr(get_runtime().config, "security", None)
@@ -1161,9 +1161,9 @@ async def main():
     logging.basicConfig(level=logging.INFO)
     workflow = CodeImplementationWorkflow()
     plan_file = os.path.join(
-        os.getcwd(), "deepcode_lab", "papers", "2", "initial_plan.txt"
+        os.getcwd(), "dfcode_lab", "papers", "2", "initial_plan.txt"
     )
-    target_directory = os.path.join(os.getcwd(), "deepcode_lab", "papers", "2")
+    target_directory = os.path.join(os.getcwd(), "dfcode_lab", "papers", "2")
     result = await workflow.run_workflow(
         plan_file,
         target_directory=target_directory,

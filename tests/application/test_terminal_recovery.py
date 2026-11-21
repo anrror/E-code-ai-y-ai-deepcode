@@ -8,7 +8,7 @@ import time
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import InvalidArgumentError, TerminalNotFoundError
 from core.domain import TrustState
 
@@ -20,7 +20,7 @@ pytestmark = [
 
 @pytest.fixture
 def terminal_app(tmp_path):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     project = app.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -173,7 +173,7 @@ def test_reader_start_failure_releases_process_capacity_and_lease(
     original = threading.Thread.start
 
     def fail_reader(thread):
-        if thread.name.startswith("deepcode-terminal-"):
+        if thread.name.startswith("dfcode-terminal-"):
             raise RuntimeError("injected thread startup failure")
         return original(thread)
 
@@ -198,7 +198,7 @@ def test_service_restart_does_not_fabricate_old_terminal_sessions(terminal_app):
     session.reader.join(2)
     database_path = app.database.path
     app.close()
-    reopened = DeepCodeApplication.open(database_path)
+    reopened = DFcodeApplication.open(database_path)
     try:
         assert reopened.terminals.list(thread_id) == []
         with pytest.raises(TerminalNotFoundError):

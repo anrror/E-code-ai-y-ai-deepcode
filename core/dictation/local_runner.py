@@ -80,7 +80,7 @@ class LocalParakeetClient:
             )
 
         ext = filename.split(".", 1)[-1] if "." in filename else "wav"
-        with tempfile.TemporaryDirectory(prefix="deepcode-dictation-") as tmpdir:
+        with tempfile.TemporaryDirectory(prefix="dfcode-dictation-") as tmpdir:
             input_file = Path(tmpdir) / f"input.{ext}"
             input_file.write_bytes(audio)
 

@@ -243,7 +243,7 @@ class CompletionGate:
     """Every completion claim goes through here, cheapest step first.
 
     1. The rule check, unless ``goal.completionVerifier`` is ``off``.
-    2. The Goal's confirmed checks: DeepCode runs each command itself; one
+    2. The Goal's confirmed checks: DFcode runs each command itself; one
        that fails turns the claim back with its output.
     3. The reviewer, when ``goal.completionVerifier`` is ``reviewer``; it is
        told how the checks went.
@@ -288,7 +288,7 @@ class CompletionGate:
             verdict = GoalVerdict(
                 confirmed=True,
                 justification=(
-                    f"DeepCode ran the {len(runs)} confirmed check(s) and each "
+                    f"DFcode ran the {len(runs)} confirmed check(s) and each "
                     "exited 0."
                 ),
                 stage="checks",
@@ -318,7 +318,7 @@ def _failed_checks_text(
     runs: tuple[GoalCheckRun, ...], failed: list[GoalCheckRun]
 ) -> str:
     lines = [
-        f"DeepCode ran the Goal's {len(runs)} confirmed check(s); "
+        f"DFcode ran the Goal's {len(runs)} confirmed check(s); "
         f"{len(failed)} did not pass:"
     ]
     for run in failed:

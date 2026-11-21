@@ -1,4 +1,4 @@
-# DeepCode website
+# DFcode website
 
 The project site: a hand-crafted landing at `/` and the teaching guides
 under `/guide/`, built with Astro + Starlight.

@@ -2,7 +2,7 @@
 
 A Session starts from the same organization context for every teammate, instead
 of each person re-explaining the same architecture, conventions, and past
-mistakes. DeepCode implements the repository side of that idea: a six-layer
+mistakes. DFcode implements the repository side of that idea: a six-layer
 ownership chain, a reviewed knowledge catalog, and an assembly step that every
 Turn reads.
 
@@ -39,7 +39,7 @@ force every project to inherit from one product. A product is owned by the org
 or by a line, and a project **references** the products it builds on:
 
 ```yaml
-# .deepcode/team/product/paas/entity.yaml
+# .dfcode/team/product/paas/entity.yaml
 name: PaaS
 parent: org://auto-sub
 codebases: ["https://git/paas"]
@@ -47,7 +47,7 @@ designs: ["docs/paas/design.md"]
 ```
 
 ```yaml
-# .deepcode/team/product/legacy-crm/entity.yaml
+# .dfcode/team/product/legacy-crm/entity.yaml
 name: Legacy CRM
 parent: line://auto-outsourcing
 archived: true            # historical: searchable, labelled, never the standard
@@ -56,7 +56,7 @@ designs: ["docs/legacy/design.md"]
 ```
 
 ```yaml
-# .deepcode/team/project/changan/entity.yaml
+# .dfcode/team/project/changan/entity.yaml
 name: Changan Lead Center
 parent: line://auto-outsourcing
 references: [product://paas, product://std-crm, product://legacy-crm]
@@ -72,13 +72,13 @@ marking every line `[historical]`; it never counts as the current standard.
 ## Every layer is its own directory
 
 ```text
-~/.deepcode/team/                       shared by every workspace on this machine
+~/.dfcode/team/                       shared by every workspace on this machine
   company/auto-sub/
     entity.yaml                         name, external, workspace binding
     AGENTS.md                           that layer's standing instructions
     knowledge.yaml                      entries owned by this layer
     knowledge/*.yaml                    one entry (or a list) per file
-<workspace>/.deepcode/team/             the workspace's own layers, committed
+<workspace>/.dfcode/team/             the workspace's own layers, committed
   line/auto-outsourcing/…
   project/changan/…
   batch/phase-1/…
@@ -93,14 +93,14 @@ readable. `entity.yaml` may omit `id` (derived as `kind://directory-name`) and
 `workspace` binds a task to a folder without any other file.
 
 ```yaml
-# .deepcode/team/task/LEAD-1234/entity.yaml
+# .dfcode/team/task/LEAD-1234/entity.yaml
 name: Lead importer
 parent: version://v1.2.0
 workspace: E:\code\team\lead-center
 ```
 
 ```yaml
-# .deepcode/team/task/LEAD-1234/knowledge.yaml
+# .dfcode/team/task/LEAD-1234/knowledge.yaml
 - id: K-004
   scope: task://LEAD-1234
   type: lesson
@@ -109,7 +109,7 @@ workspace: E:\code\team\lead-center
 ```
 
 The workspace root wins over the shared root on the same id. A single
-`.deepcode/team/catalog.yaml` is still read (and is where programmatic `add`
+`.dfcode/team/catalog.yaml` is still read (and is where programmatic `add`
 lands when a layer has no directory), but the per-layer directories are the
 configurable form: one folder per level, each with its own instructions,
 knowledge, and metadata.
@@ -155,8 +155,8 @@ A bound workspace whose layers carry no instructions, knowledge, or pointers
 still names its ownership chain in one line:
 
 ```text
-<team-context task="product://deepcodex" chain="product://deepcodex > line://ai-tools > org://default">
-ownership (nearest first): product://deepcodex > line://ai-tools > org://default (Org)
+<team-context task="product://dfcodex" chain="product://dfcodex > line://ai-tools > org://default">
+ownership (nearest first): product://dfcodex > line://ai-tools > org://default (Org)
 </team-context>
 ```
 
@@ -167,14 +167,14 @@ body at all, so an unconfigured project adds nothing to the system prompt.
 ## Company task id
 
 A company's planning system can attach its own task id to a product, project,
-or task layer. DeepCode treats it as opaque metadata: it is reported in the
+or task layer. DFcode treats it as opaque metadata: it is reported in the
 team-context block, never used to resolve a layer or a permission.
 
 Declare it on the layer that owns the work, so every Session bound to that layer
 (or one of its descendants) inherits it:
 
 ```yaml
-# .deepcode/team/project/changan/entity.yaml
+# .dfcode/team/project/changan/entity.yaml
 name: Changan Lead Center
 parent: line://auto-outsourcing
 task_id: TASK-2026-001
@@ -227,14 +227,14 @@ Implemented here, in the repository:
 - inheritance, red-line protection, review precedence, external isolation;
 - permission-aware retrieval (scope chain first, then text; external filtered);
 - prompt assembly and a tool for search and recording;
-- the same `AGENTS.md` layering DeepCode already had (user-global → repo root →
+- the same `AGENTS.md` layering DFcode already had (user-global → repo root →
   workspace), which stays the mechanism for rules that must not drift.
 
 Left to the systems that own them:
 
 - a company wiki (Confluence, GitBook) as the searchable knowledge backend —
   the catalog format is the shape to import from and export to;
-- a CodeGraph-style index (callers, callees, impact) — DeepCode's existing
+- a CodeGraph-style index (callers, callees, impact) — DFcode's existing
   search tools cover the first step; a persisted index is a separate project;
 - an MCP aggregator that merges code and knowledge retrieval — the
   `team_context` tool is the seam it would wrap;

@@ -353,7 +353,7 @@ async def test_anthropic_reasoning_events_keep_stream_alive_without_becoming_tex
     provider._emit_observability = lambda **kwargs: None
     # Three events span 120 ms, above the 80 ms idle limit, while each
     # 40 ms gap leaves real scheduler margin on loaded/containerized hosts.
-    monkeypatch.setenv("DEEPCODE_STREAM_IDLE_TIMEOUT_S", "0.08")
+    monkeypatch.setenv("DFCODE_STREAM_IDLE_TIMEOUT_S", "0.08")
 
     async def on_content(delta: str) -> None:
         visible_deltas.append(delta)

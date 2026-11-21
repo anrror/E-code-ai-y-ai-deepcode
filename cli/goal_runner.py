@@ -36,7 +36,7 @@ class GoalRunOptions:
     skill_ids: tuple[str, ...] = ()
     skill_identifiers: tuple[str, ...] = ()
     completion_evidence_command: str = ""
-    # More commands DeepCode runs itself before accepting completion.
+    # More commands DFcode runs itself before accepting completion.
     check_commands: tuple[str, ...] = ()
     token_budget: int | None = None
     time_budget_seconds: int | None = None
@@ -374,7 +374,7 @@ def _objective_with_completion_evidence(objective: str, command: str) -> str:
         f"{clean}\n\n"
         "User-requested completion evidence:\n"
         f"- Run `{command}` and only mark the Goal complete if it passes. "
-        "DeepCode also runs it itself when you claim completion."
+        "DFcode also runs it itself when you claim completion."
     )
 
 

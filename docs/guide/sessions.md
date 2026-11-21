@@ -1,13 +1,13 @@
 # Save and resume your work
 
-DeepCode saves your conversations so you can return to a task without explaining
+DFcode saves your conversations so you can return to a task without explaining
 it again. Each conversation belongs to a project folder and includes your
-messages, DeepCode's replies, and its tool activity. DeepCode calls this a
+messages, DFcode's replies, and its tool activity. DFcode calls this a
 **Session** in every interface.
 
 ## Resume
 
-Open DeepCode in your project folder and enter:
+Open DFcode in your project folder and enter:
 
 ```text
 /resume
@@ -19,11 +19,11 @@ use `/resume all`. In Desktop/Web, select a saved Session under its Project.
 If you know the Session ID, you can open it directly from your terminal:
 
 ```console
-deepcode --resume SESSION_ID
+dfcode --resume SESSION_ID
 ```
 
 Replace `SESSION_ID` with the ID shown for your conversation. Read the latest
-messages, then tell DeepCode what you want to do next.
+messages, then tell DFcode what you want to do next.
 
 If the conversation is still working on a Turn, for example one you started in
 another terminal, the TUI shows what that Turn is doing now (the answer so far,
@@ -34,10 +34,10 @@ latest messages printed above them give the context.
 ## Multiple clients, one Session
 
 You can start a task in the TUI and open the same conversation in Desktop or Web.
-On the same computer, use the same DeepCode version and configuration directory
+On the same computer, use the same DFcode version and configuration directory
 so all three interfaces show your projects and history.
 
-While DeepCode is working, send a message to adjust the current task. To save a
+While DFcode is working, send a message to adjust the current task. To save a
 separate instruction for afterward, use `/queue` in the TUI:
 
 ```text
@@ -81,15 +81,15 @@ removes the Session records but never your repository files.
 ## Long conversations: `/compact`
 
 When a conversation becomes long, use `/compact` to summarize its older messages
-and make room for more work. DeepCode keeps the recent messages and tool results,
+and make room for more work. DFcode keeps the recent messages and tool results,
 and saves the summary for the next time you open the conversation.
 
 Summarizing is a model request and can take a while. A message sent to the
 conversation in the meantime, for example from another window, starts when the
-summary is done. If there is nothing worth compacting yet, DeepCode says so and
+summary is done. If there is nothing worth compacting yet, DFcode says so and
 leaves the conversation unchanged.
 
-DeepCode also compacts automatically as the conversation approaches the model's
+DFcode also compacts automatically as the conversation approaches the model's
 context limit. To use a smaller limit, see [context settings](models.md#context-window-cap).
 
 ## Housekeeping
@@ -113,9 +113,9 @@ files. Finish or stop its active work before deleting it.
 
 ## Storage and recovery
 
-DeepCode normally stores your conversation files in `~/.deepcode/sessions/` and
-its task, approval, and Automation data in `~/.deepcode/state/deepcode.sqlite3`.
-Large tool outputs may also be stored in your project's `.deepcode/tool-results/`
+DFcode normally stores your conversation files in `~/.dfcode/sessions/` and
+its task, approval, and Automation data in `~/.dfcode/state/dfcode.sqlite3`.
+Large tool outputs may also be stored in your project's `.dfcode/tool-results/`
 directory. Keep these files when backing up work you want to resume. An output
 that no Session has used for 90 days is removed.
 

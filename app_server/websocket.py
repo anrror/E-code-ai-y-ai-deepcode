@@ -145,11 +145,11 @@ class WebSocketTransport:
         self._connections: dict[web.WebSocketResponse, str | None] = {}
         self._slots = asyncio.Semaphore(self.MAX_REQUESTS)
         self._executor = ThreadPoolExecutor(
-            max_workers=self.MAX_REQUESTS, thread_name_prefix="deepcode-rpc"
+            max_workers=self.MAX_REQUESTS, thread_name_prefix="dfcode-rpc"
         )
         self._slow_slots = asyncio.Semaphore(self.MAX_SLOW_REQUESTS)
         self._slow_executor = ThreadPoolExecutor(
-            max_workers=self.MAX_SLOW_REQUESTS, thread_name_prefix="deepcode-rpc-slow"
+            max_workers=self.MAX_SLOW_REQUESTS, thread_name_prefix="dfcode-rpc-slow"
         )
         self._alongside: set[asyncio.Task] = set()
         self._inflight: set[asyncio.Future] = set()

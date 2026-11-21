@@ -17,8 +17,8 @@ from core.sessions.store import SessionStore
 
 def state(tmp_path, monkeypatch):
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.delenv("DEEPCODE_SESSIONS_DIR", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.delenv("DFCODE_SESSIONS_DIR", raising=False)
     paths = StatePaths.current(ServiceFiles(home / "state" / "state.sqlite3"))
     db = Database(paths.database)
     db.initialize()
@@ -147,17 +147,17 @@ def test_older_runtime_refuses_newer_schema_before_backup_or_mutation(
 def test_restored_application_pauses_goals_and_schedules_before_recovery(
     tmp_path, monkeypatch
 ):
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain import AutomationScheduleKind, AutomationStatus, TrustState
     from core.domain.thread_goal import ThreadGoalStatus
 
     home = tmp_path / "home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.delenv("DEEPCODE_SESSIONS_DIR", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.delenv("DFCODE_SESSIONS_DIR", raising=False)
     paths = StatePaths.current(ServiceFiles(home / "state" / "state.sqlite3"))
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    app = DeepCodeApplication.open(
+    app = DFcodeApplication.open(
         paths.database, session_store=SessionStore(paths.sessions)
     )
     try:
@@ -182,7 +182,7 @@ def test_restored_application_pauses_goals_and_schedules_before_recovery(
     snapshot = tmp_path / "snapshot"
     create_snapshot(paths, snapshot)
     restore_snapshot(paths, snapshot, replace_data=True)
-    app = DeepCodeApplication.open(
+    app = DFcodeApplication.open(
         paths.database, session_store=SessionStore(paths.sessions)
     )
     try:

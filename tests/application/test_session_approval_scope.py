@@ -13,7 +13,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.approval import ApprovalGrant, ApprovalStatus
 from core.domain.turn import TurnStatus
@@ -57,7 +57,7 @@ class _Factory:
 def session(tmp_path: Path):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_Factory(),
         session_store=SessionStore(tmp_path / "sessions"),

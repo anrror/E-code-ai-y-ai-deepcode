@@ -102,7 +102,7 @@ def update_plan_review_meta(paper_dir: str | Path, **updates: Any) -> None:
 
 
 def _plan_review_timeout_s() -> int:
-    raw = os.environ.get("DEEPCODE_PLAN_REVIEW_TIMEOUT_S", "").strip()
+    raw = os.environ.get("DFCODE_PLAN_REVIEW_TIMEOUT_S", "").strip()
     if not raw:
         return _DEFAULT_PLAN_REVIEW_TIMEOUT_S
     try:

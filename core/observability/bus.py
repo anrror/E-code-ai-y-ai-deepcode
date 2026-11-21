@@ -4,9 +4,9 @@ The bus is intentionally module-level and idempotent. The first call to
 :func:`setup_logging` wires up:
 
 * a console sink (human-readable, level >= INFO by default);
-* a global JSONL sink at ``logs/server-{date}.jsonl`` in the DeepCode home
+* a global JSONL sink at ``logs/server-{date}.jsonl`` in the DFcode home
   (rotation by day, retention configurable, all log records);
-* a per-task JSONL sink at ``deepcode_lab/tasks/<task_id>/logs/system.jsonl``
+* a per-task JSONL sink at ``dfcode_lab/tasks/<task_id>/logs/system.jsonl``
   routed dynamically based on ``record["extra"]["task_id"]``;
 * a global ``logger.patch`` that injects the active ``task_id`` and
   ``session_id`` (from :mod:`core.observability.context`) into every
@@ -18,7 +18,7 @@ LLM and MCP records are emitted via :func:`log_llm_call` /
 are richer and they need their own files).
 
 ``llm.jsonl`` is also the home of the optional append-only transparency log
-(``DEEPCODE_TRANSPARENCY_LOG=1``):
+(``DFCODE_TRANSPARENCY_LOG=1``):
 every :class:`LLMLogRecord` we append is linked into a hash chain
 (``prev_hash`` -> ``entry_hash``) *at write time* — the link depends on the
 target file, so it cannot live in the record constructor. MCP and system
@@ -138,7 +138,7 @@ def setup_logging(
     JSONL + per-task JSONL).
 
     ``workspace_root`` controls where the global log file lives (``logs/``
-    is created relative to it). When omitted it is the DeepCode home.
+    is created relative to it). When omitted it is the DFcode home.
 
     ``console_sink`` lets a headless host redirect the console channel without
     replacing the shared stdlib/loguru bridge or duplicating its routing. A
@@ -304,7 +304,7 @@ def log_llm_call(
 ) -> None:
     """Append an :class:`LLMLogRecord` to the active task's ``llm.jsonl``.
 
-    Falls back to ``logs/llm.jsonl`` in the DeepCode home when no task is bound
+    Falls back to ``logs/llm.jsonl`` in the DFcode home when no task is bound
     (e.g. process-startup probes).
 
     The extra keyword arguments are the transparency-log fields. They are
@@ -400,7 +400,7 @@ def _console_line(record: dict[str, Any]) -> str:
 def _not_http_chatter(record: dict[str, Any]) -> bool:
     """httpx logs every request at INFO: a line per call to the service or a
     model, which on the terminal buried what the command itself printed
-    (``deepcode web``, ``deepcode service stop``). Other sinks, such as the
+    (``dfcode web``, ``dfcode service stop``). Other sinks, such as the
     log files and the service log, keep them; the terminal shows them at DEBUG.
     """
     return (
@@ -605,7 +605,7 @@ def _recover_tail_entry_hash(path: Path) -> str:
 def transparency_log_enabled() -> bool:
     """Whether LLM log lines carry a hash chain. Off unless enabled.
 
-    Opt in with ``DEEPCODE_TRANSPARENCY_LOG=1``. The chain is forensic: it
+    Opt in with ``DFCODE_TRANSPARENCY_LOG=1``. The chain is forensic: it
     lets an operator prove afterwards that a local ``llm.jsonl`` was not
     edited and see which endpoint each call went to. It is off by default
     because ``_append_llm_record`` serialises threads within one process but
@@ -616,7 +616,7 @@ def transparency_log_enabled() -> bool:
     directory.
     """
 
-    return os.environ.get("DEEPCODE_TRANSPARENCY_LOG", "").strip().lower() in {
+    return os.environ.get("DFCODE_TRANSPARENCY_LOG", "").strip().lower() in {
         "1",
         "true",
         "on",
@@ -704,9 +704,9 @@ def _home_log_dir() -> Path:
     Never the current directory: a client runs in the user's project and the
     service in its install directory, and neither should collect log files.
     """
-    from core.config import deepcode_home  # core.config imports this module
+    from core.config import dfcode_home  # core.config imports this module
 
-    return deepcode_home() / "logs"
+    return dfcode_home() / "logs"
 
 
 __all__ = [

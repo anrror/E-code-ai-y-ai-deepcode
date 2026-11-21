@@ -22,7 +22,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain.automation import AutomationScheduleKind
 from core.domain.project import TrustState
 from core.persistence.event_repository import EventRepository
@@ -50,14 +50,14 @@ def test_deleting_canonical_jsonl_drops_the_projection_instead_of_resurrecting(
     session = _seed_session(store, workspace)
     database = tmp_path / "state.sqlite3"
 
-    first = DeepCodeApplication.open(database, session_store=store)
+    first = DFcodeApplication.open(database, session_store=store)
     assert [t.id for t in first.threads.list()] == [session.session_id]
     first.close()
 
     # Out-of-band deletion — exactly what a user's `rm -rf` does.
     shutil.rmtree(store.root / session.session_id)
 
-    reopened = DeepCodeApplication.open(
+    reopened = DFcodeApplication.open(
         database,
         session_store=SessionStore(tmp_path / "sessions"),
     )
@@ -79,7 +79,7 @@ def test_automation_thread_is_rematerialized_not_dropped(tmp_path: Path) -> None
     workspace.mkdir()
     database = tmp_path / "state.sqlite3"
 
-    application = DeepCodeApplication.open(database)
+    application = DFcodeApplication.open(database)
     project = application.projects.add(str(workspace))
     application.projects.update(project.id, trust_state=TrustState.TRUSTED)
     created = application.automations.create(
@@ -94,7 +94,7 @@ def test_automation_thread_is_rematerialized_not_dropped(tmp_path: Path) -> None
 
     shutil.rmtree(store_root / thread_id)
 
-    reopened = DeepCodeApplication.open(database)
+    reopened = DFcodeApplication.open(database)
     try:
         assert any(t.id == thread_id for t in reopened.threads.list())
         session = reopened.session_store.get_session(thread_id)
@@ -128,7 +128,7 @@ def test_context_notes_do_not_poison_projection_pair_matching(
     )
     store.append_message(session.session_id, "assistant", "found and fixed")
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -181,7 +181,7 @@ def test_user_input_provenance_survives_projection_rebuild(tmp_path, delivery):
     )
     store.append_message(session.session_id, "assistant", "implemented")
 
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
     try:
         app.threads.read(session.session_id)
         app.threads.reconcile()
@@ -205,7 +205,7 @@ def test_actual_transcript_disagreement_remains_visible(tmp_path):
     workspace.mkdir()
     store = SessionStore(tmp_path / "sessions")
     session = _seed_session(store, workspace)
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
     try:
         with app.database.transaction() as connection:
             item = ItemRepository(connection).conversation_for_thread(
@@ -262,7 +262,7 @@ def test_tool_only_assistant_record_does_not_conflict_with_visible_conversation(
         metadata={"name": "read", "toolCallId": "read-1"},
     )
     store.append_message(session.session_id, "assistant", "file inspected")
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_store=store)
     try:
         app.threads.read(session.session_id)
         app.threads.reconcile()

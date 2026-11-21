@@ -1,4 +1,4 @@
-"""Attach stdin/stdout to the local DeepCode service."""
+"""Attach stdin/stdout to the local DFcode service."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ _PROCESS_STARTED = time.perf_counter()
 
 
 def _trace_startup(stage: str) -> None:
-    if os.environ.get("DEEPCODE_STARTUP_TRACE") == "1":
+    if os.environ.get("DFCODE_STARTUP_TRACE") == "1":
         elapsed = time.perf_counter() - _PROCESS_STARTED
         print(f"startup {elapsed:.3f}s {stage}", file=sys.stderr, flush=True)
 
@@ -23,7 +23,7 @@ _trace_startup("entrypoint")
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="DeepCode stdio App Server")
+    parser = argparse.ArgumentParser(description="DFcode stdio App Server")
     parser.add_argument(
         "--service",
         action="store_true",
@@ -56,7 +56,7 @@ def build_parser() -> argparse.ArgumentParser:
         "--database",
         type=Path,
         default=None,
-        help="override the default ~/.deepcode/state/deepcode.sqlite3",
+        help="override the default ~/.dfcode/state/dfcode.sqlite3",
     )
     parser.add_argument(
         "--verify-runtime",
@@ -113,10 +113,10 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
             protocol_sink,
         )
     from app_server.server import AppServer
-    from core.application.application import DeepCodeApplication
+    from core.application.application import DFcodeApplication
 
     _trace_startup("opening-application")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         args.database,
         host_surface="app_server",
         run_automation_scheduler=True,
@@ -126,7 +126,7 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
 
 
 def _run_script(script: str, arguments: list[str]) -> int:
-    """Run one of DeepCode's helper scripts the way ``python script`` would.
+    """Run one of DFcode's helper scripts the way ``python script`` would.
 
     The frozen build has no separate Python, so its executable stands in for
     one (see ``core.platform_compat.script_command``), but only for scripts
@@ -137,7 +137,7 @@ def _run_script(script: str, arguments: list[str]) -> int:
     root = Path(getattr(sys, "_MEIPASS", Path(__file__).resolve().parents[1]))
     path = Path(script).resolve()
     if path.suffix != ".py" or not path.is_relative_to(root.resolve()):
-        print(f"not a DeepCode helper script: {script}", file=sys.stderr)
+        print(f"not a DFcode helper script: {script}", file=sys.stderr)
         return 2
     sys.argv = [str(path), *arguments]
     runpy.run_path(str(path), run_name="__main__")

@@ -1,4 +1,4 @@
-"""DeepCode's own git calls ignore the programs a repository names for itself."""
+"""DFcode's own git calls ignore the programs a repository names for itself."""
 
 from __future__ import annotations
 

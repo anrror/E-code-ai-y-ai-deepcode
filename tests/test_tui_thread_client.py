@@ -12,7 +12,7 @@ import pytest
 from cli.tui.app import TuiApp
 from cli.tui.thread_client import TuiThreadClient
 from core import agent_setup
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.domain.execution_security import ExecutionAccessPreset
 from core.domain.turn import TurnStatus
 from core.events import Event
@@ -99,8 +99,8 @@ def _make_client(
 ) -> TuiThreadClient:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     _patch_provider(monkeypatch, provider)
     client = TuiThreadClient(
         workspace=str(workspace),
@@ -389,7 +389,7 @@ async def test_desktop_application_resumes_the_exact_cli_session(
     finally:
         await client.close()
 
-    desktop_application = DeepCodeApplication.open(session_store=store)
+    desktop_application = DFcodeApplication.open(session_store=store)
     try:
         resumed = desktop_application.threads.resume(
             session_id,
@@ -427,7 +427,7 @@ async def test_cli_and_desktop_share_one_goal_in_both_directions(
     )
     await cli.close()
 
-    desktop = DeepCodeApplication.open(
+    desktop = DFcodeApplication.open(
         session_store=SessionStore(session_root),
     )
     try:
@@ -479,7 +479,7 @@ async def test_cli_and_desktop_share_one_goal_in_both_directions(
     finally:
         await resumed_cli.close()
 
-    desktop_again = DeepCodeApplication.open(
+    desktop_again = DFcodeApplication.open(
         session_store=SessionStore(session_root),
     )
     try:
@@ -499,12 +499,12 @@ async def test_goal_commands_reuse_the_cli_application(
     provider = _BlockingProvider()
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
     _patch_provider(monkeypatch, provider)
 
-    original_open = DeepCodeApplication.open.__func__
+    original_open = DFcodeApplication.open.__func__
     opened = 0
 
     def counted_open(cls, *args: Any, **kwargs: Any):
@@ -512,7 +512,7 @@ async def test_goal_commands_reuse_the_cli_application(
         opened += 1
         return original_open(cls, *args, **kwargs)
 
-    monkeypatch.setattr(DeepCodeApplication, "open", classmethod(counted_open))
+    monkeypatch.setattr(DFcodeApplication, "open", classmethod(counted_open))
     app = TuiApp(
         shared_service=False,
         workspace=str(workspace),
@@ -551,8 +551,8 @@ async def test_interrupting_a_turn_settles_the_animated_status_line(
     provider = _BlockingProvider()
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
     _patch_provider(monkeypatch, provider)
 

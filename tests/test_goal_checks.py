@@ -1,4 +1,4 @@
-"""A Goal's checklist: proposed by the agent, confirmed by the user, run by DeepCode.
+"""A Goal's checklist: proposed by the agent, confirmed by the user, run by DFcode.
 
 Also the history of completion reviews the Goal keeps.
 """
@@ -142,7 +142,7 @@ async def test_a_check_has_the_agents_sandbox(tmp_path) -> None:
 
     if not fences_writes():
         pytest.skip("no sandbox backend here")
-    outside = Path.home() / ".deepcode-check-sandbox-probe"
+    outside = Path.home() / ".dfcode-check-sandbox-probe"
     try:
         (run,) = await run_checks(
             (GoalCheckSpec("x", ("sh", "-c", f"echo x > {outside}")),),
@@ -259,7 +259,7 @@ def test_the_reviewer_is_given_the_confirmed_checklist() -> None:
     assert "The user confirmed this checklist" in task
     assert "- Zero stock removes the item" in task
     assert "(command: `pytest -q`)" in task
-    assert "DeepCode itself ran" in task
+    assert "DFcode itself ran" in task
 
 
 # --- the router keeps a history ------------------------------------------
@@ -563,13 +563,13 @@ def test_reviews_are_kept_per_goal_and_unreadable_lines_skipped(tmp_path) -> Non
 def test_the_app_server_confirms_and_dismisses_checks(tmp_path) -> None:
     from app_server.connection import ConnectionState
     from app_server.dispatcher import Dispatcher, InvalidParams, Params
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
 
     from core.domain.project import TrustState
 
     workspace = tmp_path / "w"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions", use_index=False),
     )
@@ -636,7 +636,7 @@ def test_settings_switch_the_completion_verifier(tmp_path) -> None:
     from core.application.config_store import ConfigStore
     from core.application.settings_service import SettingsService
 
-    service = SettingsService(store=ConfigStore(tmp_path / "deepcode_config.json"))
+    service = SettingsService(store=ConfigStore(tmp_path / "dfcode_config.json"))
     assert service.read()["goal"] == {"completionVerifier": "off", "maxRejections": 3}
     updated = service.update({"goal": {"completionVerifier": "reviewer"}})
     assert updated["goal"]["completionVerifier"] == "reviewer"
@@ -749,12 +749,12 @@ def test_a_goal_stops_once_its_time_limit_is_used(tmp_path) -> None:
 def test_the_time_limit_is_kept_unless_an_edit_names_one(tmp_path) -> None:
     from app_server.connection import ConnectionState
     from app_server.dispatcher import Dispatcher, Params
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.domain.project import TrustState
 
     workspace = tmp_path / "w"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=SessionStore(tmp_path / "sessions", use_index=False),
     )

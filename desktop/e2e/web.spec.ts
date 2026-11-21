@@ -21,15 +21,15 @@ import { crossComponentRules } from "./cssLeaks";
 
 const repository = fileURLToPath(new URL("../../", import.meta.url));
 const python =
-  process.env.DEEPCODE_TEST_PYTHON ??
+  process.env.DFCODE_TEST_PYTHON ??
   join(
     repository,
     ".venv",
     process.platform === "win32" ? "Scripts/python.exe" : "bin/python",
   );
-const live = process.env.DEEPCODE_WEB_LIVE === "1";
-const installed = process.env.DEEPCODE_WEB_PACKAGE_DIR;
-const standalone = process.env.DEEPCODE_WEB_BINARY;
+const live = process.env.DFCODE_WEB_LIVE === "1";
+const installed = process.env.DFCODE_WEB_PACKAGE_DIR;
+const standalone = process.env.DFCODE_WEB_BINARY;
 let root: string,
   workspace: string,
   environment: NodeJS.ProcessEnv,
@@ -62,7 +62,7 @@ function link() {
   return JSON.parse(
     command(
       "-m",
-      "deepcode",
+      "dfcode",
       "web",
       "--database",
       join(root, "state.sqlite3"),
@@ -73,7 +73,7 @@ function link() {
 }
 
 test.beforeAll(async () => {
-  root = mkdtempSync(join(tmpdir(), "deepcode-web-e2e-"));
+  root = mkdtempSync(join(tmpdir(), "dfcode-web-e2e-"));
   workspace = join(root, "workspace");
   mkdirSync(workspace);
   mkdirSync(join(root, "home"));
@@ -93,15 +93,15 @@ test.beforeAll(async () => {
       [
         "-m",
         "tests.app_server.web_worker",
-        join(root, "home", "deepcode_config.json"),
+        join(root, "home", "dfcode_config.json"),
         "--prepare-live-config",
       ],
       { cwd: repository },
     );
   environment = {
     ...process.env,
-    DEEPCODE_HOME: join(root, "home"),
-    DEEPCODE_SESSIONS_DIR: join(root, "home", "sessions"),
+    DFCODE_HOME: join(root, "home"),
+    DFCODE_SESSIONS_DIR: join(root, "home", "sessions"),
     ...(installed ? { PYTHONPATH: installed } : {}),
   };
   for (const key of Object.keys(environment))
@@ -139,7 +139,7 @@ test.afterAll(() => {
   try {
     command(
       "-m",
-      "deepcode",
+      "dfcode",
       "service",
       "stop",
       "--database",
@@ -395,7 +395,7 @@ test("browser access: missing and used links, sign-out, and fresh-link recovery"
   await page.goto(base);
   const notice = page.getByRole("alert");
   await expect(notice).toContainText("Browser access required");
-  await expect(notice).toContainText("deepcode web");
+  await expect(notice).toContainText("dfcode web");
   await expect(notice).not.toContainText("APP_SERVER_OFFLINE");
   await expect(notice.getByRole("button", { name: "Reconnect" })).toHaveCount(0);
   await expect(notice.locator("span")).toHaveCSS("white-space", "normal");

@@ -1,9 +1,9 @@
-"""DeepCode compatibility layer for legacy ``mcp_agent`` imports.
+"""DFcode compatibility layer for legacy ``mcp_agent`` imports.
 
 The legacy code base wired itself to ``mcp_agent`` types such as
 :class:`MCPApp`, :class:`Agent`, :class:`RequestParams`, ``AugmentedLLM``,
 and :class:`ParallelLLM`. To avoid touching every callsite we re-export
-DeepCode-native replacements here that share the same surface, but are
+DFcode-native replacements here that share the same surface, but are
 implemented on top of the new ``core`` runtime (provider/tool/runner stack
 ported from ``nanobot``).
 
@@ -19,7 +19,7 @@ Public surface (mirrors ``mcp_agent``):
   passing a class to ``attach_llm``.
 * :class:`RequestParams` - dataclass with ``max_tokens``, ``temperature``,
   ``model``, ``maxTokens``, ``use_history``, ``max_iterations`` (matches
-  the legacy fields used in DeepCode).
+  the legacy fields used in DFcode).
 * :class:`ParallelLLM` - simple parallel fan-out / fan-in helper.
 """
 
@@ -34,7 +34,7 @@ from core.compat.mcp_app import MCPApp
 from core.compat.parallel import ParallelLLM
 from core.compat.request_params import RequestParams
 from core.compat.runtime import (
-    DeepCodeRuntime,
+    DFcodeRuntime,
     get_runtime,
     set_runtime,
     use_runtime,
@@ -44,7 +44,7 @@ __all__ = [
     "Agent",
     "AnthropicAugmentedLLM",
     "AugmentedLLM",
-    "DeepCodeRuntime",
+    "DFcodeRuntime",
     "GoogleAugmentedLLM",
     "MCPApp",
     "OpenAIAugmentedLLM",

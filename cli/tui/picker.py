@@ -5,7 +5,7 @@ type to filter, ↑/↓ to move, Enter to choose, Esc clears a non-empty
 filter first and cancels on the second press, Tab flips between scopes,
 Shift+Tab cycles the highlighted row's variant (its reasoning effort),
 and the row's *title* is the identity — ids live on the dim detail line.
-This is the DeepCode rendition: an inline (no alternate screen)
+This is the DFcode rendition: an inline (no alternate screen)
 prompt_toolkit application that erases itself when done, leaving the
 transcript clean.
 """

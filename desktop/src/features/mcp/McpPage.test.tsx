@@ -27,8 +27,8 @@ class McpRuntime {
   requests: Array<{ method: string; params: unknown }> = [];
   inventory: McpInventory = {
     servers: [],
-    userConfigPath: "/home/user/.deepcode/deepcode_config.json",
-    projectConfigPath: "/workspace/repo/deepcode_config.json",
+    userConfigPath: "/home/user/.dfcode/dfcode_config.json",
+    projectConfigPath: "/workspace/repo/dfcode_config.json",
   };
   presets: McpPresetInventory = {
     source: "https://github.com/HKUDS/nanobot",

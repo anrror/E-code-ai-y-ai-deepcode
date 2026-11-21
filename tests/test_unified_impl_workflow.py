@@ -178,7 +178,7 @@ def _tool_call(call_id: str, name: str, arguments: dict[str, Any]) -> ToolCallRe
 def _make_workflow(monkeypatch) -> CodeImplementationWorkflow:
     # Do not force the permission mode here: these tests also lock the legacy
     # autonomous default used by unconfigured CLI/batch workflows.
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     monkeypatch.setattr(
         ConciseMemoryAgent,
         "_extract_all_files",

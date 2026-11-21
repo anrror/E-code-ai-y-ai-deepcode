@@ -20,7 +20,7 @@ from app_server.protocol.timeouts import timeout_capabilities
 from core.agent_presets import METADATA_KEY as PRESET_METADATA_KEY
 from core.agent_presets import list_agent_presets
 from core.application import jenkins_service, k8s_service
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.errors import (
     NoActiveTurnError,
     ThreadNotFoundError,
@@ -215,7 +215,7 @@ Handler = Callable[[Params], Any]
 class Dispatcher:
     def __init__(
         self,
-        application: DeepCodeApplication,
+        application: DFcodeApplication,
         connection: ConnectionState,
         *,
         max_message_bytes: int = DEFAULT_MAX_MESSAGE_BYTES,
@@ -424,7 +424,7 @@ class Dispatcher:
                 if self.service_info is not None
                 else {}
             ),
-            "serverInfo": {"name": "deepcode-app-server", "version": SERVER_VERSION},
+            "serverInfo": {"name": "dfcode-app-server", "version": SERVER_VERSION},
             "clientInfo": {
                 "name": client_name,
                 "version": client_version,

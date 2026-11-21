@@ -1,7 +1,7 @@
 """P2-A7 (GenAI lesson 17): tool-name miss semantic candidates.
 
 Taskweaver stores plugins as embeddings and lets the LLM *semantically
-search* for the right plugin when the tool count grows. DeepCode routes tools
+search* for the right plugin when the tool count grows. DFcode routes tools
 by exact name; when the model hallucinates or misremembers a name, the
 registry returns "not found". This module adds the cheap first step: given the
 missed name and the available tool names, suggest the closest candidates by

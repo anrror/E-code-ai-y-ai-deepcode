@@ -52,7 +52,7 @@ jobs:
         if: steps.scope.outputs.runtime_changed == 'true'
         working-directory: desktop
         env:
-          DEEPCODE_TEST_PYTHON: python
+          DFCODE_TEST_PYTHON: python
         run: npm run test:web
       - uses: actions/upload-artifact@v4
         if: always() && steps.scope.outputs.runtime_changed == 'true'

@@ -1,6 +1,6 @@
 """Shared execution loop for tool-using agents.
 
-Ported from ``nanobot.agent.runner`` and adapted for DeepCode:
+Ported from ``nanobot.agent.runner`` and adapted for DFcode:
 
 - All ``nanobot.*`` imports rewritten to ``core.*``.
 - The single ``render_template`` call for the max-iterations message is

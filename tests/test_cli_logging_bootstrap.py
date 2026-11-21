@@ -3,7 +3,7 @@
 Reported in #167: loguru ships a stderr sink at DEBUG level, and nothing on
 the CLI path ever replaced it. Routine internals therefore reached the user's
 terminal — most visibly the "config layer absent" line `load_config` emits in
-any directory without a project-level `deepcode_config.json`.
+any directory without a project-level `dfcode_config.json`.
 
 The ordering is the subtle part: reading the config is itself one of the
 things that logs, so a quiet default has to be installed first.
@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-import deepcode  # noqa: E402
+import dfcode  # noqa: E402
 from core.observability import shutdown_logging  # noqa: E402
 
 
@@ -37,11 +37,11 @@ def _restore_logging():
 
 
 def test_bootstrap_replaces_the_default_debug_sink(monkeypatch, tmp_path):
-    monkeypatch.delenv("DEEPCODE_LOG_LEVEL", raising=False)
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("DFCODE_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
 
     # 10 is loguru's DEBUG. Leaving it in place is what put internals on the
     # terminal; INFO (20) or quieter is the contract here.
@@ -50,14 +50,14 @@ def test_bootstrap_replaces_the_default_debug_sink(monkeypatch, tmp_path):
 
 
 def test_env_override_wins_without_any_config_file(monkeypatch, tmp_path):
-    """`DEEPCODE_LOG_LEVEL` has to work before a config exists — it is the
+    """`DFCODE_LOG_LEVEL` has to work before a config exists — it is the
     escape hatch for debugging config loading itself."""
 
-    monkeypatch.setenv("DEEPCODE_LOG_LEVEL", "DEBUG")
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
 
     assert min(sink_levels()) <= 10
 
@@ -67,15 +67,15 @@ def test_configured_level_is_honoured(monkeypatch, tmp_path):
 
     home = tmp_path / "home"
     home.mkdir()
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         '{"logger": {"level": "warning", "transports": ["console"]}}',
         encoding="utf-8",
     )
-    monkeypatch.delenv("DEEPCODE_LOG_LEVEL", raising=False)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.delenv("DFCODE_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
 
     assert min(sink_levels()) >= 30  # WARNING
 
@@ -86,12 +86,12 @@ def test_an_unreadable_config_does_not_break_startup(monkeypatch, tmp_path):
 
     home = tmp_path / "home"
     home.mkdir()
-    (home / "deepcode_config.json").write_text("{ not json", encoding="utf-8")
-    monkeypatch.delenv("DEEPCODE_LOG_LEVEL", raising=False)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    (home / "dfcode_config.json").write_text("{ not json", encoding="utf-8")
+    monkeypatch.delenv("DFCODE_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
 
     assert sink_levels()
 
@@ -106,15 +106,15 @@ def _log_http_request_and_more() -> None:
 
 
 def test_http_requests_stay_off_the_terminal(monkeypatch, tmp_path, capsys):
-    """httpx logs every request at INFO, so `deepcode web` and `deepcode
+    """httpx logs every request at INFO, so `dfcode web` and `dfcode
     service stop` printed a line per call to the service above their output."""
 
     shutdown_logging()
-    monkeypatch.delenv("DEEPCODE_LOG_LEVEL", raising=False)
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.delenv("DFCODE_LOG_LEVEL", raising=False)
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
     _log_http_request_and_more()
 
     err = capsys.readouterr().err
@@ -124,11 +124,11 @@ def test_http_requests_stay_off_the_terminal(monkeypatch, tmp_path, capsys):
 
 def test_debug_logging_still_shows_http_requests(monkeypatch, tmp_path, capsys):
     shutdown_logging()
-    monkeypatch.setenv("DEEPCODE_LOG_LEVEL", "DEBUG")
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_LOG_LEVEL", "DEBUG")
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     monkeypatch.chdir(tmp_path)
 
-    deepcode._bootstrap_logging()
+    dfcode._bootstrap_logging()
     _log_http_request_and_more()
 
     assert "HTTP Request" in capsys.readouterr().err
@@ -139,9 +139,9 @@ def test_main_bootstraps_before_dispatching(monkeypatch, capsys):
     not repeated in each entrypoint."""
 
     called: list[bool] = []
-    monkeypatch.setattr(deepcode, "_bootstrap_logging", lambda: called.append(True))
-    monkeypatch.setattr(sys, "argv", ["deepcode", "--version"])
+    monkeypatch.setattr(dfcode, "_bootstrap_logging", lambda: called.append(True))
+    monkeypatch.setattr(sys, "argv", ["dfcode", "--version"])
 
-    deepcode.main()
+    dfcode.main()
 
     assert called == [True]

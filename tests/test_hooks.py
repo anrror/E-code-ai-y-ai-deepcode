@@ -85,8 +85,8 @@ def test_invalid_regex_matches_nothing_and_is_flagged():
 
 
 def test_discovery_parses_and_orders(tmp_path):
-    (tmp_path / ".deepcode").mkdir()
-    (tmp_path / ".deepcode" / "hooks.json").write_text(
+    (tmp_path / ".dfcode").mkdir()
+    (tmp_path / ".dfcode" / "hooks.json").write_text(
         json.dumps(
             {
                 "hooks": {
@@ -125,8 +125,8 @@ def test_discovery_parses_and_orders(tmp_path):
 
 
 def test_discovery_skips_unsupported_and_warns(tmp_path):
-    (tmp_path / ".deepcode").mkdir()
-    (tmp_path / ".deepcode" / "hooks.json").write_text(
+    (tmp_path / ".dfcode").mkdir()
+    (tmp_path / ".dfcode" / "hooks.json").write_text(
         json.dumps(
             {
                 "hooks": {
@@ -164,8 +164,8 @@ def test_discovery_none_when_no_files(tmp_path):
 
 
 def test_userprompt_matcher_forced_none(tmp_path):
-    (tmp_path / ".deepcode").mkdir()
-    (tmp_path / ".deepcode" / "hooks.json").write_text(
+    (tmp_path / ".dfcode").mkdir()
+    (tmp_path / ".dfcode" / "hooks.json").write_text(
         json.dumps(
             {
                 "hooks": {

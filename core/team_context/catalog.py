@@ -4,7 +4,7 @@ Every layer is configured by its own directory, so an organization can change
 one layer without touching the others:
 
 ```text
-.deepcode/team/
+.dfcode/team/
   company/auto-sub/          entity.yaml  knowledge.yaml  AGENTS.md
   line/auto-outsourcing/     entity.yaml  knowledge.yaml  AGENTS.md
   project/changan/           entity.yaml  knowledge.yaml  AGENTS.md
@@ -20,8 +20,8 @@ list per file). ``AGENTS.md`` is that layer's standing instructions.
 
 Both roots are read, the workspace one winning by id:
 
-``~/.deepcode/team/``        organization/line content shared by every workspace
-``<workspace>/.deepcode/team/``  the workspace's layers and its task binding
+``~/.dfcode/team/``        organization/line content shared by every workspace
+``<workspace>/.dfcode/team/``  the workspace's layers and its task binding
 
 The single-file ``catalog.yaml`` form is still read for compatibility, and is
 where programmatic additions land when a scope has no directory of its own.
@@ -43,7 +43,7 @@ from core.team_context.models import (
     TeamEntity,
 )
 
-TEAM_RELATIVE = Path(".deepcode") / "team"
+TEAM_RELATIVE = Path(".dfcode") / "team"
 CATALOG_RELATIVE = TEAM_RELATIVE / "catalog.yaml"
 # Directory name per layer; ``company`` is the design document's word for org.
 LAYER_DIRECTORIES = {

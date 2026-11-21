@@ -1,4 +1,4 @@
-"""Utility helpers for the DeepCode pipeline.
+"""Utility helpers for the DFcode pipeline.
 
 The legacy ``dialogue_logger`` and ``simple_llm_logger`` modules have
 been removed; structured logging now lives in

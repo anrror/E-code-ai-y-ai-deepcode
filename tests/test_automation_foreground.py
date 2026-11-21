@@ -8,7 +8,7 @@ from pathlib import Path
 import pytest
 
 from cli import automation_cli
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.approval import ApprovalStatus
 from core.domain.automation import AutomationRunStatus, AutomationScheduleKind
@@ -58,12 +58,12 @@ class _ApprovalGoalFactory:
 def _seed(
     tmp_path: Path,
     factory: _ApprovalGoalFactory,
-) -> tuple[DeepCodeApplication, str, Path, SessionStore]:
+) -> tuple[DFcodeApplication, str, Path, SessionStore]:
     database_path = tmp_path / "state.sqlite3"
     session_store = SessionStore(tmp_path / "sessions")
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         database_path,
         session_store=session_store,
         session_factory=factory,
@@ -89,7 +89,7 @@ def _audit(
     factory: _ApprovalGoalFactory,
     automation_id: str,
 ):
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         database_path,
         session_store=session_store,
         session_factory=factory,

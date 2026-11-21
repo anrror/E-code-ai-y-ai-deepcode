@@ -36,8 +36,8 @@ desktop/build/sidecar/.venv              Python 3.12
         │ npm run build:sidecar
         ▼
 desktop/build/sidecar/dist/
-└── deepcode-app-server/
-    ├── deepcode-app-server[.exe]
+└── dfcode-app-server/
+    ├── dfcode-app-server[.exe]
     └── _internal/...
 ```
 
@@ -55,16 +55,16 @@ The build fails unless the packaged executable:
    document converters, and workflow kernel through
    `app_server --verify-runtime`;
 2. completes an isolated `initialize → shutdown` exchange using temporary
-   `DEEPCODE_HOME` and SQLite paths.
+   `DFCODE_HOME` and SQLite paths.
 
 Tauri copies the whole directory into the platform resource directory as
 `app-server/`. On macOS the executable is therefore at
-`DeepCode.app/Contents/Resources/app-server/deepcode-app-server`, with its
+`DFcode.app/Contents/Resources/app-server/dfcode-app-server`, with its
 private Python runtime in the same sealed resource tree.
 
 Launch resolution is deterministic:
 
-1. explicit `DEEPCODE_APP_SERVER_PATH`;
+1. explicit `DFCODE_APP_SERVER_PATH`;
 2. in debug builds only, repository `.venv` source runtime;
 3. bundled `app-server/` resource;
 4. in debug builds only, source `onedir` output.
@@ -72,10 +72,10 @@ Launch resolution is deterministic:
 An invalid explicit path fails closed instead of silently choosing another
 binary. Release builds never inspect a compiled-in repository path, load an
 executable merely placed beside the host, or fall back to a system Python.
-`DEEPCODE_DATABASE_PATH` is forwarded as `--database`, allowing clean
+`DFCODE_DATABASE_PATH` is forwarded as `--database`, allowing clean
 acceptance tests without touching user state. `SessionStore()` resolves its
 default root when instantiated, so the same acceptance run's
-`DEEPCODE_HOME/sessions` is isolated as well.
+`DFCODE_HOME/sessions` is isolated as well.
 
 ## Rust ownership and failure model
 

@@ -143,7 +143,7 @@ class SessionRuntimeRegistry:
         self.max_live_sessions = max_live_sessions
         # Names this process in the refusal another process sees.
         self.holder_label = (
-            holder_label or f"another DeepCode process (pid {os.getpid()})"
+            holder_label or f"another DFcode process (pid {os.getpid()})"
         )
         self.skill_hosts = skill_hosts
         self._runtimes: OrderedDict[str, LiveSessionRuntime] = OrderedDict()
@@ -227,7 +227,7 @@ class SessionRuntimeRegistry:
                 project_hook_approval=project_hook_approval,
             )
         elif runtime.canonical_message_count != len(canonical.messages):
-            # Another DeepCode process appended to the shared Session. Visible
+            # Another DFcode process appended to the shared Session. Visible
             # JSONL history wins; reloading is safer than silently forking.
             runtime.agent.load_history(self._visible_history(canonical))
             runtime.canonical_message_count = len(canonical.messages)

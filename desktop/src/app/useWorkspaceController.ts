@@ -35,8 +35,8 @@ import {
   type WorkspaceState,
 } from "./workspaceState";
 
-const PROJECT_KEY = "deepcode.desktop.selectedProject";
-const THREAD_KEY = "deepcode.desktop.selectedThread";
+const PROJECT_KEY = "dfcode.desktop.selectedProject";
+const THREAD_KEY = "dfcode.desktop.selectedThread";
 
 function normalizeError(error: unknown): BridgeError {
   if (typeof error === "object" && error !== null && "message" in error) {
@@ -695,7 +695,7 @@ export function useWorkspaceController(runtime: ClientRuntime): WorkspaceControl
           t(
             "confirm.fullAccess.message",
             "Full access lets tools run without approval and outside the workspace " +
-              "sandbox for this Session. DeepCode may read, modify, or execute " +
+              "sandbox for this Session. DFcode may read, modify, or execute " +
               "files anywhere your account can access.",
           ),
           {

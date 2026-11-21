@@ -2,7 +2,7 @@
 
 Shared by every entrypoint that builds an agent (TUI, headless exec, ...) so a
 misconfiguration prints one friendly block — never a Python traceback — and,
-when DeepCode has no config at all, points the user at ``deepcode init``.
+when DFcode has no config at all, points the user at ``dfcode init``.
 """
 
 from __future__ import annotations
@@ -20,11 +20,11 @@ def format_config_error(exc: ConfigError) -> str:
     if is_unconfigured():
         lines += [
             "",
-            "DeepCode is not configured yet — no deepcode_config.json was found at",
+            "DFcode is not configured yet — no dfcode_config.json was found at",
             f"  {home_config_path()}  (user base)",
             "  or in the current directory / its parents (project).",
             "",
-            "Run  deepcode init  to create the user base, then add a provider key",
-            'under "providers" in that file. After that, deepcode works in any directory.',
+            "Run  dfcode init  to create the user base, then add a provider key",
+            'under "providers" in that file. After that, dfcode works in any directory.',
         ]
     return "\n".join(lines)

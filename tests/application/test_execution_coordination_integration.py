@@ -8,7 +8,7 @@ from typing import Any
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ConflictError
 from core.application.execution_coordinator import ExecutionDispatch
 from core.domain import (
@@ -69,7 +69,7 @@ class _HangingFactory:
 
 
 def _wait_for(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     status: TurnStatus,
 ) -> Turn:
@@ -84,7 +84,7 @@ def _wait_for(
     )
 
 
-def _wait_for_claims_released(application: DeepCodeApplication) -> None:
+def _wait_for_claims_released(application: DFcodeApplication) -> None:
     # Settlement commits the terminal status and the claim's release together,
     # and only then does the worker forget the claim in memory, so a reader
     # can see the status a moment before active_claims empties.
@@ -97,7 +97,7 @@ def _wait_for_claims_released(application: DeepCodeApplication) -> None:
 
 
 def _trusted_thread(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     tmp_path: Path,
     suffix: str,
 ) -> Thread:
@@ -113,7 +113,7 @@ def _trusted_thread(
 def test_product_turn_is_bound_claimed_and_released_by_submitting_worker(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_ImmediateFactory(),
         host_surface="desktop",
@@ -151,7 +151,7 @@ def test_product_turn_is_bound_claimed_and_released_by_submitting_worker(
 def test_claimed_turn_must_still_be_queued_and_hold_its_fence(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_HangingFactory(),
     )
@@ -209,7 +209,7 @@ def test_registry_start_failure_atomically_fails_turn_and_releases_claim(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_ImmediateFactory(),
     )
@@ -240,7 +240,7 @@ def test_registry_start_failure_atomically_fails_turn_and_releases_claim(
 
 
 def _dead_workers_running_turn(
-    application: DeepCodeApplication, tmp_path: Path
+    application: DFcodeApplication, tmp_path: Path
 ) -> tuple[RuntimeWorker, Turn, ResourceClaim]:
     workspace = tmp_path / "workspace-orphan"
     workspace.mkdir()
@@ -299,7 +299,7 @@ def _dead_workers_running_turn(
 def test_dead_running_turn_is_interrupted_and_never_replayed(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_ImmediateFactory(),
     )
@@ -326,7 +326,7 @@ def test_dead_running_turn_is_failed_when_it_cannot_be_interrupted(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_ImmediateFactory(),
     )
@@ -355,7 +355,7 @@ def test_dead_running_turn_is_failed_when_it_cannot_be_interrupted(
 def test_dead_workers_unclaimed_queued_turn_is_safely_rehomed(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_ImmediateFactory(),
     )
@@ -407,14 +407,14 @@ def test_second_application_requests_cancel_from_claim_owner(
     tmp_path: Path,
 ) -> None:
     database_path = tmp_path / "state.sqlite3"
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         database_path,
         session_factory=_HangingFactory(),
     )
     thread = _trusted_thread(first, tmp_path, "remote-cancel")
     submitted = first.turns.start(thread.id, prompt="Keep running")
     _wait_for(first, submitted.turn.id, TurnStatus.RUNNING)
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         database_path,
         session_factory=_HangingFactory(),
         session_store=first.session_store,
@@ -439,7 +439,7 @@ def test_close_keeps_worker_liveness_lock_when_claim_did_not_drain(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_HangingFactory(),
     )

@@ -11,7 +11,7 @@ from typing import Any
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ConflictError
 from core.application.turn_service import (
     TurnTransactionContext,
@@ -503,10 +503,10 @@ class LegacyUsageFactory(ScriptedFactory):
 
 def _application(
     tmp_path: Path, factory: ScriptedFactory
-) -> tuple[DeepCodeApplication, str]:
+) -> tuple[DFcodeApplication, str]:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=factory
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -514,7 +514,7 @@ def _application(
     return application, thread.id
 
 
-def _wait_for(application: DeepCodeApplication, turn_id: str, status) -> Any:
+def _wait_for(application: DFcodeApplication, turn_id: str, status) -> Any:
     deadline = time.monotonic() + 3
     while time.monotonic() < deadline:
         snapshot = application.turns.read(turn_id)
@@ -1046,7 +1046,7 @@ def test_streamed_assistant_text_is_logged_once_it_completes(tmp_path: Path) -> 
     finally:
         application.close()
 
-    reopened = DeepCodeApplication.open(database_path, session_factory=factory)
+    reopened = DFcodeApplication.open(database_path, session_factory=factory)
     try:
         restored = reopened.turns.read(turn_id)
         assistant = next(item for item in restored.items if item.id == assistant_id)
@@ -1093,7 +1093,7 @@ def test_reasoning_projects_once_and_replays_from_durable_events(
     finally:
         application.close()
 
-    reopened = DeepCodeApplication.open(database_path, session_factory=factory)
+    reopened = DFcodeApplication.open(database_path, session_factory=factory)
     try:
         restored = reopened.turns.read(turn_id)
         reasoning = next(item for item in restored.items if item.id == reasoning_id)
@@ -1507,7 +1507,7 @@ def test_open_recovers_incomplete_turn_and_pending_approval(tmp_path: Path) -> N
             },
         )
 
-    recovered = DeepCodeApplication.open(database_path, session_factory=factory)
+    recovered = DFcodeApplication.open(database_path, session_factory=factory)
     try:
         snapshot = recovered.turns.read(turn.id)
         assert snapshot.turn.status is TurnStatus.INTERRUPTED
@@ -1534,7 +1534,7 @@ def test_execution_registry_bounds_concurrent_turns(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     factory = ScriptedFactory(hang=True)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
         max_concurrent_turns=1,
@@ -1569,7 +1569,7 @@ def test_application_close_drains_running_and_queued_turns(tmp_path: Path) -> No
     workspace.mkdir()
     database_path = tmp_path / "state.sqlite3"
     factory = ScriptedFactory(hang=True)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         database_path,
         session_factory=factory,
         max_concurrent_turns=1,
@@ -1584,7 +1584,7 @@ def test_application_close_drains_running_and_queued_turns(tmp_path: Path) -> No
 
     application.close()
 
-    reopened = DeepCodeApplication.open(database_path, session_factory=factory)
+    reopened = DFcodeApplication.open(database_path, session_factory=factory)
     try:
         assert reopened.turns.read(first.turn.id).turn.status is TurnStatus.INTERRUPTED
         assert reopened.turns.read(second.turn.id).turn.status is TurnStatus.INTERRUPTED

@@ -1,6 +1,6 @@
 """Jenkins REST client used by the CLI and the agent tools.
 
-Only the endpoints DeepCode needs are implemented: server info, jobs, builds,
+Only the endpoints DFcode needs are implemented: server info, jobs, builds,
 console output, queueing a build, and stopping one. Every URL is built from the
 configured controller origin; a queue URL returned by Jenkins is kept on that
 origin even when the controller reports an internal hostname behind a proxy.

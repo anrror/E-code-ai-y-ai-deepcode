@@ -66,7 +66,7 @@ def default_coding_tools(
     over ``workspace``. ``workspace`` is the root the tools resolve relative
     paths against and, unless an explicit Full Access profile is supplied, the
     boundary write / edit / apply_patch / bash are fenced to. ``memory``
-    persists notes under ``.deepcode/memory/``;
+    persists notes under ``.dfcode/memory/``;
     ``update_plan`` is the agent's self-driven TODO plan.
 
     ``skill_runtime`` is the preferred shared, live catalog. ``skills`` remains

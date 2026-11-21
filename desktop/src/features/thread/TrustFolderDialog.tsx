@@ -103,7 +103,7 @@ export function TrustFolderDialog({
       : preset === "ask"
         ? t(
             "trust.access.detail.ask",
-            "Commands run in the workspace sandbox, and DeepCode asks you before actions that need approval.",
+            "Commands run in the workspace sandbox, and DFcode asks you before actions that need approval.",
           )
         : preset === "read_only"
           ? t(
@@ -127,7 +127,7 @@ export function TrustFolderDialog({
       <p>
         {t(
           "trust.intro",
-          "Trusting this folder lets DeepCode's agent run commands, edit files and use tools in it:",
+          "Trusting this folder lets DFcode's agent run commands, edit files and use tools in it:",
         )}
       </p>
       <p>
@@ -146,7 +146,7 @@ export function TrustFolderDialog({
         <li>
           {t(
             "trust.hooks",
-            "The project's hooks (.deepcode/hooks.json, .claude/settings.json) are approved as they are now and run automatically during Turns. If they change later, they stop until you approve them again.",
+            "The project's hooks (.dfcode/hooks.json, .claude/settings.json) are approved as they are now and run automatically during Turns. If they change later, they stop until you approve them again.",
           )}
           <br />
           {hooks.state === "loading"

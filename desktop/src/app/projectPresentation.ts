@@ -1,6 +1,6 @@
 import type { Project } from "../generated/app-server";
 
-const MISSING_WORKSPACE_SEGMENT = "/.deepcode/sessions/.missing-workspaces/";
+const MISSING_WORKSPACE_SEGMENT = "/.dfcode/sessions/.missing-workspaces/";
 
 function normalizedPath(path: string): string {
   return path.replaceAll("\\", "/");

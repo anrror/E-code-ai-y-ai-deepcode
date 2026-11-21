@@ -1,17 +1,17 @@
 # Local background service
 
-The service keeps one `DeepCodeApplication` running independently of the CLI
+The service keeps one `DFcodeApplication` running independently of the CLI
 process that starts it. It uses the existing Agent, execution coordinator,
 Automation scheduler, Session store, and application database.
 
 ## Commands
 
 ```sh
-deepcode service start
-deepcode service status --json
-deepcode service logs --lines 100
-deepcode service logs --follow
-deepcode service stop --drain --timeout 60
+dfcode service start
+dfcode service status --json
+dfcode service logs --lines 100
+dfcode service logs --follow
+dfcode service stop --drain --timeout 60
 ```
 
 `start` waits for an authenticated ready response, then returns. Closing the
@@ -22,23 +22,23 @@ is reaped before that launcher returns.
 The service prefers port 3081. When another program holds that port, or the
 system reserves it, the service listens on a free port instead and logs a
 warning; clients find the actual address in the service record, and `status`
-and `deepcode web` report it. `start --port 0` always requests a free port. Any
+and `dfcode web` report it. `start --port 0` always requests a free port. Any
 other explicit port is required: if it cannot be bound, start fails and says
 the port is in use (the service exits with status 69). To change the port of a
 running service, stop it first.
 
 Every service subcommand accepts `--database <path>` to address an isolated
-database. Without it the existing `$DEEPCODE_HOME/state/deepcode.sqlite3`
+database. Without it the existing `$DFCODE_HOME/state/dfcode.sqlite3`
 location is used. Foreground operation is available for development or an
 external supervisor:
 
 ```sh
-deepcode serve --foreground --port 3081
-deepcode service restart --drain --timeout 60
+dfcode serve --foreground --port 3081
+dfcode service restart --drain --timeout 60
 ```
 
 The listener provides management, browser authentication, business WebSocket RPC
-and the packaged Web client. Run `deepcode web` to open its short-lived local
+and the packaged Web client. Run `dfcode web` to open its short-lived local
 access link; see [WEB_CLIENT.md](WEB_CLIENT.md) for setup and browser behavior.
 Desktop connects to the same service
 through a stdio relay (`app_server.stdio_relay`), so work submitted from
@@ -51,12 +51,12 @@ system reboot. A service must remain running for its scheduled work to execute.
 ## Optional macOS login startup
 
 ```sh
-deepcode service install --at-login
-deepcode service start
-deepcode service doctor --json
+dfcode service install --at-login
+dfcode service start
+dfcode service doctor --json
 ```
 
-Login means signing into the **macOS user account**, not a DeepCode account.
+Login means signing into the **macOS user account**, not a DFcode account.
 Installation is explicit and optional. It writes one private plist under the
 current user's `~/Library/LaunchAgents`, keyed by the database identity. It does
 not register a system-wide daemon, change other LaunchAgents, or enable startup
@@ -73,8 +73,8 @@ current work has finished. A loaded LaunchAgent must be stopped before changing
 its installed command or port.
 
 ```sh
-deepcode service stop --drain --timeout 60
-deepcode service uninstall
+dfcode service stop --drain --timeout 60
+dfcode service uninstall
 ```
 
 Stopping a launchd-owned service first drains admitted work, then removes the
@@ -92,7 +92,7 @@ After moving or removing that environment, reinstall the startup item. `doctor`
 checks the executable, directory, runtime home, GUI login domain and loaded job.
 It never treats a PID alone as proof of service identity.
 
-The managed process receives the configured DeepCode home, optional Session
+The managed process receives the configured DFcode home, optional Session
 directory, and PATH captured at installation (`install --path ...` overrides
 PATH). API keys and proxy credentials are not copied from the terminal into
 the plist. Prefer the existing private credential store; explicitly configure
@@ -120,7 +120,7 @@ cancel a pending approval or kill a running tool. To explicitly cancel current
 service work and then stop:
 
 ```sh
-deepcode service stop --cancel-running
+dfcode service stop --cancel-running
 ```
 
 Global service stop is separate from a client's RPC `shutdown` operation.
@@ -169,7 +169,7 @@ The default per-message limit remains 1 MiB.
 
 Native clients first verify the service identity through the management client,
 then authenticate the WebSocket with the same private bearer and
-`X-DeepCode-Instance`. Missing Origin is never sufficient authorization.
+`X-DFcode-Instance`. Missing Origin is never sufficient authorization.
 Browser authentication is a separate flow:
 
 1. The local management client calls `auth/issue`. The result includes
@@ -182,9 +182,9 @@ Browser authentication is a separate flow:
    `localStorage`, which other ports cannot read.
 3. HTTP routes take the session as `Authorization: Bearer <session>`. Browsers
    cannot set headers on a WebSocket, so the page opens `/api/rpc` offering the
-   subprotocols `deepcode.rpc` and `deepcode.session.<session>`, with the exact
-   service Origin; the service selects `deepcode.rpc`. A session offered without
-   `deepcode.rpc` is refused before the handshake, which would otherwise log
+   subprotocols `dfcode.rpc` and `dfcode.session.<session>`, with the exact
+   service Origin; the service selects `dfcode.rpc`. A session offered without
+   `dfcode.rpc` is refused before the handshake, which would otherwise log
    it. A browser-supplied management Authorization header does not bypass
    session authentication. No CORS origins or forwarded hosts are implicitly
    trusted.
@@ -199,9 +199,9 @@ Page scripts can read the stored session; the strict Content Security Policy
 (`script-src 'self'`) keeps other scripts out of the page. This is not a remote
 HTTPS or multi-user deployment mode.
 
-`deepcode web` issues the ticket and opens the packaged same-origin client.
+`dfcode web` issues the ticket and opens the packaged same-origin client.
 The browser removes the fragment before exchanging it. This is local service
-access, with no DeepCode account registration or password login.
+access, with no DFcode account registration or password login.
 
 Initialization retains protocol `1.0` and its existing method capabilities.
 Network clients additionally receive optional `serviceInfo`: service instance
@@ -475,9 +475,9 @@ frozen launch arguments are validated by the macOS manager.
 TUI and one-shot CLI runs use the same service by default:
 
 ```sh
-deepcode --trust --workspace /path/to/project
-deepcode exec --trust --workspace /path/to/project "your task"
-deepcode exec --detach --trust --workspace /path/to/project "your task"
+dfcode --trust --workspace /path/to/project
+dfcode exec --trust --workspace /path/to/project "your task"
+dfcode exec --detach --trust --workspace /path/to/project "your task"
 ```
 
 `--trust` is an explicit grant; omit it for a project already trusted. Service

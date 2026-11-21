@@ -1,6 +1,6 @@
-# DeepCode Desktop
+# DFcode Desktop
 
-DeepCode Desktop is the Tauri 2 workbench for DeepCode. It opens the same local
+DFcode Desktop is the Tauri 2 workbench for DFcode. It opens the same local
 Projects, canonical Sessions, Agent runtime, models, Skills, Goals,
 Automations, permissions, and evidence as the CLI. Desktop is a visual client,
 not a second implementation of Agent behavior.
@@ -17,13 +17,13 @@ runs from a source checkout. Follow [Run from source](#run-from-source) below,
 then run:
 
 ```console
-deepcode desktop
+dfcode desktop
 ```
 
 A CLI installed from a local checkout launches that checkout and prepares
-missing development resources. Use `deepcode desktop --source /path/to/DeepCode`
+missing development resources. Use `dfcode desktop --source /path/to/DFcode`
 to choose a checkout explicitly, or
-`deepcode desktop --app /path/to/application` to open an app you built
+`dfcode desktop --app /path/to/application` to open an app you built
 yourself. The [main README](../README.md#desktop) has the short version.
 
 ## Run from source
@@ -85,15 +85,15 @@ From the repository root, build Web assets and register the global CLI:
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 uv tool install --python 3.12 --force .
-deepcode init
+dfcode init
 ```
 
-If `deepcode` is not on PATH, run `uv tool update-shell` and reopen PowerShell.
+If `dfcode` is not on PATH, run `uv tool update-shell` and reopen PowerShell.
 
-#### 4. Start DeepCode Desktop
+#### 4. Start DFcode Desktop
 
 ```powershell
-deepcode desktop
+dfcode desktop
 ```
 
 The first launch prepares missing Desktop resources. Later launches reuse them.
@@ -101,9 +101,9 @@ Keep this development terminal open while Desktop is running. Closing the
 window or pressing Ctrl+C closes the client and the App Server it started.
 
 Desktop does not attach to the shared background service. It launches the App
-Server (`deepcode-app-server --embedded`) as a child process, talks to it over
+Server (`dfcode-app-server --embedded`) as a child process, talks to it over
 stdio, and on exit asks it to shut down and then kills the remaining process
-tree. `deepcode service status` therefore reports nothing new after a Desktop
+tree. `dfcode service status` therefore reports nothing new after a Desktop
 launch, and no App Server process outlives the window.
 
 ### macOS and Linux
@@ -115,18 +115,18 @@ repository root, install the current checkout once:
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 uv tool install --python 3.12 --force .
-deepcode init
+dfcode init
 ```
 
 Then start the application from any directory:
 
 ```bash
-deepcode desktop
+dfcode desktop
 ```
 
-Use `deepcode desktop --setup` to rebuild source dependencies and Desktop
+Use `dfcode desktop --setup` to rebuild source dependencies and Desktop
 resources. To select a different checkout explicitly, use
-`deepcode desktop --source /path/to/DeepCode`.
+`dfcode desktop --source /path/to/DFcode`.
 
 ### Development sidecar
 
@@ -144,7 +144,7 @@ runtime dependencies.
 | `rustup`, `cargo`, or `npm` is not recognized | The terminal has the old `PATH` | Close all PowerShell windows and open a new one. |
 | `linker 'link.exe' not found` | The Visual C++ workload is missing | Open Visual Studio Installer, modify Build Tools 2022, and select **Desktop development with C++**. |
 | `uv pip` reports a Conda path instead of `.venv` | Another Python environment is active | Keep the explicit `--python .venv\Scripts\python.exe` argument. |
-| `build/sidecar/dist/deepcode-app-server` does not exist | The first sidecar build has not run | From `desktop`, run `npm run setup:sidecar` and then `npm run build:sidecar`. |
+| `build/sidecar/dist/dfcode-app-server` does not exist | The first sidecar build has not run | From `desktop`, run `npm run setup:sidecar` and then `npm run build:sidecar`. |
 
 ### Configure the first LLM connection
 
@@ -153,7 +153,7 @@ runtime dependencies.
 3. Paste an API key, or choose an environment variable. Custom gateways and
    local servers without a universal endpoint also ask for their base URL;
    optional endpoint overrides remain under **Advanced connection settings**.
-4. Select **Save and check**. DeepCode checks credential availability and model
+4. Select **Save and check**. DFcode checks credential availability and model
    discovery without sending repository or Session content.
 5. Under **Agent model**, choose an exact model ID and select **Save and verify
    model**. This final step sends one tiny `reply OK` inference request so a
@@ -162,10 +162,10 @@ runtime dependencies.
    the connection/model for future Turns.
 
 The model check above is minimal inference. To also check streaming and a local
-tool round trip, run `deepcode provider test CONNECTION_ID --model MODEL_ID --agent`
+tool round trip, run `dfcode provider test CONNECTION_ID --model MODEL_ID --agent`
 with the configured IDs. See [Models and providers](../docs/guide/models.md).
 
-API keys are written to `~/.deepcode/credentials.json` in user-private storage.
+API keys are written to `~/.dfcode/credentials.json` in user-private storage.
 Desktop receives only configured/missing status and never reads a stored key
 back. The same named connections and defaults are used by CLI and Desktop.
 
@@ -173,7 +173,7 @@ back. The same named connections and defaults are used by CLI and Desktop.
 
 The composer model picker changes the connection, model, and model-advertised
 Thinking effort for future Turns in the current Session. Existing history stays
-attached to the same canonical Session under `~/.deepcode/sessions/`. A switch
+attached to the same canonical Session under `~/.dfcode/sessions/`. A switch
 made while work is active leaves the current Turn's immutable execution profile
 unchanged and applies to the next Turn. Raw chain-of-thought is never shown as
 assistant text. Provider-designated summaries and reasoning details are kept in
@@ -202,7 +202,7 @@ Sessions without an override inherit the corresponding advanced phase default.
 ### Trust and tool access
 
 The first time a Project is used for Agent execution, review and trust its
-canonical folder. Trust remembers which workspace DeepCode may execute in; it
+canonical folder. Trust remembers which workspace DFcode may execute in; it
 does not grant unrestricted tool access.
 
 The composer access picker controls future Turns in the current Session:
@@ -228,11 +228,11 @@ be removed first.
 The equivalent CLI workflow uses the same connection and Session backend:
 
 ```bash
-deepcode provider list
-deepcode provider set personal-openrouter --template openrouter --api-key
-deepcode provider models personal-openrouter --refresh
-deepcode provider test personal-openrouter --model <model-id>
-deepcode -c personal-openrouter -m <model-id> --effort auto
+dfcode provider list
+dfcode provider set personal-openrouter --template openrouter --api-key
+dfcode provider models personal-openrouter --refresh
+dfcode provider test personal-openrouter --model <model-id>
+dfcode -c personal-openrouter -m <model-id> --effort auto
 ```
 
 ### Appearance and imported themes
@@ -245,11 +245,11 @@ the same stored preference the slider edits — a drag stays below 100, which is
 the built-in cap rather than "fill the workspace". **Import VS Code theme**
 accepts one local `.json` or `.jsonc`
 color-theme file, validates every value in its `colors` object, and maps the
-supported workbench colors onto DeepCode's complete palette. Unmapped tokens
+supported workbench colors onto DFcode's complete palette. Unmapped tokens
 come from the inferred light or dark base, so an imported theme never leaves a
 component on an unrelated fallback palette.
 
-Only the normalized palette and display name are persisted. DeepCode does not
+Only the normalized palette and display name are persisted. DFcode does not
 retain the source path or raw file, execute theme content, discover extension
 packages, import syntax `tokenColors`, or follow `include` chains. Invalid
 colors are reported in the Appearance panel and leave the current theme intact.
@@ -294,14 +294,14 @@ window, schedules continue after Desktop closes only when the shared service
 (started by the TUI or Web client) is running. Agent and Workflow Turns still
 obey execution capacity and workspace fences, preventing concurrent mutations
 of the same canonical checkout. Inspect the shared service with
-`deepcode service status`;
+`dfcode service status`;
 see [Automations](../docs/guide/goals-and-headless.md#persistent-interval-automations)
 for manual runs and pausing future submissions.
 
 Automation instructions never grant trust or elevated permissions. Each Turn
 captures the workspace's explicit permission setting or the safe default, and
-an approval can be answered from another connected DeepCode client. The same
-definitions and Run history are available through `deepcode automation`.
+an approval can be answered from another connected DFcode client. The same
+definitions and Run history are available through `dfcode automation`.
 See the
 [Automation architecture](../docs/AUTOMATION_ARCHITECTURE.md) for lifecycle,
 idempotency, and recovery details.
@@ -341,7 +341,7 @@ change.
 
 The packaged sidecar supports PDF, Markdown, text, HTML, and DOCX without
 Docling or a system Office installation. CLI users who need Docling's advanced
-layout/image conversion can install `deepcode-hku[advanced-documents]`; it is
+layout/image conversion can install `dfcode-hku[advanced-documents]`; it is
 deliberately excluded from the Desktop bundle.
 
 Regenerate Desktop protocol types only after changing the canonical schema:
@@ -366,12 +366,12 @@ Python.
 
 Useful runtime overrides for tests and diagnostics:
 
-- `DEEPCODE_APP_SERVER_PATH`: explicit sidecar executable.
-- `DEEPCODE_DATABASE_PATH`: explicit SQLite path passed to the App Server.
-- `DEEPCODE_SIDECAR_PYTHON`: Python interpreter used by the sidecar build.
-- `DEEPCODE_SIDECAR_BOOTSTRAP_PYTHON`: Python 3.12 used to create the isolated
+- `DFCODE_APP_SERVER_PATH`: explicit sidecar executable.
+- `DFCODE_DATABASE_PATH`: explicit SQLite path passed to the App Server.
+- `DFCODE_SIDECAR_PYTHON`: Python interpreter used by the sidecar build.
+- `DFCODE_SIDECAR_BOOTSTRAP_PYTHON`: Python 3.12 used to create the isolated
   packaging environment.
-- `DEEPCODE_TARGET_TRIPLE`: target name used by the sidecar build.
+- `DFCODE_TARGET_TRIPLE`: target name used by the sidecar build.
 
 Local macOS bundles use ad-hoc signing so nested Python resources and the app
 resource seal can be verified with `codesign --verify --deep --strict`.

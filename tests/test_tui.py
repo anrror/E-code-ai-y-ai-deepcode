@@ -3,7 +3,7 @@
 The TUI's InputReader falls back to plain stdin when not a TTY, so the whole
 REPL is drivable by monkeypatched stdin — no pty needed. The provider is
 scripted (no network); session persistence goes to a tmp store via
-DEEPCODE_SESSIONS_DIR.
+DFCODE_SESSIONS_DIR.
 """
 
 from __future__ import annotations
@@ -122,8 +122,8 @@ def _run_tui(
         first_call_delay=first_call_delay,
     )
     _patch_provider(monkeypatch, provider)
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     # Fresh default store per test (the singleton caches the env root).
     import core.sessions.store as store_mod
 
@@ -155,8 +155,8 @@ def test_noninteractive_tui_requires_trust_without_creating_a_session(
 
     workspace = tmp_path / "untrusted"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("sys.stdin", io.StringIO("/exit\n"))
 
     assert tui_app.main(["--workspace", str(workspace)]) == 1
@@ -193,8 +193,8 @@ def test_service_tui_asks_before_trusting_a_folder_in_a_terminal(
 
     workspace = tmp_path / "untrusted"
     workspace.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("sys.stdin", _Terminal(f"{answer}\n"))
     monkeypatch.setattr(tui_app, "_silence_console_logging", lambda: None)
     opened: list[dict] = []
@@ -302,7 +302,7 @@ def test_tui_adds_presets_and_really_probes_without_a_model_turn(
     home = tmp_path / "home"
     fixture = Path(__file__).parent / "fixtures" / "mcp_runtime_server.py"
     home.mkdir()
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "mcpServers": {
@@ -778,8 +778,8 @@ def test_banner_draws_the_logo_and_falls_back_on_a_narrow_terminal(
     workspace = tmp_path / "ws"
     workspace.mkdir()
     _patch_provider(monkeypatch, _ScriptedProvider(["unused"]))
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("sys.stdin", io.StringIO(""))
     import core.sessions.store as store_mod
 
@@ -798,7 +798,7 @@ def test_banner_draws_the_logo_and_falls_back_on_a_narrow_terminal(
         app._banner()
         rendered = wide.getvalue()
         assert theme.BRAND_ART[0][0] in rendered
-        assert "DeepCode" in rendered
+        assert "DFcode" in rendered
         assert theme.BRAND_TAGLINE in rendered
 
         narrow = io.StringIO()
@@ -807,7 +807,7 @@ def test_banner_draws_the_logo_and_falls_back_on_a_narrow_terminal(
         squeezed = narrow.getvalue()
         assert theme.BRAND_ART[0][0] not in squeezed
         assert theme.BRAND_MARK in squeezed
-        assert "DeepCode" in squeezed
+        assert "DFcode" in squeezed
     finally:
         app.goal_controller.close()
         asyncio.run(app.thread_client.close())
@@ -1302,7 +1302,7 @@ def test_skill_command_is_one_turn_only_and_persists_invocation_metadata(
     capsys,
 ):
     workspace = tmp_path / "ws"
-    skill = workspace / ".deepcode" / "skills" / "review"
+    skill = workspace / ".dfcode" / "skills" / "review"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\n"
@@ -1362,8 +1362,8 @@ def test_skills_command_prints_catalog_warnings(monkeypatch, tmp_path, capsys):
 def _configure_fake_goal_provider(monkeypatch, tmp_path) -> None:
     home = tmp_path / "home"
     home.mkdir(exist_ok=True)
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    (home / "deepcode_config.json").write_text(
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "agents": {
@@ -1395,7 +1395,7 @@ def test_goal_command_uses_shared_goal_ledger_and_selected_skill(
     from core.sessions import SessionStore, ThreadGoalStore
 
     workspace = tmp_path / "ws"
-    skill = workspace / ".deepcode" / "skills" / "review"
+    skill = workspace / ".dfcode" / "skills" / "review"
     skill.mkdir(parents=True)
     (skill / "SKILL.md").write_text(
         "---\n"
@@ -2210,7 +2210,7 @@ def test_resume_picker_marks_current_session_and_resumes_choice(monkeypatch):
 def test_agent_preset_overview_shows_the_deny_list(tmp_path: Path, monkeypatch) -> None:
     from types import SimpleNamespace
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     presets = tmp_path / ".agents" / "presets"
     presets.mkdir(parents=True)
     (presets / "deny-only.md").write_text(

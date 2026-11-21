@@ -386,7 +386,7 @@ class ApprovalService:
         """Wait without a business timeout, reconciling from shared SQLite.
 
         A local response wakes the Future immediately.  Another
-        ``DeepCodeApplication`` cannot access that Future, so periodic reads
+        ``DFcodeApplication`` cannot access that Future, so periodic reads
         make the durable Approval row authoritative and also close the
         commit-before-waiter-registration race.  The polling interval is an
         injectable transport cadence, not a limit on how long a user may take.

@@ -143,7 +143,7 @@ def test_team_exclude_keeps_non_ascii_user_rules(tmp_path):
 @pytest.mark.parametrize("hooks_dir", [".git/hooks", ".githooks"])
 def test_isolated_agent_commits_and_merges_run_no_hooks(tmp_path, hooks_dir):
     # The agent can write the repository's hooks, or the tracked directory
-    # core.hooksPath names. DeepCode commits and merges for isolated agents
+    # core.hooksPath names. DFcode commits and merges for isolated agents
     # outside the sandbox, so a planted hook would escape it.
     m = _mgr(tmp_path)
     m.ensure_base()
@@ -214,7 +214,7 @@ def test_isolated_agent_commits_and_merges_run_no_program_the_repository_names(
     tmp_path,
 ):
     # A repository the agent started in the sandbox (git init) carries a
-    # config it wrote. DeepCode commits and merges outside the sandbox, so
+    # config it wrote. DFcode commits and merges outside the sandbox, so
     # nothing that config names may run: not even on a 3-way merge.
     m = _mgr(tmp_path)
     m.ensure_base()

@@ -18,7 +18,7 @@ from typing import Any
 from core.agent_runtime.compaction import SUMMARIZATION_PROMPT
 from core.agent_runtime.tools.base import Tool, tool_parameters
 from core.agent_runtime.tools.registry import ToolRegistry
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.message_provenance import ClientSurface
 from core.domain.turn import TurnStatus
@@ -175,11 +175,11 @@ class _Factory:
 
 def _application(
     tmp_path: Path, *script: LLMResponse | Exception | None
-) -> tuple[DeepCodeApplication, str, _Factory]:
+) -> tuple[DFcodeApplication, str, _Factory]:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     factory = _Factory(_Model(list(script)))
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=factory
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -187,7 +187,7 @@ def _application(
     return application, thread.id, factory
 
 
-def _wait_for(application: DeepCodeApplication, turn_id: str, status: TurnStatus):
+def _wait_for(application: DFcodeApplication, turn_id: str, status: TurnStatus):
     deadline = time.monotonic() + 5
     while time.monotonic() < deadline:
         snapshot = application.turns.read(turn_id)
@@ -199,14 +199,14 @@ def _wait_for(application: DeepCodeApplication, turn_id: str, status: TurnStatus
     )
 
 
-def _projected_prompts(application: DeepCodeApplication, thread_id: str) -> list:
+def _projected_prompts(application: DFcodeApplication, thread_id: str) -> list:
     application.threads.read(thread_id)
     with application.database.read() as connection:
         turns = TurnRepository(connection).list_for_thread(thread_id)
     return [turn.prompt for turn in turns]
 
 
-def _conflicted(application: DeepCodeApplication, thread_id: str) -> bool:
+def _conflicted(application: DFcodeApplication, thread_id: str) -> bool:
     application.threads.read(thread_id)
     with application.database.read() as connection:
         return EventRepository(connection).has_type(
@@ -256,7 +256,7 @@ def test_the_interruption_marker_is_not_a_turn_of_its_own(tmp_path: Path) -> Non
         application.close()
 
     # Rebuilt from JSONL alone, the marker still belongs to the Turn it ended.
-    rebuilt = DeepCodeApplication.open(
+    rebuilt = DFcodeApplication.open(
         tmp_path / "rebuilt.sqlite3", session_store=SessionStore(sessions)
     )
     try:
@@ -365,7 +365,7 @@ def _transcript(application, thread_id: str) -> list[tuple[str, str, str | None]
 class _ReplyWrites:
     """Makes saving the model's replies to the session file fail on demand."""
 
-    def __init__(self, application: DeepCodeApplication, monkeypatch) -> None:
+    def __init__(self, application: DFcodeApplication, monkeypatch) -> None:
         self.failures_left = 0
         store = application.session_store
         append = store.append_message

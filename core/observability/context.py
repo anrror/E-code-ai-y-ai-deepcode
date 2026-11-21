@@ -19,16 +19,16 @@ from typing import Iterator
 
 
 _task_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
-    "deepcode_task_id", default=None
+    "dfcode_task_id", default=None
 )
 _session_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
-    "deepcode_session_id", default=None
+    "dfcode_session_id", default=None
 )
 # Which agent produced a call: "parent" for the main session, or
 # "<category>:<agent id>" for delegated work. Cost reporting groups on this so
 # "the cheap category paid for itself" is a measurement, not a claim.
 _agent_path_var: contextvars.ContextVar[str | None] = contextvars.ContextVar(
-    "deepcode_agent_path", default=None
+    "dfcode_agent_path", default=None
 )
 
 

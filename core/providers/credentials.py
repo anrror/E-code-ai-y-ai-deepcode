@@ -13,7 +13,7 @@ from typing import Any
 
 from loguru import logger
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.file_lock import exclusive_file_lock
 from core.private_storage import (
     atomic_write_private_json,
@@ -25,13 +25,13 @@ from core.private_storage import (
 # failure degrades to the credential file. The file stays the source of truth
 # and the only write target — ``set``/``clear`` never touch the keychain, which
 # keeps ``revision``'s mtime/size fingerprint meaningful.
-KEYRING_ENV_VAR = "DEEPCODE_KEYRING"
-KEYRING_SERVICE = "deepcode"
+KEYRING_ENV_VAR = "DFCODE_KEYRING"
+KEYRING_SERVICE = "dfcode"
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
 
 
 def default_credentials_path() -> Path:
-    return deepcode_home() / "credentials.json"
+    return dfcode_home() / "credentials.json"
 
 
 def _keyring_backend() -> Any:
@@ -203,11 +203,11 @@ class CredentialStore:
             with os.fdopen(descriptor, "r", encoding="utf-8") as handle:
                 value = json.load(handle)
         except json.JSONDecodeError as exc:
-            raise ValueError(f"invalid DeepCode credentials JSON: {exc}") from exc
+            raise ValueError(f"invalid DFcode credentials JSON: {exc}") from exc
         if not isinstance(value, dict):
-            raise TypeError("DeepCode credentials must contain a JSON object")
+            raise TypeError("DFcode credentials must contain a JSON object")
         if value.get("version", 1) != 1:
-            raise ValueError("unsupported DeepCode credentials version")
+            raise ValueError("unsupported DFcode credentials version")
         if not isinstance(value.get("connections", {}), dict):
             raise TypeError("credentials.connections must be an object")
         for field in ("accounts", "loginGenerations"):

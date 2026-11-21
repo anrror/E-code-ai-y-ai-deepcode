@@ -5,7 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.skills.models import SkillScope, SkillSourceRoot
 
 
@@ -54,9 +54,9 @@ def discover_skill_roots(
     roots.extend(
         (
             SkillRootSpec(
-                path=workspace_path / ".deepcode" / "skills",
+                path=workspace_path / ".dfcode" / "skills",
                 scope=SkillScope.PROJECT,
-                source_root=SkillSourceRoot.DEEPCODE,
+                source_root=SkillSourceRoot.DFCODE,
                 trust_boundary=workspace_path,
             ),
             SkillRootSpec(
@@ -71,10 +71,10 @@ def discover_skill_roots(
     if include_user:
         if home is not None:
             home_path = Path(home).expanduser().resolve(strict=False)
-            legacy_deepcode = home_path / ".deepcode" / "skills"
+            legacy_dfcode = home_path / ".dfcode" / "skills"
         else:
             home_path = Path.home().resolve(strict=False)
-            legacy_deepcode = deepcode_home() / "skills"
+            legacy_dfcode = dfcode_home() / "skills"
         roots.extend(
             (
                 SkillRootSpec(
@@ -84,9 +84,9 @@ def discover_skill_roots(
                     writable=True,
                 ),
                 SkillRootSpec(
-                    path=legacy_deepcode,
+                    path=legacy_dfcode,
                     scope=SkillScope.USER,
-                    source_root=SkillSourceRoot.DEEPCODE,
+                    source_root=SkillSourceRoot.DFCODE,
                 ),
                 SkillRootSpec(
                     path=home_path / ".claude" / "skills",

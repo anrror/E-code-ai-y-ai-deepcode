@@ -1,4 +1,4 @@
-name: Upload DeepCode Package
+name: Upload DFcode Package
 
 on:
   release:

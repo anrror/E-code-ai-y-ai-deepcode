@@ -84,13 +84,13 @@ pub fn run() {
             app.manage(Arc::clone(&bridge));
             tauri::async_runtime::spawn_blocking(move || {
                 if let Err(error) = bridge.start() {
-                    eprintln!("failed to start DeepCode App Server: {error}");
+                    eprintln!("failed to start DFcode App Server: {error}");
                 }
             });
             Ok(())
         })
         .build(tauri::generate_context!())
-        .expect("failed to build DeepCode desktop");
+        .expect("failed to build DFcode desktop");
 
     app.run(|app_handle, event| {
         if matches!(event, tauri::RunEvent::Exit) {

@@ -1,4 +1,4 @@
-# DeepCode Skills product architecture
+# DFcode Skills product architecture
 
 Status: implementation contract
 Scope: Skills, local Agent Plugins 1.0 packages, and their MCP components.
@@ -37,7 +37,7 @@ code are explicitly out of scope.
   a symbolic-link target, hashed into the ID and never exposed as part of the
   protocol identity; this keeps intentional aliases independently addressable
 - `scope`: `project`, `user`, or read-only `system`
-- `source_root`: canonical `agents`, compatibility `deepcode` / `claude`, or
+- `source_root`: canonical `agents`, compatibility `dfcode` / `claude`, or
   bundled `system`
 - `relative_path`: the normalized path of the Skill directory below its
   configured root
@@ -52,9 +52,9 @@ Catalog entries retain all valid candidates. Discovery precedence is:
 
 1. project `.agents/skills`, from the working directory up to the registered
    workspace boundary;
-2. project `.deepcode/skills` and `.claude/skills` compatibility roots;
+2. project `.dfcode/skills` and `.claude/skills` compatibility roots;
 3. user `~/.agents/skills`;
-4. user `~/.deepcode/skills` and `~/.claude/skills` compatibility roots;
+4. user `~/.dfcode/skills` and `~/.claude/skills` compatibility roots;
 5. bundled system Skills.
 
 New imports and creator output use `.agents/skills` only. Compatibility roots
@@ -203,7 +203,7 @@ files.
 
 Optional `agents/openai.yaml` metadata may declare `dependencies.tools` and
 `dependencies.skills`. Tool dependency records retain Codex-compatible
-`type`, `value`, `description`, `transport`, `command`, and `url` fields. DeepCode
+`type`, `value`, `description`, `transport`, `command`, and `url` fields. DFcode
 currently resolves `tool`, Codex-compatible `mcp` / `cli`, and the `command`
 alias; an unsupported type is blocked explicitly instead of being guessed.
 
@@ -222,7 +222,7 @@ An explicit selection is submitted as a structured `SkillSelection`. The
 backend resolves it against the Session's immutable catalog snapshot and
 injects the exact instructions before the first model request.
 
-The base DeepCode prompt, permission policy, and security boundaries remain
+The base DFcode prompt, permission policy, and security boundaries remain
 system instructions. Skill catalog metadata is developer-priority capability
 guidance; selected Skill bodies are transient user-priority context for the
 current Turn. The runner folds privileged guidance into the provider's single
@@ -271,7 +271,7 @@ valid `SKILL.md`.
 
 ## Configuration
 
-User and project `deepcode_config.json` files may contain:
+User and project `dfcode_config.json` files may contain:
 
 ```json
 {
@@ -322,7 +322,7 @@ User Session messages remain ordinary text. New clients add versioned metadata:
       "skillId": "sk_...",
       "name": "security-review",
       "revision": "sha256:...",
-      "source": "project:deepcode",
+      "source": "project:dfcode",
       "invocation": "explicit"
     }
   ]

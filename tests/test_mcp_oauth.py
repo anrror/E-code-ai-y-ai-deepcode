@@ -40,7 +40,7 @@ async def test_oauth_storage_is_endpoint_scoped_private_and_logout_is_final(
     )
     await storage.set_client_info(
         OAuthClientInformationFull(
-            client_id="deepcode-test",
+            client_id="dfcode-test",
             redirect_uris=["http://127.0.0.1:43210/auth/mcp/callback"],
         )
     )
@@ -107,7 +107,7 @@ def test_oauth_browser_callback_persists_tokens_and_reconnects_noninteractively(
 ) -> None:
     port = _available_port()
     base_url = f"http://127.0.0.1:{port}"
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     process = subprocess.Popen(
         [sys.executable, str(OAUTH_FIXTURE), str(port)],
         stdout=subprocess.DEVNULL,

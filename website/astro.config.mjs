@@ -1,11 +1,11 @@
-// The DeepCode website: a hand-crafted landing at `/` and the teaching
+// The DFcode website: a hand-crafted landing at `/` and the teaching
 // guides under `/guide/`, rendered by Starlight from ../docs/guide (the
 // single source of truth — see scripts/sync-guides.mjs).
 import { defineConfig } from "astro/config";
 import starlight from "@astrojs/starlight";
 
 // GitHub Pages serves project sites under /<repo>/ — the deploy workflow
-// sets WEBSITE_BASE=/DeepCode; local dev and root-domain hosts use "/".
+// sets WEBSITE_BASE=/DFcode; local dev and root-domain hosts use "/".
 const base = process.env.WEBSITE_BASE || "/";
 
 export default defineConfig({
@@ -13,14 +13,14 @@ export default defineConfig({
   base,
   integrations: [
     starlight({
-      title: "DeepCode",
+      title: "DFcode",
       description: "Open agentic coding — guides taught from the source.",
       customCss: ["./src/styles/starlight-theme.css"],
       social: [
         {
           icon: "github",
           label: "GitHub",
-          href: "https://github.com/HKUDS/DeepCode",
+          href: "https://github.com/HKUDS/DFcode",
         },
       ],
       sidebar: [

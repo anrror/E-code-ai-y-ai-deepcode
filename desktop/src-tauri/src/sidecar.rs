@@ -215,7 +215,7 @@ impl RpcBridge {
             json!({
                 "protocolVersion": PROTOCOL_VERSION,
                 "clientInfo": {
-                    "name": "deepcode-desktop-host",
+                    "name": "dfcode-desktop-host",
                     "version": env!("CARGO_PKG_VERSION"),
                     "surface": "desktop"
                 }
@@ -415,7 +415,7 @@ impl RpcBridge {
     {
         let bridge = Arc::clone(self);
         thread::Builder::new()
-            .name("deepcode-sidecar-stdout".into())
+            .name("dfcode-sidecar-stdout".into())
             .spawn(move || {
                 let mut reader = BufReader::new(stdout);
                 loop {
@@ -451,7 +451,7 @@ impl RpcBridge {
         let app = self.app.clone();
         let bridge = self.clone();
         thread::Builder::new()
-            .name("deepcode-sidecar-stderr".into())
+            .name("dfcode-sidecar-stderr".into())
             .spawn(move || {
                 for line in BufReader::new(stderr).lines() {
                     match line {
@@ -462,7 +462,7 @@ impl RpcBridge {
                                 }
                                 tail.push_back(message.clone());
                             }
-                            let _ = app.emit("deepcode://sidecar-log", message);
+                            let _ = app.emit("dfcode://sidecar-log", message);
                         }
                         Err(_) => break,
                     }
@@ -476,7 +476,7 @@ impl RpcBridge {
             Ok(message) => message,
             Err(error) => {
                 let _ = self.app.emit(
-                    "deepcode://sidecar-log",
+                    "dfcode://sidecar-log",
                     format!("ignored malformed App Server message: {error}"),
                 );
                 return;
@@ -491,7 +491,7 @@ impl RpcBridge {
             return;
         }
         if message.get("method").and_then(Value::as_str).is_some() {
-            let _ = self.app.emit("deepcode://rpc-notification", message);
+            let _ = self.app.emit("dfcode://rpc-notification", message);
         }
     }
 
@@ -550,7 +550,7 @@ impl RpcBridge {
     fn spawn_exit_monitor(self: &Arc<Self>, generation: u64) {
         let bridge = Arc::downgrade(self);
         thread::Builder::new()
-            .name("deepcode-sidecar-monitor".into())
+            .name("dfcode-sidecar-monitor".into())
             .spawn(move || loop {
                 thread::sleep(Duration::from_millis(500));
                 let Some(bridge) = bridge.upgrade() else {
@@ -625,7 +625,7 @@ impl RpcBridge {
     }
 
     fn emit_status(&self) {
-        let _ = self.app.emit("deepcode://sidecar-state", self.status());
+        let _ = self.app.emit("dfcode://sidecar-state", self.status());
     }
 
     fn lock_process(&self) -> MutexGuard<'_, Option<SidecarProcess>> {
@@ -679,15 +679,15 @@ fn response_result(message: &Value) -> PendingResult {
 }
 
 fn resolve_launch_spec(app: &AppHandle) -> Result<LaunchSpec, BridgeError> {
-    if let Some(configured) = env::var_os("DEEPCODE_APP_SERVER_PATH") {
+    if let Some(configured) = env::var_os("DFCODE_APP_SERVER_PATH") {
         let path = PathBuf::from(configured);
         if path.is_file() {
-            return Ok(binary_launch(path, "DEEPCODE_APP_SERVER_PATH"));
+            return Ok(binary_launch(path, "DFCODE_APP_SERVER_PATH"));
         }
         return Err(BridgeError::new(
             "SIDECAR_NOT_FOUND",
             format!(
-                "DEEPCODE_APP_SERVER_PATH does not point to a file: {}",
+                "DFCODE_APP_SERVER_PATH does not point to a file: {}",
                 path.display()
             ),
             false,
@@ -695,9 +695,9 @@ fn resolve_launch_spec(app: &AppHandle) -> Result<LaunchSpec, BridgeError> {
     }
 
     let binary_name = if cfg!(windows) {
-        "deepcode-app-server.exe".to_owned()
+        "dfcode-app-server.exe".to_owned()
     } else {
-        "deepcode-app-server".to_owned()
+        "dfcode-app-server".to_owned()
     };
 
     #[cfg(debug_assertions)]
@@ -720,7 +720,7 @@ fn resolve_launch_spec(app: &AppHandle) -> Result<LaunchSpec, BridgeError> {
     #[cfg(debug_assertions)]
     {
         let source_bundle = repository
-            .join("desktop/build/sidecar/dist/deepcode-app-server")
+            .join("desktop/build/sidecar/dist/dfcode-app-server")
             .join(&binary_name);
         if source_bundle.is_file() {
             return Ok(binary_launch(source_bundle, "source App Server bundle"));
@@ -771,7 +771,7 @@ fn binary_launch(program: PathBuf, source: &str) -> LaunchSpec {
 }
 
 fn database_args() -> Vec<String> {
-    env::var_os("DEEPCODE_DATABASE_PATH")
+    env::var_os("DFCODE_DATABASE_PATH")
         .filter(|value| !value.is_empty())
         .map(|value| {
             vec![

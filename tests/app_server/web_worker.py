@@ -33,7 +33,7 @@ def prepare_live_config(destination: Path) -> None:
         temperature=phase.temperature,
         reasoningEffort=phase.reasoning_effort,
     )
-    protocol = os.environ.get("DEEPCODE_WEB_PROTOCOL", connection.protocol)
+    protocol = os.environ.get("DFCODE_WEB_PROTOCOL", connection.protocol)
     with os.fdopen(
         os.open(destination, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o600), "w"
     ) as stream:
@@ -82,17 +82,17 @@ if __name__ == "__main__":
     else:
         from app_server.service import serve
         from app_server.service_state import ServiceFiles
-        from core.application import DeepCodeApplication
+        from core.application import DFcodeApplication
 
         if not args.live:
             from tests.application.test_cross_process_approval import _ApprovalFactory
 
-            original_open = DeepCodeApplication.open
+            original_open = DFcodeApplication.open
 
             def open_for_browser_test(*args, **kwargs):
                 return original_open(
                     *args, session_factory=_ApprovalFactory(), **kwargs
                 )
 
-            DeepCodeApplication.open = staticmethod(open_for_browser_test)
+            DFcodeApplication.open = staticmethod(open_for_browser_test)
         asyncio.run(serve(ServiceFiles(args.root / "state.sqlite3"), 0))

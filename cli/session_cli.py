@@ -1,4 +1,4 @@
-"""Manage canonical DeepCode Sessions from the command line."""
+"""Manage canonical DFcode Sessions from the command line."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import argparse
 import json
 import sys
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ApplicationError
 
 
@@ -30,7 +30,7 @@ def _delete(args: argparse.Namespace) -> int:
             print("Deletion cancelled.")
         return 2
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         host_surface="session_cli",
         run_automation_scheduler=False,
     )
@@ -73,8 +73,8 @@ def _delete(args: argparse.Namespace) -> int:
 
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode session",
-        description="Manage canonical DeepCode conversation Sessions.",
+        prog="dfcode session",
+        description="Manage canonical DFcode conversation Sessions.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
     delete = commands.add_parser(

@@ -1,4 +1,4 @@
-"""DeepCode interactive TUI — free-form multi-turn coding conversations.
+"""DFcode interactive TUI — free-form multi-turn coding conversations.
 
 The Claude Code / Codex CLI analogue: launch straight into a conversation
 (no menus), type tasks in natural language, watch the agent stream text and
@@ -394,7 +394,7 @@ class TuiApp:
                 extra = len(models) - _MODEL_CATALOG_PREVIEW
                 catalog = shown + (f", +{extra} more" if extra > 0 else "")
             else:
-                catalog = f"browse models with deepcode provider models {view['id']}"
+                catalog = f"browse models with dfcode provider models {view['id']}"
             marker = " · current" if view.get("id") == profile.connection_id else ""
             lines.append(f"  {str(view.get('id', '')):<{width}}  {catalog}{marker}")
         return "\n".join(lines)
@@ -632,7 +632,7 @@ class TuiApp:
                 threading.Thread(
                     target=self._load_completion_candidates,
                     args=(key, load, pending),
-                    name="deepcode-completion",
+                    name="dfcode-completion",
                     daemon=True,
                 ).start()
         try:
@@ -685,7 +685,7 @@ class TuiApp:
             return f"Plugin error: {exc}"
         if not discovery.plugins:
             return "no Plugins installed"
-        lines = ["", "Plugins (manage with `deepcode plugin ...`):"]
+        lines = ["", "Plugins (manage with `dfcode plugin ...`):"]
         for plugin in discovery.plugins:
             components = (
                 ", ".join(
@@ -1204,7 +1204,7 @@ class TuiApp:
         self.console.print()
 
     def _uses_builtin_default_model(self) -> bool:
-        """Whether nothing chose the model: DeepCode fell back to its own."""
+        """Whether nothing chose the model: DFcode fell back to its own."""
         try:
             from core.config import AgentDefaults, load_config_for_workspace
 
@@ -1237,28 +1237,28 @@ class TuiApp:
         if not view.get("enabled", True):
             lines = [
                 f"The {name} connection is turned off, so messages will fail.",
-                f"Turn it on:  deepcode provider set {connection_id} --enabled",
+                f"Turn it on:  dfcode provider set {connection_id} --enabled",
             ]
         elif view.get("auth") == "oauth":
             lines = [
                 f"{name} is not signed in, so messages will fail.",
-                f"Sign in:  deepcode provider login {connection_id}",
+                f"Sign in:  dfcode provider login {connection_id}",
             ]
         elif view.get("credentialSource") not in {None, "missing"}:
             # The credential is there; the endpoint is what is missing.
             lines = [
                 f"{name} has no API address, so messages will fail.",
-                f"Set it:  deepcode provider set {connection_id} --api-base <url>",
+                f"Set it:  dfcode provider set {connection_id} --api-base <url>",
             ]
         else:
             lines = [
                 f"{name} has no API key, so messages will fail.",
                 f"Add one (it asks for the key and does not show it):  "
-                f"deepcode provider set {connection_id} --api-key",
+                f"dfcode provider set {connection_id} --api-key",
             ]
             env = view.get("apiKeyEnv")
             if env:
-                lines.append(f"or set {env} before starting DeepCode.")
+                lines.append(f"or set {env} before starting DFcode.")
         # Connections that are set up. A built-in local one (Ollama, vLLM)
         # needs no key but may not be running, so it counts once configured.
         ready = [
@@ -1275,8 +1275,8 @@ class TuiApp:
             )
         if self._uses_builtin_default_model():
             lines.append(
-                f"{self.model} is DeepCode's built-in default: no model is configured "
-                "yet (deepcode init creates a config file)."
+                f"{self.model} is DFcode's built-in default: no model is configured "
+                "yet (dfcode init creates a config file)."
             )
         return lines
 
@@ -1314,7 +1314,7 @@ class TuiApp:
             highlight=False,
         )
         self.console.print(
-            f"[{theme.META_STYLE}]Reattach:  deepcode --resume "
+            f"[{theme.META_STYLE}]Reattach:  dfcode --resume "
             f"{escape(self.thread_client.session_id)}[/]",
             soft_wrap=True,
             highlight=False,
@@ -1448,8 +1448,8 @@ class TuiApp:
 
 def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode",
-        description="Interactive DeepCode coding agent (multi-turn TUI).",
+        prog="dfcode",
+        description="Interactive DFcode coding agent (multi-turn TUI).",
     )
     parser.add_argument("--workspace", "-w", default=os.getcwd())
     parser.add_argument("--model", "-m", default=None)
@@ -1498,7 +1498,7 @@ def main(argv: list[str] | None = None, *, shared_service: bool = True) -> int:
         print(exc.user_message, file=sys.stderr)
         return 1
     except (RuntimeError, OSError) as exc:
-        print(f"DeepCode could not start: {exc}", file=sys.stderr)
+        print(f"DFcode could not start: {exc}", file=sys.stderr)
         return 1
     return asyncio.run(app.repl())
 
@@ -1522,7 +1522,7 @@ def _error_text(exc: BaseException) -> str:
 def _bootstrap_quiet_logging() -> None:
     """Install a quiet console sink before anything can log (#167's rule).
 
-    ``deepcode`` does this for every subcommand it dispatches, but
+    ``dfcode`` does this for every subcommand it dispatches, but
     ``python -m cli.tui`` — the invocation this module's own docstring
     documents — reaches ``main`` without passing through it, so loguru
     keeps its built-in DEBUG sink and the config loader's "layer absent"
@@ -1536,7 +1536,7 @@ def _bootstrap_quiet_logging() -> None:
 
         setup_logging(
             LoggerConfig(
-                level=os.environ.get("DEEPCODE_LOG_LEVEL") or "INFO",
+                level=os.environ.get("DFCODE_LOG_LEVEL") or "INFO",
                 transports=["console"],
             )
         )
@@ -1570,9 +1570,9 @@ def _silence_console_logging() -> None:
 def _prepare_workspace_trust(workspace: str, *, grant: bool) -> bool:
     """Persist trust before creating a Session, avoiding empty denied threads."""
 
-    from core.application.application import DeepCodeApplication
+    from core.application.application import DFcodeApplication
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         host_surface="cli-trust",
         run_automation_scheduler=False,
     )
@@ -1628,7 +1628,7 @@ def _confirm_trust(project: Project) -> bool:
             print(exc.user_message, file=sys.stderr)
         return False
     print(
-        "DeepCode can read files and run tools in this workspace:\n"
+        "DFcode can read files and run tools in this workspace:\n"
         f"  {project.canonical_path}",
         file=sys.stderr,
     )
@@ -1645,8 +1645,8 @@ def _confirm_trust(project: Project) -> bool:
             break
         question = "Please answer y (trust it) or n (leave): "
     print(
-        "Not trusted, so DeepCode will not open this folder. To use it, run "
-        "deepcode again here and answer y, or start with --trust.",
+        "Not trusted, so DFcode will not open this folder. To use it, run "
+        "dfcode again here and answer y, or start with --trust.",
         file=sys.stderr,
     )
     return False

@@ -34,22 +34,22 @@ def _cfg(mode="full_auto", permissions=None):
 
 
 def test_legacy_default_mode_is_full_auto(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     assert resolve_permission_mode(None) is PermissionMode.FULL_AUTO
 
 
 def test_config_mode_used_when_no_env(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     assert resolve_permission_mode("plan") is PermissionMode.PLAN
 
 
 def test_env_overrides_config(monkeypatch):
-    monkeypatch.setenv("DEEPCODE_PERMISSION_MODE", "default")
+    monkeypatch.setenv("DFCODE_PERMISSION_MODE", "default")
     assert resolve_permission_mode("plan") is PermissionMode.DEFAULT
 
 
 def test_typo_falls_back_to_client_default(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     assert resolve_permission_mode("nonsense") is PermissionMode.FULL_AUTO
     assert (
         resolve_permission_mode("nonsense", default_mode=PermissionMode.DEFAULT)
@@ -58,7 +58,7 @@ def test_typo_falls_back_to_client_default(monkeypatch):
 
 
 def test_build_engine_applies_config_rules(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     cfg = _cfg(
         mode="default",
         permissions={"execute_bash": {"git push *": "ask", "*": "allow"}},
@@ -76,7 +76,7 @@ def test_build_engine_applies_config_rules(monkeypatch):
 
 
 def test_build_engine_denylist_still_wins_over_config(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     cfg = _cfg(mode="full_auto", permissions={"read_file": {"*": "allow"}})
     engine = build_permission_engine(cfg, cwd="/home/u/proj")
     assert (
@@ -109,7 +109,7 @@ def test_client_default_applies_only_when_pydantic_field_was_not_configured():
 
 
 def test_mode_override_inherits_resolved_parent_policy(monkeypatch):
-    monkeypatch.setenv("DEEPCODE_PERMISSION_MODE", "full_auto")
+    monkeypatch.setenv("DFCODE_PERMISSION_MODE", "full_auto")
     engine = build_permission_engine(
         SecurityConfig(permission_mode="plan"),
         cwd="/w",
@@ -119,8 +119,8 @@ def test_mode_override_inherits_resolved_parent_policy(monkeypatch):
 
 
 def test_full_access_profile_is_atomic_and_ignores_legacy_env(monkeypatch):
-    monkeypatch.setenv("DEEPCODE_PERMISSION_MODE", "plan")
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "1")
+    monkeypatch.setenv("DFCODE_PERMISSION_MODE", "plan")
+    monkeypatch.setenv("DFCODE_SANDBOX", "1")
     full_access = ExecutionSecurityProfile.for_preset(ExecutionAccessPreset.FULL_ACCESS)
 
     resolved = resolve_execution_security_profile(
@@ -161,8 +161,8 @@ def test_full_access_skips_the_hook_write_ask():
     )
     assert engine.protect_hook_configs is False
     for raw in (
-        "/home/u/.deepcode/hooks.json",  # user level
-        "/w/.deepcode/hooks.json",  # workspace
+        "/home/u/.dfcode/hooks.json",  # user level
+        "/w/.dfcode/hooks.json",  # workspace
         "/w/.claude/settings.json",  # workspace
     ):
         assert (
@@ -220,7 +220,7 @@ def test_engine_consumes_frozen_profile_rules_not_live_config():
 
 
 def test_legacy_profile_honors_config_sandbox_and_env_override(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_SANDBOX", raising=False)
+    monkeypatch.delenv("DFCODE_SANDBOX", raising=False)
     configured = resolve_execution_security_profile(
         SecurityConfig(
             permission_mode="full_auto",
@@ -234,7 +234,7 @@ def test_legacy_profile_honors_config_sandbox_and_env_override(monkeypatch):
         {"bash": {"git push *": "ask"}}
     )
 
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "1")
+    monkeypatch.setenv("DFCODE_SANDBOX", "1")
     overridden = resolve_execution_security_profile(
         SecurityConfig(permission_mode="full_auto", sandbox=False)
     )

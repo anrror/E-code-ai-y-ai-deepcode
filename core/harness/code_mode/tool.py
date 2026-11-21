@@ -6,7 +6,7 @@ in a sandboxed subprocess and dispatches every tool call back to the parent so
 loops, conditionals, and batching happen in a single turn.
 
 Ported in spirit from the reference agent's ``code_mode`` (which embeds V8 and
-runs the model's JavaScript): the runtime that confines the code is DeepCode's
+runs the model's JavaScript): the runtime that confines the code is DFcode's
 platform sandbox instead of V8, and the code language is Python. Each tool call
 the code makes is executed by ``execute_tool`` in the parent, so it passes the
 same permission checks and hooks as a normal tool call — the sandboxed child
@@ -170,8 +170,8 @@ class CodeModeTool(Tool):
                 stdout=asyncio.subprocess.PIPE,
                 stderr=asyncio.subprocess.PIPE,
                 cwd=self._workspace,
-                # Never DeepCode's own model keys or PYTHONPATH; with
-                # DEEPCODE_BASH_SCRUB_ENV=1 no credential-shaped variable
+                # Never DFcode's own model keys or PYTHONPATH; with
+                # DFCODE_BASH_SCRUB_ENV=1 no credential-shaped variable
                 # either (see env_sanitize.child_env).
                 env=child_env(),
                 limit=_STREAM_LIMIT,

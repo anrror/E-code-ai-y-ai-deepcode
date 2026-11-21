@@ -1,4 +1,4 @@
-"""Offline tests for `deepcode exec` (the headless agent entry).
+"""Offline tests for `dfcode exec` (the headless agent entry).
 
 Patches the provider so no network/model is needed; verifies the CLI drives
 AgentSession + native tools, streams NDJSON events, actually writes a file,
@@ -49,7 +49,7 @@ def _patch(monkeypatch, provider):
     monkeypatch.setattr(
         agent_setup, "get_workflow_provider", lambda **kw: (provider, _Profile())
     )
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
     monkeypatch.setattr(
         agent_setup,
         "get_runtime",

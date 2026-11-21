@@ -128,8 +128,8 @@ def test_every_model_visible_message_is_reconstructable(monkeypatch, tmp_path):
         ]
     )
     _patch_provider(monkeypatch, provider)
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     import core.sessions.store as store_module
 
     monkeypatch.setattr(store_module, "_DEFAULT_STORE", None)

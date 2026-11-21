@@ -521,7 +521,7 @@ class AgentSession:
         self._current_task: asyncio.Task | None = None
         self._active_turn_task: asyncio.Task | None = None
         self._submission_id: ContextVar[str | None] = ContextVar(
-            f"deepcode_submission_{id(self)}", default=None
+            f"dfcode_submission_{id(self)}", default=None
         )
 
     # -- event queue -------------------------------------------------------
@@ -590,7 +590,7 @@ class AgentSession:
     async def run_stream(self, op: Op):
         """Submit ``op`` and yield events live until the turn ends.
 
-        The streaming consumer API every frontend uses (``deepcode exec``,
+        The streaming consumer API every frontend uses (``dfcode exec``,
         a TUI, the web backend): events arrive as they happen rather than
         all at once. A ``UserInput`` turn always ends with ``task_complete``
         (even on interrupt/error), and ``Shutdown`` with ``shutdown_complete``,
@@ -810,7 +810,7 @@ class AgentSession:
         Notification-only: a failure is logged and never crashes the
         shutdown. Fired exactly once from ``submit(Shutdown)`` or the actual
         resource teardown path, whichever comes first. ``other`` is the
-        compatible exit reason for a DeepCode runtime shutdown; per-turn
+        compatible exit reason for a DFcode runtime shutdown; per-turn
         notifications belong to the Stop event, not SessionEnd.
         """
         async with self._session_end_lock:

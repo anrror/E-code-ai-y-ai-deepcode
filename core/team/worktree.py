@@ -21,13 +21,13 @@ from core.safe_git import MovedWorkTreeError, safe_git_options
 
 _GIT_IDENTITY = (
     "-c",
-    "user.name=DeepCode Team",
+    "user.name=DFcode Team",
     "-c",
-    "user.email=team@deepcode.local",
+    "user.email=team@dfcode.local",
 )
 _BRANCH_PREFIX = "team/"
 
-# Paths a worker must never commit: the team's own scratch state (.deepcode/ —
+# Paths a worker must never commit: the team's own scratch state (.dfcode/ —
 # task board + per-worker loop state) and build-artifact noise a worker's test
 # run leaves in its worktree. Committing either pollutes the user's history AND
 # breaks merges — git aborts a merge whose incoming (committed) artifact would
@@ -42,7 +42,7 @@ _BRANCH_PREFIX = "team/"
 # The list is the footprint the team's own runs create plus universal noise —
 # not project source, so nothing a worker legitimately authors is caught.
 _TEAM_EXCLUDE = (
-    ".deepcode/",
+    ".dfcode/",
     "__pycache__/",
     "*.py[cod]",
     ".pytest_cache/",
@@ -52,8 +52,8 @@ _TEAM_EXCLUDE = (
     "node_modules/",
     ".DS_Store",
 )
-_EXCLUDE_BEGIN = "# >>> deepcode team (auto, local-only) >>>"
-_EXCLUDE_END = "# <<< deepcode team (auto, local-only) <<<"
+_EXCLUDE_BEGIN = "# >>> dfcode team (auto, local-only) >>>"
+_EXCLUDE_END = "# <<< dfcode team (auto, local-only) <<<"
 
 
 @dataclass

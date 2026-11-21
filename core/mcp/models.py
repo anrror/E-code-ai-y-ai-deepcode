@@ -63,7 +63,7 @@ class _ConfigModel(BaseModel):
 
 
 class McpCredentialRef(_ConfigModel):
-    """Reference to a user-owned DeepCode connection credential.
+    """Reference to a user-owned DFcode connection credential.
 
     Secrets are resolved immediately before a connection starts and never
     become part of an inventory, diagnostic, or serialized runtime plan.
@@ -481,7 +481,7 @@ def validate_server_name(value: str) -> str:
 
 
 def validate_no_literal_secrets(definition: McpServerDefinition) -> None:
-    """Enforce DeepCode's native-config secret storage boundary.
+    """Enforce DFcode's native-config secret storage boundary.
 
     This is intentionally not part of the transport model. Agent Plugins has
     its own portable schema and authority boundary, while user/project config

@@ -388,12 +388,12 @@ _INTERPRETERS = frozenset(
 )
 
 # Environment variable that waives the egress screen for one deliberate run.
-_ALLOW_REMOTE_SCRIPT_ENV = "DEEPCODE_ALLOW_REMOTE_SCRIPT"
+_ALLOW_REMOTE_SCRIPT_ENV = "DFCODE_ALLOW_REMOTE_SCRIPT"
 
 # Environment variable that turns the new screens off wholesale.
-_SCREEN_DISABLE_ENV = "DEEPCODE_COMMAND_SCREEN"
+_SCREEN_DISABLE_ENV = "DFCODE_COMMAND_SCREEN"
 
-# ``DEEPCODE_COMMAND_SCREEN=strict`` additionally enables the egress and
+# ``DFCODE_COMMAND_SCREEN=strict`` additionally enables the egress and
 # install screens in front of the agent's shell. They stay off by default:
 # ``curl ... | sh`` installers and third-party package mirrors are everyday
 # tools, and refusing them for every user is a worse trade than the relay
@@ -814,7 +814,7 @@ def screen_all(
     """Run every screen and return the first reason, or ``None``.
 
     The destructive-command screen always runs. The egress and install screens
-    run only under ``DEEPCODE_COMMAND_SCREEN=strict`` (see
+    run only under ``DFCODE_COMMAND_SCREEN=strict`` (see
     :func:`strict_screens_enabled`). Order matters only for the quality of the
     message: the destructive check is the cheapest and the most certain, so it
     speaks first.

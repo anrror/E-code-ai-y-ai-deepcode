@@ -100,7 +100,7 @@ def test_session_prompt_names_the_posture_it_runs_under(tmp_path, monkeypatch):
         prompt = _built_system_prompt(
             tmp_path, monkeypatch, ExecutionSecurityProfile.for_preset(preset)
         )
-        assert prompt.startswith("You are DeepCode")
+        assert prompt.startswith("You are DFcode")
         assert "## Working style\n" in prompt
         assert heading in prompt
         assert prompt.count("## Permissions") == 1

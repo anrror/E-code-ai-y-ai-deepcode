@@ -180,7 +180,7 @@ class AutomationService:
         """Whether an open Automation Run owns the Goal.
 
         Such a Goal was scheduled to run without anyone watching, so it keeps
-        going after DeepCode restarts.
+        going after DFcode restarts.
         """
 
         with self.database.read() as connection:

@@ -3,32 +3,32 @@
 <table style="border: none; margin: 0 auto; padding: 0; border-collapse: collapse;">
 <tr>
 <td align="center" style="vertical-align: middle; padding: 10px; border: none; width: 250px;">
-  <img src="assets/logo.png" alt="DeepCode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
+  <img src="assets/logo.png" alt="DFcode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
 </td>
 <td align="left" style="vertical-align: middle; padding: 10px 0 10px 30px; border: none;">
-  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗
-    ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝
-    ██║  ██║█████╗  █████╗  ██████╔╝██║     ██║   ██║██║  ██║█████╗
-    ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██║     ██║   ██║██║  ██║██╔══╝
-    ██████╔╝███████╗███████╗██║     ╚██████╗╚██████╔╝██████╔╝███████╗
-    ╚═════╝ ╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
+  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗ ██████╗ ██████╗ ██████╗ ███████╗
+    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝
+    ██║  ██║█████╗  ██║     ██║   ██║██║  ██║█████╗
+    ██║  ██║██╔══╝  ██║     ██║   ██║██║  ██║██╔══╝
+    ██████╔╝██║     ╚██████╗╚██████╔╝██████╔╝███████╗
+    ╚═════╝ ╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
 </td>
 </tr>
 </table>
 
 <div align="center">
-<a href="https://trendshift.io/repositories/14665?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDeepCode | Trendshift" width="250" height="55"/></a>
-<a href="https://trendshift.io/repositories/14665?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/14665/daily?language=Python" alt="HKUDS%2FDeepCode | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/14665?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDFcode | Trendshift" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/14665?utm_source=trendshift-badge&amp;utm_medium=badge&amp;utm_campaign=badge-trendshift-14665" target="_blank" rel="noopener noreferrer"><img src="https://trendshift.io/api/badge/trendshift/repositories/14665/daily?language=Python" alt="HKUDS%2FDFcode | Trendshift" width="250" height="55"/></a>
 </div>
 
-<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DeepCode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
+<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DFcode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
 
-# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DeepCode_images/title_logo.svg" alt="DeepCode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DeepCode: Open Agentic Coding
+# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DFcode_images/title_logo.svg" alt="DFcode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DFcode: Open Agentic Coding
 
 ### *Advancing Code Generation with Multi-Agent Systems*
 
 <p align="center">
-  <a href="https://hkuds.github.io/DeepCode/" target="_blank"><img alt="Website — hkuds.github.io/DeepCode" src="https://img.shields.io/badge/Website-hkuds.github.io%2FDeepCode%20%E2%86%97-06B6D4?style=for-the-badge&labelColor=0B1116" height="36"></a>
+  <a href="https://hkuds.github.io/DFcode/" target="_blank"><img alt="Website — hkuds.github.io/DFcode" src="https://img.shields.io/badge/Website-hkuds.github.io%2FDFcode%20%E2%86%97-06B6D4?style=for-the-badge&labelColor=0B1116" height="36"></a>
 </p>
 
 <!-- <p align="center">
@@ -39,10 +39,10 @@
   <img src="https://img.shields.io/badge/HKU-Data_Intelligence_Lab-f39c12?style=for-the-badge&logo=university&logoColor=white" alt="HKU">
 </p> -->
 <p>
-  <a href="https://github.com/HKUDS/DeepCode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DeepCode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
+  <a href="https://github.com/HKUDS/DFcode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DFcode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
   <a href='https://arxiv.org/abs/2512.07921'><img src="https://img.shields.io/badge/Paper-arXiv-orange?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=1a1a2e"></a>
   <img src="https://img.shields.io/badge/🐍Python-3.12%2B-4ecdc4?style=for-the-badge&logo=python&logoColor=white&labelColor=1a1a2e">
-  <!-- <a href="https://pypi.org/project/deepcode-hku/"><img src="https://img.shields.io/pypi/v/deepcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a> -->
+  <!-- <a href="https://pypi.org/project/dfcode-hku/"><img src="https://img.shields.io/pypi/v/dfcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a> -->
 </p>
 <p>
   <a href="https://github.com/HKUDS/.github/blob/main/profile/README.md"><img src="https://img.shields.io/badge/Feishu-Group-E9DBFC?style=flat&logo=feishu&logoColor=white" alt="Feishu"></a>
@@ -69,18 +69,18 @@
 
 ### 🖥️ **Interface Showcase**
 
-#### 🖥️ **DeepCode Desktop**
+#### 🖥️ **DFcode Desktop**
 
 <div align="center">
 
-  <img src="https://github.com/Zongwei9888/Experiment_Images/raw/e389750e733ec2c1b94986cb990036899dcaec52/DeepCode_images/Area.gif" alt="DeepCode Desktop coding agent demo" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
+  <img src="https://github.com/Zongwei9888/Experiment_Images/raw/e389750e733ec2c1b94986cb990036899dcaec52/DFcode_images/Area.gif" alt="DFcode Desktop coding agent demo" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
 
-*Work with DeepCode in a visual workspace for Sessions, goals, tool activity, code changes, and verification.*
+*Work with DFcode in a visual workspace for Sessions, goals, tool activity, code changes, and verification.*
 </div>
 
-DeepCode provides TUI, Desktop, and Web clients over one shared local service.
+DFcode provides TUI, Desktop, and Web clients over one shared local service.
 They share Projects, Session history, models, Skills, permissions, Goals, and
-Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
+Automations. Use `dfcode`, `dfcode desktop`, or `dfcode web`; see
 [Quick start](#quick-start) for installation and your first task.
 
 ---
@@ -92,13 +92,13 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 <div style="margin: 20px 0;">
   <a href="https://youtu.be/TxwBHRQoaBw" target="_blank">
     <img src="https://img.youtube.com/vi/TxwBHRQoaBw/maxresdefault.jpg"
-         alt="DeepCode Introduction Video"
+         alt="DFcode Introduction Video"
          width="75%"
          style="border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); transition: transform 0.3s ease;"/>
   </a>
 </div>
 
-*🎯 **Watch the DeepCode V2 introduction** - Long-horizon tasks, loop engineering, the agent harness, and self-evolution in 100 seconds*
+*🎯 **Watch the DFcode V2 introduction** - Long-horizon tasks, loop engineering, the agent harness, and self-evolution in 100 seconds*
 
 <p>
   <a href="https://youtu.be/TxwBHRQoaBw" target="_blank">
@@ -119,8 +119,8 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 ## 📑 Table of Contents
 
 - [📰 What's new](#whats-new)
-- [🧠 What Deep means in DeepCode](#what-deep-means-in-deepcode)
-- [💡 Why DeepCode](#why-deepcode)
+- [🧠 What Deep means in DFcode](#what-deep-means-in-dfcode)
+- [💡 Why DFcode](#why-dfcode)
 - [⚡ Quick start](#quick-start)
 - [🖥️ Choosing a client](#choosing-a-client)
 - [📋 Requirements and platforms](#requirements-and-platforms)
@@ -137,7 +137,7 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 - [📄 License](#license)
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/overview.png" alt="How DeepCode fits together: the TUI, Desktop, Web and scripts talk to one local service, whose agent harness works in your project with the model you chose" width="1080" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/overview.png" alt="How DFcode fits together: the TUI, Desktop, Web and scripts talk to one local service, whose agent harness works in your project with the model you chose" width="1080" />
 </p>
 
 ---
@@ -150,16 +150,16 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
   every model call is attributed to the category and agent that made it. The
   change ships with a measurement gate, and the honest result is that
   delegation is not free: three parallel agents were 3.2× slower than doing
-  five short tasks yourself, and 1.25× slower on a real long task. DeepCode
+  five short tasks yourself, and 1.25× slower on a real long task. DFcode
   therefore keeps category routing and ordering, and does not add a graph
   scheduler ([measurements](eval/subagent_parallel/README.md)).
 - **2026-11-02** — Goals you can trust to finish: the agent proposes a
-  checklist, and once you confirm it DeepCode runs those commands itself
+  checklist, and once you confirm it DFcode runs those commands itself
   before it accepts "complete"; an optional independent reviewer checks every
   requirement, switched on in Settings, and each check is shown on the Goal
   card. A Goal can have a time limit, stops when it is stuck or keeps
   repeating itself, wraps up when its budget runs out, and pauses when
-  DeepCode restarts.
+  DFcode restarts.
 - **2026-10-31** — Long tasks read better on the Web (folded steps, a Goal
   outcome, faster long Sessions), declined tools say so, the terminal UI
   wraps Chinese text and resumes a running Turn cleanly, the Chinese
@@ -169,8 +169,8 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 - **2026-10-29** — Optional microcompact that clears old tool output before
   summarizing (`agents.defaults.microcompact`), an optional check before a
   Goal completes (`goal.completionVerifier`), folder browsing in the Web
-  client, an opt-in risk check (`DEEPCODE_RISK_EVALUATOR=1`), and approval for
-  project hooks (`deepcode hooks status` / `approve`). Clearer approvals:
+  client, an opt-in risk check (`DFCODE_RISK_EVALUATOR=1`), and approval for
+  project hooks (`dfcode hooks status` / `approve`). Clearer approvals:
   the TUI shows when it waits for you and what will change, "always allow"
   covers one kind of command instead of the whole tool, and trusting a folder
   asks first.
@@ -182,11 +182,11 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 - **2026-10-21** — A quiet Windows service, a separate code font, and community fixes
 - **2026-10-14** — Sessions that keep their history, a tighter sandbox, and the Desktop and Web apps in Chinese
 - **2026-10-13** — Smoother streaming, a self-managing background service, and safer Web sign-in
-- **2026-10-12** — DeepCode v2.3.1: Markdown answers in the TUI, a Windows service that stays up, `/compact` for coding sessions, and community fixes
+- **2026-10-12** — DFcode v2.3.1: Markdown answers in the TUI, a Windows service that stays up, `/compact` for coding sessions, and community fixes
 - **2026-10-10** — A steadier terminal UI: answers shown once, keys that keep your draft, and an orderly `/compact`
-- **2026-09-28** — DeepCode v2.3.0: voice dictation, Opper and Bedrock, Desktop polish, and opt-in hardening
+- **2026-09-28** — DFcode v2.3.0: voice dictation, Opper and Bedrock, Desktop polish, and opt-in hardening
 - **2026-09-09** — TUI, Desktop, and Web share one local background service
-- **2026-09-06** — DeepCode v2.2.0: Session context-window caps, compaction that leaves a memory, and a fully localized Desktop
+- **2026-09-06** — DFcode v2.2.0: Session context-window caps, compaction that leaves a memory, and a fully localized Desktop
 - **2026-09-03** — Desktop catalog race, an honest command screen, GLM-5.2, and two dependency bumps
 - **2026-08-28** — Community fixes: plugin credential warnings and a wider zh-CN Desktop
 - **2026-08-25** — Command executors close two bypasses
@@ -203,7 +203,7 @@ Automations. Use `deepcode`, `deepcode desktop`, or `deepcode web`; see
 - **2026-08-09** — Skills now have a real runtime contract
 - **2026-08-07** — Thinking controls, more providers, and a Desktop you can tune
 - **2026-08-04** — Skills that work wherever you do
-- **2026-08-03** — 🎉 DeepCode v2.0 is here
+- **2026-08-03** — 🎉 DFcode v2.0 is here
 - **2026-07-31** — One execution model across CLI and Desktop
 - **2026-07-21** — Durable Goals and safe Session lifecycle
 - **2026-07-20** — Session-level model control and shared Skills
@@ -219,14 +219,14 @@ All changes: [CHANGELOG.md](CHANGELOG.md).
 
 ---
 
-## What Deep means in DeepCode
+## What Deep means in DFcode
 
 Most Coding Agents can generate code. The hard part is understanding a real
 project, making changes within the right boundaries, continuously correcting
 course from runtime results, and making it clear why the outcome can be
 trusted.
 
-DeepCode is an open-source Coding Agent for real software engineering. Give it
+DFcode is an open-source Coding Agent for real software engineering. Give it
 a simple change or a goal that takes dozens of steps. It can understand the
 project, work on the code, run tools, verify results, and continue after an
 interruption, restart, or model switch.
@@ -241,9 +241,9 @@ finish:
 | **Deep Verification** | Check results with tests, builds, diagnostics, Diffs, and task Artifacts rather than treating a plausible answer as done. |
 | **Deep Continuity**   | Preserve conversations, decisions, tool records, and evidence across time, directories, clients, and model changes.    |
 
-DeepCode stands out in three ways:
+DFcode stands out in three ways:
 
-- **Done means checked.** When the agent says a Goal is complete, DeepCode
+- **Done means checked.** When the agent says a Goal is complete, DFcode
   runs the checklist you confirmed itself, and an optional independent
   reviewer proves each requirement with evidence. A claim that falls short
   goes back to the agent with what is missing.
@@ -255,12 +255,12 @@ DeepCode stands out in three ways:
   for your approval, and each Goal keeps its tool calls and checks, so you can
   see why the outcome can be trusted.
 
-DeepCode is not designed to make an Agent look busier. It is designed to help
+DFcode is not designed to make an Agent look busier. It is designed to help
 you finish real software engineering work more reliably.
 
 ---
 
-## Why DeepCode
+## Why DFcode
 
 - **Work that outlasts one answer.** Give the agent a Goal and it keeps
   working across turns, checking its results, until it reports the Goal
@@ -271,7 +271,7 @@ you finish real software engineering work more reliably.
   TUI, reopen the session in the browser, and answer the pending approval
   there. Desktop is deliberately different: it runs its own App Server inside
   the app and stops it when the window closes.
-- **One session, four clients.** The TUI, Desktop, Web and `deepcode exec`
+- **One session, four clients.** The TUI, Desktop, Web and `dfcode exec`
   read and write the same projects, sessions, models, Skills and permissions.
 - **You decide what it may do.** A folder must be trusted before the agent
   works in it. Each session runs under Ask, Read only or Full access, shell
@@ -280,11 +280,11 @@ you finish real software engineering work more reliably.
   Anthropic-compatible endpoint, or a local model.
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/web-ui.png" alt="The DeepCode Web client after a real Goal: the agent fixed the code and tests, and the Goal card shows the completion check that passed, with each requirement and its evidence" width="100%" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/web-ui.png" alt="The DFcode Web client after a real Goal: the agent fixed the code and tests, and the Goal card shows the completion check that passed, with each requirement and its evidence" width="100%" />
 </p>
 
 <p align="center"><sub>The Web client after a real Goal: the agent fixed two bugs and
-added tests, DeepCode ran the confirmed checks, and an independent review proved every
+added tests, DFcode ran the confirmed checks, and an independent review proved every
 requirement before the Goal counted as complete.</sub></p>
 
 ## Quick start
@@ -292,40 +292,40 @@ requirement before the Goal counted as complete.</sub></p>
 **1. Install.** With [uv](https://docs.astral.sh/uv/):
 
 ```console
-uv tool install --python 3.12 deepcode-hku
-deepcode init
+uv tool install --python 3.12 dfcode-hku
+dfcode init
 ```
 
-`deepcode init` creates `~/.deepcode` and sets the default access to **Ask**.
-If your shell cannot find `deepcode`, run `uv tool update-shell` and open a new
+`dfcode init` creates `~/.dfcode` and sets the default access to **Ask**.
+If your shell cannot find `dfcode`, run `uv tool update-shell` and open a new
 terminal. On Windows, install uv with
 `winget install --id astral-sh.uv --exact`.
 
 **2. Add a model.** This example uses OpenRouter; any
 [supported provider](#models-and-providers) works the same way. The key is
-read without echo and stored in `~/.deepcode/credentials.json`.
+read without echo and stored in `~/.dfcode/credentials.json`.
 
 ```console
-deepcode provider set my-openrouter --template openrouter --api-key
-deepcode provider models my-openrouter --refresh
-deepcode provider test my-openrouter --model MODEL_ID
+dfcode provider set my-openrouter --template openrouter --api-key
+dfcode provider models my-openrouter --refresh
+dfcode provider test my-openrouter --model MODEL_ID
 ```
 
 Replace `MODEL_ID` with a model from the list. In Desktop or Web you can do the
 same under **Settings → Models**.
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/settings-models.png" alt="Model connections in DeepCode settings" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.2); margin: 15px 0;"/>
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/settings-models.png" alt="Model connections in DFcode settings" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.2); margin: 15px 0;"/>
 </div>
 
 **3. Run it in a project.**
 
 ```console
 cd /path/to/your-project
-deepcode --trust --connection my-openrouter --model MODEL_ID
+dfcode --trust --connection my-openrouter --model MODEL_ID
 ```
 
-`--trust` is needed once per project. Later, run `deepcode` in that folder and
+`--trust` is needed once per project. Later, run `dfcode` in that folder and
 use `/model` to switch models. Try a first task:
 
 ```text
@@ -342,12 +342,12 @@ can be continued in any other.
 
 | Client | Start with | Use it for |
 |---|---|---|
-| **TUI** | `deepcode` | Working in the terminal. See [The terminal UI](docs/guide/the-tui.md). |
-| **Web** | `deepcode web` | The full workbench (diffs, files, terminal, Goals) in your browser, from the same install. See [Web client](docs/WEB_CLIENT.md). |
-| **Desktop** | `deepcode desktop` | The same workbench as a native app. Runs from a source checkout for now, see [below](#desktop). |
-| **Headless** | `deepcode exec "<task>"` | One turn from a script or CI job; `--json` prints events as NDJSON. `deepcode loop "<goal>"` runs a Goal. See [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md). |
+| **TUI** | `dfcode` | Working in the terminal. See [The terminal UI](docs/guide/the-tui.md). |
+| **Web** | `dfcode web` | The full workbench (diffs, files, terminal, Goals) in your browser, from the same install. See [Web client](docs/WEB_CLIENT.md). |
+| **Desktop** | `dfcode desktop` | The same workbench as a native app. Runs from a source checkout for now, see [below](#desktop). |
+| **Headless** | `dfcode exec "<task>"` | One turn from a script or CI job; `--json` prints events as NDJSON. `dfcode loop "<goal>"` runs a Goal. See [Headless and automation](docs/HEADLESS_AND_AUTOMATION.md). |
 
-`deepcode web --no-open` prints the sign-in link instead of opening a browser.
+`dfcode web --no-open` prints the sign-in link instead of opening a browser.
 The link works once and expires after 60 seconds.
 
 ### Desktop
@@ -358,13 +358,13 @@ source checkout and needs Node.js 22+, Rust (stable) and the
 platform:
 
 ```console
-git clone https://github.com/HKUDS/DeepCode.git
-cd DeepCode
+git clone https://github.com/HKUDS/DFcode.git
+cd DFcode
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 uv tool install --python 3.12 --force .
-deepcode init
-deepcode desktop
+dfcode init
+dfcode desktop
 ```
 
 The first launch builds the app's resources and takes a few minutes; keep the
@@ -384,12 +384,12 @@ service if you need them to continue.
 
 | Task | Command |
 |---|---|
-| Check whether it is running | `deepcode service status` |
-| Read recent logs | `deepcode service logs --lines 100` |
-| Stop after current work finishes | `deepcode service stop --drain --timeout 60` |
-| Start it when you log in | `deepcode service install --at-login` |
+| Check whether it is running | `dfcode service status` |
+| Read recent logs | `dfcode service logs --lines 100` |
+| Stop after current work finishes | `dfcode service stop --drain --timeout 60` |
+| Start it when you log in | `dfcode service install --at-login` |
 
-Upgrades and backups: [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md).
+Upgrades and backups: [Upgrading DFcode](docs/UPGRADE_AND_RESTORE.md).
 Problems: [Troubleshooting](docs/guide/troubleshooting.md).
 
 ## Requirements and platforms
@@ -399,14 +399,14 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
 | Python | 3.12 or later (CI tests 3.12, 3.13 and 3.14) |
 | Operating systems | macOS, Linux and Windows |
 | Tools | Git, for change review and worktrees. On Linux, bubblewrap (`bwrap`) for the command sandbox. |
-| Model | An API key for a supported provider, or a local Ollama or vLLM server. The model must support tool calling; `deepcode provider test <id> --agent` checks it. |
+| Model | An API key for a supported provider, or a local Ollama or vLLM server. The model must support tool calling; `dfcode provider test <id> --agent` checks it. |
 | Web client | A current browser on the same computer |
 | Desktop | Node.js 22+, Rust and the Tauri prerequisites (source build) |
 
 ## Core features
 
 <p align="center">
-  <img src="https://raw.githubusercontent.com/HKUDS/DeepCode/main/assets/readme/goal-loop.png" alt="How a Goal reaches complete: Turns of work, a completion claim, then a rule check, the checks you confirmed and an independent review, with the claim turned back while anything is missing" width="1080" />
+  <img src="https://raw.githubusercontent.com/HKUDS/DFcode/main/assets/readme/goal-loop.png" alt="How a Goal reaches complete: Turns of work, a completion claim, then a rule check, the checks you confirmed and an independent review, with the claim turned back while anything is missing" width="1080" />
 </p>
 
 - **Repository work.** Reads, searches and edits files, applies patches, runs
@@ -414,7 +414,7 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   [Getting started](docs/guide/getting-started.md)
 - **Goals.** `/goal <objective>` in the TUI or the Goal panel in Desktop and
   Web. The Goal continues across turns and is kept across restarts. Its
-  completion is checked: DeepCode runs the checklist you confirmed, and an
+  completion is checked: DFcode runs the checklist you confirmed, and an
   independent reviewer can prove each requirement (Settings → General). A
   token budget or time limit bounds it.
   [Goals and automation](docs/guide/goals-and-headless.md)
@@ -422,7 +422,7 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   approvals and Goal state. `/resume`, `/compact` and per-session context caps
   keep long work going. [Sessions](docs/guide/sessions.md)
 - **Project instructions and memory.** Reads `AGENTS.md` and `CLAUDE.md`, and
-  keeps project notes in `.deepcode/memory/`.
+  keeps project notes in `.dfcode/memory/`.
   [Skills and memory](docs/guide/skills-and-memory.md)
 - **Models and providers.** Named connections, per-session model and
   reasoning effort, and connection checks before use.
@@ -432,7 +432,7 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   package Skills and MCP servers. [Skills](docs/guide/skills-and-memory.md) ·
   [Local plugins](docs/LOCAL_PLUGINS.md)
 - **MCP.** Connects to stdio, SSE and Streamable HTTP servers, with a bundled
-  catalog and OAuth sign-in. `deepcode mcp serve` exposes DeepCode itself as an
+  catalog and OAuth sign-in. `dfcode mcp serve` exposes DFcode itself as an
   MCP server. [MCP guide](docs/integrations/MCP.md)
 - **Agent presets and sub-agents.** Presets set a persona and narrow the tool
   set. Sub-agents can work in separate Git worktrees, run on a model chosen by
@@ -442,7 +442,7 @@ Problems: [Troubleshooting](docs/guide/troubleshooting.md).
   version → task) with a reviewed knowledge catalog: organization red lines
   cannot be overridden, external batches stay labelled as unverified, and every
   Turn assembles the same context from per-layer directories
-  (`.deepcode/team/<layer>/<slug>/` with `entity.yaml`, `knowledge.yaml`, and
+  (`.dfcode/team/<layer>/<slug>/` with `entity.yaml`, `knowledge.yaml`, and
   `AGENTS.md`). [Team context](docs/guide/team-context.md)
 - **Automations.** Run a saved instruction on a schedule with the same
   agent, permissions and history.
@@ -458,13 +458,13 @@ Built-in templates: OpenRouter, Requesty, Opper, Forge, Amazon Bedrock,
 Anthropic, OpenAI, DeepSeek, Gemini, Zhipu AI, DashScope, MiniMax, Ollama and
 vLLM. A **Custom** connection points at any endpoint that speaks the OpenAI
 Chat Completions, OpenAI Responses or Anthropic Messages API.
-`deepcode provider list` shows them and which ones are ready.
+`dfcode provider list` shows them and which ones are ready.
 
 ## Security and data
 
 - **Data stays on your computer.** Settings, sessions, state and logs are under
-  `~/.deepcode` (or `$DEEPCODE_HOME`). Project notes are in
-  `<project>/.deepcode/memory/`. DeepCode has no account system and sends no
+  `~/.dfcode` (or `$DFCODE_HOME`). Project notes are in
+  `<project>/.dfcode/memory/`. DFcode has no account system and sends no
   analytics.
 - **Local service.** The background service listens on `127.0.0.1` only (port
   3081, or a free port if that is taken). Native clients authenticate with a
@@ -477,8 +477,8 @@ Chat Completions, OpenAI Responses or Anthropic Messages API.
   access** removes approvals and the sandbox. Your `deny` rules apply under
   every preset.
 - **Hooks.** Hooks a repository declares run only after you approve them;
-  changed hooks wait for `deepcode hooks approve`.
-- **Credentials.** API keys are stored in `~/.deepcode/credentials.json` with
+  changed hooks wait for `dfcode hooks approve`.
+- **Credentials.** API keys are stored in `~/.dfcode/credentials.json` with
   owner-only permissions and never returned to a client. Shell commands do not
   see them.
 - **What model providers receive.** The system prompt, project instructions,
@@ -507,28 +507,28 @@ vulnerability, see [SECURITY.md](SECURITY.md).
 | MCP servers | [MCP guide](docs/integrations/MCP.md) |
 | Background service | [Local background service](docs/SERVICE_RUNTIME.md) |
 | Team context | [Team context](docs/guide/team-context.md) |
-| Upgrades and backups | [Upgrading DeepCode](docs/UPGRADE_AND_RESTORE.md) |
+| Upgrades and backups | [Upgrading DFcode](docs/UPGRADE_AND_RESTORE.md) |
 | Desktop from source | [Desktop guide](desktop/README.md) |
 | Paper2Code | [Paper2Code](docs/paper2code.md) |
 
 ## Research origin
 
-DeepCode started as Paper2Code, a multi-agent system that turns research papers
+DFcode started as Paper2Code, a multi-agent system that turns research papers
 into working code. On [PaperBench](https://openai.com/index/paperbench/) it
 scored 75.9% on the human-expert subset, above the best reported human
 baseline (72.4%). The method is described in
-[DeepCode: Open Agentic Coding](https://arxiv.org/abs/2512.07921). Paper2Code
+[DFcode: Open Agentic Coding](https://arxiv.org/abs/2512.07921). Paper2Code
 is still available in Desktop and Web; see [Paper2Code](docs/paper2code.md).
 
 <p align="center">
-  <img src="assets/result_main02.jpg" alt="DeepCode PaperBench results" width="920" />
+  <img src="assets/result_main02.jpg" alt="DFcode PaperBench results" width="920" />
 </p>
 
 <a id="live-demonstrations"></a>
 
 ## 🎬 Live Demonstrations
 
-These recordings show projects produced by earlier DeepCode workflows. They
+These recordings show projects produced by earlier DFcode workflows. They
 are output demonstrations rather than screenshots of the current Desktop UI.
 
 <table align="center" width="100%">
@@ -581,7 +581,7 @@ are output demonstrations rather than screenshots of the current Desktop UI.
 </tr>
 </table>
 
-The [DeepCode V2 introduction video](https://youtu.be/TxwBHRQoaBw) gives a
+The [DFcode V2 introduction video](https://youtu.be/TxwBHRQoaBw) gives a
 broader walkthrough.
 
 ---
@@ -594,7 +594,7 @@ listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ## Support
 
-- Bugs and feature requests: [GitHub Issues](https://github.com/HKUDS/DeepCode/issues)
+- Bugs and feature requests: [GitHub Issues](https://github.com/HKUDS/DFcode/issues)
 - Security reports: [SECURITY.md](SECURITY.md)
 - Community: the Feishu and WeChat groups listed on the
   [HKUDS profile](https://github.com/HKUDS/.github/blob/main/profile/README.md)
@@ -609,11 +609,11 @@ listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 *Community growth trajectory*
 
-  <a href="https://star-history.com/#HKUDS/DeepCode&Date">
+  <a href="https://star-history.com/#HKUDS/DFcode&Date">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date&theme=dark" />
-      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" />
-      <img src="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" alt="DeepCode Star History chart" width="900" />
+      <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date&theme=dark" />
+      <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" />
+      <img src="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" alt="DFcode Star History chart" width="900" />
     </picture>
   </a>
 
@@ -621,14 +621,14 @@ listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 
 ---
 
-### 🚀 Ready to build with DeepCode?
+### 🚀 Ready to build with DFcode?
 
 <div align="center">
 
 <p>
   <a href="#quick-start"><img src="https://img.shields.io/badge/🚀_Get_Started-00d4ff?style=for-the-badge&logo=rocket&logoColor=white" alt="Get started" /></a>
-  <a href="https://github.com/HKUDS/DeepCode"><img src="https://img.shields.io/badge/🏛️_View_on_GitHub-00d4ff?style=for-the-badge&logo=github&logoColor=white" alt="View DeepCode on GitHub" /></a>
-  <a href="https://github.com/HKUDS/DeepCode/stargazers"><img src="https://img.shields.io/badge/⭐_Star_Project-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star DeepCode" /></a>
+  <a href="https://github.com/HKUDS/DFcode"><img src="https://img.shields.io/badge/🏛️_View_on_GitHub-00d4ff?style=for-the-badge&logo=github&logoColor=white" alt="View DFcode on GitHub" /></a>
+  <a href="https://github.com/HKUDS/DFcode/stargazers"><img src="https://img.shields.io/badge/⭐_Star_Project-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star DFcode" /></a>
 </p>
 
 </div>
@@ -640,12 +640,12 @@ listed in [CONTRIBUTORS.md](CONTRIBUTORS.md).
 ## 🙏 Appreciation
 
 Thanks to everyone in the open-source community — your stars, issues, pull
-requests and discussions shape where DeepCode goes next.
+requests and discussions shape where DFcode goes next.
 
 <div align="center">
 
-<a href="https://github.com/HKUDS/DeepCode/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=HKUDS/DeepCode&max=999" alt="DeepCode contributors" />
+<a href="https://github.com/HKUDS/DFcode/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HKUDS/DFcode&max=999" alt="DFcode contributors" />
 </a>
 
 </div>
@@ -660,11 +660,11 @@ v2.0 rebuild and so are not reflected in the graph above.
 
 ## 📖 Citation
 
-If DeepCode contributes to your research, cite:
+If DFcode contributes to your research, cite:
 
 ```bibtex
-@misc{li2025deepcodeopenagenticcoding,
-  title         = {DeepCode: Open Agentic Coding},
+@misc{li2025dfcodeopenagenticcoding,
+  title         = {DFcode: Open Agentic Coding},
   author        = {Zongwei Li and Zhonghang Li and Zirui Guo and Xubin Ren and Chao Huang},
   year          = {2025},
   eprint        = {2512.07921},
@@ -684,7 +684,7 @@ If DeepCode contributes to your research, cite:
 
 <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-4ecdc4?style=for-the-badge&logo=opensourceinitiative&logoColor=white" alt="MIT License" /></a>
 
-DeepCode is available under the [MIT License](LICENSE).<br/>
+DFcode is available under the [MIT License](LICENSE).<br/>
 Copyright © 2025 Data Intelligence Lab at The University of Hong Kong.
 
 </div>

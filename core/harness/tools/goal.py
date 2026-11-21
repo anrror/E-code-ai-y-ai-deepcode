@@ -150,7 +150,7 @@ class ProposeGoalChecksTool(Tool):
             "Goal, each with the command that proves that requirement where "
             "one exists (a focused test rather than the whole suite when you "
             "can). The user confirms the "
-            "list; after that, DeepCode itself runs the commands whenever the "
+            "list; after that, DFcode itself runs the commands whenever the "
             "Goal is claimed complete, and a command that does not exit 0 "
             "turns the claim back. Proposing replaces an earlier proposal; it "
             "never changes a confirmed checklist."

@@ -246,7 +246,7 @@ async def run_external_subagent(
             else _DEFAULT_RUN_TIMEOUT_S
         )
 
-    with tempfile.TemporaryDirectory(prefix="deepcode-subagent-") as scratch:
+    with tempfile.TemporaryDirectory(prefix="dfcode-subagent-") as scratch:
         answer_path = Path(scratch) / "last-message.txt"
         process = await start_process_group(
             executable,

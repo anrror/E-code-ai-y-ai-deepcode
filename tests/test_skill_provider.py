@@ -68,7 +68,7 @@ def test_provider_refactor_preserves_catalog_and_turn_semantics(tmp_path: Path) 
         body="Inspect the implementation and evidence.",
         allowed_tools="Read, grep",
     )
-    _write_skill(workspace / ".deepcode" / "skills", "review")
+    _write_skill(workspace / ".dfcode" / "skills", "review")
     _write_skill(home / ".agents" / "skills", "document")
     invalid = workspace / ".claude" / "skills" / "broken"
     invalid.mkdir(parents=True)

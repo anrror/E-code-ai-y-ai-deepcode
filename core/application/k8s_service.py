@@ -121,7 +121,7 @@ def _tmp_pem(encoded: str, suffix: str) -> str:
     launch), and the file must never be readable by other users on the box.
     """
 
-    target = Path(os.environ.get("TEMP", "/tmp")) / "deepcode-k8s"
+    target = Path(os.environ.get("TEMP", "/tmp")) / "dfcode-k8s"
     target.mkdir(parents=True, exist_ok=True)
     digest = hashlib.sha256(encoded.encode("ascii", "replace")).hexdigest()[:16]
     path = target / f"{digest}.{suffix}"

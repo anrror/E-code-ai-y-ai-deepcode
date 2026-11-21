@@ -36,7 +36,7 @@ it.each(["en", "zh-CN"] as const)(
         onDismissError={vi.fn()}
       />,
     );
-    expect(screen.getByRole("alert").textContent).toContain("deepcode web");
+    expect(screen.getByRole("alert").textContent).toContain("dfcode web");
     expect(screen.getByRole("alert").textContent).toContain(
       locale === "en" ? "Browser access required" : "需要授权浏览器访问",
     );
@@ -76,7 +76,7 @@ it("says a request timed out, not that the connection was lost", () => {
     />,
   );
   const alert = screen.getByRole("alert").textContent ?? "";
-  expect(alert).toContain("No response from DeepCode");
+  expect(alert).toContain("No response from DFcode");
   expect(alert).not.toContain("lost");
 });
 

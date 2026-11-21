@@ -37,7 +37,7 @@ function settings(
   security: SettingsSnapshot["security"] = {},
 ): SettingsSnapshot {
   return {
-    configPath: "/tmp/deepcode_config.json",
+    configPath: "/tmp/dfcode_config.json",
   configRevision: "rev-test-1",
     agents: {},
     security,

@@ -14,7 +14,7 @@ from typing import TYPE_CHECKING, Any, Literal, Protocol
 from core.domain.common import JsonObject
 
 if TYPE_CHECKING:
-    from core.config import DeepCodeConfig
+    from core.config import DFcodeConfig
 
 
 WorkflowOutcomeStatus = Literal["completed", "incomplete", "cancelled"]
@@ -73,7 +73,7 @@ class DefaultWorkflowRunner:
 
     def preflight(
         self,
-        config: DeepCodeConfig,
+        config: DFcodeConfig,
         *,
         source_type: str,
         options: JsonObject,
@@ -101,7 +101,7 @@ class DefaultWorkflowRunner:
             request.options,
             request.workspace,
         )
-        workflow_root = request.workspace / ".deepcode" / "workflows"
+        workflow_root = request.workspace / ".dfcode" / "workflows"
         task_id = str(request.checkpoint.get("taskId") or request.run_id)
         await callbacks.progress(
             "preparing",
@@ -134,7 +134,7 @@ class DefaultWorkflowRunner:
 
             progress_tail = asyncio.create_task(persist())
 
-        logger = logging.getLogger(f"deepcode.workflow.{request.run_id}")
+        logger = logging.getLogger(f"dfcode.workflow.{request.run_id}")
         source = _resume_source(request, workflow_root, task_id)
         try:
             if request.source_type in {"local", "url"}:
@@ -196,7 +196,7 @@ class DefaultWorkflowRunner:
 
 
 def _require_mcp_servers(
-    config: DeepCodeConfig, source_type: str, options: JsonObject, workspace: Path
+    config: DFcodeConfig, source_type: str, options: JsonObject, workspace: Path
 ) -> None:
     """Refuse a run whose MCP servers (``tools.mcpServers``) are missing.
 

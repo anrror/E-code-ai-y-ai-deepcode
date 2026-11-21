@@ -74,7 +74,7 @@ are not requested.
 
 ## Workspace and Artifact safety
 
-- Desktop runs pass an explicit `<Thread workspace>/.deepcode/workflows` root;
+- Desktop runs pass an explicit `<Thread workspace>/.dfcode/workflows` root;
   the pipeline no longer derives it from process cwd.
 - Paper, URL, repository, and requirement inputs share one `workflow/start`
   contract. A local document must exist and be a regular file; the desktop

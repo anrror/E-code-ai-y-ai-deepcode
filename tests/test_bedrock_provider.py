@@ -11,7 +11,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from core.config import DeepCodeConfig, ProvidersConfig  # noqa: E402
+from core.config import DFcodeConfig, ProvidersConfig  # noqa: E402
 from core.providers.catalog import resolve_model_info  # noqa: E402
 from core.providers.catalog_service import ModelCatalogService  # noqa: E402
 from core.providers.credentials import CredentialStore  # noqa: E402
@@ -33,7 +33,7 @@ BEDROCK_MODEL_IDS = (
 def _connection(tmp_path: Path):
     credentials = CredentialStore(tmp_path / "credentials.json")
     credentials.set("work-bedrock", "bedrock-test-secret")
-    config = DeepCodeConfig.model_validate(
+    config = DFcodeConfig.model_validate(
         {
             "providers": {
                 "profiles": {
@@ -85,7 +85,7 @@ def test_bedrock_requires_a_user_supplied_region_url(
 ) -> None:
     monkeypatch.setenv("AWS_BEARER_TOKEN_BEDROCK", "bedrock-test-secret")
     connection = ConnectionResolver(
-        DeepCodeConfig(), CredentialStore(tmp_path / "credentials.json")
+        DFcodeConfig(), CredentialStore(tmp_path / "credentials.json")
     ).resolve_connection("bedrock")
 
     assert connection.api_key == "bedrock-test-secret"

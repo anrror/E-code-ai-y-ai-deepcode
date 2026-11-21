@@ -29,12 +29,12 @@ ROOT = HERE.parents[1]
 FIXTURE = HERE / "fixture"
 RUNS = HERE / ".runs"
 PY = ROOT / ".venv" / "Scripts" / "python.exe"
-DEEPCODE = ROOT / "deepcode.py"
+DFCODE = ROOT / "dfcode.py"
 AUTH = Path.home() / ".local" / "share" / "opencode" / "auth.json"
 # The process-wide LLM ledger. Unlike the per-session event stream, it records
 # every call 鈥?including the ones made by sub-agents 鈥?with a timestamp and an
 # agent_path, so it is the only place where both arms can be compared on cost.
-LEDGER = Path.home() / ".deepcode" / "logs" / "llm.jsonl"
+LEDGER = Path.home() / ".dfcode" / "logs" / "llm.jsonl"
 
 SERIAL_PROMPT = (
     "Open TASKS.md and implement all five tasks yourself, in this repository. "
@@ -213,7 +213,7 @@ def _run_once(arm: str, rep: int, *, model: str, connection: str, timeout: int,
     env["PATH"] = os.pathsep.join([str(PY.parent), env.get("PATH", "")])
     command = [
         str(PY),
-        str(DEEPCODE),
+        str(DFCODE),
         "exec",
         prompt,
         "--workspace",
@@ -361,7 +361,7 @@ def main() -> int:
     parser.add_argument("--connection", default="exp-ds")
     parser.add_argument("--timeout", type=int, default=900)
     parser.add_argument("--auth-json", type=Path, default=AUTH)
-    parser.add_argument("--env-key", default="DEEPCODE_EXP_KEY")
+    parser.add_argument("--env-key", default="DFCODE_EXP_KEY")
     parser.add_argument("--out", type=Path, default=RUNS)
     parser.add_argument(
         "--fixture",

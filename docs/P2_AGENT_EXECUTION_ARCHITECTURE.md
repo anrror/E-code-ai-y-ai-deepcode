@@ -66,7 +66,7 @@ pre-start cancellation callback so it cannot remain queued forever.
 When execution begins, TurnService marks the Turn running, acquires the Thread's
 long-lived AgentSession, and appends the user prompt to canonical JSONL before
 running it. A newly loaded runtime takes history from the same SessionStore;
-when another DeepCode process has appended visible messages, the runtime reloads
+when another DFcode process has appended visible messages, the runtime reloads
 that history before the next Turn. The projector maps SQ/EQ events as follows:
 
 | SQ/EQ event | Durable projection |
@@ -136,7 +136,7 @@ the event consumer, AgentSession, AgentRunner, approval wait, and active tool.
 AgentSession preserves the original submission correlation on the terminal
 `task_complete(interrupted)` event.
 
-Shell, code-mode, and hook commands start in a DeepCode-owned process group. On
+Shell, code-mode, and hook commands start in a DFcode-owned process group. On
 timeout or cancellation the runtime sends group SIGTERM, waits briefly, then
 sends SIGKILL to surviving descendants. Windows uses a new process group and
 `taskkill /T /F`. ToolRegistry and delegated AgentControl resources remain
@@ -154,16 +154,16 @@ CLI and Desktop inherit one timeout policy from `AgentRunner` and the provider
 adapters:
 
 - Non-streaming model calls have a 300-second wall-clock deadline, configurable
-  with `DEEPCODE_LLM_TIMEOUT_S`.
+  with `DFCODE_LLM_TIMEOUT_S`.
 - Streaming calls use an activity deadline instead of that short wall-clock
   deadline. Every provider event renews the default 90-second idle window,
   including reasoning events. Provider-returned reasoning is projected through
   a typed channel separate from assistant text; each client decides whether to
   collapse or display it. Configure the idle window with
-  `DEEPCODE_STREAM_IDLE_TIMEOUT_S`.
+  `DFCODE_STREAM_IDLE_TIMEOUT_S`.
 - Active streams have no total runtime limit by default because token limits,
   interruption, and the idle deadline already bound normal execution. Operators
-  can add a hard ceiling with `DEEPCODE_LLM_STREAM_MAX_RUNTIME_S`; a non-positive
+  can add a hard ceiling with `DFCODE_LLM_STREAM_MAX_RUNTIME_S`; a non-positive
   value disables it.
 - An explicitly supplied `llm_timeout_s` remains a per-call hard ceiling for
   compatibility with bounded automation callers.

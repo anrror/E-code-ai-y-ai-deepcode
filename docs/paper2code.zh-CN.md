@@ -1,23 +1,23 @@
 # Paper2Code
 
-Paper2Code 是 DeepCode 的起点：一个把论文或技术文档变成可运行代码库的多智能体
-工作流。DeepCode 现在已经发展为通用的 coding agent，Paper2Code 作为其中一个
+Paper2Code 是 DFcode 的起点：一个把论文或技术文档变成可运行代码库的多智能体
+工作流。DFcode 现在已经发展为通用的 coding agent，Paper2Code 作为其中一个
 专门工作流继续保留。
 
-方法见论文 [DeepCode: Open Agentic Coding](https://arxiv.org/abs/2512.07921)。
+方法见论文 [DFcode: Open Agentic Coding](https://arxiv.org/abs/2512.07921)。
 English: [paper2code.md](paper2code.md).
 
 ## 运行 Paper2Code
 
 Paper2Code 在 Desktop 和 Web 客户端中运行：
 
-1. 启动 `deepcode desktop` 或 `deepcode web`，打开一个已信任的项目。
+1. 启动 `dfcode desktop` 或 `dfcode web`，打开一个已信任的项目。
 2. 点击会话标题栏的 **Paper**（中文界面为"论文"），或在输入框输入 `/paper`，新建一个 Paper2Code 会话。
 3. 添加来源：文档、URL、代码仓库或文字需求。
 4. 工作流请你审阅计划时进行确认，然后查看各阶段进度。生成的文件和产物显示在
    右侧检查器里。
 
-原来运行旧 Paper2Code 脚本的 `deepcode test` 命令已经移除。工作流的运行时设计见
+原来运行旧 Paper2Code 脚本的 `dfcode test` 命令已经移除。工作流的运行时设计见
 [P5 Paper2Code architecture](P5_PAPER2CODE_ARCHITECTURE.md)。
 
 ## 工作方式
@@ -69,7 +69,7 @@ Paper2Code 在 Desktop 和 Web 客户端中运行：
 
 ## 研究结果
 
-DeepCode 原始研究使用
+DFcode 原始研究使用
 [PaperBench](https://openai.com/index/paperbench/) 评估科研代码复现能力。
 该基准要求 Agent 复现 20 篇 ICML 2024 论文，共包含 8,316 个可评分组件。
 
@@ -95,10 +95,10 @@ DeepCode 原始研究使用
 </table>
 
 <p align="center">
-  <img src="../assets/result_main02.jpg" alt="DeepCode PaperBench 结果" width="920" />
+  <img src="../assets/result_main02.jpg" alt="DFcode PaperBench 结果" width="920" />
 </p>
 
-| 评估子集        | DeepCode | 论文中报告的对比结果        | 差值           |
+| 评估子集        | DFcode | 论文中报告的对比结果        | 差值           |
 | --------------- | -------- | --------------------------- | -------------- |
 | 人类专家子集    | 75.9%    | 论文中最佳人类基线：72.4%   | +3.5 个百分点  |
 | 商业 Agent 子集 | 84.8%    | 论文中最佳商业 Agent：58.7% | +26.1 个百分点 |
@@ -113,7 +113,7 @@ DeepCode 原始研究使用
 
 ## 早期演示
 
-下面的录像展示了早期 DeepCode 工作流生成的项目结果。它们是输出案例,不是当前
+下面的录像展示了早期 DFcode 工作流生成的项目结果。它们是输出案例,不是当前
 界面的截图。
 
 <table align="center" width="100%">
@@ -145,7 +145,7 @@ DeepCode 原始研究使用
 
 **[▶ 观看演示](https://www.youtube.com/watch?v=nFt5mLaMEac)**
 
-<sub>查看早期 DeepCode 生成的图像处理工作流。</sub>
+<sub>查看早期 DFcode 生成的图像处理工作流。</sub>
 
 </td>
 <td width="33%" align="center">

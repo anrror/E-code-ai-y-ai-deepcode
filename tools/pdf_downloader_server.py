@@ -45,7 +45,7 @@ def run() -> None:
         print("✅ Advanced document conversion is enabled (Docling available)")
     else:
         print("✅ Baseline PDF, Markdown, TXT, HTML and DOCX conversion is enabled")
-        print("   Install deepcode-hku[advanced-documents] for Docling features")
+        print("   Install dfcode-hku[advanced-documents] for Docling features")
 
     print("\nAvailable tools:")
     print(

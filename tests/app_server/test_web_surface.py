@@ -95,7 +95,7 @@ def test_upload_download_trust_size_origin_and_symlinks(tmp_path):
             assert response.status == 200
             uploaded = await response.json()
             path = Path(uploaded["path"])
-            assert path.parent == workspace and path.name.startswith("deepcode-upload-")
+            assert path.parent == workspace and path.name.startswith("dfcode-upload-")
             assert path.read_bytes() == payload
             response = await client.get(
                 f"/api/download?threadId={thread.id}&path={path.name}", headers=headers
@@ -172,16 +172,16 @@ def test_upload_is_published_only_when_complete_and_cleans_up_on_cancel(
                 )
             )
             async with asyncio.timeout(5):
-                while not list(workspace.glob(".deepcode-upload-*.part")):
+                while not list(workspace.glob(".dfcode-upload-*.part")):
                     await asyncio.sleep(0.01)
-            assert list(workspace.glob("deepcode-upload-*")) == []
+            assert list(workspace.glob("dfcode-upload-*")) == []
             if cancel:
                 pending.cancel()
                 with pytest.raises(asyncio.CancelledError):
                     await pending
                 release.set()
                 async with asyncio.timeout(5):
-                    while list(workspace.glob(".deepcode-upload-*.part")):
+                    while list(workspace.glob(".dfcode-upload-*.part")):
                         await asyncio.sleep(0.01)
                 assert list(workspace.iterdir()) == []
             else:
@@ -190,6 +190,6 @@ def test_upload_is_published_only_when_complete_and_cleans_up_on_cancel(
                 assert response.status == 200
                 path = Path((await response.json())["path"])
                 assert path.read_bytes() == b"firstsecond"
-                assert list(workspace.glob(".deepcode-upload-*.part")) == []
+                assert list(workspace.glob(".dfcode-upload-*.part")) == []
 
     asyncio.run(asyncio.wait_for(scenario(), 15))

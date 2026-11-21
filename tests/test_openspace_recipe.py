@@ -9,7 +9,7 @@ from core.mcp import McpServerDefinition
 def test_openspace_recipe_uses_generic_mcp_and_private_credentials() -> None:
     root = Path(__file__).parents[1]
     recipe = json.loads(
-        (root / "examples" / "mcp" / "openspace.deepcode_config.json").read_text(
+        (root / "examples" / "mcp" / "openspace.dfcode_config.json").read_text(
             encoding="utf-8"
         )
     )

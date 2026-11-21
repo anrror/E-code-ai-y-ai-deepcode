@@ -68,7 +68,7 @@ async def test_public_executors_outside_workspace_rm_sandboxed(workspace):
     home (which the sandbox write-fence denies) must survive. Pre-fix the
     native handler deleted it in-process with no sandbox involved."""
     victims = []
-    for name in (".deepcode_fence_v1", ".deepcode_fence_v2"):
+    for name in (".dfcode_fence_v1", ".dfcode_fence_v2"):
         victim = Path.home() / name
         victim.mkdir(exist_ok=True)
         (victim / "keep.txt").write_text("precious")

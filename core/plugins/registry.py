@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.plugins.domain import (
     PluginAlreadyRegisteredError,
     PluginRegistration,
@@ -38,7 +38,7 @@ class LocalPluginRegistry:
         self.path = (
             Path(path).expanduser().resolve(strict=False)
             if path is not None
-            else deepcode_home() / "plugins" / "registry.json"
+            else dfcode_home() / "plugins" / "registry.json"
         )
         self.lock_path = self.path.with_suffix(self.path.suffix + ".lock")
 

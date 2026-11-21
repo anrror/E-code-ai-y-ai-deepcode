@@ -26,7 +26,7 @@ from core.providers.registry import PROVIDERS, ProviderSpec, find_by_model, find
 from core.providers.revisions import ProviderRevisionStore, credential_digest
 
 if TYPE_CHECKING:
-    from core.config import ConnectionProfileConfig, DeepCodeConfig
+    from core.config import ConnectionProfileConfig, DFcodeConfig
 
 
 CONNECTION_ID_PATTERN = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
@@ -107,10 +107,10 @@ class ConnectionResolver:
 
     def __init__(
         self,
-        config: "DeepCodeConfig",
+        config: "DFcodeConfig",
         credentials: CredentialStore | None = None,
         *,
-        config_loader: Callable[[], "DeepCodeConfig"] | None = None,
+        config_loader: Callable[[], "DFcodeConfig"] | None = None,
         credential_overrides: dict[str, str | None] | None = None,
     ) -> None:
         self.config = config
@@ -480,7 +480,7 @@ class ConnectionResolver:
             return candidates[0]
         raise ConfigError(
             f"Could not match a configured provider for model '{model}'. "
-            "Configure a connection in Desktop Settings or with `deepcode provider set`."
+            "Configure a connection in Desktop Settings or with `dfcode provider set`."
         )
 
     def _profile_connection(

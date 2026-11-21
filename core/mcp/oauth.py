@@ -77,8 +77,8 @@ class McpOAuthHandlers:
 
 
 def default_mcp_oauth_path() -> Path:
-    configured = os.environ.get("DEEPCODE_HOME")
-    home = Path(configured).expanduser() if configured else Path.home() / ".deepcode"
+    configured = os.environ.get("DFCODE_HOME")
+    home = Path(configured).expanduser() if configured else Path.home() / ".dfcode"
     return home / "auth" / "mcp.json"
 
 
@@ -302,9 +302,9 @@ async def create_mcp_oauth_provider(
     metadata = _mcp_auth_modules()[1].OAuthClientMetadata(
         redirect_uris=[AnyUrl(redirect_uri)],
         token_endpoint_auth_method="none",
-        client_name="DeepCode",
-        client_uri=AnyHttpUrl("https://github.com/HKUDS/DeepCode"),
-        software_id="https://github.com/HKUDS/DeepCode",
+        client_name="DFcode",
+        client_uri=AnyHttpUrl("https://github.com/HKUDS/DFcode"),
+        software_id="https://github.com/HKUDS/DFcode",
     )
     return _mcp_auth_modules()[0].OAuthClientProvider(
         url,
@@ -383,7 +383,7 @@ class McpOAuthManager:
         thread = threading.Thread(
             target=self._run,
             args=(flow, open_browser, reset_credentials),
-            name=f"deepcode-mcp-oauth-{server.server_id}",
+            name=f"dfcode-mcp-oauth-{server.server_id}",
             daemon=True,
         )
         flow.thread = thread
@@ -608,9 +608,9 @@ async def _handle_callback(
             callback.set_exception(exc)
     finally:
         body = (
-            "DeepCode authorization received. You can close this window."
+            "DFcode authorization received. You can close this window."
             if ok
-            else "DeepCode could not accept this authorization callback."
+            else "DFcode could not accept this authorization callback."
         ).encode()
         status = b"200 OK" if ok else b"400 Bad Request"
         writer.write(

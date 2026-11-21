@@ -2,7 +2,7 @@
 
 Adapted from the reference agent's ``hooks/src/engine/discovery.rs``. The
 enterprise-only machinery there (MDM / managed requirements) does not apply to
-DeepCode and is left out. Project hooks are gated by a digest of their
+DFcode and is left out. Project hooks are gated by a digest of their
 declarations instead (see :mod:`core.harness.hooks.trust`): given a
 :class:`ProjectHookApproval`, project hooks whose current digest is not the
 approved one are skipped. The config shape both agents share:
@@ -19,8 +19,8 @@ approved one are skipped. The config shape both agents share:
 Sources are read lowest-precedence first so ``display_order`` — which fixes the
 fold order when several hooks fire for one event — is stable and deterministic:
 
-    1. user     ``~/.deepcode/hooks.json``
-    2. project  ``<workspace>/.deepcode/hooks.json``
+    1. user     ``~/.dfcode/hooks.json``
+    2. project  ``<workspace>/.dfcode/hooks.json``
     3. project  ``<workspace>/.claude/settings.json``  (Claude-Code-compatible)
 
 Only ``type: command`` handlers are supported; ``prompt`` / ``agent`` handlers
@@ -81,8 +81,8 @@ def _hook_source_files(workspace: str, home: str | None) -> list[tuple[Path, str
     home_dir = Path(home) if home is not None else Path.home()
     ws = Path(workspace)
     return [
-        (home_dir / ".deepcode" / "hooks.json", "user"),
-        (ws / ".deepcode" / "hooks.json", "project"),
+        (home_dir / ".dfcode" / "hooks.json", "user"),
+        (ws / ".dfcode" / "hooks.json", "project"),
         (ws / ".claude" / "settings.json", "project"),
     ]
 
@@ -139,9 +139,9 @@ def discover_hooks(
         handlers = [handler for handler in handlers if handler.source != "project"]
         skipped = True
         warnings.append(
-            "Project hooks were not run: the hooks declared in .deepcode/"
+            "Project hooks were not run: the hooks declared in .dfcode/"
             "hooks.json or .claude/settings.json are new or changed since they "
-            "were approved. Run `deepcode hooks approve` in this project to "
+            "were approved. Run `dfcode hooks approve` in this project to "
             "enable them."
         )
     return DiscoveryResult(

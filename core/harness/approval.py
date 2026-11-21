@@ -9,7 +9,7 @@ This module provides a terminal approver: a callable
 Altitude note: the autonomous implementation phase runs FULL_AUTO (no asks),
 so this approver is opt-in — attached only when a run uses ``default`` /
 ``plan`` mode (e.g. a security-conscious user sets
-``DEEPCODE_PERMISSION_MODE=default``). Interactive-by-default belongs to the
+``DFCODE_PERMISSION_MODE=default``). Interactive-by-default belongs to the
 general agent loop (P2), not to the batch reproduction pipeline.
 
 Choices: ``y`` allow once · ``n`` deny · ``a``/``always`` allow and remember
@@ -79,7 +79,7 @@ class TerminalApprover:
         if not self._is_interactive():
             self._output(
                 f"⚠️  '{tool_name}' needs approval but stdin is not interactive; "
-                "denying (set DEEPCODE_PERMISSION_MODE=full_auto to run "
+                "denying (set DFCODE_PERMISSION_MODE=full_auto to run "
                 "unattended)."
             )
             return False

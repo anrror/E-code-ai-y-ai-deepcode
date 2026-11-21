@@ -9,7 +9,7 @@ from mcp import types
 from mcp.server.fastmcp import FastMCP
 
 server = FastMCP(
-    "deepcode-runtime-fixture",
+    "dfcode-runtime-fixture",
     instructions="Use read_value for deterministic fixture reads.",
     log_level="ERROR",
 )

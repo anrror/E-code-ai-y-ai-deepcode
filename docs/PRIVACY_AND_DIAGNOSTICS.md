@@ -1,34 +1,34 @@
-# DeepCode Desktop privacy and diagnostics
+# DFcode Desktop privacy and diagnostics
 
-DeepCode Desktop is a client of the local DeepCode background service, the
-same service the TUI, Web client and `deepcode exec` use. It does not include
+DFcode Desktop is a client of the local DFcode background service, the
+same service the TUI, Web client and `dfcode exec` use. It does not include
 product analytics, advertising identifiers, or crash-upload SDKs.
 
 The background service is a local HTTP and WebSocket server. It listens on
 `127.0.0.1` only (port 3081 by default), requires a private token or a
 one-time browser sign-in, and keeps running after a client closes so accepted
-work can finish. Stop it with `deepcode service stop`. See
+work can finish. Stop it with `dfcode service stop`. See
 [Security and data](guide/security.md#the-background-service).
 
 ## Data stored locally
 
 - Canonical Session identity, title, workspace origin, visible messages, model,
   and task links remain in the central JSONL Session store
-  (`~/.deepcode/sessions/`).
+  (`~/.dfcode/sessions/`).
 - Projections, execution state, workflow checkpoints, test results, and event
   replay data are stored in the shared state database
-  (`~/.deepcode/state/deepcode.sqlite3`).
+  (`~/.dfcode/state/dfcode.sqlite3`).
 - Provider-returned reasoning summaries or details, when available, remain
   separate from assistant messages. Safe summaries may be retained in canonical
   Session metadata; display details stay in the local execution projection.
   Opaque provider continuation state is not rendered as text.
 - Generated code and workflow artifacts stay inside the selected project or
-  its DeepCode-owned worktree.
-- Provider credentials are written only through the existing DeepCode
+  its DFcode-owned worktree.
+- Provider credentials are written only through the existing DFcode
   configuration layer. The UI never reads a saved secret back.
 
 Removing the Desktop application does not delete projects, canonical Sessions,
-or the DeepCode user configuration. Database migrations create a validated,
+or the DFcode user configuration. Database migrations create a validated,
 permission-restricted backup before changing an existing schema.
 
 ## Network activity

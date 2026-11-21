@@ -175,7 +175,7 @@ def test_browser_auth_origin_replay_logout_and_management_separation(tmp_path):
                 ({**auth(control), "Origin": "https://evil.example"}, 403),
                 ({**auth(control), "Host": "evil.example"}, 403),
                 ({**auth(control), "Origin": "null"}, 403),
-                ({**auth(control), "X-DeepCode-Instance": "wrong"}, 401),
+                ({**auth(control), "X-DFcode-Instance": "wrong"}, 401),
             ]:
                 with pytest.raises(WSServerHandshakeError) as failure:
                     await client.ws_connect("/api/rpc", headers=headers)
@@ -233,7 +233,7 @@ def test_browser_session_is_never_a_cookie_and_rides_a_websocket_subprotocol(
             origin = {"Origin": control.record.url}
             assert (await client.get("/api/session", headers=headers)).status == 200
             for presented in [
-                {"Cookie": f"deepcode_session={session}"},
+                {"Cookie": f"dfcode_session={session}"},
                 {"Authorization": f"Basic {session}"},
             ]:
                 assert (
@@ -628,7 +628,7 @@ def test_process_crash_interrupts_running_work_without_repeating_it(
             assert record.pid == process.pid
             headers = {
                 "Authorization": "Bearer " + token,
-                "X-DeepCode-Instance": record.instance_id,
+                "X-DFcode-Instance": record.instance_id,
             }
             async with ClientSession(trust_env=False) as http:
                 async with http.ws_connect(
@@ -701,7 +701,7 @@ def test_process_crash_interrupts_running_work_without_repeating_it(
                 record, token = files.read()
                 headers = {
                     "Authorization": "Bearer " + token,
-                    "X-DeepCode-Instance": record.instance_id,
+                    "X-DFcode-Instance": record.instance_id,
                 }
                 async with http.ws_connect(
                     record.url + "/api/rpc", headers=headers

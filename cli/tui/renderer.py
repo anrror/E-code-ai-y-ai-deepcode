@@ -298,7 +298,7 @@ class EventRenderer:
         self.transcript_mode = transcript_mode
         # Paths are named the way the user would type them: relative to the
         # workspace they launched in. Absolute tool arguments read as noise
-        # ("…orkbase/test_repo/.deepcode/tool-results/…" says nothing).
+        # ("…orkbase/test_repo/.dfcode/tool-results/…" says nothing).
         self.workspace = workspace
         self._streamed = ""  # text already shown as deltas this turn
         self._stream_tail = ""  # unterminated tail of the delta stream
@@ -1031,7 +1031,7 @@ class EventRenderer:
             # else on screen says what went wrong.
             return
         self._close_line()
-        # The elbow — DeepCode's signature second line — answers three
+        # The elbow — DFcode's signature second line — answers three
         # questions and nothing else: did it work, which card is this (only
         # when more than one was in flight), and what came back. The tool's
         # own name is NOT among them on success: the card above already said

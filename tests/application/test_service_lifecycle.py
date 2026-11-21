@@ -4,7 +4,7 @@ import asyncio
 from pathlib import Path
 import threading
 
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.service_lifecycle import ServiceLifecycle
 from core.domain import TrustState
 from core.events import AgentMessage, Event, TaskComplete, TurnStarted
@@ -38,7 +38,7 @@ class BlockingFactory:
 
 def test_drain_timeout_restores_scheduler_and_preserves_running_turn(tmp_path: Path):
     factory = BlockingFactory()
-    app = DeepCodeApplication.open(
+    app = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
         run_automation_scheduler=True,
@@ -65,7 +65,7 @@ def test_drain_timeout_restores_scheduler_and_preserves_running_turn(tmp_path: P
 
 
 def test_drain_interrupt_restores_an_idle_service(tmp_path):
-    app = DeepCodeApplication.open(
+    app = DFcodeApplication.open(
         tmp_path / "state.sqlite3", run_automation_scheduler=True
     )
     try:
@@ -80,7 +80,7 @@ def test_drain_interrupt_restores_an_idle_service(tmp_path):
 
 
 def test_completed_supervisor_drain_can_restore_scheduler_and_admission(tmp_path):
-    app = DeepCodeApplication.open(
+    app = DFcodeApplication.open(
         tmp_path / "state.sqlite3", run_automation_scheduler=True
     )
     try:

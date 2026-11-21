@@ -3,7 +3,7 @@
 Ported from nanobot.agent.tools.mcp. Compared to the upstream version we:
 
 - Accept a small ``MCPServerConfig`` dataclass (this module) so callers can
-  feed in entries materialised from ``deepcode_config.json`` without taking
+  feed in entries materialised from ``dfcode_config.json`` without taking
   a Pydantic dependency at the agent-runtime layer.
 - Track per-server :class:`AsyncExitStack` on the supplied
   :class:`ToolRegistry` so the orchestration code can close them all with a
@@ -31,15 +31,15 @@ from core.platform_compat import normalize_stdio_command
 
 @dataclass(slots=True)
 class MCPServerConfig:
-    """Subset of nanobot's MCP server config sufficient for DeepCode's needs."""
+    """Subset of nanobot's MCP server config sufficient for DFcode's needs."""
 
     name: str
     type: str | None = None
     command: str | None = None
     args: list[str] = field(default_factory=list)
     env: dict[str, str] | None = None
-    # Variables a stdio server does not inherit from DeepCode's environment
-    # (the keys DeepCode's own model connections use); ``env`` still sets them.
+    # Variables a stdio server does not inherit from DFcode's environment
+    # (the keys DFcode's own model connections use); ``env`` still sets them.
     withheld_env: frozenset[str] = frozenset()
     url: str | None = None
     headers: dict[str, str] | None = None
@@ -344,7 +344,7 @@ class MCPPromptWrapper(Tool):
 def _open_mcp_stderr_log(server_name: str, server_stack: AsyncExitStack):
     """Open ``mcp_server_<name>.log`` in the active task's logs dir.
 
-    Falls back to ``logs/mcp_servers/`` in the DeepCode home when there is
+    Falls back to ``logs/mcp_servers/`` in the DFcode home when there is
     no active task (e.g. process-startup smoke test). The file handle is
     registered with ``server_stack`` so it is closed when the MCP connection
     tears down. Returns ``None`` on any error so the caller can use the SDK's
@@ -614,7 +614,7 @@ async def connect_mcp_servers(
     # closing the stack later from the parent task triggers
     # ``RuntimeError: Attempted to exit cancel scope in a different task
     # than it was entered in``. Sequential connect keeps every stack's
-    # enter/exit on the same task and is fast enough in practice (DeepCode
+    # enter/exit on the same task and is fast enough in practice (DFcode
     # agents typically use 1-3 MCP servers).
     for name, cfg in mcp_servers.items():
         try:

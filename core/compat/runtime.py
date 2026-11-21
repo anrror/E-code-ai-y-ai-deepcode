@@ -1,11 +1,11 @@
-"""Process-wide runtime singleton for the DeepCode compatibility layer.
+"""Process-wide runtime singleton for the DFcode compatibility layer.
 
 The legacy code obtained logger / config / MCP wiring from
 ``mcp_agent``'s :class:`MCPApp` async context manager. We replace it with a
-single :class:`DeepCodeRuntime` object that owns:
+single :class:`DFcodeRuntime` object that owns:
 
-- the parsed :class:`core.config.DeepCodeConfig`
-- a loguru logger (DeepCode standardised on loguru)
+- the parsed :class:`core.config.DFcodeConfig`
+- a loguru logger (DFcode standardised on loguru)
 - a lazily-instantiated :class:`core.providers.base.LLMProvider` cache,
   keyed by ``(provider_name, phase, model)``
 
@@ -29,7 +29,7 @@ from loguru import logger
 
 from core.agent_runtime.tools.mcp import MCPServerConfig
 from core.config import (
-    DeepCodeConfig,
+    DFcodeConfig,
     ProviderConfig,
     load_config,
     make_llm_provider,
@@ -41,7 +41,7 @@ from core.providers.credentials import CredentialStore
 from core.providers.profiles import ConnectionResolver
 
 _runtime_lock = threading.Lock()
-_runtime: "DeepCodeRuntime | None" = None
+_runtime: "DFcodeRuntime | None" = None
 
 
 @dataclass(slots=True)
@@ -53,7 +53,7 @@ class _MCPNamespace:
 
 @dataclass(slots=True)
 class _ConfigNamespace:
-    """Mirror of ``mcp_agent.context.config`` exposing the bits DeepCode reads."""
+    """Mirror of ``mcp_agent.context.config`` exposing the bits DFcode reads."""
 
     mcp: _MCPNamespace
 
@@ -65,16 +65,16 @@ class _ContextNamespace:
     config: _ConfigNamespace
 
 
-class DeepCodeRuntime:
-    """Owns the loaded DeepCode config + provider cache for one process."""
+class DFcodeRuntime:
+    """Owns the loaded DFcode config + provider cache for one process."""
 
     def __init__(
         self,
-        config: DeepCodeConfig,
+        config: DFcodeConfig,
         *,
         credential_store: CredentialStore | None = None,
         phase_execution_profiles: dict[str, ExecutionProfile] | None = None,
-        config_loader: Callable[[], DeepCodeConfig] | None = None,
+        config_loader: Callable[[], DFcodeConfig] | None = None,
     ) -> None:
         self.config = config
         self.credential_store = credential_store or CredentialStore()
@@ -94,8 +94,8 @@ class DeepCodeRuntime:
         self.context = _ContextNamespace(config=config_namespace)
 
     @classmethod
-    def load(cls, config_path: str | None = None) -> "DeepCodeRuntime":
-        """Read ``deepcode_config.json`` and build a fresh runtime."""
+    def load(cls, config_path: str | None = None) -> "DFcodeRuntime":
+        """Read ``dfcode_config.json`` and build a fresh runtime."""
         return cls(
             load_config(config_path=config_path),
             config_loader=lambda: load_config(config_path=config_path),
@@ -232,13 +232,13 @@ class DeepCodeRuntime:
         return self._mcp_servers
 
 
-_runtime_override: ContextVar[DeepCodeRuntime | None] = ContextVar(
-    "deepcode_runtime_override",
+_runtime_override: ContextVar[DFcodeRuntime | None] = ContextVar(
+    "dfcode_runtime_override",
     default=None,
 )
 
 
-def get_runtime() -> DeepCodeRuntime:
+def get_runtime() -> DFcodeRuntime:
     """Return the context-bound runtime or the lazy process-wide default."""
     override = _runtime_override.get()
     if override is not None:
@@ -247,12 +247,12 @@ def get_runtime() -> DeepCodeRuntime:
     if _runtime is None:
         with _runtime_lock:
             if _runtime is None:
-                _runtime = DeepCodeRuntime.load()
+                _runtime = DFcodeRuntime.load()
     return _runtime
 
 
 @contextmanager
-def use_runtime(runtime: DeepCodeRuntime) -> Iterator[DeepCodeRuntime]:
+def use_runtime(runtime: DFcodeRuntime) -> Iterator[DFcodeRuntime]:
     """Bind ``runtime`` to the current async/thread context and restore it."""
     token = _runtime_override.set(runtime)
     try:
@@ -261,7 +261,7 @@ def use_runtime(runtime: DeepCodeRuntime) -> Iterator[DeepCodeRuntime]:
         _runtime_override.reset(token)
 
 
-def set_runtime(runtime: DeepCodeRuntime | None) -> None:
+def set_runtime(runtime: DFcodeRuntime | None) -> None:
     """Override the process-wide runtime (useful for tests / reloads)."""
     global _runtime
     with _runtime_lock:

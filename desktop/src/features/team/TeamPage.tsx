@@ -2214,7 +2214,7 @@ export function TeamPage({
           </p>
           {createForm.kind === "org" ? (
             <p className={styles.orgNote}>
-              组织策略写入本机共享层（~/.deepcode/team），对这台机器上的所有项目生效；红线条目不可被下层覆盖。
+              组织策略写入本机共享层（~/.dfcode/team），对这台机器上的所有项目生效；红线条目不可被下层覆盖。
             </p>
           ) : null}
           {createError ? (

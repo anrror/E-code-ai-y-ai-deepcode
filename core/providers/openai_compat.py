@@ -78,13 +78,13 @@ _ALNUM = string.ascii_letters + string.digits
 _STANDARD_TC_KEYS = frozenset({"id", "type", "index", "function"})
 _STANDARD_FN_KEYS = frozenset({"name", "arguments"})
 _DEFAULT_OPENROUTER_HEADERS = {
-    "HTTP-Referer": "https://github.com/HKUDS/DeepCode",
-    "X-OpenRouter-Title": "DeepCode",
+    "HTTP-Referer": "https://github.com/HKUDS/DFcode",
+    "X-OpenRouter-Title": "DFcode",
     "X-OpenRouter-Categories": "cli-agent,research-agent",
 }
 _DEFAULT_REQUESTY_HEADERS = {
-    "HTTP-Referer": "https://github.com/HKUDS/DeepCode",
-    "X-Title": "DeepCode",
+    "HTTP-Referer": "https://github.com/HKUDS/DFcode",
+    "X-Title": "DFcode",
 }
 # Per-model thinking / reasoning quirks now live declaratively in
 # ``core.providers.model_compat`` (resolved via ``resolve_model_compat``);
@@ -172,7 +172,7 @@ def _uses_openrouter_attribution(
 def _uses_requesty_attribution(
     spec: "ProviderSpec | None", api_base: str | None
 ) -> bool:
-    """Apply DeepCode attribution headers to Requesty requests by default."""
+    """Apply DFcode attribution headers to Requesty requests by default."""
     if spec and spec.name == "requesty":
         return True
     return bool(api_base and "requesty" in api_base.lower())
@@ -185,7 +185,7 @@ _RESPONSES_PROBE_INTERVAL_S = 300  # 5 minutes
 def _get_default_request_timeout_s() -> float:
     """Return the default wall-clock timeout for OpenAI-compatible requests."""
     raw = (
-        os.environ.get("DEEPCODE_OPENAI_REQUEST_TIMEOUT_S")
+        os.environ.get("DFCODE_OPENAI_REQUEST_TIMEOUT_S")
         or os.environ.get("NANOBOT_OPENAI_REQUEST_TIMEOUT_S")
         or "180"
     ).strip()

@@ -289,7 +289,7 @@ export function ConnectionSettings({
           <span>
             {t(
               "settings.connections.description",
-              "Add the service that supplies your models. DeepCode keeps API keys in user-private storage and shares the connection with CLI and Desktop.",
+              "Add the service that supplies your models. DFcode keeps API keys in user-private storage and shares the connection with CLI and Desktop.",
             )}
           </span>
           {scope === "project" ? (
@@ -339,7 +339,7 @@ export function ConnectionSettings({
             disabled={busy || saving}
             title={t(
               "settings.connections.customTooltip",
-              "Declare an OpenAI-compatible or Anthropic endpoint DeepCode does not ship",
+              "Declare an OpenAI-compatible or Anthropic endpoint DFcode does not ship",
             )}
           >
             <Plus size={14} />

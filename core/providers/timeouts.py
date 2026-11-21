@@ -27,14 +27,14 @@ class StreamIdleTimeoutError(TimeoutError):
 def resolve_request_timeout_s(explicit: float | None = None) -> float | None:
     """Return the non-streaming wall-clock deadline.
 
-    ``DEEPCODE_LLM_TIMEOUT_S`` retains its historical meaning for regular
+    ``DFCODE_LLM_TIMEOUT_S`` retains its historical meaning for regular
     requests. A non-positive explicit/environment value disables the limit.
     """
 
     if explicit is not None:
         return _normalize_optional_timeout(explicit)
     return _timeout_from_env(
-        ("DEEPCODE_LLM_TIMEOUT_S", "NANOBOT_LLM_TIMEOUT_S"),
+        ("DFCODE_LLM_TIMEOUT_S", "NANOBOT_LLM_TIMEOUT_S"),
         default=DEFAULT_LLM_REQUEST_TIMEOUT_S,
         label="LLM request timeout",
         non_positive_disables=True,
@@ -46,7 +46,7 @@ def resolve_stream_max_runtime_s(explicit: float | None = None) -> float | None:
 
     Streams are bounded by inactivity rather than a short fixed wall clock.
     Operators that need an additional safety ceiling can set
-    ``DEEPCODE_LLM_STREAM_MAX_RUNTIME_S``. An explicitly supplied legacy
+    ``DFCODE_LLM_STREAM_MAX_RUNTIME_S``. An explicitly supplied legacy
     ``llm_timeout_s`` still acts as a hard cap for backwards compatibility.
     """
 
@@ -54,7 +54,7 @@ def resolve_stream_max_runtime_s(explicit: float | None = None) -> float | None:
         return _normalize_optional_timeout(explicit)
     return _timeout_from_env(
         (
-            "DEEPCODE_LLM_STREAM_MAX_RUNTIME_S",
+            "DFCODE_LLM_STREAM_MAX_RUNTIME_S",
             "NANOBOT_LLM_STREAM_MAX_RUNTIME_S",
         ),
         default=None,
@@ -67,7 +67,7 @@ def resolve_stream_idle_timeout_s() -> float:
     """Return the maximum gap allowed between any two provider stream events."""
 
     timeout = _timeout_from_env(
-        ("DEEPCODE_STREAM_IDLE_TIMEOUT_S", "NANOBOT_STREAM_IDLE_TIMEOUT_S"),
+        ("DFCODE_STREAM_IDLE_TIMEOUT_S", "NANOBOT_STREAM_IDLE_TIMEOUT_S"),
         default=DEFAULT_STREAM_IDLE_TIMEOUT_S,
         label="LLM stream idle timeout",
         non_positive_disables=False,

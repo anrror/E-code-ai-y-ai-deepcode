@@ -169,7 +169,7 @@ class SkillRuntime:
         # cache. New code should depend on ``skill_provider``.
         self.catalog_provider = self.skill_provider
         self._turn: ContextVar[SkillTurnContext | None] = ContextVar(
-            f"deepcode_skill_turn_{id(self)}",
+            f"dfcode_skill_turn_{id(self)}",
             default=None,
         )
 

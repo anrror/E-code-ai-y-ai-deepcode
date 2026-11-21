@@ -82,7 +82,7 @@ class ConciseMemoryAgent:
         if target_directory:
             self.save_path = target_directory
         else:
-            self.save_path = "./deepcode_lab/papers/1/"
+            self.save_path = "./dfcode_lab/papers/1/"
 
         # Store code directory for file extraction
         self.code_directory = code_directory or os.path.join(

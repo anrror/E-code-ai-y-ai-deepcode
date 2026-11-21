@@ -21,12 +21,12 @@ be named.
 ## Supported versions
 
 Security fixes go into the `main` branch and the next release on
-[PyPI](https://pypi.org/project/deepcode-hku/). Older releases do not receive
+[PyPI](https://pypi.org/project/dfcode-hku/). Older releases do not receive
 fixes; please upgrade to the latest version.
 
 ## Scope
 
-In scope are DeepCode's own code in this repository: the agent runtime, the
+In scope are DFcode's own code in this repository: the agent runtime, the
 local background service, the TUI, Desktop and Web clients, and the bundled
 tools. Examples:
 
@@ -40,5 +40,5 @@ tools. Examples:
 Out of scope: problems in model providers, in third-party MCP servers or
 plugins, and actions you approved or allowed with Full access.
 
-How DeepCode handles data and tool access is described in
+How DFcode handles data and tool access is described in
 [Security and data](docs/guide/security.md).

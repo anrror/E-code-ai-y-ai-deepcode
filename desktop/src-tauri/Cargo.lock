@@ -671,7 +671,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "deepcode-desktop"
+name = "dfcode-desktop"
 version = "0.1.0"
 dependencies = [
  "serde",

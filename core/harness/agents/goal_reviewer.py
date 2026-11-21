@@ -229,7 +229,7 @@ def review_task(request: GoalCompletionRequest) -> str:
         )
     if request.check_runs:
         parts.append(
-            "DeepCode itself ran the checklist's commands just now, and each "
+            "DFcode itself ran the checklist's commands just now, and each "
             "exited 0:\n"
             + "\n".join(
                 f"- {run.requirement}: `{' '.join(run.command)}`"

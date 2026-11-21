@@ -1,22 +1,22 @@
-"""DeepCode runtime configuration (layered JSON, home base + project override).
+"""DFcode runtime configuration (layered JSON, home base + project override).
 
-This module is the single source of truth for DeepCode's runtime settings:
+This module is the single source of truth for DFcode's runtime settings:
 provider keys, phase-specific models, MCP servers, workspace, document
-segmentation, and logger options, all in ``deepcode_config.json``.
+segmentation, and logger options, all in ``dfcode_config.json``.
 
-Resolution mirrors Codex / Claude Code so ``deepcode`` runs in *any* directory:
-a user-level base at ``deepcode_home()`` (``$DEEPCODE_HOME`` or ``~/.deepcode``,
+Resolution mirrors Codex / Claude Code so ``dfcode`` runs in *any* directory:
+a user-level base at ``dfcode_home()`` (``$DFCODE_HOME`` or ``~/.dfcode``,
 cwd-independent — this is where provider keys live) is deep-merged with an
 optional project-level file walked up from the cwd, which overrides the base
 key by key. An explicit ``config_path`` bypasses the layering.
 
 The schema mirrors ``nanobot.config.schema`` (camelCase keys, Pydantic
-``BaseModel`` per section) and is extended with DeepCode-specific blocks
+``BaseModel`` per section) and is extended with DFcode-specific blocks
 (``workspace``, ``documentSegmentation``, ``logger``, ``llmLogger``).
 
 Public API:
 
-- :class:`DeepCodeConfig` – parsed configuration object
+- :class:`DFcodeConfig` – parsed configuration object
 - :class:`AgentDefaults`, :class:`AgentPhase`, :class:`ProviderConfig`,
   :class:`ToolsConfig`, :class:`WorkspaceConfig`,
   :class:`DocumentSegmentationConfig`, :class:`LoggerConfig`,
@@ -69,9 +69,9 @@ from core.providers.registry import (
 )
 
 
-_DEFAULT_CONFIG_FILENAME = "deepcode_config.json"
+_DEFAULT_CONFIG_FILENAME = "dfcode_config.json"
 # Env var that relocates the user-level config base (cf. Codex's CODEX_HOME).
-DEEPCODE_HOME_ENV = "DEEPCODE_HOME"
+DFCODE_HOME_ENV = "DFCODE_HOME"
 _ENV_REF_PATTERN = re.compile(r"\$\{([A-Za-z_][A-Za-z0-9_]*)\}")
 _ENV_NAME_PATTERN = re.compile(r"^[A-Za-z_][A-Za-z0-9_]*$")
 # Kubernetes object names: DNS-1123 labels/subdomains. CI/CD config only needs
@@ -126,7 +126,7 @@ class AgentDefaults(_Base):
     # explicitly. Resolved (and snapshotted by value) at Session creation;
     # an unresolvable name is ignored rather than blocking creation.
     default_preset: str | None = None
-    # DeepCode-specific token policy fields used by retry logic.
+    # DFcode-specific token policy fields used by retry logic.
     base_max_tokens: int | None = None
     retry_max_tokens: int | None = None
     max_tokens_policy: str | None = None
@@ -230,7 +230,7 @@ class ManualModelConfig(_Base):
     catalog cascade, so a declaration only ever narrows or corrects — it
     never has to restate what the catalog already knows.
 
-    ``reasoningEfforts`` follows DeepCode's capability model: a list of
+    ``reasoningEfforts`` follows DFcode's capability model: a list of
     canonical levels (include ``"off"`` to allow disabling; omitting it
     declares reasoning mandatory), ``false`` to declare a non-reasoning
     model, or absent to inherit the catalog's answer.
@@ -343,11 +343,11 @@ class EgressPolicyConfig(_Base):
     Environment overrides, taken as a union with the config lists (block still
     wins, and an env list cannot un-block what the config blocks):
 
-    - ``DEEPCODE_EGRESS_ALLOW_DOMAINS`` — comma-separated.
-    - ``DEEPCODE_EGRESS_BLOCK_DOMAINS`` — comma-separated.
-    - ``DEEPCODE_EGRESS_MODE`` — ``enforce`` (default) or ``warn``.
+    - ``DFCODE_EGRESS_ALLOW_DOMAINS`` — comma-separated.
+    - ``DFCODE_EGRESS_BLOCK_DOMAINS`` — comma-separated.
+    - ``DFCODE_EGRESS_MODE`` — ``enforce`` (default) or ``warn``.
 
-    A project-level ``deepcode_config.json`` cannot loosen this: the project
+    A project-level ``dfcode_config.json`` cannot loosen this: the project
     layer (``_project_runtime_layer``) drops every provider routing field
     except a literal ``apiKey``, so ``providers.egress`` stays user-owned.
     """
@@ -424,7 +424,7 @@ class SkillsConfig(_Base):
 
 
 # ---------------------------------------------------------------------------
-# DeepCode-specific
+# DFcode-specific
 # ---------------------------------------------------------------------------
 
 
@@ -452,7 +452,7 @@ class SecurityConfig(_Base):
 
 
 class WorkspaceConfig(_Base):
-    root: str = "./deepcode_lab"
+    root: str = "./dfcode_lab"
     max_input_mb: int = 100
 
 
@@ -724,10 +724,10 @@ class LoggerPathSettings(_Base):
     The new :class:`LoggerConfig` uses :class:`LoggerGlobalFile` /
     :class:`LoggerTaskFile` / :class:`LoggerLLMSink` instead. This block
     is no longer read by the runtime but is preserved so existing
-    ``deepcode_config.json`` files keep validating.
+    ``dfcode_config.json`` files keep validating.
     """
 
-    path_pattern: str = "logs/deepcode-{unique_id}.jsonl"
+    path_pattern: str = "logs/dfcode-{unique_id}.jsonl"
     timestamp_format: str = "%Y%m%d_%H%M%S"
     unique_id: str = "timestamp"
 
@@ -742,7 +742,7 @@ class LoggerGlobalFile(_Base):
 
 
 class LoggerTaskFile(_Base):
-    """Per-task JSONL sink under ``deepcode_lab/tasks/<id>/logs/``."""
+    """Per-task JSONL sink under ``dfcode_lab/tasks/<id>/logs/``."""
 
     enabled: bool = True
 
@@ -788,8 +788,8 @@ class LLMLoggerConfig(_Base):
 # ---------------------------------------------------------------------------
 
 
-class DeepCodeConfig(BaseSettings):
-    """Root configuration loaded from ``deepcode_config.json``."""
+class DFcodeConfig(BaseSettings):
+    """Root configuration loaded from ``dfcode_config.json``."""
 
     agents: AgentsConfig = Field(default_factory=AgentsConfig)
     providers: ProvidersConfig = Field(default_factory=ProvidersConfig)
@@ -812,7 +812,7 @@ class DeepCodeConfig(BaseSettings):
     # reads as configured while doing nothing.
     dictation: DictationConfig | None = None
     # Absent means "no CI/CD integration"; present backends are offered to the
-    # agent and the `deepcode cicd` CLI. User-owned: a project layer may not
+    # agent and the `dfcode cicd` CLI. User-owned: a project layer may not
     # redirect an infrastructure credential.
     cicd: CicdConfig | None = None
     document_segmentation: DocumentSegmentationConfig = Field(
@@ -826,7 +826,7 @@ class DeepCodeConfig(BaseSettings):
     )
 
     model_config = ConfigDict(
-        env_prefix="DEEPCODE_",
+        env_prefix="DFCODE_",
         env_nested_delimiter="__",
         populate_by_name=True,
         extra="ignore",
@@ -1002,13 +1002,13 @@ class ConfigError(ValueError):
 
     Subclasses :class:`ValueError` so existing ``except ValueError`` handlers
     and tests keep working, while CLI entrypoints can catch it specifically to
-    print a clean, actionable message (pointing at ``deepcode init``) instead
+    print a clean, actionable message (pointing at ``dfcode init``) instead
     of a traceback.
     """
 
 
 def _resolve_workspace_path(start: Path | None = None) -> Path:
-    """Find the project root by looking for ``deepcode_config.json`` upwards."""
+    """Find the project root by looking for ``dfcode_config.json`` upwards."""
     here = (start or Path.cwd()).resolve()
     for candidate in (here, *here.parents):
         if (candidate / _DEFAULT_CONFIG_FILENAME).exists():
@@ -1017,7 +1017,7 @@ def _resolve_workspace_path(start: Path | None = None) -> Path:
 
 
 def default_config_path() -> Path:
-    """The project-level ``deepcode_config.json`` (walked up from the cwd)."""
+    """The project-level ``dfcode_config.json`` (walked up from the cwd)."""
     return project_config_path()
 
 
@@ -1035,26 +1035,26 @@ def project_config_path(workspace: str | Path | None = None) -> Path:
     return _resolve_workspace_path(start) / _DEFAULT_CONFIG_FILENAME
 
 
-def deepcode_home() -> Path:
+def dfcode_home() -> Path:
     """The fixed user config directory, independent of the cwd.
 
-    ``$DEEPCODE_HOME`` if set, else ``~/.deepcode``. This is where a user keeps
-    one config (with provider keys) so ``deepcode`` runs in *any* directory —
+    ``$DFCODE_HOME`` if set, else ``~/.dfcode``. This is where a user keeps
+    one config (with provider keys) so ``dfcode`` runs in *any* directory —
     the same idea as Codex's ``CODEX_HOME`` / Claude Code's ``~/.claude``.
     """
-    env = os.environ.get(DEEPCODE_HOME_ENV)
-    return (Path(env).expanduser() if env else Path.home() / ".deepcode").resolve()
+    env = os.environ.get(DFCODE_HOME_ENV)
+    return (Path(env).expanduser() if env else Path.home() / ".dfcode").resolve()
 
 
 def home_config_path() -> Path:
-    """The user-level (home) ``deepcode_config.json`` — the base config layer."""
-    return deepcode_home() / _DEFAULT_CONFIG_FILENAME
+    """The user-level (home) ``dfcode_config.json`` — the base config layer."""
+    return dfcode_home() / _DEFAULT_CONFIG_FILENAME
 
 
 def _load_raw(path: Path) -> dict[str, Any]:
     """Read one config file into a dict; ``{}`` when it is absent."""
     if not path.exists():
-        logger.debug("deepcode_config.json not found at {}; skipping layer", path)
+        logger.debug("dfcode_config.json not found at {}; skipping layer", path)
         return {}
     try:
         with path.open("r", encoding="utf-8") as fh:
@@ -1068,10 +1068,10 @@ def _load_raw(path: Path) -> dict[str, Any]:
     return data
 
 
-def _validated(raw: dict[str, Any], sources: list[Path]) -> DeepCodeConfig:
+def _validated(raw: dict[str, Any], sources: list[Path]) -> DFcodeConfig:
     """The merged config; an invalid entry is a ConfigError that names it."""
     try:
-        return DeepCodeConfig.model_validate(raw)
+        return DFcodeConfig.model_validate(raw)
     except ValidationError as exc:
         problems = "; ".join(
             f"{'.'.join(str(part) for part in error['loc'])}: {error['msg']}"
@@ -1188,7 +1188,7 @@ def _resolve_env_refs(value: Any, *, path: str = "") -> Any:
             if env_value is None:
                 where = f" at {path}" if path else ""
                 raise ValueError(
-                    f"Environment variable '{name}' referenced in deepcode_config.json{where} is not set"
+                    f"Environment variable '{name}' referenced in dfcode_config.json{where} is not set"
                 )
             return env_value
 
@@ -1206,7 +1206,7 @@ def _resolve_env_refs(value: Any, *, path: str = "") -> Any:
 
 
 def credential_variables() -> set[str]:
-    """Environment variables DeepCode's own model credentials are read from.
+    """Environment variables DFcode's own model credentials are read from.
 
     Each provider template's variable (``OPENAI_API_KEY`` ...), plus every
     ``apiKeyEnv`` and every ``${NAME}`` under ``providers`` and ``dictation``
@@ -1242,12 +1242,12 @@ def credential_variables() -> set[str]:
     return names
 
 
-def load_config(config_path: str | Path | None = None) -> DeepCodeConfig:
-    """Load and parse ``deepcode_config.json``.
+def load_config(config_path: str | Path | None = None) -> DFcodeConfig:
+    """Load and parse ``dfcode_config.json``.
 
     With an explicit ``config_path`` that single file is used. Otherwise the
     config is layered like Codex / Claude Code: the user-level base at
-    ``deepcode_home()/deepcode_config.json`` (always readable, so ``deepcode``
+    ``dfcode_home()/dfcode_config.json`` (always readable, so ``dfcode``
     works in any directory) with a project-level file — walked up from the cwd
     — deep-merged on top (project overrides the base, key by key). When neither
     exists, defaults are returned so the process still boots for diagnostics.
@@ -1282,7 +1282,7 @@ def effective_config_layers(
     """Every configured leaf with the layer that supplied it — the answer to
     "why is my setting not taking effect?".
 
-    The dsh ``--dump-config`` counterpart for DeepCode's two-layer model:
+    The dsh ``--dump-config`` counterpart for DFcode's two-layer model:
     each row names the dotted path, the winning layer (``project`` overrides
     ``user``, mirroring :func:`load_config_for_workspace` exactly — including
     the project-layer provider sanitization), and a credential-safe preview
@@ -1342,7 +1342,7 @@ def effective_config_layers(
     return rows
 
 
-def load_config_for_workspace(workspace: str | Path) -> DeepCodeConfig:
+def load_config_for_workspace(workspace: str | Path) -> DFcodeConfig:
     """Load the user base plus the project layer for an explicit workspace.
 
     This is the desktop-safe counterpart to :func:`load_config`: it preserves
@@ -1362,7 +1362,7 @@ def load_config_for_workspace(workspace: str | Path) -> DeepCodeConfig:
 
 
 def _resolve_spec_for_phase(
-    config: DeepCodeConfig,
+    config: DFcodeConfig,
     phase: str,
     *,
     provider_override: str | None,
@@ -1390,7 +1390,7 @@ def _resolve_spec_for_phase(
 
 
 def enforce_provider_egress(
-    config: DeepCodeConfig,
+    config: DFcodeConfig,
     spec: ProviderSpec,
     api_base: str | None,
     *,
@@ -1400,7 +1400,7 @@ def enforce_provider_egress(
 
     Called exactly once per provider construction, so it must stay cheap: the
     decision is a string comparison, not a request-time cost. Policy lives in
-    ``providers.egress`` and the ``DEEPCODE_EGRESS_*`` env vars; see
+    ``providers.egress`` and the ``DFCODE_EGRESS_*`` env vars; see
     :class:`EgressPolicyConfig`.
 
     ``enforce`` raises :class:`ConfigError` (the convention of this module for
@@ -1440,7 +1440,7 @@ def enforce_provider_egress(
 
 
 def make_llm_provider(
-    config: DeepCodeConfig,
+    config: DFcodeConfig,
     *,
     phase: str = "default",
     model: str | None = None,
@@ -1482,7 +1482,7 @@ def make_llm_provider(
     if needs_key and not api_key:
         raise ConfigError(
             f"Provider '{spec.name}' (phase '{phase}') requires providers.{spec.name}.apiKey "
-            "in deepcode_config.json"
+            "in dfcode_config.json"
         )
 
     effective_base = api_base or spec.default_api_base or None
@@ -1527,7 +1527,7 @@ def make_llm_provider(
 
 
 __all__ = [
-    "DEEPCODE_HOME_ENV",
+    "DFCODE_HOME_ENV",
     "AgentDefaults",
     "AgentPhase",
     "AgentsConfig",
@@ -1535,7 +1535,7 @@ __all__ = [
     "ConfigError",
     "ConnectionProfileConfig",
     "ManualModelConfig",
-    "DeepCodeConfig",
+    "DFcodeConfig",
     "DictationConfig",
     "DocumentSegmentationConfig",
     "EgressPolicyConfig",
@@ -1556,7 +1556,7 @@ __all__ = [
     "ToolsConfig",
     "WorkspaceConfig",
     "credential_variables",
-    "deepcode_home",
+    "dfcode_home",
     "default_config_path",
     "home_config_path",
     "load_config",

@@ -20,7 +20,7 @@ from app_server.protocol.codec import (
 )
 from app_server.protocol.models import Request, Response, notification
 from app_server.protocol.timeouts import SLOW_METHOD_TIMEOUTS
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.config import ConfigError
 from core.application.errors import ApplicationError
 from core.application.event_service import DeliveryBatch
@@ -40,7 +40,7 @@ class RpcPeer:
 
     def __init__(
         self,
-        application: DeepCodeApplication,
+        application: DFcodeApplication,
         send: Callable[[bytes], None],
         *,
         on_close: Callable[[RpcPeer], None],
@@ -67,7 +67,7 @@ class RpcPeer:
         self._dropped = 0
         self._stop = threading.Event()
         self._pump = threading.Thread(
-            target=self._pump_events, name="deepcode-event-pump", daemon=True
+            target=self._pump_events, name="dfcode-event-pump", daemon=True
         )
 
     @property
@@ -168,7 +168,7 @@ class RpcPeer:
         if isinstance(exc, ApplicationError):
             return from_application_error(exc)
         if isinstance(exc, ConfigError):
-            # A setting the user must fix, not a fault in DeepCode.
+            # A setting the user must fix, not a fault in DFcode.
             return RpcError(-32000, str(exc), stable_code="CONFIG_INVALID")
         logger.exception("Unhandled App Server request failure")
         return RpcError(-32603, "internal error", stable_code="INTERNAL_ERROR")

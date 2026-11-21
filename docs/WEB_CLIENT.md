@@ -1,6 +1,6 @@
 # Local browser client
 
-`deepcode web` starts or reuses the local background service and opens its Web
+`dfcode web` starts or reuses the local background service and opens its Web
 client. Closing or refreshing the page leaves admitted tasks and terminals in
 that service running. It uses the same Agent, tools, approvals, project trust,
 configuration, Session history and application services as Desktop.
@@ -10,18 +10,18 @@ configuration, Session history and application services as Desktop.
 With a complete Python release installed and a model connection configured:
 
 ```sh
-deepcode web
-deepcode web --no-open
-deepcode service status --json
+dfcode web
+dfcode web --no-open
+dfcode service status --json
 ```
 
 The launcher prints the actual URL, including a single-use ticket valid for
 60 seconds. The browser immediately removes the ticket from the address bar and
-exchanges it for a browser session. No DeepCode account is required. The page
+exchanges it for a browser session. No DFcode account is required. The page
 keeps the session in its own site storage rather than in a cookie, because a
 browser sends cookies to every port on `127.0.0.1` and so to any other local
 server you visit. A session lasts 12 hours and is shared by tabs of the same
-address; after expiration or service restart, run `deepcode web` again. Sign
+address; after expiration or service restart, run `dfcode web` again. Sign
 out revokes that browser session without stopping admitted tasks.
 The service binds to `127.0.0.1` only; use the printed host and port. Public
 hosting and arbitrary reverse-proxy origins are not supported.
@@ -72,8 +72,8 @@ as if the server could read them. Each selection accepts up to eight files,
 workspace upload budget is 64 MiB, including unfinished staging files. Uploads
 use private staging files and are published only after the full body is written;
 interruption cleans up the staging file. Crash leftovers count against the
-budget. Remove unused `deepcode-upload-*` files and orphan
-`.deepcode-upload-*.part` files from the workspace when no upload is active.
+budget. Remove unused `dfcode-upload-*` files and orphan
+`.dfcode-upload-*.part` files from the workspace when no upload is active.
 There is no automatic retention policy for these workspace files.
 
 Files can be downloaded from the inspector with authenticated, workspace-confined
@@ -99,7 +99,7 @@ repository root:
 npm --prefix desktop ci
 npm --prefix desktop run build:web
 uv tool install --python 3.12 --force .
-deepcode web
+dfcode web
 ```
 
 See [installation](../README.md#quick-start) for the full setup and
@@ -110,7 +110,7 @@ The service serves those assets and its API from the same origin. Missing or
 incompatible assets produce an installation repair message. The browser checks
 its compiled build identity against the service handshake before business use.
 After changing frontend source, rebuild and reinstall the tool. Let active
-work finish, restart the service, and open a fresh `deepcode web` link to load
+work finish, restart the service, and open a fresh `dfcode web` link to load
 the matching assets. Do not replace assets during an active acceptance test.
 
 Python wheel and sdist releases include these generated assets. Release CI builds
@@ -125,7 +125,7 @@ For release engineering, verify that the bundled App Server also includes the as
 cd desktop
 npm run setup:sidecar
 npm run build:sidecar
-build/sidecar/dist/deepcode-app-server/deepcode-app-server --web
+build/sidecar/dist/dfcode-app-server/dfcode-app-server --web
 ```
 
 The executable's `--web` launcher and `--serve` mode run without a system Python
@@ -150,17 +150,17 @@ refresh/reconnection, settings persistence, upload, diff, file download and a
 real terminal across refresh. It cleans up its service and workspace. CI uses
 this credential-free scenario.
 
-Set `DEEPCODE_TEST_PYTHON` to an installed test interpreter when not using the
-repository `.venv`. `DEEPCODE_CHROME_PATH` can select a local Chrome binary.
-Set `DEEPCODE_WEB_LIVE=1` only for an intentional live-provider test: the fixture
+Set `DFCODE_TEST_PYTHON` to an installed test interpreter when not using the
+repository `.venv`. `DFCODE_CHROME_PATH` can select a local Chrome binary.
+Set `DFCODE_WEB_LIVE=1` only for an intentional live-provider test: the fixture
 copies the selected usable connection into a private temporary configuration,
 requests two small Python files, approves only those file writes and a constrained
 unit-test command, refreshes during execution, independently tests the result,
 and checks that only one Turn was admitted. This consumes the configured model's
 API quota. Code and test evidence are attached to the Playwright JSON report.
 
-`DEEPCODE_WEB_PACKAGE_DIR` selects an installed wheel target outside the checkout;
-`DEEPCODE_WEB_BINARY` selects the standalone executable. Those modes run the
+`DFCODE_WEB_PACKAGE_DIR` selects an installed wheel target outside the checkout;
+`DFCODE_WEB_BINARY` selects the standalone executable. Those modes run the
 browser engineering checks without a model call. These browser scenarios do not establish platform-wide release acceptance.
 Native Desktop packaging, operating-system service integration, and extended
 stability checks require their own validation; see the

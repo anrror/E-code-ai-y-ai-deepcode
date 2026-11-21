@@ -1,4 +1,4 @@
-# DeepCode Desktop release runbook
+# DFcode Desktop release runbook
 
 This runbook covers the signed Tauri release pipeline. Python CLI publication
 remains independent in `pypi-publish.yml`.
@@ -76,7 +76,7 @@ overwrite one another.
    resources fail the release.
 6. Download each workflow artifact onto a clean matching platform.
 7. Verify first launch with an isolated test account:
-   - no existing DeepCode Sessions are imported accidentally;
+   - no existing DFcode Sessions are imported accidentally;
    - project selection and trust work;
    - Agent startup and shutdown leave no orphan sidecar;
    - TXT, HTML, DOCX, Markdown, and PDF inputs reach `paper.md`;
@@ -98,7 +98,7 @@ published release:
 1. stop advertising it by restoring a known-good release as the GitHub
    `latest` release or replacing the update manifest;
 2. publish a higher-version hotfix whenever possible;
-3. if a manual binary rollback is unavoidable, quit DeepCode, preserve the
+3. if a manual binary rollback is unavoidable, quit DFcode, preserve the
    current state directory, restore the validated pre-migration SQLite backup,
    then install the older signed bundle;
 4. never modify or roll back canonical Session JSONL as part of a Desktop

@@ -8,12 +8,12 @@ refuses known-interactive scaffolds that would otherwise hang the agent.
 
 ``screen_all`` (:mod:`core.harness.command_guard`) runs before the command
 reaches the shell. The destructive-command screen is always on. With
-``DEEPCODE_COMMAND_SCREEN=strict`` it also refuses remote scripts piped into an
+``DFCODE_COMMAND_SCREEN=strict`` it also refuses remote scripts piped into an
 interpreter, installs from unknown package indexes and one-edit package names,
 which matters when the command text may not be the model's own (an
 intermediary between us and the provider can rewrite a tool call on its way
-back). The child never receives DeepCode's own model keys, so a plain ``env``
-cannot copy them into the transcript; with ``DEEPCODE_BASH_SCRUB_ENV=1`` it gets
+back). The child never receives DFcode's own model keys, so a plain ``env``
+cannot copy them into the transcript; with ``DFCODE_BASH_SCRUB_ENV=1`` it gets
 a credential-scrubbed environment (:mod:`core.harness.env_sanitize`). The
 strict screens and the scrub are opt-in because everyday work (``curl | sh``
 installers, package mirrors, ``gh``/``aws`` reading tokens from the
@@ -204,14 +204,14 @@ class BashTool(Tool):
         if refusal:
             return f"Error: {refusal}"
 
-        # Destructive argv is always refused; under DEEPCODE_COMMAND_SCREEN=strict
+        # Destructive argv is always refused; under DFCODE_COMMAND_SCREEN=strict
         # so are remote scripts piped into an interpreter, installs from unknown
         # indexes and one-edit package names (see command_guard.screen_all).
         screened = screen_all(command, known_packages=self._known_packages())
         if screened:
             return (
                 f"Error: command blocked by policy screen ({screened}). "
-                "If this is intended, re-run with the matching DEEPCODE_* waiver."
+                "If this is intended, re-run with the matching DFCODE_* waiver."
             )
 
         try:
@@ -229,8 +229,8 @@ class BashTool(Tool):
             proc = await start_process_group(
                 *wrapped.argv,
                 cwd=self._workspace,
-                # Never DeepCode's own model keys or PYTHONPATH; with
-                # DEEPCODE_BASH_SCRUB_ENV=1 no credential-shaped variable
+                # Never DFcode's own model keys or PYTHONPATH; with
+                # DFCODE_BASH_SCRUB_ENV=1 no credential-shaped variable
                 # either (see env_sanitize.child_env).
                 env=child_env(
                     # A read-only run cannot write bytecode beside the source.
@@ -292,7 +292,7 @@ class BashTool(Tool):
             )
 
         # Spill full output to a file; return a bounded preview + the path.
-        fd, path = tempfile.mkstemp(prefix="deepcode-bash-", suffix=".txt")
+        fd, path = tempfile.mkstemp(prefix="dfcode-bash-", suffix=".txt")
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             f.write(text)
         preview = text[-_MAX_OUTPUT_CHARS:]

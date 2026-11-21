@@ -1,5 +1,5 @@
 """
-Prompt templates for the DeepCode agent system.
+Prompt templates for the DFcode agent system.
 
 RECENT UPDATES (针对论文代码复现优化):
 1. 简化并优化了文件结构生成逻辑，确保结构简洁且富有逻辑性

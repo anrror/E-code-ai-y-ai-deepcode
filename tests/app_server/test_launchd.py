@@ -195,7 +195,7 @@ def test_failed_managed_stop_preserves_work_and_restores_admission(
 
 
 @pytest.mark.skipif(
-    os.environ.get("DEEPCODE_TEST_LAUNCHD") != "1", reason="opt-in native launchd test"
+    os.environ.get("DFCODE_TEST_LAUNCHD") != "1", reason="opt-in native launchd test"
 )
 def test_native_job_recovers_from_crash_and_stays_stopped(tmp_path, monkeypatch):
     files = ServiceFiles(tmp_path / "state.sqlite3")

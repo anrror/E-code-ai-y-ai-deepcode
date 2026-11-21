@@ -27,7 +27,7 @@ def test_systemd_registration_escapes_values_and_preserves_manual_lifetime(
         return subprocess.CompletedProcess(args, 0, output, "")
 
     monkeypatch.setattr(manager, "_run", run)
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "private % home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "private % home"))
     manager.install(port=3081, path='/tool $PATH/%/"bin"')
     configured = manager.read()
     assert configured["command"][4] == str(files.database)
@@ -91,7 +91,7 @@ def test_systemd_generated_unit_passes_the_real_linux_parser(tmp_path, monkeypat
     runtime = tmp_path / "runtime"
     runtime.mkdir(mode=0o700)
     monkeypatch.setenv("XDG_RUNTIME_DIR", str(runtime))
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     working = tmp_path / 'directory with % and "quotes"'
     working.mkdir()
     manager = SystemdUserService(

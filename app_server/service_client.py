@@ -32,10 +32,10 @@ class ServiceClient:
         instance_id: str | None = None,
     ) -> dict[str, Any]:
         if not self.files.running():
-            raise ServiceUnavailable("DeepCode service is not running")
+            raise ServiceUnavailable("DFcode service is not running")
         discovered = self.files.read()
         if discovered is None:
-            raise ServiceUnavailable("DeepCode service is starting or stopping")
+            raise ServiceUnavailable("DFcode service is starting or stopping")
         record, token = discovered
         if instance_id is not None and record.instance_id != instance_id:
             raise ServiceUnavailable("Service instance changed before the operation")
@@ -63,7 +63,7 @@ class ServiceClient:
                     "/control/rpc",
                     headers={
                         "Authorization": f"Bearer {token}",
-                        "X-DeepCode-Instance": record.instance_id,
+                        "X-DFcode-Instance": record.instance_id,
                     },
                     json={
                         "jsonrpc": "2.0",
@@ -82,7 +82,7 @@ class ServiceClient:
                 else type(exc).__name__
             )
             raise ServiceUnavailable(
-                f"Cannot communicate with the local DeepCode service ({detail}); check service logs"
+                f"Cannot communicate with the local DFcode service ({detail}); check service logs"
             ) from exc
         if not isinstance(value, dict) or value.get("id") != 1:
             raise ServiceUnavailable("Invalid service response")

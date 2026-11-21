@@ -1,6 +1,6 @@
 # Third-party software notices
 
-DeepCode Desktop includes open-source Python, JavaScript, Rust, and platform
+DFcode Desktop includes open-source Python, JavaScript, Rust, and platform
 runtime components. Their package names, versions, license expressions, and
 source metadata are recorded by the locked manifests:
 
@@ -25,7 +25,7 @@ authoritative.
 
 ## Flaticon interface accents
 
-DeepCode Desktop includes adapted outline interface accents from the **Zeir
+DFcode Desktop includes adapted outline interface accents from the **Zeir
 minimal user interface** pack by **The Icon Tree** on Flaticon. Attribution:
 Icons designed by The Icon Tree from Flaticon.
 
@@ -40,7 +40,7 @@ Session, protocol, or execution behavior.
 
 ## Phosphor Icons
 
-DeepCode Desktop includes two outline marks from the **Phosphor Icons** core
+DFcode Desktop includes two outline marks from the **Phosphor Icons** core
 set, used for the Plugins and Skills empty states.
 
 - Source: https://github.com/phosphor-icons/core
@@ -52,7 +52,7 @@ Session, protocol, or execution behavior.
 
 ## Bundled Agent Skills
 
-DeepCode bundles upstream Agent Skills from the following repositories. The
+DFcode bundles upstream Agent Skills from the following repositories. The
 exact source path and pinned revision for each bundled package are recorded in
 `core/skills/builtin/UPSTREAM_SOURCES.json`; upstream license files are kept
 inside their respective Skill directories when supplied by the source.
@@ -61,6 +61,6 @@ inside their respective Skill directories when supplied by the source.
 - OpenAI Codex: https://github.com/openai/codex
 - Anthropic Skills: https://github.com/anthropics/skills
 
-The Skill instructions remain attributable to their upstream authors. DeepCode
+The Skill instructions remain attributable to their upstream authors. DFcode
 provides the host runtime, discovery, selection, resource access, and tool/MCP
 integration used to execute them.

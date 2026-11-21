@@ -168,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     # Reconfigure early so headless runs never crash rendering non-GBK text.
     configure_utf8_stdio()
     parser = argparse.ArgumentParser(
-        prog="deepcode loop",
+        prog="dfcode loop",
         description="Run a durable Goal on the shared ordinary-Turn runtime.",
     )
     parser.add_argument(
@@ -193,7 +193,7 @@ def main(argv: list[str] | None = None) -> int:
         "-t",
         default="",
         help="For a new Goal, a test command (for example 'python -m pytest -q'). "
-        "The Agent runs it, and DeepCode runs it itself "
+        "The Agent runs it, and DFcode runs it itself "
         "before accepting completion.",
     )
     parser.add_argument(
@@ -201,7 +201,7 @@ def main(argv: list[str] | None = None) -> int:
         action="append",
         default=[],
         metavar="COMMAND",
-        help="For a new Goal, another command that must exit 0 before DeepCode "
+        help="For a new Goal, another command that must exit 0 before DFcode "
         "accepts completion (repeatable). Shell syntax runs in bash with pipefail.",
     )
     parser.add_argument(

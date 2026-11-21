@@ -60,7 +60,7 @@ export const FONT_CANDIDATES: readonly FontCandidate[] = [
 ];
 
 /** Name for the throwaway face a probe loads. It is never registered. */
-const PROBE_FACE_NAME = "deepcode-font-probe";
+const PROBE_FACE_NAME = "dfcode-font-probe";
 
 /** Quote a family for a `local()` source, dropping characters that would end it. */
 function quote(family: string): string {

@@ -247,7 +247,7 @@ class ExecutionCoordinator:
                 return
         raise RuntimeError(
             f"worker registration did not become durable: {worker.id}. "
-            "Another DeepCode process starting at the same moment likely "
+            "Another DFcode process starting at the same moment likely "
             "raced this one; retry, or start the processes a moment apart."
         )
 
@@ -695,7 +695,7 @@ class ExecutionCoordinator:
     def _start_background_locked(self) -> None:
         self._thread = threading.Thread(
             target=self._run,
-            name=f"deepcode-execution-coordinator-{self.worker_id[-8:]}",
+            name=f"dfcode-execution-coordinator-{self.worker_id[-8:]}",
             daemon=True,
         )
         self._thread.start()

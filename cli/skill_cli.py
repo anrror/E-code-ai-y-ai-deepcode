@@ -1,4 +1,4 @@
-"""Manage the same local Skill catalog consumed by DeepCode Agent turns."""
+"""Manage the same local Skill catalog consumed by DFcode Agent turns."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ from core.skills.host import SkillWorkspaceRegistry
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode skill",
+        prog="dfcode skill",
         description="List and manage local Agent Skills.",
     )
     parser.add_argument(

@@ -11,7 +11,7 @@ import pytest
 
 from app_server.host import ServiceHost
 from app_server.server import AppServer, serve_stdio
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from tests.app_server.support import PausedFactory
 
@@ -63,7 +63,7 @@ def test_disconnected_client_does_not_cancel_work_or_close_other_clients(
     tmp_path, disconnect
 ):
     factory = PausedFactory()
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     project = app.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -117,7 +117,7 @@ def test_disconnected_client_does_not_cancel_work_or_close_other_clients(
 def test_one_config_watcher_is_shared_and_survives_client_disconnect(
     tmp_path, monkeypatch
 ):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     watchers = []
 
     class Watcher:
@@ -148,7 +148,7 @@ def test_one_config_watcher_is_shared_and_survives_client_disconnect(
 
 
 def test_failed_writer_disconnects_only_its_peer(tmp_path):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     with ServiceHost(app) as host:
         working = Client(host, "working")
 
@@ -173,7 +173,7 @@ def test_failed_writer_disconnects_only_its_peer(tmp_path):
 def test_slow_client_does_not_block_notifications_or_requests_for_other_clients(
     tmp_path,
 ):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     entered = threading.Event()
     release = threading.Event()
     delivered: queue.Queue[dict[str, Any]] = queue.Queue()
@@ -217,7 +217,7 @@ def test_slow_client_does_not_block_notifications_or_requests_for_other_clients(
 def test_startup_failure_releases_partial_subscriptions_and_application(
     tmp_path, monkeypatch
 ):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     calls = []
     original_unsubscribe = app.terminals.unsubscribe
     original_close = app.close
@@ -244,7 +244,7 @@ def test_startup_failure_releases_partial_subscriptions_and_application(
 
 
 def test_host_close_can_retry_application_cleanup_failure(tmp_path, monkeypatch):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     original_close = app.close
     attempts = 0
 
@@ -267,7 +267,7 @@ def test_host_close_can_retry_application_cleanup_failure(tmp_path, monkeypatch)
 
 
 def test_private_stdio_eof_still_closes_its_application(tmp_path, monkeypatch):
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3")
     original_close = app.close
     closed = threading.Event()
 

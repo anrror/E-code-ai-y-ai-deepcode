@@ -164,7 +164,7 @@ def test_saved_output_path_line_is_preserved() -> None:
     policy = MicrocompactPolicy(keep_recent_tool_results=0, min_savings_tokens=1.0)
     spilled = (
         "[tool output persisted]\n"
-        "Full output saved to: .deepcode/tool-results/abc.txt\n"
+        "Full output saved to: .dfcode/tool-results/abc.txt\n"
         "PREVIEW" + "x" * 400
     )
     messages = [
@@ -175,7 +175,7 @@ def test_saved_output_path_line_is_preserved() -> None:
     ]
     result = apply_microcompact(messages, policy)
     content = result.messages[1].get("content")
-    assert "Full output saved to: .deepcode/tool-results/abc.txt" in content
+    assert "Full output saved to: .dfcode/tool-results/abc.txt" in content
     assert "[tool output persisted]" in content
     assert "PREVIEW" not in content  # the bulky preview is gone
     assert MICROCOMPACT_PLACEHOLDER in content
@@ -193,7 +193,7 @@ def test_bash_spill_pointer_is_preserved() -> None:
     for header in ("", "[exit 1]\n"):
         spilled = (
             f"{header}...output truncated (40001 chars). "
-            "Full output saved to: /tmp/deepcode-bash-abc.txt\n\n" + "y" * 4000
+            "Full output saved to: /tmp/dfcode-bash-abc.txt\n\n" + "y" * 4000
         )
         messages = [
             _assistant_calls(["c0"]),
@@ -202,7 +202,7 @@ def test_bash_spill_pointer_is_preserved() -> None:
             _tool_result("c1", "recent"),
         ]
         content = apply_microcompact(messages, policy).messages[1]["content"]
-        assert "Full output saved to: /tmp/deepcode-bash-abc.txt" in content
+        assert "Full output saved to: /tmp/dfcode-bash-abc.txt" in content
         assert "y" * 100 not in content
 
 
@@ -226,7 +226,7 @@ def test_cleared_spill_keeps_its_file_renewed(tmp_path: Path) -> None:
     ]
     policy = MicrocompactPolicy(keep_recent_tool_results=0, min_savings_tokens=1.0)
     cleared = apply_microcompact(messages, policy).messages
-    path = next((tmp_path / ".deepcode" / "tool-results" / "sess").iterdir())
+    path = next((tmp_path / ".dfcode" / "tool-results" / "sess").iterdir())
     old = time.time() - 80 * 24 * 3600
     os.utime(path, (old, old))
     renew_tool_result_references(tmp_path, cleared)

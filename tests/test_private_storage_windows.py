@@ -199,7 +199,7 @@ def test_acl_check_accepts_a_file_inheriting_a_hardened_parent(tmp_path: Path) -
     import core.private_storage as ps
 
     directory = ensure_private_directory(tmp_path / "state")
-    child = directory / "deepcode.sqlite3-wal"
+    child = directory / "dfcode.sqlite3-wal"
     child.write_text("x", encoding="utf-8")
 
     # SQLite side files are created by the library, not by open_private_file;

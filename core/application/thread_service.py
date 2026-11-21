@@ -1243,7 +1243,7 @@ class ThreadService:
         is genuinely its system of record — a P1-P6 legacy import, or an
         Automation bootstrap whose idempotent Session materialization has not
         landed yet. Any other projection-only Thread is a stale shadow of a
-        Session removed outside DeepCode; it is dropped from the projection
+        Session removed outside DFcode; it is dropped from the projection
         instead of resurrected.
         """
         with self.database.read() as connection:

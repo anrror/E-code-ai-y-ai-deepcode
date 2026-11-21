@@ -51,7 +51,7 @@ class GitHubURLExtractor:
                 else:
                     # 处理短格式 (owner/repo) - 添加更多验证
                     if "/" in match and not any(
-                        x in match for x in ["./", "../", "deepcode_lab", "tools"]
+                        x in match for x in ["./", "../", "dfcode_lab", "tools"]
                     ):
                         parts = match.split("/")
                         if (

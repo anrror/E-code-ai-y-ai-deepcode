@@ -18,7 +18,7 @@ import {
   type ImportedTheme,
 } from "./importedTheme";
 
-const STORAGE_KEY = "deepcode.desktop.appearance.v1";
+const STORAGE_KEY = "dfcode.desktop.appearance.v1";
 
 /**
  * Follow the OS, or pin one palette regardless of it.

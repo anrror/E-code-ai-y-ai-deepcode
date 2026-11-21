@@ -104,10 +104,10 @@
 <p class="lede" data-i18n="lede"></p>
 
 <div class="label col-label" style="left:64px" data-i18n="clientsLabel"></div>
-<div class="client" style="top:178px"><b data-i18n="tui"></b><span class="mono">deepcode</span></div>
-<div class="client" style="top:290px"><b data-i18n="desktop"></b><span class="mono">deepcode desktop</span></div>
-<div class="client" style="top:402px"><b data-i18n="web"></b><span class="mono">deepcode web</span></div>
-<div class="client" style="top:514px"><b data-i18n="scripts"></b><span class="mono">deepcode exec · loop</span></div>
+<div class="client" style="top:178px"><b data-i18n="tui"></b><span class="mono">dfcode</span></div>
+<div class="client" style="top:290px"><b data-i18n="desktop"></b><span class="mono">dfcode desktop</span></div>
+<div class="client" style="top:402px"><b data-i18n="web"></b><span class="mono">dfcode web</span></div>
+<div class="client" style="top:514px"><b data-i18n="scripts"></b><span class="mono">dfcode exec · loop</span></div>
 <p style="position:absolute;left:64px;top:632px;width:264px;font-size:14px;line-height:1.5;color:var(--text3)" data-i18n="clientsNote"></p>
 
 <div class="service">
@@ -154,12 +154,12 @@
 <script>
 const text = {
   en: {
-    title: "How DeepCode fits together",
+    title: "How DFcode fits together",
     lede: "Every client talks to one service on your computer. The agent works only where and how you allow.",
     clientsLabel: "Where you work",
     tui: "Terminal UI", desktop: "Desktop app", web: "Web client", scripts: "Scripts and CI",
     clientsNote: "Start in one, continue in another: they share Projects, Sessions, models, Skills and permissions.",
-    service: "DeepCode service",
+    service: "DFcode service",
     serviceSub: "Runs in the background on 127.0.0.1, so work continues after you close a client.",
     c1: "Projects you trust", c2: "Sessions and history", c3: "Goals", c4: "Approvals", c5: "Automations",
     harness: "Agent harness",
@@ -168,21 +168,21 @@ const text = {
     h3: "Guardrails", h3p: "Ask, Read only or Full access; an OS sandbox for commands; project hooks run only once you approve them.",
     h4: "Context", h4p: "AGENTS.md, project memory, Skills and MCP servers.",
     h5: "Sub-agents", h5p: "Parallel helpers, each optionally in its own Git worktree.",
-    h6: "Goal checks", h6p: "A checklist DeepCode runs itself and an independent reviewer, before a Goal counts as complete.",
+    h6: "Goal checks", h6p: "A checklist DFcode runs itself and an independent reviewer, before a Goal counts as complete.",
     projectLabel: "Where the work happens",
     project: "Your project",
     projectP: "Every edit shows as a diff to review; nothing outside the folder changes under Ask.",
     model: "The model you chose",
     modelP: "Receives the instructions, the conversation and tool results. A local model keeps all of it on your machine.",
-    footer: "No account and no analytics. Settings, Sessions and API keys stay in ~/.deepcode on your computer.",
+    footer: "No account and no analytics. Settings, Sessions and API keys stay in ~/.dfcode on your computer.",
   },
   zh: {
-    title: "DeepCode 的整体结构",
+    title: "DFcode 的整体结构",
     lede: "所有客户端都连到你电脑上的同一个服务；智能体只在你允许的地方、按你允许的方式工作。",
     clientsLabel: "在哪里使用",
     tui: "终端界面", desktop: "桌面应用", web: "网页客户端", scripts: "脚本与 CI",
     clientsNote: "在一个客户端开始，换一个继续：项目、会话、模型、Skill 和权限都是共享的。",
-    service: "DeepCode 服务",
+    service: "DFcode 服务",
     serviceSub: "在后台运行，只监听 127.0.0.1；关掉客户端后，工作照常继续。",
     c1: "已信任的项目", c2: "会话与历史", c3: "Goal", c4: "审批", c5: "Automation",
     harness: "智能体运行环境",
@@ -191,13 +191,13 @@ const text = {
     h3: "护栏", h3p: "询问 / 只读 / 完全访问；命令在系统沙箱里运行；项目 hook 经你批准才运行。",
     h4: "上下文", h4p: "AGENTS.md、项目记忆、Skill 和 MCP 服务器。",
     h5: "子智能体", h5p: "并行的帮手，可以各自在独立的 Git worktree 里工作。",
-    h6: "Goal 验收", h6p: "DeepCode 自己运行的检查清单加独立审查，通过后 Goal 才算完成。",
+    h6: "Goal 验收", h6p: "DFcode 自己运行的检查清单加独立审查，通过后 Goal 才算完成。",
     projectLabel: "工作发生的地方",
     project: "你的项目",
     projectP: "每处改动都以 diff 呈现供你审阅；在询问模式下，文件夹之外不会被改动。",
     model: "你选择的模型",
     modelP: "收到系统指令、对话和工具结果；用本地模型时，这些都不离开你的电脑。",
-    footer: "没有账号，也没有统计上报；设置、会话和 API 密钥都保存在你电脑上的 ~/.deepcode。",
+    footer: "没有账号，也没有统计上报；设置、会话和 API 密钥都保存在你电脑上的 ~/.dfcode。",
   },
 };
 const lang = new URLSearchParams(location.search).get("lang") || "en";

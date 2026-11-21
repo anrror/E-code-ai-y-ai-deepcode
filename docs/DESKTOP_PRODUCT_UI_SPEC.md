@@ -1,11 +1,11 @@
-# DeepCode Desktop Product UI Specification
+# DFcode Desktop Product UI Specification
 
 Status: active implementation contract
 Updated: 2026-07-29
 
 ## Product thesis
 
-DeepCode Desktop is a local command center for developers supervising long-running
+DFcode Desktop is a local command center for developers supervising long-running
 agents across repositories. Its primary job is not to expose every backend event.
 It must make three things immediately clear:
 
@@ -109,7 +109,7 @@ quiet.
   reason, while detailed tools, approvals, evidence, and continuation remain
   in that Thread.
 - Desktop reports whether a scheduler runtime is active. It must not imply that
-  an interval will execute while every compatible DeepCode runtime is closed.
+  an interval will execute while every compatible DFcode runtime is closed.
 - Removing an Automation is distinct from deleting its Session. The definition
   is retired while its Thread and Run history remain available.
 - Keyboard focus is visible. Reduced motion is respected.

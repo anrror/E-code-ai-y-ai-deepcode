@@ -76,7 +76,7 @@ class LocalPluginHost:
         if monitor:
             self._thread = threading.Thread(
                 target=self._run,
-                name="deepcode-plugin-monitor",
+                name="dfcode-plugin-monitor",
                 daemon=True,
             )
             self._thread.start()

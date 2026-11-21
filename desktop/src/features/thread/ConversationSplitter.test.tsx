@@ -5,7 +5,7 @@ import { __resetAppearanceStoreForTests } from "../../app/useAppearance";
 import { ConversationSplitter } from "./ConversationSplitter";
 import { SPLITTER_MAX, SPLITTER_MIN } from "./conversationWidthResize";
 
-const STORAGE_KEY = "deepcode.desktop.appearance.v1";
+const STORAGE_KEY = "dfcode.desktop.appearance.v1";
 const WORKSPACE_WIDTH = 1000;
 const COLUMN_WIDTH = 700;
 const HANDLE_WIDTH = 12;

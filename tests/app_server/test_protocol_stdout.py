@@ -49,7 +49,7 @@ def test_app_server_entrypoint_opts_into_resident_scheduler(monkeypatch) -> None
             return 17
 
     monkeypatch.setattr(
-        "core.application.application.DeepCodeApplication", _Application
+        "core.application.application.DFcodeApplication", _Application
     )
     monkeypatch.setattr("app_server.server.AppServer", _Server)
     monkeypatch.setattr(

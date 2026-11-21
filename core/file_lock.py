@@ -76,7 +76,7 @@ class FileLease:
 
 @contextmanager
 def exclusive_file_lock(path: Path) -> Iterator[None]:
-    """Serialize a bounded mutation across DeepCode processes."""
+    """Serialize a bounded mutation across DFcode processes."""
 
     ensure_private_directory(path.parent)
     descriptor = open_private_file(path, os.O_RDWR | os.O_CREAT)

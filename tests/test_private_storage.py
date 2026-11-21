@@ -35,9 +35,9 @@ def test_runtime_state_is_created_with_user_only_permissions(tmp_path: Path) -> 
     )
     store.update_settings(session.session_id, model="example/model")
 
-    database = Database(tmp_path / "home" / "state" / "deepcode.sqlite3")
+    database = Database(tmp_path / "home" / "state" / "dfcode.sqlite3")
     database.initialize()
-    ConfigStore(tmp_path / "home" / "deepcode_config.json").mutate(lambda _: {})
+    ConfigStore(tmp_path / "home" / "dfcode_config.json").mutate(lambda _: {})
     CredentialStore(tmp_path / "home" / "credentials.json").set(
         "example",
         "secret",
@@ -59,7 +59,7 @@ def test_runtime_state_is_created_with_user_only_permissions(tmp_path: Path) -> 
         session_directory / "tasks.jsonl",
         session_directory / "settings.json",
         database.path,
-        tmp_path / "home" / "deepcode_config.json",
+        tmp_path / "home" / "dfcode_config.json",
         tmp_path / "home" / "credentials.json",
     ):
         assert _mode(path) == 0o600
@@ -167,8 +167,8 @@ def test_private_tree_rejects_a_link_as_its_root(tmp_path: Path) -> None:
 def test_suite_redirects_all_user_state_to_the_test_directory(
     tmp_path: Path,
 ) -> None:
-    home = Path(os.environ["DEEPCODE_HOME"])
-    sessions = Path(os.environ["DEEPCODE_SESSIONS_DIR"])
+    home = Path(os.environ["DFCODE_HOME"])
+    sessions = Path(os.environ["DFCODE_SESSIONS_DIR"])
 
-    assert home == tmp_path / "deepcode-home"
+    assert home == tmp_path / "dfcode-home"
     assert sessions == home / "sessions"

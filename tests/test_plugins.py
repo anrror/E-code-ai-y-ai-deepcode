@@ -407,7 +407,7 @@ async def test_plugin_mcp_runs_through_generic_runtime_with_private_data(
         assert server.plugin_data is not None and server.plugin_data.is_dir()
         assert server.policy_key == "review-tools/runtime"
 
-        plan = McpConfigResolver(tmp_path / "home" / "deepcode_config.json").resolve(
+        plan = McpConfigResolver(tmp_path / "home" / "dfcode_config.json").resolve(
             workspace,
             project_trusted=True,
             plugin_servers=contributions,
@@ -505,7 +505,7 @@ def test_plugin_skills_are_direct_children_and_strictly_validated(
         skill_hosts.close()
 
 
-def test_standalone_skill_keeps_deepcode_compat_profile(tmp_path: Path) -> None:
+def test_standalone_skill_keeps_dfcode_compat_profile(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     directory = workspace / ".agents" / "skills" / "directory-name"

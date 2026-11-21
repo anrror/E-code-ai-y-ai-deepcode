@@ -21,12 +21,12 @@ invests in graph-level orchestration:
     task and then `wait_agent` until all report. A run with fewer than
     `--min-spawns` (default 5) calls is marked invalid and excluded from the
     medians.
-- **Tokens** — summed from the process LLM ledger (`~/.deepcode/logs/llm.jsonl`)
+- **Tokens** — summed from the process LLM ledger (`~/.dfcode/logs/llm.jsonl`)
   inside the run window. This is the only source that includes sub-agent calls;
   the per-session event stream sees the parent only. Run the experiment on an
   otherwise idle machine, or unrelated sessions land in the window.
 - **Isolation** — every run copies the fixture to `.runs/<stamp>/`, runs
-  `git init` there, and executes `deepcode exec --access full-access --trust`.
+  `git init` there, and executes `dfcode exec --access full-access --trust`.
   The repository's own working tree is never touched.
 - **Credentials** — the key is read from the local `auth.json` at run time and
   passed only as an environment variable to the child process. It is never

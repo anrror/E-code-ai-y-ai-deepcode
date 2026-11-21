@@ -45,7 +45,7 @@ describe("confirmAction", () => {
 
     expect(browserConfirm).not.toHaveBeenCalled();
     expect(mocks.nativeConfirm).toHaveBeenCalledWith("Remove it?", {
-      title: "DeepCode",
+      title: "DFcode",
       kind: "warning",
       okLabel: "Remove",
       cancelLabel: "Keep",

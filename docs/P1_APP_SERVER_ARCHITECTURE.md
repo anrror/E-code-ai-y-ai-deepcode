@@ -41,8 +41,8 @@ its Session, including established eight-character CLI IDs. Session title,
 workspace origin, model, archive metadata, visible user/assistant transcript,
 and task links remain in the existing Session format.
 
-The Desktop database is `$DEEPCODE_HOME/state/deepcode.sqlite3`, falling back to
-`~/.deepcode/state/deepcode.sqlite3`. It is a rebuildable projection plus
+The Desktop database is `$DFCODE_HOME/state/dfcode.sqlite3`, falling back to
+`~/.dfcode/state/dfcode.sqlite3`. It is a rebuildable projection plus
 Desktop-only runtime state. Schema v1 contains:
 
 ```text
@@ -112,7 +112,7 @@ Run the server from a source checkout:
 
 ```bash
 python -m app_server
-python -m app_server --database /tmp/deepcode-p1.sqlite3
+python -m app_server --database /tmp/dfcode-p1.sqlite3
 ```
 
 Example handshake:

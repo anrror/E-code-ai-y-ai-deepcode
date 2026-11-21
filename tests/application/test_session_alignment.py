@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ConflictError, ProjectNotTrustedError
 from core.domain.common import utc_now
 from core.domain.execution_security import (
@@ -46,7 +46,7 @@ def test_desktop_projects_existing_cli_session_without_copying_it(
     source = store.root / session.session_id / "session.jsonl"
     before = source.read_bytes()
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -80,7 +80,7 @@ def test_reading_an_up_to_date_thread_takes_no_write_lock(tmp_path: Path) -> Non
     workspace.mkdir()
     store = SessionStore(tmp_path / "sessions")
     session = _seed_cli_session(store, workspace)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -147,7 +147,7 @@ def test_a_rebuilt_tool_result_shows_people_what_a_live_one_shows(
     )
     store.append_message(sid, "assistant", "two issues remain")
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -197,7 +197,7 @@ def test_rebuild_from_jsonl_shows_tool_activity_and_stays_idempotent(
     )
     store.append_message(sid, "assistant", "the directory is empty")
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -252,7 +252,7 @@ def test_compaction_checkpoint_does_not_open_a_desktop_turn(
     store.append_message(session.session_id, "user", "carry on")
     store.append_message(session.session_id, "assistant", "carrying on")
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -277,7 +277,7 @@ def test_projection_database_can_be_deleted_and_rebuilt_from_jsonl(
     session = _seed_cli_session(store, workspace)
     database = tmp_path / "state.sqlite3"
 
-    first = DeepCodeApplication.open(database, session_store=store)
+    first = DFcodeApplication.open(database, session_store=store)
     assert first.threads.read(session.session_id).id == session.session_id
     first.close()
     for suffix in ("", "-wal", "-shm"):
@@ -285,7 +285,7 @@ def test_projection_database_can_be_deleted_and_rebuilt_from_jsonl(
         if path.exists():
             path.unlink()
 
-    rebuilt = DeepCodeApplication.open(database, session_store=store)
+    rebuilt = DFcodeApplication.open(database, session_store=store)
     try:
         thread = rebuilt.threads.read(session.session_id)
         assert thread.id == session.session_id
@@ -318,7 +318,7 @@ def test_projection_rebuild_restores_the_canonical_turn_security_snapshot(
     store.append_message(session.session_id, "user", "change it", metadata=metadata)
     store.append_message(session.session_id, "assistant", "done", metadata=metadata)
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -353,7 +353,7 @@ def test_projection_rebuild_keeps_a_retried_goal_prompt_recognizable(
     )
     store.append_message(session.session_id, "assistant", "done")
 
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -387,7 +387,7 @@ def test_projection_rebuild_rejects_a_corrupt_canonical_security_snapshot(
     )
 
     with pytest.raises(ConflictError, match="invalid execution security profile"):
-        DeepCodeApplication.open(
+        DFcodeApplication.open(
             tmp_path / "state.sqlite3",
             session_store=store,
         )
@@ -400,7 +400,7 @@ def test_session_access_preset_is_canonical_and_forks_fail_closed(
     workspace.mkdir()
     store = SessionStore(tmp_path / "sessions")
     database = tmp_path / "state.sqlite3"
-    application = DeepCodeApplication.open(database, session_store=store)
+    application = DFcodeApplication.open(database, session_store=store)
     try:
         project = application.projects.add(str(workspace))
         source = application.threads.start(
@@ -429,7 +429,7 @@ def test_session_access_preset_is_canonical_and_forks_fail_closed(
     finally:
         application.close()
 
-    reopened = DeepCodeApplication.open(database, session_store=store)
+    reopened = DFcodeApplication.open(database, session_store=store)
     try:
         assert (
             reopened.threads.read(source.id).access_preset_override
@@ -458,7 +458,7 @@ def test_session_listing_supports_exact_cwd_and_all_directories(tmp_path: Path) 
     store = SessionStore(tmp_path / "sessions")
     first = _seed_cli_session(store, first_workspace, "one")
     second = _seed_cli_session(store, second_workspace, "two")
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -485,7 +485,7 @@ def test_explicit_cross_directory_resume_is_process_local_and_stable(
     session = _seed_cli_session(store, original_workspace)
     source = store.root / session.session_id / "session.jsonl"
     before = source.read_bytes()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_store=store,
     )
@@ -589,7 +589,7 @@ def test_p6_import_projection_tail_merges_back_into_original_session(
             imported_at=now,
         )
 
-    application = DeepCodeApplication.open(database_path, session_store=store)
+    application = DFcodeApplication.open(database_path, session_store=store)
     try:
         visible = application.threads.list()
         assert [thread.id for thread in visible] == [original.session_id]

@@ -6,7 +6,7 @@ import setuptools
 ROOT = Path(__file__).resolve().parent
 
 
-REPOSITORY = "https://github.com/HKUDS/DeepCode"
+REPOSITORY = "https://github.com/HKUDS/DFcode"
 # Markdown links whose target is relative: ](docs/x.md), ](#anchor), ](LICENSE).
 _RELATIVE_LINK = re.compile(r"\]\((?![a-z][a-z0-9+.-]*:|//)([^)\s]+)\)", re.IGNORECASE)
 
@@ -29,7 +29,7 @@ def read_long_description():
     try:
         return _absolute_links((ROOT / "README.md").read_text(encoding="utf-8"))
     except FileNotFoundError:
-        return "DeepCode: an open agentic coding system."
+        return "DFcode: an open agentic coding system."
 
 
 # Read the canonical product version without importing runtime dependencies.
@@ -60,10 +60,10 @@ long_description = read_long_description()
 requirements = read_requirements()
 
 setuptools.setup(
-    name="deepcode-hku",
-    url="https://github.com/HKUDS/DeepCode",
+    name="dfcode-hku",
+    url="https://github.com/HKUDS/DFcode",
     version=read_version(),
-    author="DeepCode Team",
+    author="DFcode Team",
     license="MIT",
     description=(
         "An open-source coding agent for long-running work: Goals that continue "
@@ -75,7 +75,7 @@ setuptools.setup(
     packages=setuptools.find_packages(
         exclude=("tests*", "docs*", ".history*", ".git*", ".ruff_cache*")
     ),
-    py_modules=["deepcode"],
+    py_modules=["dfcode"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Programming Language :: Python :: 3",
@@ -122,14 +122,14 @@ setuptools.setup(
     },
     entry_points={
         "console_scripts": [
-            "deepcode=deepcode:main",
-            "deepcode-app-server=app_server.__main__:main",
+            "dfcode=dfcode:main",
+            "dfcode-app-server=app_server.__main__:main",
         ],
     },
     project_urls={
-        "Documentation": "https://github.com/HKUDS/DeepCode#readme",
-        "Source": "https://github.com/HKUDS/DeepCode",
-        "Tracker": "https://github.com/HKUDS/DeepCode/issues",
-        "Changelog": "https://github.com/HKUDS/DeepCode/blob/main/CHANGELOG.md",
+        "Documentation": "https://github.com/HKUDS/DFcode#readme",
+        "Source": "https://github.com/HKUDS/DFcode",
+        "Tracker": "https://github.com/HKUDS/DFcode/issues",
+        "Changelog": "https://github.com/HKUDS/DFcode/blob/main/CHANGELOG.md",
     },
 )

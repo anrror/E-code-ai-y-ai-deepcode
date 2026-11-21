@@ -1,6 +1,6 @@
-"""Options for DeepCode's own git calls on a repository the agent writes to.
+"""Options for DFcode's own git calls on a repository the agent writes to.
 
-DeepCode runs git outside the sandbox: status, diff and discard for the
+DFcode runs git outside the sandbox: status, diff and discard for the
 Changes view, Session worktrees, and the commits and merges of isolated
 sub-agents. The repository may carry a config the agent wrote, one it
 started with ``git init`` inside the sandbox (which only protects the
@@ -123,5 +123,5 @@ def _require_own_work_tree(cwd: str | os.PathLike[str]) -> None:
     if not points_back:
         raise MovedWorkTreeError(
             f"the repository at {git_dir} sets its work tree to {top} "
-            "(core.worktree); DeepCode runs no git command there"
+            "(core.worktree); DFcode runs no git command there"
         )

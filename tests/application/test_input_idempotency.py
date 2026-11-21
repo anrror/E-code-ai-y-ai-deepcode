@@ -7,7 +7,7 @@ import time
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import (
     DuplicateMessageConflictError,
     ProjectNotTrustedError,
@@ -42,7 +42,7 @@ class CountingFactory:
 @contextmanager
 def application(tmp_path):
     factory = CountingFactory()
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     project = app.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -142,7 +142,7 @@ def test_receipt_survives_restart_and_canonical_rebuild(tmp_path, rebuild):
         assert receipt.payload["requestFingerprint"].startswith("v1:")
         assert factory.runs == 1
     replacement = CountingFactory()
-    reopened = DeepCodeApplication.open(
+    reopened = DFcodeApplication.open(
         tmp_path / ("rebuilt.sqlite3" if rebuild else "state.sqlite3"),
         session_factory=replacement,
     )

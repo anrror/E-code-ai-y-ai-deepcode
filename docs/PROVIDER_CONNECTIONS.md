@@ -20,11 +20,11 @@ an SDK Authorization header; it does not borrow an ambient API key. Explicit
 custom headers remain private connection configuration.
 
 ```sh
-deepcode provider set local --template custom \
+dfcode provider set local --template custom \
   --api-base http://127.0.0.1:1234/v1 --protocol openai_chat --auth none \
   --catalog manual --model my-model
 
-deepcode provider set gateway --template custom \
+dfcode provider set gateway --template custom \
   --api-base https://gateway.example/v1 --protocol openai_responses --api-key \
   --catalog manual --model my-model
 ```
@@ -66,7 +66,7 @@ compatibility; secret headers remain in owner-only revision files. API-key
 bodies are stored only in the credential store, not Turn metadata or events.
 Per-model compatibility changes invalidate idle Session runtimes too.
 
-Before each model request, DeepCode checks current credentials and whether the
+Before each model request, DFcode checks current credentials and whether the
 connection is still enabled. Same-account key rotation at the same endpoint can
 continue. Removing a credential, disabling the connection, changing authenticated
 accounts or changing header credentials stops the next request without automatic
@@ -81,8 +81,8 @@ child/tool cleanup; a borrowed runtime remains its owner's responsibility.
 ## Quick test and Agent compatibility
 
 ```sh
-deepcode provider test gateway --model my-model
-deepcode provider test gateway --model my-model --agent --json
+dfcode provider test gateway --model my-model
+dfcode provider test gateway --model my-model --agent --json
 ```
 
 The quick test separates credential, catalog and minimal inference checks.
@@ -113,10 +113,10 @@ from this controlled protocol probe.
 ## OpenRouter login
 
 ```sh
-deepcode provider set router-login --template openrouter \
+dfcode provider set router-login --template openrouter \
   --protocol openai_chat --auth oauth
-deepcode provider login router-login
-deepcode provider logout router-login
+dfcode provider login router-login
+dfcode provider logout router-login
 ```
 
 Select **Sign in with OpenRouter** as the authentication method and save before
@@ -133,10 +133,10 @@ OpenRouter's flow exchanges a code for a user-controlled API key; it does not
 issue a refresh token. No refresh API is advertised. Disconnect removes local
 credentials and blocks further calls by old Turns. Remote revocation is a
 separate operation in [OpenRouter key settings](https://openrouter.ai/settings/keys).
-The management API requires a management credential; DeepCode does not pretend
+The management API requires a management credential; DFcode does not pretend
 a regular login key grants that authority.
 
-This first login adapter assumes a browser on the machine running DeepCode.
+This first login adapter assumes a browser on the machine running DFcode.
 Remote/SSH callback forwarding and other Provider OAuth adapters are not
 implemented. Real-account authorization remains an interactive user action.
 

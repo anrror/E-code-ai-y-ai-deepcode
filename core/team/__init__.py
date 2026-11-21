@@ -1,6 +1,6 @@
 """Worktree isolation for delegated sub-agents.
 
-The deterministic ``deepcode team`` pipeline (a decompose→board→workers→merge
+The deterministic ``dfcode team`` pipeline (a decompose→board→workers→merge
 coordinator) has been retired in favour of model-driven delegation: the agent
 calls the ``spawn_agent`` tool when it decides a subtask is worth handing off.
 What survives here is the piece that delegation reuses — :class:`WorktreeManager`,

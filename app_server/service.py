@@ -1,4 +1,4 @@
-"""Loopback management and business listener for one DeepCode application."""
+"""Loopback management and business listener for one DFcode application."""
 
 from __future__ import annotations
 
@@ -33,7 +33,7 @@ from app_server.service_state import (
 )
 from app_server.websocket import WebSocketTransport
 from app_server.web_surface import WebSurface
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.service_lifecycle import ServiceLifecycle
 from core.config import LoggerConfig
 from core.observability import setup_logging
@@ -226,7 +226,7 @@ class ControlServer:
                 request.headers.get("Authorization", "").encode(),
                 f"Bearer {self._token}".encode(),
             )
-            and request.headers.get("X-DeepCode-Instance") == self.record.instance_id
+            and request.headers.get("X-DFcode-Instance") == self.record.instance_id
         )
 
     async def _rpc(self, request: web.Request) -> web.Response:
@@ -362,7 +362,7 @@ async def serve(files: ServiceFiles, port: int) -> None:
             raise ServiceUnavailable(
                 "Service ownership is busy but no live owner could be verified"
             ) from exc
-        logger.info("A DeepCode service already owns this database")
+        logger.info("A DFcode service already owns this database")
         return
     host = None
     runner = None
@@ -381,7 +381,7 @@ async def serve(files: ServiceFiles, port: int) -> None:
         )
         token = secrets.token_hex(32)
         application = await asyncio.to_thread(
-            DeepCodeApplication.open,
+            DFcodeApplication.open,
             files.database,
             host_surface="service",
             run_automation_scheduler=True,
@@ -446,7 +446,7 @@ async def serve(files: ServiceFiles, port: int) -> None:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        description="Run the DeepCode service in the foreground"
+        description="Run the DFcode service in the foreground"
     )
     parser.add_argument("--database", type=Path, default=None)
     parser.add_argument("--port", type=int, default=DEFAULT_PORT)
@@ -469,7 +469,7 @@ def main(argv: list[str] | None = None) -> int:
         handler = None
     setup_logging(
         LoggerConfig(
-            level=os.environ.get("DEEPCODE_LOG_LEVEL", "INFO"), transports=["console"]
+            level=os.environ.get("DFCODE_LOG_LEVEL", "INFO"), transports=["console"]
         ),
         force=True,
         console_sink=handler,
@@ -481,7 +481,7 @@ def main(argv: list[str] | None = None) -> int:
     except PortUnavailable:
         return EXIT_PORT_UNAVAILABLE
     except Exception as exc:
-        logger.exception("DeepCode service failed (%s): %s", type(exc).__name__, exc)
+        logger.exception("DFcode service failed (%s): %s", type(exc).__name__, exc)
         return 1
     return 0
 

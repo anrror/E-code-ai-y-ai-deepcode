@@ -9,7 +9,7 @@ httpx>=0.27.0
 json-repair>=0.30.0
 loguru>=0.7.0
 
-# DeepCode-native LLM + MCP runtime (replaces legacy mcp-agent)
+# DFcode-native LLM + MCP runtime (replaces legacy mcp-agent)
 mcp>=1.29,<2
 mcp-server-git
 nest_asyncio

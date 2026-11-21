@@ -638,8 +638,8 @@ def test_a_missing_key_is_reported_at_startup_with_the_fix(monkeypatch) -> None:
 
     text = output.getvalue()
     assert "! OpenAI has no API key, so messages will fail." in text
-    assert "deepcode provider set openai --api-key" in text
-    assert "or set OPENAI_API_KEY before starting DeepCode." in text
+    assert "dfcode provider set openai --api-key" in text
+    assert "or set OPENAI_API_KEY before starting DFcode." in text
     assert "/model (deepseek)" in text
     assert "Error" not in text
 
@@ -653,7 +653,7 @@ def test_the_built_in_default_model_is_named_as_such(monkeypatch) -> None:
 
     app._print_setup_problem()
 
-    assert "openai/gpt-4o-mini is DeepCode's built-in default" in output.getvalue()
+    assert "openai/gpt-4o-mini is DFcode's built-in default" in output.getvalue()
     assert "/model" not in output.getvalue()
 
 
@@ -662,12 +662,12 @@ def test_the_built_in_default_model_is_named_as_such(monkeypatch) -> None:
     [
         (
             _view(enabled=False, configured=True),
-            "deepcode provider set openai --enabled",
+            "dfcode provider set openai --enabled",
         ),
-        (_view(auth="oauth"), "deepcode provider login openai"),
+        (_view(auth="oauth"), "dfcode provider login openai"),
         (
             _view(credentialSource="config"),
-            "deepcode provider set openai --api-base <url>",
+            "dfcode provider set openai --api-base <url>",
         ),
     ],
 )
@@ -716,7 +716,7 @@ def test_leaving_while_a_turn_runs_says_how_to_come_back() -> None:
     app._print_exit_note()
     text = output.getvalue()
     assert "The current task keeps running in the background service." in text
-    assert f"deepcode --resume {THREAD}" in text
+    assert f"dfcode --resume {THREAD}" in text
 
 
 def test_leaving_while_an_approval_waits_says_so() -> None:

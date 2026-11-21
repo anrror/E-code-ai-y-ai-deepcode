@@ -20,7 +20,7 @@ export function effortLabel(value: string, t: TFunction): string {
     case "max":
       return t("effort.max", "Max");
     default:
-      // A level DeepCode does not know yet is shown as the provider names it.
+      // A level DFcode does not know yet is shown as the provider names it.
       return value.charAt(0).toLocaleUpperCase() + value.slice(1);
   }
 }

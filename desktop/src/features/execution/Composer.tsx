@@ -472,7 +472,7 @@ export function Composer({
                 )
               : t(
                   "composer.placeholder.idle",
-                  "Ask DeepCode to build, inspect, or verify…",
+                  "Ask DFcode to build, inspect, or verify…",
                 )
           }
           rows={1}
@@ -862,7 +862,7 @@ export function Composer({
           disabledReason ??
           t(
             "composer.hint.sensitive",
-            "DeepCode may ask before sensitive tools run.",
+            "DFcode may ask before sensitive tools run.",
           )}
         <span>
           {active

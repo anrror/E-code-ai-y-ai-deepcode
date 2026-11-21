@@ -81,7 +81,7 @@ _DEFAULT_CODE_ANALYZER_TIMEOUT_S = 180
 def _get_code_analyzer_timeout_s() -> int:
     """Return the wall-clock timeout for a single planning LLM attempt."""
     raw = (
-        os.environ.get("DEEPCODE_CODE_ANALYZER_TIMEOUT_S")
+        os.environ.get("DFCODE_CODE_ANALYZER_TIMEOUT_S")
         or os.environ.get("NANOBOT_CODE_ANALYZER_TIMEOUT_S")
         or ""
     ).strip()
@@ -367,7 +367,7 @@ def _adjust_params_for_retry(params: RequestParams, retry_count: int) -> Request
     Token减少策略以适应模型context限制
 
     策略说明（针对总context有限的模型，例如 qwen/qwen-max 的 32768 token 限制）：
-    - 第1次重试：REDUCE到retry_max_tokens（从 deepcode_config.json 读取）
+    - 第1次重试：REDUCE到retry_max_tokens（从 dfcode_config.json 读取）
     - 第2次重试：REDUCE到retry_max_tokens的80%
     - 第3次重试：REDUCE到retry_max_tokens的60%
     - 降低temperature提高稳定性和可预测性
@@ -1991,11 +1991,11 @@ async def execute_multi_agent_research_pipeline(
         # Diagnostic stop-probe: lets developers halt the pipeline right at the
         # phase 8 entry to inspect intermediate state. Inactive unless the
         # environment variable is explicitly set to "8". Safe to leave in place.
-        if os.getenv("DEEPCODE_STOP_AT_PHASE") == "8":
-            print("🛑 [STOP_AT_PHASE_8] halt requested via DEEPCODE_STOP_AT_PHASE")
+        if os.getenv("DFCODE_STOP_AT_PHASE") == "8":
+            print("🛑 [STOP_AT_PHASE_8] halt requested via DFCODE_STOP_AT_PHASE")
             raise RuntimeError(
                 "[STOP_AT_PHASE_8] Pipeline halted at phase 8 entry as requested "
-                "(DEEPCODE_STOP_AT_PHASE=8). Phase 1-7 outputs are preserved in the task dir."
+                "(DFCODE_STOP_AT_PHASE=8). Phase 1-7 outputs are preserved in the task dir."
             )
 
         if enable_indexing:
@@ -2221,7 +2221,7 @@ async def execute_chat_based_planning_pipeline(
         workspace_path = (
             Path(workflow_root).expanduser().resolve()
             if workflow_root is not None
-            else (Path.cwd() / "deepcode_lab").resolve()
+            else (Path.cwd() / "dfcode_lab").resolve()
         )
         workspace_path.mkdir(parents=True, exist_ok=True)
         workspace_dir = str(workspace_path)

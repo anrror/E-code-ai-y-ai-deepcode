@@ -11,7 +11,7 @@ Design notes:
 * Pure data + derived path properties; no I/O, no LLM, no business logic.
   All side-effects live in :mod:`workflows.environment`.
 * All paths are :class:`pathlib.Path` (absolute) so downstream callers
-  cannot accidentally mix the legacy ``./deepcode_lab/papers`` relative
+  cannot accidentally mix the legacy ``./dfcode_lab/papers`` relative
   string with the new resolved value.
 * :meth:`to_dir_info` exists solely as a transitional bridge for Phase
   4-10 which still consume the old stringly-typed dict. New code should
@@ -43,7 +43,7 @@ EXTENSION_TO_KIND: dict[str, InputKind] = {
 
 TaskKind = Literal["paper2code", "chat2code", "text2web"]
 """Top-level pipeline modality. Drives task-directory naming under
-``deepcode_lab/tasks/<prefix>_<task_id>/``.
+``dfcode_lab/tasks/<prefix>_<task_id>/``.
 """
 
 TASK_KIND_PREFIX: dict[TaskKind, str] = {
@@ -77,7 +77,7 @@ class WorkflowContext:
     """Detected input flavour, used to drive Phase 2 routing."""
 
     workspace_root: Path
-    """Resolved workspace root (env > yaml > ``cwd/deepcode_lab``)."""
+    """Resolved workspace root (env > yaml > ``cwd/dfcode_lab``)."""
 
     task_dir: Path
     """Per-task directory: ``workspace_root / "tasks" / "<prefix>_<task_id>"``."""
@@ -147,21 +147,21 @@ class WorkflowContext:
 
 
 def resolve_workspace_root(yaml_root: str | None) -> Path:
-    """Decide where ``deepcode_lab`` should live.
+    """Decide where ``dfcode_lab`` should live.
 
     Priority (highest first):
 
-    1. ``DEEPCODE_WORKSPACE`` environment variable.
-    2. ``workspace.root`` in ``deepcode_config.json`` (passed in as
+    1. ``DFCODE_WORKSPACE`` environment variable.
+    2. ``workspace.root`` in ``dfcode_config.json`` (passed in as
        ``yaml_root``; ``None`` if absent).
-    3. ``<cwd>/deepcode_lab`` as a sane default that matches existing
+    3. ``<cwd>/dfcode_lab`` as a sane default that matches existing
        behaviour for users who do not customise anything.
 
     The returned path is always absolute and resolved.
     """
-    env_value = os.environ.get("DEEPCODE_WORKSPACE")
+    env_value = os.environ.get("DFCODE_WORKSPACE")
     if env_value:
         return Path(env_value).expanduser().resolve()
     if yaml_root:
         return Path(yaml_root).expanduser().resolve()
-    return (Path.cwd() / "deepcode_lab").resolve()
+    return (Path.cwd() / "dfcode_lab").resolve()

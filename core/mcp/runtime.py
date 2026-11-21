@@ -119,7 +119,7 @@ class _ActivateMcpServerTool(Tool):
 
 
 class McpSessionRuntime:
-    """Materialize one immutable MCP plan into a DeepCode ToolRegistry."""
+    """Materialize one immutable MCP plan into a DFcode ToolRegistry."""
 
     def __init__(
         self,
@@ -293,7 +293,7 @@ class McpSessionRuntime:
                 )
             if deferred_ids:
                 activation_name = visible_tool_name(
-                    "deepcode_runtime",
+                    "dfcode_runtime",
                     "activate_server",
                     used=used,
                 )

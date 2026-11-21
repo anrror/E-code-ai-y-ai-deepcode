@@ -410,8 +410,8 @@ async def test_explicit_sampling_limit_remains_available_for_diagnostics() -> No
 async def test_streaming_request_is_not_cut_off_by_regular_request_timeout(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    monkeypatch.setenv("DEEPCODE_LLM_TIMEOUT_S", "0.01")
-    monkeypatch.delenv("DEEPCODE_LLM_STREAM_MAX_RUNTIME_S", raising=False)
+    monkeypatch.setenv("DFCODE_LLM_TIMEOUT_S", "0.01")
+    monkeypatch.delenv("DFCODE_LLM_STREAM_MAX_RUNTIME_S", raising=False)
     provider = DelayedStreamingProvider(0.03)
     hook = StreamingHook()
 
@@ -426,7 +426,7 @@ async def test_streaming_request_is_not_cut_off_by_regular_request_timeout(
 async def test_streaming_request_respects_explicit_safety_cap(
     monkeypatch: pytest.MonkeyPatch,
 ):
-    monkeypatch.setenv("DEEPCODE_LLM_STREAM_MAX_RUNTIME_S", "0.01")
+    monkeypatch.setenv("DFCODE_LLM_STREAM_MAX_RUNTIME_S", "0.01")
     provider = DelayedStreamingProvider(0.03)
 
     result = await AgentRunner(provider).run(_spec(provider, hook=StreamingHook()))

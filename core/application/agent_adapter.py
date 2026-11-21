@@ -10,7 +10,7 @@ from core.agent_presets import AgentPresetSnapshot
 from core.agent_runtime.goal_runtime import GoalRuntimeRouter
 from core.agent_runtime.injections import InjectionCallback, TurnInputSink
 from core.agent_setup import build_agent_session
-from core.compat import DeepCodeRuntime, get_runtime
+from core.compat import DFcodeRuntime, get_runtime
 from core.config import home_config_path, load_config_for_workspace, project_config_path
 from core.domain.execution_permission import ExecutionPermissionMode
 from core.domain.execution_profile import ExecutionProfile
@@ -140,7 +140,7 @@ class ConfiguredAgentSessionFactory:
                 options["tool_filter"] = preset_filter
             if agent_preset.allow_spawn is not None:
                 options["allow_spawn"] = agent_preset.allow_spawn
-        runtime = DeepCodeRuntime(
+        runtime = DFcodeRuntime(
             load_config_for_workspace(workspace),
             config_loader=lambda: load_config_for_workspace(workspace),
         )

@@ -194,7 +194,7 @@ def test_config_env_reaches_the_child_after_the_scrub(
 ) -> None:
     """The ``subagents.<backend>.env`` layer is how the user's shell-function
     proxy reaches the spawned CLI — and the scrub must not eat it."""
-    config = tmp_path / "deepcode_config.json"
+    config = tmp_path / "dfcode_config.json"
     config.write_text(
         json.dumps(
             {
@@ -234,11 +234,11 @@ def test_credential_shaped_parent_env_is_scrubbed(
             "codex",
             """\
             with open(out, "w") as f:
-                f.write("LEAK" if "DEEPCODE_API_KEY" in os.environ else "clean")
+                f.write("LEAK" if "DFCODE_API_KEY" in os.environ else "clean")
             """,
         ),
     )
-    monkeypatch.setenv("DEEPCODE_API_KEY", "hunter2")
+    monkeypatch.setenv("DFCODE_API_KEY", "hunter2")
     answer = asyncio.run(run_external_subagent("codex", "task", tmp_path))
     assert answer == "clean"
 
@@ -281,7 +281,7 @@ def test_run_budget_expiry_terminates_and_raises(
 def test_config_can_set_the_budget(
     tmp_path: Path, monkeypatch: pytest.MonkeyPatch
 ) -> None:
-    config = tmp_path / "deepcode_config.json"
+    config = tmp_path / "dfcode_config.json"
     config.write_text(
         json.dumps({"subagents": {"codex": {"timeoutS": 0.5}}}),
         encoding="utf-8",

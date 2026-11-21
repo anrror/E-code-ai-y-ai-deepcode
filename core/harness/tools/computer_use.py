@@ -17,7 +17,7 @@ from typing import Any
 
 from core.agent_runtime.tools.base import Tool, ToolResult, tool_parameters
 
-_SHOT_DIR = Path(os.path.expanduser("~")) / ".deepcode" / "computer-shots"
+_SHOT_DIR = Path(os.path.expanduser("~")) / ".dfcode" / "computer-shots"
 
 _INPUT_MOUSE = 0
 _INPUT_KEYBOARD = 1

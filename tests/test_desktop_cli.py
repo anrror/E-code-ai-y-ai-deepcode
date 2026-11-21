@@ -42,7 +42,7 @@ def test_installed_cli_finds_its_local_install_source_without_using_cwd(
 def test_source_launch_from_another_directory_reuses_built_resources(
     tmp_path, monkeypatch
 ):
-    root = checkout(tmp_path / "DeepCode source")
+    root = checkout(tmp_path / "DFcode source")
     desktop = root / "desktop"
     tool = (
         desktop
@@ -53,11 +53,11 @@ def test_source_launch_from_another_directory_reuses_built_resources(
     tool.touch()
     binary = (
         desktop
-        / "build/sidecar/dist/deepcode-app-server"
+        / "build/sidecar/dist/dfcode-app-server"
         / (
-            "deepcode-app-server.exe"
+            "dfcode-app-server.exe"
             if desktop_cli.os.name == "nt"
-            else "deepcode-app-server"
+            else "dfcode-app-server"
         )
     )
     binary.parent.mkdir(parents=True)
@@ -110,7 +110,7 @@ def test_explicit_missing_source_never_falls_back_to_another_installation(
 
 
 def test_macos_installed_app_opens_without_build_tools(tmp_path, monkeypatch):
-    app = tmp_path / "DeepCode.app"
+    app = tmp_path / "DFcode.app"
     app.mkdir()
     monkeypatch.setattr(desktop_cli.sys, "platform", "darwin")
     monkeypatch.setattr(desktop_cli, "_source_checkout", lambda: None)
@@ -124,7 +124,7 @@ def test_macos_installed_app_opens_without_build_tools(tmp_path, monkeypatch):
 
 
 def test_installed_native_executable_is_launched_without_a_shell(tmp_path, monkeypatch):
-    app = tmp_path / "DeepCode AppImage"
+    app = tmp_path / "DFcode AppImage"
     app.write_bytes(b"\x7fELF")
     calls = []
     monkeypatch.setattr(
@@ -145,12 +145,12 @@ def test_missing_desktop_is_reported_without_opening_web(monkeypatch, capsys):
 
 
 def test_top_level_command_dispatches_desktop(monkeypatch):
-    import deepcode
+    import dfcode
 
-    monkeypatch.setattr(deepcode, "_bootstrap_logging", lambda: None)
-    monkeypatch.setattr(deepcode.sys, "argv", ["deepcode", "desktop", "--setup"])
+    monkeypatch.setattr(dfcode, "_bootstrap_logging", lambda: None)
+    monkeypatch.setattr(dfcode.sys, "argv", ["dfcode", "desktop", "--setup"])
     calls = []
     monkeypatch.setattr(desktop_cli, "run", lambda args: calls.append(args) or 0)
     with pytest.raises(SystemExit) as exit:
-        deepcode.main()
+        dfcode.main()
     assert exit.value.code == 0 and calls == [["--setup"]]

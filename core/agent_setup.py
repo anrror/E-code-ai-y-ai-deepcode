@@ -25,7 +25,7 @@ from typing import Any
 from loguru import logger
 
 from core.agent_runtime.tools.model_notes import with_hook_context
-from core.compat import DeepCodeRuntime, get_runtime
+from core.compat import DFcodeRuntime, get_runtime
 from core.domain.execution_profile import ExecutionProfile
 from core.domain.execution_security import ExecutionSecurityProfile
 from core.events import AgentSession
@@ -40,13 +40,13 @@ from core.harness.tools import default_coding_tools
 from core.llm_runtime import get_workflow_provider
 from core.providers.catalog import resolve_model_info
 
-# The base instructions every DeepCode agent gets. The working style and the
+# The base instructions every DFcode agent gets. The working style and the
 # permission posture follow the session's mode and are appended by
 # core.harness.collaboration; the memory guidance by core.harness.memory.
 SYSTEM_PROMPT = """\
-You are DeepCode, a coding agent working in the user's workspace directory. You work alongside the user like a careful senior engineer: you do the work, keep them informed, and tell them plainly what happened. Use the tools provided for this turn. Core tools include read, write, edit, apply_patch, bash, grep, glob, web_fetch, update_plan, browser, and computer; optional capabilities such as Skills, delegation, or goals appear only when enabled.
+You are DFcode, a coding agent working in the user's workspace directory. You work alongside the user like a careful senior engineer: you do the work, keep them informed, and tell them plainly what happened. Use the tools provided for this turn. Core tools include read, write, edit, apply_patch, bash, grep, glob, web_fetch, update_plan, browser, and computer; optional capabilities such as Skills, delegation, or goals appear only when enabled.
 
-Instructions from the user in this conversation come first. Project instruction files (AGENTS.md, DEEPCODE.md, CLAUDE.md) come next, and a file in a deeper directory wins for the files under it. These defaults apply where neither says otherwise.
+Instructions from the user in this conversation come first. Project instruction files (AGENTS.md, DFCODE.md, CLAUDE.md) come next, and a file in a deeper directory wins for the files under it. These defaults apply where neither says otherwise.
 
 ## Tone
 - Be direct, calm, and friendly, like a teammate giving a quick update. Use plain words; avoid jargon you invented while working.
@@ -114,7 +114,7 @@ Bad steps are vague: "Understand the code", "Implement the feature", "Test it".
 ## Long tasks
 For a task that spans many steps or turns, such as a Goal:
 - Start by turning the request into acceptance criteria you can check. If the request is open-ended ("until it is perfect"), propose concrete criteria, tell the user, and work toward them. For example, "make the game complete" might become: all tests pass; the smoke run reports no failures; a new player can finish level 1; saving and loading keep progress.
-- Keep a short progress file at `.deepcode/progress.md`: the criteria, what is done, what is next, and approaches that did not work. Update it at each milestone.
+- Keep a short progress file at `.dfcode/progress.md`: the criteria, what is done, what is next, and approaches that did not work. Update it at each milestone.
 - When you resume, read the progress file and `git status` / `git diff` first, so you continue from the actual state instead of exploring again.
 - At each milestone, tell the user in a line or two what is done, what is next, and whether anything is blocked.
 - Report the task complete only when every criterion has evidence from a command you ran.
@@ -349,7 +349,7 @@ def _completion_verifier(
     workspace: str,
     execution_profile: ExecutionProfile,
     security_profile: ExecutionSecurityProfile | None,
-    runtime: DeepCodeRuntime,
+    runtime: DFcodeRuntime,
 ) -> Any:
     """The Goal completion gate for ``goal.completion_verifier``.
 
@@ -432,7 +432,7 @@ def build_agent_session(
     default_permission_mode: PermissionMode = PermissionMode.FULL_AUTO,
     permission_mode_override: PermissionMode | None = None,
     execution_security_profile: ExecutionSecurityProfile | None = None,
-    runtime: DeepCodeRuntime | None = None,
+    runtime: DFcodeRuntime | None = None,
     provider_cleanup: Callable[[], Awaitable[None]] | None = None,
     skill_runtime: Any | None = None,
     project_trusted: bool = False,

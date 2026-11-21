@@ -80,7 +80,7 @@ export function GoalCheckingCard({
         {t(`settings.goalChecking.${selected.value}Note`, selected.note)}{" "}
         {t(
           "settings.goalChecking.checksNote",
-          "Checks you confirm for a Goal always run: DeepCode runs their commands itself before accepting completion.",
+          "Checks you confirm for a Goal always run: DFcode runs their commands itself before accepting completion.",
         )}
       </p>
     </section>

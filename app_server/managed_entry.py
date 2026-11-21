@@ -8,7 +8,7 @@ from pathlib import Path
 
 from core.private_storage import open_existing_private_file
 
-ENVIRONMENT_KEYS = frozenset({"DEEPCODE_HOME", "DEEPCODE_SESSIONS_DIR", "PATH"})
+ENVIRONMENT_KEYS = frozenset({"DFCODE_HOME", "DFCODE_SESSIONS_DIR", "PATH"})
 
 
 def read_configuration(path: Path) -> dict:

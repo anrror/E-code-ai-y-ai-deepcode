@@ -7,7 +7,7 @@ import threading
 
 from app_server.service import serve
 from app_server.service_state import ServiceFiles
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.events import Event, TurnStarted
 
 
@@ -30,7 +30,7 @@ class CheckpointFactory:
 
 
 if __name__ == "__main__":
-    original_open = DeepCodeApplication.open
+    original_open = DFcodeApplication.open
 
     def open_for_test(*args, **kwargs):
         app = original_open(*args, session_factory=CheckpointFactory(), **kwargs)
@@ -47,5 +47,5 @@ if __name__ == "__main__":
 
     # Only this child process substitutes the Agent. Listener, leases, executor,
     # SQLite, Session files and restart recovery all use production code.
-    DeepCodeApplication.open = staticmethod(open_for_test)
+    DFcodeApplication.open = staticmethod(open_for_test)
     asyncio.run(serve(ServiceFiles(Path(sys.argv[1])), 0))

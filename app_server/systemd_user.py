@@ -18,7 +18,7 @@ from app_server.service_state import (
     service_working_directory,
     shell_only_variables,
 )
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.private_storage import open_existing_private_file, open_private_file
 
 
@@ -40,7 +40,7 @@ class SystemdUserService:
     def __init__(self, files: ServiceFiles, *, directory: Path | None = None):
         self.files = files
         identity = hashlib.sha256(str(files.database).encode()).hexdigest()[:16]
-        self.label = f"deepcode-{identity}.service"
+        self.label = f"dfcode-{identity}.service"
         config = Path(os.environ.get("XDG_CONFIG_HOME", str(Path.home() / ".config")))
         if not config.is_absolute():
             raise ValueError("XDG_CONFIG_HOME must be an absolute path")
@@ -115,7 +115,7 @@ class SystemdUserService:
                 not Path(directory).is_absolute()
                 or parser["Service"]["Restart"] != "on-failure"
                 or parser["Service"]["KillMode"] != "mixed"
-                or set(environment) - {"DEEPCODE_HOME", "DEEPCODE_SESSIONS_DIR", "PATH"}
+                or set(environment) - {"DFCODE_HOME", "DFCODE_SESSIONS_DIR", "PATH"}
             ):
                 raise ValueError("Unexpected service configuration")
             value = {
@@ -139,7 +139,7 @@ class SystemdUserService:
         return "\n".join(
             [
                 "[Unit]",
-                "Description=DeepCode local service",
+                "Description=DFcode local service",
                 "StartLimitIntervalSec=120",
                 "StartLimitBurst=5",
                 "",
@@ -209,7 +209,7 @@ class SystemdUserService:
             )
         if not self.available():
             raise ServiceOperationError(
-                "No user systemd session is available; use deepcode serve --foreground"
+                "No user systemd session is available; use dfcode serve --foreground"
             )
         if (
             not Path(value["command"][0]).is_file()
@@ -263,8 +263,8 @@ class SystemdUserService:
                         },
                         {
                             "name": "runtimeHome",
-                            "ok": value["environment"].get("DEEPCODE_HOME")
-                            == str(deepcode_home()),
+                            "ok": value["environment"].get("DFCODE_HOME")
+                            == str(dfcode_home()),
                         },
                     ]
                 )

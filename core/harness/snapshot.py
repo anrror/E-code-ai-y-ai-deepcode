@@ -25,9 +25,9 @@ from pathlib import Path
 # Identity for shadow commits (never uses the user's git identity/config).
 _GIT_IDENTITY = (
     "-c",
-    "user.name=DeepCode",
+    "user.name=DFcode",
     "-c",
-    "user.email=snapshots@deepcode.local",
+    "user.email=snapshots@dfcode.local",
     "-c",
     "commit.gpgsign=false",
 )
@@ -37,8 +37,8 @@ def _default_shadow_dir(workspace: str) -> Path:
     digest = hashlib.sha1(os.path.abspath(workspace).encode()).hexdigest()[:12]
     base = Path(
         os.environ.get(
-            "DEEPCODE_SNAPSHOT_DIR",
-            str(Path.home() / ".local" / "share" / "deepcode" / "snapshots"),
+            "DFCODE_SNAPSHOT_DIR",
+            str(Path.home() / ".local" / "share" / "dfcode" / "snapshots"),
         )
     )
     return base / digest

@@ -3,7 +3,7 @@ from pathlib import Path
 
 from app_server.connection import ConnectionState
 from app_server.dispatcher import Dispatcher
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 
 ROOT = Path(__file__).resolve().parents[2]
 SCHEMA = ROOT / "protocol" / "app-server.schema.json"
@@ -13,7 +13,7 @@ GENERATED_TYPES = ROOT / "desktop" / "src" / "generated" / "app-server.ts"
 def test_schema_covers_every_server_method(tmp_path: Path) -> None:
     schema = json.loads(SCHEMA.read_text(encoding="utf-8"))
     schema_methods = set(schema["$defs"]["MethodParams"]["properties"])
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     dispatcher = Dispatcher(application, ConnectionState(application.broker))
     assert schema_methods == set(dispatcher.methods)
 

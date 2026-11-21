@@ -28,7 +28,7 @@ def _source_checkout() -> Path | None:
     # works without editable .pth hooks and without trusting the caller's cwd.
     try:
         data = json.loads(
-            distribution("deepcode-hku").read_text("direct_url.json") or "{}"
+            distribution("dfcode-hku").read_text("direct_url.json") or "{}"
         )
         url = urlsplit(data.get("url", ""))
         if url.scheme == "file" and url.netloc in ("", "localhost"):
@@ -54,7 +54,7 @@ def _run_source(root: Path, *, setup: bool, options: list[str]) -> int:
     )
     environment = {
         **os.environ,
-        "DEEPCODE_PYTHON": str(python if python.is_file() else sys.executable),
+        "DFCODE_PYTHON": str(python if python.is_file() else sys.executable),
     }
     if (
         setup
@@ -67,13 +67,13 @@ def _run_source(root: Path, *, setup: bool, options: list[str]) -> int:
         subprocess.run([npm, "ci"], cwd=desktop, env=environment, check=True)
     binary = (
         desktop
-        / "build/sidecar/dist/deepcode-app-server"
-        / ("deepcode-app-server.exe" if os.name == "nt" else "deepcode-app-server")
+        / "build/sidecar/dist/dfcode-app-server"
+        / ("dfcode-app-server.exe" if os.name == "nt" else "dfcode-app-server")
     )
     if setup or not binary.is_file():
         for task in ("setup:sidecar", "build:sidecar"):
             subprocess.run([npm, "run", task], cwd=desktop, env=environment, check=True)
-    print("Opening DeepCode Desktop. Keep this development terminal open.", flush=True)
+    print("Opening DFcode Desktop. Keep this development terminal open.", flush=True)
     return subprocess.call(
         [npm, "run", "tauri", "--", "dev", *options], cwd=desktop, env=environment
     )
@@ -82,18 +82,18 @@ def _run_source(root: Path, *, setup: bool, options: list[str]) -> int:
 def _installed_app() -> Path | None:
     if sys.platform == "darwin":
         candidates = [
-            Path.home() / "Applications/DeepCode.app",
-            Path("/Applications/DeepCode.app"),
+            Path.home() / "Applications/DFcode.app",
+            Path("/Applications/DFcode.app"),
         ]
     elif os.name == "nt":
         candidates = [
-            Path(base) / "DeepCode/deepcode-desktop.exe"
+            Path(base) / "DFcode/dfcode-desktop.exe"
             for key in ("LOCALAPPDATA", "ProgramFiles", "ProgramFiles(x86)")
             if (base := os.environ.get(key))
         ]
     else:
         candidates = [
-            Path(directory) / "deepcode-desktop" for directory in os.get_exec_path()
+            Path(directory) / "dfcode-desktop" for directory in os.get_exec_path()
         ]
     for candidate in candidates:
         if sys.platform == "darwin" and candidate.is_dir():
@@ -125,7 +125,7 @@ def _open_app(app: Path) -> int:
 
 def run(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode desktop", description="Open the native DeepCode Desktop client."
+        prog="dfcode desktop", description="Open the native DFcode Desktop client."
     )
     location = parser.add_mutually_exclusive_group()
     location.add_argument(
@@ -151,7 +151,7 @@ def run(argv: list[str] | None = None) -> int:
     try:
         source = args.source.expanduser().resolve() if args.source else None
         if source is not None and not _is_checkout(source):
-            raise ValueError("--source must point to a DeepCode source checkout.")
+            raise ValueError("--source must point to a DFcode source checkout.")
         if args.app is None:
             source = source or _source_checkout()
         if source is not None:
@@ -161,7 +161,7 @@ def run(argv: list[str] | None = None) -> int:
         app = args.app or _installed_app()
         if app is None:
             raise ValueError(
-                "Desktop is not installed. Install the Desktop app, or use deepcode desktop --source /path/to/DeepCode."
+                "Desktop is not installed. Install the Desktop app, or use dfcode desktop --source /path/to/DFcode."
             )
         return _open_app(app)
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:

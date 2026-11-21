@@ -1,6 +1,6 @@
 """Delivery integrations: an external Jenkins job and Kubernetes target per layer.
 
-Secrets live in ``~/.deepcode/integrations.yaml`` (0600) rather than in the team
+Secrets live in ``~/.dfcode/integrations.yaml`` (0600) rather than in the team
 store, so a team snapshot can be shared without leaking a Jenkins token or a
 kubeconfig path. Nothing here is ever sent to a model: only the RPC layer reads
 a token, and it never returns it.
@@ -14,7 +14,7 @@ from typing import Any
 
 import yaml
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 
 _INTEGRATIONS = "integrations.yaml"
 
@@ -24,8 +24,8 @@ class IntegrationError(Exception):
 
 
 def integrations_path(home: Path | None = None) -> Path:
-    base = home or deepcode_home().parent
-    return base / ".deepcode" / _INTEGRATIONS
+    base = home or dfcode_home().parent
+    return base / ".dfcode" / _INTEGRATIONS
 
 
 def _read(home: Path | None) -> dict[str, Any]:

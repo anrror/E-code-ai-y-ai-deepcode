@@ -2,18 +2,18 @@ from __future__ import annotations
 
 import sys
 
-import deepcode
+import dfcode
 from app_server.dispatcher import SERVER_VERSION
 from app_server.runtime_probe import verify_runtime
 from core.version import __version__
 
 
 def test_cli_reports_the_canonical_version(monkeypatch, capsys) -> None:
-    monkeypatch.setattr(sys, "argv", ["deepcode", "--version"])
+    monkeypatch.setattr(sys, "argv", ["dfcode", "--version"])
 
-    deepcode.main()
+    dfcode.main()
 
-    assert capsys.readouterr().out.strip() == f"DeepCode {__version__}"
+    assert capsys.readouterr().out.strip() == f"DFcode {__version__}"
 
 
 def test_runtime_surfaces_share_the_canonical_core_version() -> None:

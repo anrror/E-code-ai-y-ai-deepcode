@@ -1,5 +1,5 @@
 <!--
-Thanks for contributing to DeepCode!
+Thanks for contributing to DFcode!
 
 Please ensure your pull request is ready for review before submitting.
 

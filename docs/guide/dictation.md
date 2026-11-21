@@ -1,6 +1,6 @@
 # Voice Dictation (Parakeet)
 
-DeepCode supports push-to-talk voice input directly in the composer. Spoken text is transcribed through a speech-to-text model—such as NVIDIA Parakeet—and inserted right where your cursor is, without bypassing your review before sending.
+DFcode supports push-to-talk voice input directly in the composer. Spoken text is transcribed through a speech-to-text model—such as NVIDIA Parakeet—and inserted right where your cursor is, without bypassing your review before sending.
 
 ## Overview
 
@@ -15,9 +15,9 @@ DeepCode supports push-to-talk voice input directly in the composer. Spoken text
 
 ## Option 1: Zero-Server Local Dictation (Recommended)
 
-If you have `parakeet-mlx` installed on your machine (`pip install parakeet-mlx`), DeepCode can transcribe clips directly in-process without any daemon.
+If you have `parakeet-mlx` installed on your machine (`pip install parakeet-mlx`), DFcode can transcribe clips directly in-process without any daemon.
 
-Add to `~/.deepcode/deepcode_config.json`:
+Add to `~/.dfcode/dfcode_config.json`:
 
 ```json
 {
@@ -50,9 +50,9 @@ The server exposes an OpenAI-compatible speech-to-text API at:
 
 ---
 
-## Configuring DeepCode
+## Configuring DFcode
 
-Add the `dictation` block to your user configuration file (`~/.deepcode/deepcode_config.json`):
+Add the `dictation` block to your user configuration file (`~/.dfcode/dfcode_config.json`):
 
 ```json
 {

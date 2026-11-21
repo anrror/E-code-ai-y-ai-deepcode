@@ -134,7 +134,7 @@ const text = {
     claim: "“Complete”",
     gate: "Completion check", gateSub: "Cheapest step first; any step can turn the claim back.",
     s1: "Rule check", s1p: "The latest check passed, and the Turn did real work.", s1w: "rule · reviewer",
-    s2: "Your checks", s2p: "DeepCode runs each confirmed command itself. A pipe cannot hide a failure.", s2w: "always",
+    s2: "Your checks", s2p: "DFcode runs each confirmed command itself. A pipe cannot hide a failure.", s2w: "always",
     s3: "Independent review", s3p: "A read-only agent proves every requirement with evidence, or lists what is missing.", s3w: "reviewer",
     done: "Complete", doneP: "Every check is kept on the Goal card: requirement, finding, evidence.",
     back: "Turned back with what is missing: the agent keeps working",
@@ -142,7 +142,7 @@ const text = {
     p1: "Budget or time limit", p1p: "The Turn stops; the agent gets one answer, without tools, to say what is done and what is left.",
     p2: "Nothing new", p2p: "A Turn whose tool calls keep returning what it has already seen is ended, after a warning.",
     p3: "Stuck", p3p: "Three automatic Turns in a row with no successful step: the Goal is blocked for you to look at.",
-    p4: "Restart", p4p: "If DeepCode restarts mid-Goal, the Goal pauses instead of spending tokens unattended.",
+    p4: "Restart", p4p: "If DFcode restarts mid-Goal, the Goal pauses instead of spending tokens unattended.",
   },
   zh: {
     title: "一个 Goal 如何走到完成",
@@ -157,7 +157,7 @@ const text = {
     claim: "“完成了”",
     gate: "完成验收", gateSub: "先做代价最小的一步；任何一步都可以打回。",
     s1: "规则检查", s1p: "最近一次检查通过，而且这个回合确实做了事。", s1w: "规则 · 审查",
-    s2: "你确认的检查", s2p: "DeepCode 自己运行每条已确认的命令，管道藏不住失败。", s2w: "始终",
+    s2: "你确认的检查", s2p: "DFcode 自己运行每条已确认的命令，管道藏不住失败。", s2w: "始终",
     s3: "独立审查", s3p: "只读的智能体逐条用证据证明需求，或列出还缺什么。", s3w: "审查",
     done: "完成", doneP: "每次验收都记在 Goal 卡片上：需求、结论、证据。",
     back: "带着缺什么被打回：智能体继续工作",
@@ -165,7 +165,7 @@ const text = {
     p1: "预算或时间用完", p1p: "回合停下；智能体最后再回答一次（不能用工具），说明做完了什么、还剩什么。",
     p2: "没有新进展", p2p: "工具调用一直拿到已经看过的结果，先警告，再结束这个回合。",
     p3: "卡住了", p3p: "连续三个自动回合没有一步成功：Goal 转为受阻，等你来看。",
-    p4: "重启", p4p: "Goal 进行中 DeepCode 重启了：Goal 暂停，不会在无人看着时花 token。",
+    p4: "重启", p4p: "Goal 进行中 DFcode 重启了：Goal 暂停，不会在无人看着时花 token。",
   },
 };
 const lang = new URLSearchParams(location.search).get("lang") || "en";

@@ -962,7 +962,7 @@ reverse_derived_contract:
 | A | 需求方是否配合可测性评审 | **会配合** | 已确认。因此阻塞项应等待答复而非自行假设（§0.1） |
 | B | 度量是否进个人考核 | **不进** | 已确认。度量体系保持原设计 |
 | C | 默认 review_mode | `guided` | 需求方配合的前提下，只需在可测性评审处停一次 |
-| D | 兼容多 agent | 是（`~/.agents/skills/`） | 已落地，DeepCodeX 的 roots.py 识别该目录 |
+| D | 兼容多 agent | 是（`~/.agents/skills/`） | 已落地，DFcodeX 的 roots.py 识别该目录 |
 | E | 状态目录 | 工具目录（`~/.testflow/<hash>`） | 已确认，不污染仓库 |
 
 ### 12.2 仍需确认

@@ -19,7 +19,7 @@ from core.application.errors import (
 from core.application.execution_security_policy import ExecutionSecurityPolicy
 from core.application.project_service import ProjectService
 from core.config import (
-    DeepCodeConfig,
+    DFcodeConfig,
     load_config,
     load_config_for_workspace,
     project_config_path,
@@ -153,7 +153,7 @@ class SettingsService:
 
     def _view(
         self,
-        config: DeepCodeConfig,
+        config: DFcodeConfig,
         *,
         workspace: Path | None,
     ) -> dict[str, Any]:
@@ -266,7 +266,7 @@ class SettingsService:
                     ) from exc
 
         try:
-            DeepCodeConfig.model_validate(patch)
+            DFcodeConfig.model_validate(patch)
         except Exception as exc:
             raise InvalidArgumentError(f"invalid settings patch: {exc}") from exc
 
@@ -330,7 +330,7 @@ def _resolved_security_source(
         return "project"
     if _raw_access_preset(user_config) is not None:
         return "user"
-    if os.environ.get("DEEPCODE_PERMISSION_MODE", "").strip():
+    if os.environ.get("DFCODE_PERMISSION_MODE", "").strip():
         return "environment"
     if "permissionMode" in project_security or "permission_mode" in project_security:
         return "project_legacy"

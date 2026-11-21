@@ -255,7 +255,7 @@ class MutationRuntime implements ClientRuntime {
             worktreePath: "/workspace/worktree",
           },
           path: "/workspace/worktree",
-          branch: "deepcode/thread-b",
+          branch: "dfcode/thread-b",
           disposition:
             method === "git/worktree/create" ? "created" : "cleaned",
           dirty: false,

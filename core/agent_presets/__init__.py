@@ -42,7 +42,7 @@ from typing import Any
 
 import yaml
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 
 TRUST_SYSTEM = "system"
 TRUST_USER = "user"
@@ -239,7 +239,7 @@ def discover_preset_roots(workspace: str | Path | None = None) -> list[PresetRoo
         roots.append(PresetRoot(base / ".agents" / "presets", TRUST_PROJECT))
         # Zero-copy interop: definitions written for Claude Code load as-is.
         roots.append(PresetRoot(base / ".claude" / "agents", TRUST_PROJECT))
-    roots.append(PresetRoot(deepcode_home() / "agent-presets", TRUST_USER))
+    roots.append(PresetRoot(dfcode_home() / "agent-presets", TRUST_USER))
     home = Path.home()
     roots.append(PresetRoot(home / ".agents" / "presets", TRUST_USER))
     roots.append(PresetRoot(home / ".claude" / "agents", TRUST_USER))

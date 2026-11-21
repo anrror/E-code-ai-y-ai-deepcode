@@ -42,7 +42,7 @@ from contextlib import contextmanager
 from dataclasses import replace
 from pathlib import Path
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.file_lock import FileLease, exclusive_file_lock
 from core.private_storage import (
     ensure_private_directory,
@@ -99,7 +99,7 @@ class SessionStore:
         self.root = (
             Path(root).expanduser().resolve()
             if root
-            else (deepcode_home() / "sessions").resolve()
+            else (dfcode_home() / "sessions").resolve()
         )
         harden_private_tree(self.root)
         self._lock = threading.RLock()
@@ -1197,7 +1197,7 @@ def get_default_store() -> SessionStore:
     if _DEFAULT_STORE is None:
         with _DEFAULT_LOCK:
             if _DEFAULT_STORE is None:
-                env_root = os.environ.get("DEEPCODE_SESSIONS_DIR")
+                env_root = os.environ.get("DFCODE_SESSIONS_DIR")
                 _DEFAULT_STORE = SessionStore(env_root) if env_root else SessionStore()
     return _DEFAULT_STORE
 

@@ -1,6 +1,6 @@
 """Input layer — prompt_toolkit when interactive, plain stdin when piped.
 
-Interactive mode gives persistent history (~/.deepcode/tui_history),
+Interactive mode gives persistent history (~/.dfcode/tui_history),
 ``@path`` file completion against the workspace, and slash-command
 completion. When stdin is not a TTY (scripted runs, tests, CI) the same
 ``read()`` coroutine falls back to plain line reads, so the whole TUI stays
@@ -30,7 +30,7 @@ from prompt_toolkit.styles import Style
 
 from cli.tui import theme
 from cli.tui.commands import REGISTRY
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.private_storage import (
     ensure_private_directory,
     ensure_private_file,
@@ -213,7 +213,7 @@ class InputReader:
         # waits), consumed by the next read.
         self._draft = ""
         if self.interactive:
-            history_path = _HISTORY_PATH or deepcode_home() / "tui_history"
+            history_path = _HISTORY_PATH or dfcode_home() / "tui_history"
             ensure_private_directory(history_path.parent)
             if not history_path.exists():
                 descriptor = open_private_file(

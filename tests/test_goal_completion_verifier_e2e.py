@@ -90,7 +90,7 @@ def _run(
     (workspace / "calc.py").write_text("def add(a, b):\n    return a - b\n")
     home = tmp_path / "home"
     home.mkdir()
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "goal": {"completionVerifier": verifier},
@@ -105,8 +105,8 @@ def _run(
         "get_workflow_provider",
         lambda **_kwargs: (provider, _Profile()),
     )
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
-    monkeypatch.setenv("DEEPCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_SESSIONS_DIR", str(tmp_path / "sessions"))
     monkeypatch.setattr("core.sessions.store._DEFAULT_STORE", None)
 
     loop_cli.main(
@@ -407,7 +407,7 @@ def test_the_reviewer_runs_no_hooks(monkeypatch, tmp_path) -> None:
         [
             (
                 "write",
-                {"file_path": ".deepcode/hooks.json", "content": json.dumps(hooks)},
+                {"file_path": ".dfcode/hooks.json", "content": json.dumps(hooks)},
             ),
             ("read", {"file_path": "calc.py"}),
             COMPLETE,
@@ -554,7 +554,7 @@ def test_a_confirmed_check_runs_whatever_the_setting(
         tmp_path,
         [
             ("read", {"file_path": "calc.py"}),
-            COMPLETE,  # claimed before the fix: DeepCode's own run fails
+            COMPLETE,  # claimed before the fix: DFcode's own run fails
             ("write", {"file_path": "calc.py", "content": fixed}),
             COMPLETE,
         ],

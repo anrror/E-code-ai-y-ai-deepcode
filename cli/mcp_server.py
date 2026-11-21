@@ -1,11 +1,11 @@
-"""``deepcode mcp`` — expose DeepCode as an MCP server (C5a).
+"""``dfcode mcp`` — expose DFcode as an MCP server (C5a).
 
-The mirror of DeepCode's MCP *client*: instead of DeepCode calling other MCP
+The mirror of DFcode's MCP *client*: instead of DFcode calling other MCP
 servers for tools, this lets any MCP client (another agent, an IDE, a second
-DeepCode) drive DeepCode itself as a coding sub-agent over stdio.
+DFcode) drive DFcode itself as a coding sub-agent over stdio.
 
 The stdio server submits durable Turns to the shared local service. The
-``deepcode`` tool starts a Session; ``deepcode-reply`` resumes its canonical id.
+``dfcode`` tool starts a Session; ``dfcode-reply`` resumes its canonical id.
 Workspace trust and tool approval remain enforced by the service. Closing MCP
 stdio detaches the client; it does not close the Agent or erase Session history.
 Logs stay on stderr so stdout remains the MCP protocol channel.
@@ -22,13 +22,13 @@ import mcp.types as types
 from mcp.server.lowlevel import Server
 from mcp.server.stdio import stdio_server
 
-_DEEPCODE_TOOL = types.Tool(
-    name="deepcode",
-    title="DeepCode",
+_DFCODE_TOOL = types.Tool(
+    name="dfcode",
+    title="DFcode",
     description=(
-        "Run a DeepCode coding session on a prompt. The agent navigates, edits, "
+        "Run a DFcode coding session on a prompt. The agent navigates, edits, "
         "and runs code in the given workspace and returns a summary of what it "
-        "did. Returns a session_id you can pass to deepcode-reply to continue."
+        "did. Returns a session_id you can pass to dfcode-reply to continue."
     ),
     inputSchema={
         "type": "object",
@@ -54,10 +54,10 @@ _DEEPCODE_TOOL = types.Tool(
 )
 
 _REPLY_TOOL = types.Tool(
-    name="deepcode-reply",
-    title="DeepCode reply",
+    name="dfcode-reply",
+    title="DFcode reply",
     description=(
-        "Continue an existing DeepCode session (started by a prior deepcode "
+        "Continue an existing DFcode session (started by a prior dfcode "
         "call) with a follow-up prompt. The shared service keeps its full history across MCP connections."
     ),
     inputSchema={
@@ -65,7 +65,7 @@ _REPLY_TOOL = types.Tool(
         "properties": {
             "session_id": {
                 "type": "string",
-                "description": "The session_id returned by a prior deepcode call.",
+                "description": "The session_id returned by a prior dfcode call.",
             },
             "prompt": {
                 "type": "string",
@@ -116,7 +116,7 @@ async def _run_task(prompt: str, *, workspace=None, model=None, session_id=None)
     )
 
 
-async def _handle_deepcode(arguments: dict[str, Any]):
+async def _handle_dfcode(arguments: dict[str, Any]):
     prompt = str(arguments.get("prompt") or "").strip()
     if not prompt:
         return _reply("Error: 'prompt' is required.", {"error": "missing prompt"})
@@ -137,18 +137,18 @@ async def _handle_reply(arguments: dict[str, Any]):
 
 
 def build_server() -> Server:
-    """Assemble the ``deepcode`` MCP server (list_tools + call_tool handlers)."""
-    server: Server = Server("deepcode")
+    """Assemble the ``dfcode`` MCP server (list_tools + call_tool handlers)."""
+    server: Server = Server("dfcode")
 
     @server.list_tools()
     async def _list_tools() -> list[types.Tool]:
-        return [_DEEPCODE_TOOL, _REPLY_TOOL]
+        return [_DFCODE_TOOL, _REPLY_TOOL]
 
     @server.call_tool()
     async def _call_tool(name: str, arguments: dict[str, Any]):
-        if name == "deepcode":
-            return await _handle_deepcode(arguments)
-        if name == "deepcode-reply":
+        if name == "dfcode":
+            return await _handle_dfcode(arguments)
+        if name == "dfcode-reply":
             return await _handle_reply(arguments)
         return _reply(f"Error: unknown tool {name!r}.", {"error": "unknown tool"})
 
@@ -168,7 +168,7 @@ def main(argv: list[str] | None = None) -> int:
     from loguru import logger
 
     logger.remove()
-    logger.add(sys.stderr, level=os.environ.get("DEEPCODE_LOG_LEVEL", "WARNING"))
+    logger.add(sys.stderr, level=os.environ.get("DFCODE_LOG_LEVEL", "WARNING"))
     asyncio.run(_serve())
     return 0
 

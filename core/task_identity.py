@@ -1,6 +1,6 @@
 """Company-assigned task identity.
 
-The identifier is opaque to DeepCode: a company's planning system issues it,
+The identifier is opaque to DFcode: a company's planning system issues it,
 the product/project configuration carries it, and the team-context block
 reports it so a Session can be attributed to that task.
 

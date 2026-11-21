@@ -1,4 +1,4 @@
-"""macOS user LaunchAgents for the existing DeepCode service executable."""
+"""macOS user LaunchAgents for the existing DFcode service executable."""
 
 from __future__ import annotations
 
@@ -19,7 +19,7 @@ from app_server.service_state import (
     service_working_directory,
     shell_only_variables,
 )
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.private_storage import open_existing_private_file, open_private_file
 
 
@@ -31,7 +31,7 @@ class LaunchAgent:
     def __init__(self, files: ServiceFiles, *, directory: Path | None = None) -> None:
         self.files = files
         identity = hashlib.sha256(str(files.database).encode()).hexdigest()[:16]
-        self.label = f"ai.deepcode.service.{identity}"
+        self.label = f"ai.dfcode.service.{identity}"
         self.domain = f"gui/{os.getuid()}"
         self.target = f"{self.domain}/{self.label}"
         self.path = (
@@ -77,7 +77,7 @@ class LaunchAgent:
         try:
             value = plistlib.loads(data)
         except (ValueError, plistlib.InvalidFileException, ExpatError) as exc:
-            raise ServiceOperationError("Invalid DeepCode LaunchAgent plist") from exc
+            raise ServiceOperationError("Invalid DFcode LaunchAgent plist") from exc
         if not isinstance(value, dict) or value.get("Label") != self.label:
             raise ServiceOperationError(
                 "LaunchAgent identity does not match this database"
@@ -124,7 +124,7 @@ class LaunchAgent:
             )
         if previous != value:
             # LaunchAgents is a shared user directory; do not chmod it as though
-            # DeepCode owned every agent in it. Only our plist is private.
+            # DFcode owned every agent in it. Only our plist is private.
             self.path.parent.mkdir(parents=True, exist_ok=True)
             temporary = self.path.with_suffix(".plist.tmp")
             try:
@@ -150,7 +150,7 @@ class LaunchAgent:
             )
         if not self.available():
             raise ServiceOperationError(
-                "No macOS desktop login session is available; use deepcode serve --foreground"
+                "No macOS desktop login session is available; use dfcode serve --foreground"
             )
         for key in ("ProgramArguments", "WorkingDirectory"):
             target = value[key][0] if key == "ProgramArguments" else value[key]
@@ -210,8 +210,8 @@ class LaunchAgent:
                     },
                     {
                         "name": "runtimeHome",
-                        "ok": value["EnvironmentVariables"].get("DEEPCODE_HOME")
-                        == str(deepcode_home()),
+                        "ok": value["EnvironmentVariables"].get("DFCODE_HOME")
+                        == str(dfcode_home()),
                     },
                 ]
             )

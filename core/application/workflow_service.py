@@ -43,7 +43,7 @@ from core.application.workflow_adapter import (
     WorkflowRunner,
 )
 from core.application.workspace_service import WorkspaceService
-from core.compat.runtime import DeepCodeRuntime, use_runtime
+from core.compat.runtime import DFcodeRuntime, use_runtime
 from core.config import load_config_for_workspace
 from core.domain.artifact import Artifact
 from core.domain.common import JsonObject, new_id, utc_now, validate_json_object
@@ -858,7 +858,7 @@ class WorkflowService:
                 workspace=workspace,
                 checkpoint=run.checkpoint,
             )
-            runtime = DeepCodeRuntime(
+            runtime = DFcodeRuntime(
                 load_config_for_workspace(workspace),
                 credential_store=self.llm_configuration.credentials,
                 phase_execution_profiles=_execution_profiles(run.input),

@@ -239,7 +239,7 @@ def test_known_gaps_are_documented_not_guarded():
 
 def test_feature_off_decisions_and_reasons_are_identical(monkeypatch):
     # make_engine never reads the flag: even exported, nothing changes.
-    monkeypatch.setenv("DEEPCODE_RISK_EVALUATOR", "1")
+    monkeypatch.setenv("DFCODE_RISK_EVALUATOR", "1")
     calls = [
         ("read_file", {"file_path": "/home/u/proj/a.py"}),
         ("write_file", {"file_path": "/home/u/proj/a.py"}),
@@ -263,7 +263,7 @@ def test_feature_off_decisions_and_reasons_are_identical(monkeypatch):
 
 
 def test_make_engine_takes_only_an_explicit_evaluator(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_RISK_EVALUATOR", raising=False)
+    monkeypatch.delenv("DFCODE_RISK_EVALUATOR", raising=False)
 
     engine = make_engine(
         "full_auto", cwd="/w", risk_evaluator=CommandGuardRiskEvaluator()
@@ -274,11 +274,11 @@ def test_make_engine_takes_only_an_explicit_evaluator(monkeypatch):
 
 
 def test_runtime_engine_builder_follows_the_env_flag(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
-    monkeypatch.delenv("DEEPCODE_RISK_EVALUATOR", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_RISK_EVALUATOR", raising=False)
     assert build_permission_engine(None, cwd="/w").risk_evaluator is None
 
-    monkeypatch.setenv("DEEPCODE_RISK_EVALUATOR", "1")
+    monkeypatch.setenv("DFCODE_RISK_EVALUATOR", "1")
     engine = build_permission_engine(None, cwd="/w")
 
     assert isinstance(engine.risk_evaluator, CommandGuardRiskEvaluator)
@@ -286,8 +286,8 @@ def test_runtime_engine_builder_follows_the_env_flag(monkeypatch):
 
 
 def test_runtime_engine_builder_off_is_identical_to_main(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
-    monkeypatch.delenv("DEEPCODE_RISK_EVALUATOR", raising=False)
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.delenv("DFCODE_RISK_EVALUATOR", raising=False)
     calls = [
         ("read_file", {"file_path": "/w/a.py"}),
         ("write_file", {"file_path": "/w/a.py"}),
@@ -316,8 +316,8 @@ def test_runtime_engine_builder_off_is_identical_to_main(monkeypatch):
 
 
 def test_full_access_skips_the_evaluator(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
-    monkeypatch.setenv("DEEPCODE_RISK_EVALUATOR", "1")
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.setenv("DFCODE_RISK_EVALUATOR", "1")
 
     engine = build_permission_engine(
         None,
@@ -335,8 +335,8 @@ def test_full_access_skips_the_evaluator(monkeypatch):
 
 
 def test_read_only_preset_turns_a_flag_into_a_deny(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_PERMISSION_MODE", raising=False)
-    monkeypatch.setenv("DEEPCODE_RISK_EVALUATOR", "1")
+    monkeypatch.delenv("DFCODE_PERMISSION_MODE", raising=False)
+    monkeypatch.setenv("DFCODE_RISK_EVALUATOR", "1")
 
     engine = build_permission_engine(
         None,

@@ -93,8 +93,8 @@ def test_fences_writes_tracks_backend_capability(monkeypatch, backend, fenced):
     assert fences_writes() is fenced
 
 
-def test_job_launcher_starts_without_deepcode_on_the_path(monkeypatch, tmp_path):
-    """Commands run in the project without DeepCode's PYTHONPATH, so the job
+def test_job_launcher_starts_without_dfcode_on_the_path(monkeypatch, tmp_path):
+    """Commands run in the project without DFcode's PYTHONPATH, so the job
     launcher must not need ``import core`` to start."""
 
     import core.harness.windows_sandbox as launcher
@@ -102,7 +102,7 @@ def test_job_launcher_starts_without_deepcode_on_the_path(monkeypatch, tmp_path)
     monkeypatch.setattr("core.harness.sandbox.sandbox_backend", lambda: "job")
     wrapped = wrap_shell_command("echo hi", SandboxPolicy.for_workspace(tmp_path))
     assert wrapped.argv[1:3] == [launcher.__file__, "--"]
-    # -I keeps an installed copy of DeepCode out of reach as well.
+    # -I keeps an installed copy of DFcode out of reach as well.
     proc = subprocess.run(
         [sys.executable, "-I", *wrapped.argv[1:]],
         cwd=tmp_path,
@@ -140,7 +140,7 @@ def test_seatbelt_blocks_write_outside_workspace(tmp_path):
     # work). ``tmp_path`` lives under temp, so use a path in $HOME instead.
     workspace = tmp_path / "ws"
     workspace.mkdir()
-    forbidden = Path.home() / ".deepcode_sandbox_leak_test.txt"
+    forbidden = Path.home() / ".dfcode_sandbox_leak_test.txt"
     if forbidden.exists():
         forbidden.unlink()
     policy = SandboxPolicy.for_workspace(workspace)
@@ -172,7 +172,7 @@ def test_a_sandboxed_command_cannot_swap_a_later_commands_policy(tmp_path):
     # must not be able to loosen the policy a later command starts under.
     workspace = tmp_path / "ws"
     workspace.mkdir()
-    forbidden = Path.home() / ".deepcode_sandbox_swap_test.txt"
+    forbidden = Path.home() / ".dfcode_sandbox_swap_test.txt"
     forbidden.unlink(missing_ok=True)
     policy = SandboxPolicy.for_workspace(workspace)
     later = wrap_shell_command(f"echo leak > {forbidden}", policy)
@@ -193,13 +193,13 @@ def test_a_sandboxed_command_cannot_swap_a_later_commands_policy(tmp_path):
 
 
 def test_policy_for_workspace_keeps_credential_stores_unreadable(tmp_path):
-    from core.config import deepcode_home
+    from core.config import dfcode_home
 
     unreadable = SandboxPolicy.for_workspace(tmp_path).unreadable
 
     assert str(Path.home() / ".ssh") in unreadable
     assert str(Path.home() / ".aws") in unreadable
-    assert str(deepcode_home() / "credentials.json") in unreadable
+    assert str(dfcode_home() / "credentials.json") in unreadable
 
 
 def test_policy_for_workspace_leaves_public_ssh_files_readable(tmp_path):
@@ -366,7 +366,7 @@ _git = shutil.which("git") is not None
 
 @pytest.mark.skipif(not (_seatbelt and _git), reason="seatbelt and git required")
 def test_seatbelt_keeps_workspace_control_paths_read_only(tmp_path):
-    # DeepCode later acts on these outside the sandbox: git runs hooks and
+    # DFcode later acts on these outside the sandbox: git runs hooks and
     # config-defined programs, and the next session loads project hooks and
     # config. A sandboxed command must not plant anything there.
     workspace = tmp_path / "ws"
@@ -379,15 +379,15 @@ def test_seatbelt_keeps_workspace_control_paths_read_only(tmp_path):
         "echo /tmp/elsewhere > .git/commondir",
         "mkdir -p .git/modules/sub",
         "mv .git .git-old",
-        "mkdir .deepcode",
+        "mkdir .dfcode",
         "mkdir .claude",
-        "echo '{}' > deepcode_config.json",
+        "echo '{}' > dfcode_config.json",
     ):
         assert _run(command, policy, cwd=workspace).returncode != 0, command
     assert not (workspace / ".git" / "hooks" / "pre-commit").exists()
     assert not (workspace / ".git" / "commondir").exists()
-    assert not (workspace / ".deepcode").exists()
-    assert not (workspace / "deepcode_config.json").exists()
+    assert not (workspace / ".dfcode").exists()
+    assert not (workspace / "dfcode_config.json").exists()
 
     # Everyday git still works: only what makes git run a program is fenced.
     commit = _run(
@@ -417,7 +417,7 @@ def test_bwrap_mounts_existing_control_paths_read_only(monkeypatch, tmp_path):
     workspace = tmp_path / "ws"
     (workspace / ".git" / "hooks").mkdir(parents=True)
     (workspace / ".git" / "config").write_text("")
-    (workspace / ".deepcode").mkdir()
+    (workspace / ".dfcode").mkdir()
     policy = SandboxPolicy(writable_roots=(str(workspace),))
 
     wrapped = wrap_shell_command("true", policy)
@@ -435,13 +435,13 @@ def test_bwrap_mounts_existing_control_paths_read_only(monkeypatch, tmp_path):
     assert bind < at("--bind", git, git)
     assert at("--bind", git, git) < at("--ro-bind", git / "hooks", git / "hooks")
     assert bind < at("--ro-bind", git / "config", git / "config")
-    assert bind < at("--ro-bind", workspace / ".deepcode", workspace / ".deepcode")
+    assert bind < at("--ro-bind", workspace / ".dfcode", workspace / ".dfcode")
     # bwrap can only mount over what exists.
     assert str(git / "commondir") not in argv
 
 
 def test_bwrap_holds_missing_control_dirs_with_placeholders(monkeypatch, tmp_path):
-    # A command could otherwise create .deepcode/hooks.json or the agent
+    # A command could otherwise create .dfcode/hooks.json or the agent
     # settings directory, which the next session loads outside the sandbox.
     monkeypatch.setattr("core.harness.sandbox.sandbox_backend", lambda: "bwrap")
     workspace = tmp_path / "ws"
@@ -452,7 +452,7 @@ def test_bwrap_holds_missing_control_dirs_with_placeholders(monkeypatch, tmp_pat
     second = wrap_shell_command("true", policy)  # running at the same time
 
     joined = "\0".join(first.argv)
-    for name in (".deepcode", ".claude"):
+    for name in (".dfcode", ".claude"):
         path = str(workspace / name)
         assert "\0".join(["--ro-bind", path, path]) in joined
         assert not any((workspace / name).iterdir())
@@ -460,10 +460,10 @@ def test_bwrap_holds_missing_control_dirs_with_placeholders(monkeypatch, tmp_pat
     assert "--unshare-pid" in first.argv
     first.cleanup()
     assert (workspace / ".claude").is_dir()  # still held for the other command
-    (workspace / ".deepcode" / "memory").mkdir()  # DeepCode itself, meanwhile
+    (workspace / ".dfcode" / "memory").mkdir()  # DFcode itself, meanwhile
     second.cleanup()
     assert not (workspace / ".claude").exists()
-    assert (workspace / ".deepcode" / "memory").is_dir()
+    assert (workspace / ".dfcode" / "memory").is_dir()
 
 
 def test_bwrap_sets_aside_a_project_config_the_command_created(monkeypatch, tmp_path):
@@ -474,11 +474,11 @@ def test_bwrap_sets_aside_a_project_config_the_command_created(monkeypatch, tmp_
     planted = '{"mcpServers": {"x": {"type": "stdio", "command": "sh"}}}'
 
     wrapped = wrap_shell_command("true", policy)
-    (workspace / "deepcode_config.json").write_text(planted)  # the command
+    (workspace / "dfcode_config.json").write_text(planted)  # the command
     wrapped.cleanup()
 
-    assert not (workspace / "deepcode_config.json").exists()
-    (aside,) = workspace.glob("deepcode_config.json.from-sandbox-*")
+    assert not (workspace / "dfcode_config.json").exists()
+    (aside,) = workspace.glob("dfcode_config.json.from-sandbox-*")
     assert aside.read_text() == planted
 
 
@@ -486,7 +486,7 @@ def test_bwrap_keeps_a_project_config_that_was_there(monkeypatch, tmp_path):
     monkeypatch.setattr("core.harness.sandbox.sandbox_backend", lambda: "bwrap")
     workspace = tmp_path / "ws"
     workspace.mkdir()
-    config = workspace / "deepcode_config.json"
+    config = workspace / "dfcode_config.json"
     config.write_text("{}")
     policy = SandboxPolicy(writable_roots=(str(workspace),))
 
@@ -738,7 +738,7 @@ def test_read_only_commands_stay_sandboxed_when_sandboxing_is_off(
     from core.harness.sandbox import build_exec_command
 
     monkeypatch.setattr("core.harness.sandbox.sandbox_backend", lambda: "bwrap")
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "0")
+    monkeypatch.setenv("DFCODE_SANDBOX", "0")
     wrapped = build_exec_command(
         command="true", workspace=tmp_path, enabled=False, read_only=True
     )

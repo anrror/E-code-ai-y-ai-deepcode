@@ -7,7 +7,7 @@ import asyncio
 import pytest
 
 from cli import mcp_server
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.providers.base import LLMResponse
 from tests.test_exec_cli import _patch
@@ -27,7 +27,7 @@ def workspace(tmp_path, monkeypatch):
     _patch(monkeypatch, Provider())
     path = tmp_path / "project"
     path.mkdir()
-    app = DeepCodeApplication.open()
+    app = DFcodeApplication.open()
     try:
         app.projects.add(str(path), trust_state=TrustState.TRUSTED)
     finally:
@@ -36,16 +36,16 @@ def workspace(tmp_path, monkeypatch):
 
 
 def test_list_tools_exposes_both():
-    assert [t.name for t in (mcp_server._DEEPCODE_TOOL, mcp_server._REPLY_TOOL)] == [
-        "deepcode",
-        "deepcode-reply",
+    assert [t.name for t in (mcp_server._DFCODE_TOOL, mcp_server._REPLY_TOOL)] == [
+        "dfcode",
+        "dfcode-reply",
     ]
-    assert mcp_server.build_server().name == "deepcode"
+    assert mcp_server.build_server().name == "dfcode"
 
 
-def test_deepcode_and_reply_share_a_durable_session(workspace):
+def test_dfcode_and_reply_share_a_durable_session(workspace):
     first, identity = asyncio.run(
-        mcp_server._handle_deepcode({"prompt": "first", "workspace": str(workspace)})
+        mcp_server._handle_dfcode({"prompt": "first", "workspace": str(workspace)})
     )
     assert first[0].text == "completed in service"
     assert identity["stop_reason"] == "completed"
@@ -71,13 +71,13 @@ def test_reply_unknown_session_errors():
 
 
 def test_missing_prompt_errors():
-    content, result = asyncio.run(mcp_server._handle_deepcode({"prompt": " "}))
+    content, result = asyncio.run(mcp_server._handle_dfcode({"prompt": " "}))
     assert "required" in content[0].text and result["error"] == "missing prompt"
 
 
 def test_mcp_requires_existing_workspace_trust(tmp_path):
     content, result = asyncio.run(
-        mcp_server._handle_deepcode(
+        mcp_server._handle_dfcode(
             {"prompt": "write a file", "workspace": str(tmp_path)}
         )
     )

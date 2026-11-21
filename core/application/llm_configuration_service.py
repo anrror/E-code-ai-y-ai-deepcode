@@ -21,7 +21,7 @@ from core.application.provider_verification import (
 )
 from core.config import (
     ConnectionProfileConfig,
-    DeepCodeConfig,
+    DFcodeConfig,
     load_config,
     load_config_for_workspace,
 )
@@ -56,7 +56,7 @@ _PROFILE_FIELDS = {
 }
 
 _MODEL_PROBE_PROMPT = (
-    "Reply with exactly OK. This is a DeepCode connection verification request."
+    "Reply with exactly OK. This is a DFcode connection verification request."
 )
 _MODEL_PROBE_TIMEOUT_SECONDS = 30.0
 
@@ -739,7 +739,7 @@ class LLMConfigurationService:
     def _resolver(self, project_id: str | None = None) -> ConnectionResolver:
         return ConnectionResolver(self._config(project_id=project_id), self.credentials)
 
-    def _config(self, *, project_id: str | None = None) -> DeepCodeConfig:
+    def _config(self, *, project_id: str | None = None) -> DFcodeConfig:
         if project_id is None:
             return load_config(config_path=self.config_store.path)
         if self.projects is None:
@@ -859,8 +859,8 @@ def _verification_result(
 def _credential_detail(source: str) -> str:
     return {
         "environment": "Credential resolved from the configured environment variable",
-        "credential_store": "Credential loaded from DeepCode private storage",
-        "legacy_config": "Credential loaded from legacy DeepCode configuration",
+        "credential_store": "Credential loaded from DFcode private storage",
+        "legacy_config": "Credential loaded from legacy DFcode configuration",
         "not_required": "This connection does not require a credential",
         "request": "Unsaved credential supplied for this verification only",
         "oauth": "Credential bound to the signed-in OpenRouter account",

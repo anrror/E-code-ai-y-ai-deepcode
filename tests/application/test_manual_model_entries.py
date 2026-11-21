@@ -23,7 +23,7 @@ def _service(
     *,
     model_catalog: str = "manual",
 ) -> LLMConfigurationService:
-    config_path = tmp_path / "deepcode_config.json"
+    config_path = tmp_path / "dfcode_config.json"
     config_path.write_text(
         json.dumps(
             {
@@ -116,7 +116,7 @@ def test_public_view_carries_ids_and_declarations_side_by_side(
 def test_declaration_outranks_a_remote_snapshot_for_cached_model(
     tmp_path: Path,
 ) -> None:
-    config_path = tmp_path / "deepcode_config.json"
+    config_path = tmp_path / "dfcode_config.json"
     config_path.write_text(
         json.dumps(
             {

@@ -1,6 +1,6 @@
 """A scripted OpenAI-compatible model server for terminal tests.
 
-DeepCode reaches it through its real provider code, over real HTTP, exactly as
+DFcode reaches it through its real provider code, over real HTTP, exactly as
 it would reach a hosted model. Only the model's words are scripted: a test
 registers a reply for a prompt, and the server streams it back as
 ``chat.completion.chunk`` events at a pace the test chooses.
@@ -65,7 +65,7 @@ class Script:
 
     def reply_for(self, messages: list[dict]) -> Reply:
         prompt, answered = _latest_user_text(messages)
-        # The phrase written last wins: after an interrupted Turn, DeepCode
+        # The phrase written last wins: after an interrupted Turn, DFcode
         # sends the unanswered prompt and the new one as one user message.
         found = [
             (prompt.rfind(phrase), replies)

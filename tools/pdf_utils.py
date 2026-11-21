@@ -1,5 +1,5 @@
 """
-PDF utility functions for the DeepCode agent system.
+PDF utility functions for the DFcode agent system.
 """
 
 import re

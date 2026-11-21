@@ -13,7 +13,7 @@ from typing import Any
 
 import httpx
 
-from core.config import ManualModelConfig, deepcode_home
+from core.config import ManualModelConfig, dfcode_home
 from core.file_lock import exclusive_file_lock
 from core.private_storage import ensure_private_directory, open_private_file
 from core.providers.catalog import known_model_ids, resolve_model_info
@@ -126,7 +126,7 @@ class ModelCatalogService:
         self.path = (
             Path(path).expanduser().resolve()
             if path is not None
-            else deepcode_home() / "model_catalog_cache.json"
+            else dfcode_home() / "model_catalog_cache.json"
         )
         self.lock_path = self.path.with_suffix(self.path.suffix + ".lock")
         self.ttl_seconds = ttl_seconds

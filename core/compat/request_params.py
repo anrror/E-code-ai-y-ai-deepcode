@@ -1,6 +1,6 @@
 """Drop-in replacement for ``mcp_agent.workflows.llm.augmented_llm.RequestParams``.
 
-The legacy class accepted a kitchen sink of fields; only the ones DeepCode
+The legacy class accepted a kitchen sink of fields; only the ones DFcode
 actually reads are modelled as first-class attributes here. ``maxTokens`` is
 preserved as an alias of ``max_tokens`` because both spellings appear in the
 legacy code base.

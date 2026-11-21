@@ -240,7 +240,7 @@ class ExecutionRegistry:
         self._ready.clear()
         self._thread = threading.Thread(
             target=self._run_loop,
-            name="deepcode-background-runtime",
+            name="dfcode-background-runtime",
             daemon=True,
         )
         self._thread.start()

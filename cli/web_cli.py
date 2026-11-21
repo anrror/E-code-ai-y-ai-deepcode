@@ -20,7 +20,7 @@ from core.persistence.database import default_database_path
 
 
 def run(argv=None) -> int:
-    parser = argparse.ArgumentParser(prog="deepcode web")
+    parser = argparse.ArgumentParser(prog="dfcode web")
     parser.add_argument("--database", type=Path, default=default_database_path())
     parser.add_argument("--port", type=int, default=None)
     parser.add_argument(

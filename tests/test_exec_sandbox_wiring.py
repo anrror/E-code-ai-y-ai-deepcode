@@ -34,7 +34,7 @@ def test_requires_exactly_one_of_command_or_argv(tmp_path):
 
 
 def test_disabled_via_env_returns_bare(monkeypatch, tmp_path):
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "0")
+    monkeypatch.setenv("DFCODE_SANDBOX", "0")
     w = build_exec_command(command="echo hi", workspace=tmp_path)
     assert w.backend == "disabled"
     assert w.argv == [default_shell(), "-c", "echo hi"]
@@ -44,7 +44,7 @@ def test_disabled_via_env_returns_bare(monkeypatch, tmp_path):
 
 
 def test_enabled_by_default(monkeypatch, tmp_path):
-    monkeypatch.delenv("DEEPCODE_SANDBOX", raising=False)
+    monkeypatch.delenv("DFCODE_SANDBOX", raising=False)
     w = build_exec_command(command="echo hi", workspace=tmp_path)
     # backend is seatbelt/bwrap/job on supported platforms, else "none" — never
     # "disabled" (which only happens when explicitly turned off).
@@ -52,7 +52,7 @@ def test_enabled_by_default(monkeypatch, tmp_path):
 
 
 def test_explicit_frozen_sandbox_value_beats_environment(monkeypatch, tmp_path):
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "1")
+    monkeypatch.setenv("DFCODE_SANDBOX", "1")
     disabled = build_exec_command(
         command="echo hi",
         workspace=tmp_path,
@@ -60,7 +60,7 @@ def test_explicit_frozen_sandbox_value_beats_environment(monkeypatch, tmp_path):
     )
     assert disabled.backend == "disabled"
 
-    monkeypatch.setenv("DEEPCODE_SANDBOX", "0")
+    monkeypatch.setenv("DFCODE_SANDBOX", "0")
     enabled = build_exec_command(
         command="echo hi",
         workspace=tmp_path,
@@ -95,7 +95,7 @@ async def test_execute_bash_write_inside_workspace_ok(impl_server, tmp_path):
 @pytest.mark.asyncio
 async def test_execute_bash_write_outside_workspace_blocked(impl_server, tmp_path):
     impl_server.initialize_workspace(str(tmp_path))
-    leak = Path.home() / ".deepcode_exec_leak_test.txt"
+    leak = Path.home() / ".dfcode_exec_leak_test.txt"
     if leak.exists():
         leak.unlink()
     try:
@@ -115,7 +115,7 @@ async def test_execute_bash_credential_exfil_write_blocked(impl_server, tmp_path
     """A command that tries to copy a secret OUT to a file it controls is
     blocked at the write step (the sandbox's real protection for shell)."""
     impl_server.initialize_workspace(str(tmp_path))
-    stolen = Path.home() / ".deepcode_stolen_secret.txt"
+    stolen = Path.home() / ".dfcode_stolen_secret.txt"
     if stolen.exists():
         stolen.unlink()
     try:
@@ -134,7 +134,7 @@ async def test_execute_bash_credential_exfil_write_blocked(impl_server, tmp_path
 @pytest.mark.asyncio
 async def test_execute_python_write_outside_blocked(impl_server, tmp_path):
     impl_server.initialize_workspace(str(tmp_path))
-    leak = Path.home() / ".deepcode_py_leak_test.txt"
+    leak = Path.home() / ".dfcode_py_leak_test.txt"
     if leak.exists():
         leak.unlink()
     code = f"open({str(leak)!r}, 'w').write('leak')"

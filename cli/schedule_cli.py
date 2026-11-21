@@ -1,4 +1,4 @@
-"""``deepcode schedule`` — run a loop or memory consolidation on a keepalive
+"""``dfcode schedule`` — run a loop or memory consolidation on a keepalive
 schedule (P3, L4).
 
 Self-wakes on an interval and keeps going only while the keepalive gate is
@@ -191,7 +191,7 @@ def _positive_runs(value: str) -> int:
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="deepcode schedule",
+        prog="dfcode schedule",
         description="Run a loop or memory consolidation on a keepalive schedule.",
     )
     parser.add_argument("job", choices=("autodream", "loop"))

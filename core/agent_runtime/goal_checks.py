@@ -1,4 +1,4 @@
-"""Run a Goal's confirmed checks: commands the user approved, run by DeepCode.
+"""Run a Goal's confirmed checks: commands the user approved, run by DFcode.
 
 When the agent claims a Goal complete, each check with a command runs in the
 workspace as an argument list, with no shell: no pipes, redirections or

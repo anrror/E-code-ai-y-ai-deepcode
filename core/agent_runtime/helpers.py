@@ -45,7 +45,7 @@ def truncate_text(text: str, max_chars: int) -> str:
 
 _UNSAFE_CHARS = re.compile(r'[<>:"/\\|?*]')
 _TOOL_RESULT_PREVIEW_CHARS = 1200
-_TOOL_RESULTS_DIR = ".deepcode/tool-results"
+_TOOL_RESULTS_DIR = ".dfcode/tool-results"
 _TOOL_RESULT_REFERENCE_HEAD = "[tool output persisted]\nFull output saved to: "
 # A spilled result is referenced by the session history that produced it, so
 # it has to outlive anything a user might resume. Deleting by RANK (a "keep

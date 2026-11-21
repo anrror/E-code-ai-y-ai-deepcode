@@ -134,15 +134,15 @@ def _render(messages) -> str:
 def test_final_text_extending_the_stream_prints_only_the_missing_suffix() -> None:
     text = _render(
         [
-            AgentMessageDelta("我是 DeepCode。如果你需要了解模型版本或", "msg-1"),
+            AgentMessageDelta("我是 DFcode。如果你需要了解模型版本或", "msg-1"),
             AgentMessage(
-                "我是 DeepCode。如果你需要了解模型版本或技术细节，请查阅文档。",
+                "我是 DFcode。如果你需要了解模型版本或技术细节，请查阅文档。",
                 "msg-1",
             ),
         ]
     )
 
-    assert text.count("我是 DeepCode") == 1
+    assert text.count("我是 DFcode") == 1
     assert "技术细节，请查阅文档。" in text
 
 

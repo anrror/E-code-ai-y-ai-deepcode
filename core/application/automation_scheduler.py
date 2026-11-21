@@ -83,7 +83,7 @@ class AutomationScheduler:
             self._wake.clear()
             self._thread = threading.Thread(
                 target=self._run,
-                name="deepcode-automation-scheduler",
+                name="dfcode-automation-scheduler",
                 daemon=True,
             )
             self._thread.start()

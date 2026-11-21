@@ -10,7 +10,7 @@ from typing import Any
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.application_lease import ApplicationLease
 from core.application.errors import UpgradeRequiresExclusiveAccessError
 from core.domain.project import TrustState
@@ -126,7 +126,7 @@ def _hold_legacy_schema(
 
 
 def _wait_for_status(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     status: TurnStatus,
 ) -> None:
@@ -285,7 +285,7 @@ def test_live_old_schema_requires_exclusive_upgrade_then_preserves_backup(
     try:
         assert ready.get(timeout=10) == old_version
         with pytest.raises(UpgradeRequiresExclusiveAccessError) as raised:
-            DeepCodeApplication.open(database_path)
+            DFcodeApplication.open(database_path)
         assert raised.value.code == "UPGRADE_REQUIRES_EXCLUSIVE_ACCESS"
         assert raised.value.retryable is True
         assert raised.value.details == {
@@ -303,7 +303,7 @@ def test_live_old_schema_requires_exclusive_upgrade_then_preserves_backup(
             old_process.join(timeout=2)
     assert old_process.exitcode == 0
 
-    upgraded = DeepCodeApplication.open(database_path)
+    upgraded = DFcodeApplication.open(database_path)
     try:
         assert upgraded.database.schema_version() == LATEST_SCHEMA_VERSION
     finally:
@@ -324,15 +324,15 @@ def test_current_schema_joiner_never_runs_database_initialization(
     tmp_path: Path,
 ) -> None:
     database_path = tmp_path / "state.sqlite3"
-    owner = DeepCodeApplication.open(database_path)
+    owner = DFcodeApplication.open(database_path)
 
     def reject_initialize(_database, **_kwargs) -> None:
         raise AssertionError("shared application joiner attempted initialization")
 
     monkeypatch.setattr(Database, "initialize", reject_initialize)
-    joiner: DeepCodeApplication | None = None
+    joiner: DFcodeApplication | None = None
     try:
-        joiner = DeepCodeApplication.open(database_path)
+        joiner = DFcodeApplication.open(database_path)
         assert joiner._application_lease is not None
         assert joiner._application_lease.recovery_owner is False
         assert joiner.database.schema_version() == LATEST_SCHEMA_VERSION
@@ -346,7 +346,7 @@ def test_application_close_aggregates_failures_and_retains_lifetime_lease(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     relay_close = application.event_relay.close
     scheduler_close = application.automation_scheduler.close
     calls: list[str] = []
@@ -378,7 +378,7 @@ def test_application_close_retains_lease_when_listener_cleanup_fails(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     remove_guard = application.turns.remove_admission_guard
 
     def fail_remove_guard(_guard) -> None:
@@ -402,7 +402,7 @@ def test_application_close_retains_lease_on_execution_shutdown_timeout(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     execution_close = application.executions.close
     close_live_sessions = application.turns.close_live_sessions
 
@@ -443,7 +443,7 @@ def test_second_application_does_not_recover_another_process_live_turn(
     database_path = tmp_path / "state.sqlite3"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         database_path,
         session_factory=HangingFactory(),
     )
@@ -452,7 +452,7 @@ def test_second_application_does_not_recover_another_process_live_turn(
     started = first.turns.start(thread.id, prompt="keep running")
     _wait_for_status(first, started.turn.id, TurnStatus.RUNNING)
 
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         database_path,
         session_factory=HangingFactory(),
     )

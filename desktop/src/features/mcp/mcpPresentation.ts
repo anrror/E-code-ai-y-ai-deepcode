@@ -9,7 +9,7 @@ export function mcpSourceLabel(source: McpServerInfo["source"], t: TFunction): s
 }
 
 /**
- * How DeepCode talks to a server, in words. An invalid configuration can
+ * How DFcode talks to a server, in words. An invalid configuration can
  * name a transport that does not exist; it is shown as written.
  */
 export function mcpTransportLabel(transport: string, t: TFunction): string {
@@ -154,7 +154,7 @@ export function mcpRuntimeText(server: McpServerInfo, t: TFunction): string {
   }
 }
 
-/** A template's category, in words; a category DeepCode does not know keeps its name. */
+/** A template's category, in words; a category DFcode does not know keeps its name. */
 export function mcpCategoryLabel(category: string, t: TFunction): string {
   switch (category) {
     case "browser":

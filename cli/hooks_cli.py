@@ -8,7 +8,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.application.errors import ApplicationError, ProjectNotTrustedError
 from core.application.views import hook_discovery_view
 from core.domain.project import TrustState
@@ -21,7 +21,7 @@ _STATUS_TEXT = {
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode hooks",
+        prog="dfcode hooks",
         description=(
             "Show a project's hooks and approve the ones it declares. Project "
             "hooks run only while their declarations are the approved ones."
@@ -45,7 +45,7 @@ def _parser() -> argparse.ArgumentParser:
 
 def run(argv: list[str] | None = None) -> int:
     args = _parser().parse_args(argv)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         host_surface="hooks-cli",
         run_automation_scheduler=False,
     )
@@ -70,7 +70,7 @@ def run(argv: list[str] | None = None) -> int:
                 "project must be trusted before its hooks can be approved",
                 user_message=(
                     "This project is not trusted, so its hooks cannot run. "
-                    "Trust it first (for example `deepcode --trust` in this "
+                    "Trust it first (for example `dfcode --trust` in this "
                     "folder); trusting approves the hooks it declares then."
                 ),
             )
@@ -128,5 +128,5 @@ def _print_listing(project_path: str, listing: dict[str, Any]) -> None:
     if status == "unapproved":
         print(
             "The approval covers these declarations, not the scripts they run. "
-            "User hooks (~/.deepcode/hooks.json) always run."
+            "User hooks (~/.dfcode/hooks.json) always run."
         )

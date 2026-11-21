@@ -24,20 +24,20 @@ Where the scrub applies by default. External agent CLIs
 (:mod:`core.harness.agents.external_backend`) have always received the
 scrubbed environment and still do. The agent's own shell, hook commands and
 the code-mode runtime keep the user's environment unless the operator opts in
-with ``DEEPCODE_BASH_SCRUB_ENV=1``: everyday work such as ``gh``, ``aws``,
+with ``DFCODE_BASH_SCRUB_ENV=1``: everyday work such as ``gh``, ``aws``,
 ``huggingface-cli`` or a private package index reads its token from the
 environment, and silently dropping it would break those workflows for every
 user to defend against a relay that rewrites tool calls.
 
-What never reaches those children is what belongs to DeepCode itself rather
-than to the user's work: the variables DeepCode reads its own model-connection
+What never reaches those children is what belongs to DFcode itself rather
+than to the user's work: the variables DFcode reads its own model-connection
 keys from (``OPENAI_API_KEY``, a connection's ``apiKeyEnv``, a ``${NAME}`` in
-the provider settings, ...), and DeepCode's own checkout and Python
+the provider settings, ...), and DFcode's own checkout and Python
 environment (its ``PYTHONPATH`` entry, an activated venv or conda env and that
 env's ``PATH`` entries), which a client started from there passes on to the
-service and which would otherwise point the project's Python at DeepCode's.
+service and which would otherwise point the project's Python at DFcode's.
 
-``DEEPCODE_BASH_FULL_ENV=1`` remains the explicit "give children everything"
+``DFCODE_BASH_FULL_ENV=1`` remains the explicit "give children everything"
 override and wins over all of the above.
 """
 
@@ -66,17 +66,17 @@ SENSITIVE_ENV_PATTERN = re.compile(
 )
 
 # Opt-out: give a child the untouched parent environment.
-FULL_ENV_ENV_VAR = "DEEPCODE_BASH_FULL_ENV"
+FULL_ENV_ENV_VAR = "DFCODE_BASH_FULL_ENV"
 
 # Opt-in: scrub the environment handed to the agent's shell, hook commands and
 # the code-mode runtime. Off by default; see the module docstring.
-SCRUB_ENV_VAR = "DEEPCODE_BASH_SCRUB_ENV"
+SCRUB_ENV_VAR = "DFCODE_BASH_SCRUB_ENV"
 
 _TRUTHY = frozenset({"1", "true", "yes", "on"})
 
-# The directory DeepCode's own top-level packages (``core``, ``tools``, ...)
+# The directory DFcode's own top-level packages (``core``, ``tools``, ...)
 # are imported from.
-_DEEPCODE_ROOT = os.path.normcase(Path(__file__).resolve().parents[2])
+_DFCODE_ROOT = os.path.normcase(Path(__file__).resolve().parents[2])
 
 
 def full_env_requested() -> bool:
@@ -94,7 +94,7 @@ def env_scrub_requested() -> bool:
 def child_env(extra_env: dict[str, str] | None = None) -> dict[str, str]:
     """Environment for the agent's shell, a hook command or the code-mode runtime.
 
-    The parent environment without DeepCode's own model keys and Python
+    The parent environment without DFcode's own model keys and Python
     environment by default; the credential scrub applies only when
     :data:`SCRUB_ENV_VAR` is set, and :data:`FULL_ENV_ENV_VAR` still wins.
     ``extra_env`` merges last either way.
@@ -104,7 +104,7 @@ def child_env(extra_env: dict[str, str] | None = None) -> dict[str, str]:
         return scrubbed_parent_env(extra_env)
     env = dict(os.environ)
     if not full_env_requested():
-        _drop_deepcode_own(env)
+        _drop_dfcode_own(env)
     if extra_env:
         env.update(extra_env)
     return env
@@ -115,7 +115,7 @@ def scrubbed_parent_env(
     *,
     force_full: bool = False,
 ) -> dict[str, str]:
-    """The ambient environment minus credential-shaped names and DeepCode's own.
+    """The ambient environment minus credential-shaped names and DFcode's own.
 
     ``extra_env`` is merged *after* the scrub, so a caller can deliberately
     forward one credential without opening the whole environment. Passing
@@ -131,14 +131,14 @@ def scrubbed_parent_env(
             for key, value in os.environ.items()
             if not SENSITIVE_ENV_PATTERN.search(key)
         }
-        _drop_deepcode_own(env)
+        _drop_dfcode_own(env)
     if extra_env:
         env.update(extra_env)
     return env
 
 
-def _drop_deepcode_own(env: dict[str, str]) -> None:
-    """Remove what belongs to DeepCode itself rather than to the user's work."""
+def _drop_dfcode_own(env: dict[str, str]) -> None:
+    """Remove what belongs to DFcode itself rather than to the user's work."""
 
     from core.config import credential_variables
 
@@ -150,13 +150,13 @@ def _drop_deepcode_own(env: dict[str, str]) -> None:
         kept = [
             entry
             for entry in pythonpath.split(os.pathsep)
-            if not entry or _resolved(entry) != _DEEPCODE_ROOT
+            if not entry or _resolved(entry) != _DFCODE_ROOT
         ]
         if any(kept):
             env["PYTHONPATH"] = os.pathsep.join(kept)
-    # A client that had DeepCode's own environment activated passes it on:
+    # A client that had DFcode's own environment activated passes it on:
     # uv, poetry and conda would install into it, and ``python``/``pip`` on
-    # PATH would be DeepCode's interpreter rather than the project's. The
+    # PATH would be DFcode's interpreter rather than the project's. The
     # conda base is many users' everyday Python, so it is left alone.
     prefix = _resolved(sys.prefix)
     activated = False

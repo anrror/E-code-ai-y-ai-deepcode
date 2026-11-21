@@ -25,7 +25,7 @@ def worker(root):
     from loguru import logger
     from app_server.service import ControlServer, serve
     from app_server.service_state import ServiceFiles
-    from core.application import DeepCodeApplication
+    from core.application import DFcodeApplication
     from core.events import AgentMessage, Event, TaskComplete, TurnStarted
 
     logger.remove()
@@ -68,8 +68,8 @@ def worker(root):
         return value
 
     ControlServer.status = instrumented_status
-    original = DeepCodeApplication.open
-    DeepCodeApplication.open = staticmethod(
+    original = DFcodeApplication.open
+    DFcodeApplication.open = staticmethod(
         lambda *args, **kwargs: original(*args, session_factory=Factory(), **kwargs)
     )
     asyncio.run(serve(ServiceFiles(root / "state.sqlite3"), 0))
@@ -138,7 +138,7 @@ async def run(root, seconds, interval):
     workspace = root / "workspace"
     workspace.mkdir()
     atomic_write_private_json(
-        home / "deepcode_config.json",
+        home / "dfcode_config.json",
         {
             "agents": {"defaults": {"connection": "fixture", "model": "test-model"}},
             "providers": {
@@ -155,8 +155,8 @@ async def run(root, seconds, interval):
     )
     env = {
         **os.environ,
-        "DEEPCODE_HOME": str(home),
-        "DEEPCODE_SESSIONS_DIR": str(home / "sessions"),
+        "DFCODE_HOME": str(home),
+        "DFCODE_SESSIONS_DIR": str(home / "sessions"),
         "PYTHONPATH": str(REPOSITORY),
     }
     env = {

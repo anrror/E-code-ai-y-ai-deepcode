@@ -60,7 +60,7 @@ def _shared_lock_seen_by_other_process(path: Path) -> str:
 
 @pytest.fixture
 def database(tmp_path: Path) -> Database:
-    db = Database(tmp_path / "state" / "deepcode.sqlite3")
+    db = Database(tmp_path / "state" / "dfcode.sqlite3")
     db.initialize()
     with db.transaction() as connection:
         connection.execute("CREATE TABLE probe (x INTEGER)")

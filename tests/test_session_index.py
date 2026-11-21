@@ -20,9 +20,9 @@ if str(ROOT) not in sys.path:
 from core.sessions.store import SessionStore  # noqa: E402
 
 
-def test_default_root_follows_deepcode_home(tmp_path, monkeypatch):
-    home = tmp_path / "deepcode-home"
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+def test_default_root_follows_dfcode_home(tmp_path, monkeypatch):
+    home = tmp_path / "dfcode-home"
+    monkeypatch.setenv("DFCODE_HOME", str(home))
 
     store = SessionStore(use_index=False)
 

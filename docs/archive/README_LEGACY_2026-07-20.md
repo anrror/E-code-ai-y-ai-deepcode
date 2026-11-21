@@ -5,26 +5,26 @@
 <table style="border: none; margin: 0 auto; padding: 0; border-collapse: collapse;">
 <tr>
 <td align="center" style="vertical-align: middle; padding: 10px; border: none; width: 250px;">
-  <img src="../../assets/logo.png" alt="DeepCode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
+  <img src="../../assets/logo.png" alt="DFcode Logo" width="200" style="margin: 0; padding: 0; display: block;"/>
 </td>
 <td align="left" style="vertical-align: middle; padding: 10px 0 10px 30px; border: none;">
-  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗███████╗██████╗  ██████╗ ██████╗ ██████╗ ███████╗
-    ██╔══██╗██╔════╝██╔════╝██╔══██╗██╔════╝██╔═══██╗██╔══██╗██╔════╝
-    ██║  ██║█████╗  █████╗  ██████╔╝██║     ██║   ██║██║  ██║█████╗
-    ██║  ██║██╔══╝  ██╔══╝  ██╔═══╝ ██║     ██║   ██║██║  ██║██╔══╝
-    ██████╔╝███████╗███████╗██║     ╚██████╗╚██████╔╝██████╔╝███████╗
-    ╚═════╝ ╚══════╝╚══════╝╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
+  <pre style="font-family: 'Courier New', monospace; font-size: 16px; color: #0EA5E9; margin: 0; padding: 0; text-shadow: 0 0 10px #0EA5E9, 0 0 20px rgba(14,165,233,0.5); line-height: 1.2; transform: skew(-1deg, 0deg); display: block;">    ██████╗ ███████╗ ██████╗ ██████╗ ██████╗ ███████╗
+    ██╔══██╗██╔════╝██╔════╝██╔═══██╗██╔══██╗██╔════╝
+    ██║  ██║█████╗  ██║     ██║   ██║██║  ██║█████╗
+    ██║  ██║██╔══╝  ██║     ██║   ██║██║  ██║██╔══╝
+    ██████╔╝██║     ╚██████╗╚██████╔╝██████╔╝███████╗
+    ╚═════╝ ╚═╝      ╚═════╝ ╚═════╝ ╚═════╝ ╚══════╝</pre>
 </td>
 </tr>
 </table>
 
 <div align="center">
-<a href="https://trendshift.io/repositories/14665" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDeepCode | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
+<a href="https://trendshift.io/repositories/14665" target="_blank"><img src="https://trendshift.io/api/badge/repositories/14665" alt="HKUDS%2FDFcode | Trendshift" style="width: 250px; height: 55px;" width="250" height="55"/></a>
 </div>
 
-<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DeepCode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
+<!-- <img src="https://readme-typing-svg.herokuapp.com?font=Russo+One&size=28&duration=2000&pause=800&color=06B6D4&background=00000000&center=true&vCenter=true&width=800&height=50&lines=%E2%9A%A1+OPEN+AGENTIC+CODING+%E2%9A%A1" alt="DFcode Tech Subtitle" style="margin-top: 5px; filter: drop-shadow(0 0 12px #06B6D4) drop-shadow(0 0 24px rgba(6,182,212,0.4));"/> -->
 
-# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DeepCode_images/title_logo.svg" alt="DeepCode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DeepCode: Open Agentic Coding
+# <img src="https://github.com/Zongwei9888/Experiment_Images/raw/43c585dca3d21b8e4b6390d835cdd34dc4b4b23d/DFcode_images/title_logo.svg" alt="DFcode Logo" width="32" height="32" style="vertical-align: middle; margin-right: 8px;"/> DFcode: Open Agentic Coding
 
 ### *Advancing Code Generation with Multi-Agent Systems*
 
@@ -36,10 +36,10 @@
   <img src="https://img.shields.io/badge/HKU-Data_Intelligence_Lab-f39c12?style=for-the-badge&logo=university&logoColor=white" alt="HKU">
 </p> -->
 <p>
-  <a href="https://github.com/HKUDS/DeepCode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DeepCode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
+  <a href="https://github.com/HKUDS/DFcode/stargazers"><img src='https://img.shields.io/github/stars/HKUDS/DFcode?color=00d9ff&style=for-the-badge&logo=star&logoColor=white&labelColor=1a1a2e' /></a>
   <a href='https://arxiv.org/abs/2512.07921'><img src="https://img.shields.io/badge/Paper-arXiv-orange?style=for-the-badge&logo=arxiv&logoColor=white&labelColor=1a1a2e"></a>
   <img src="https://img.shields.io/badge/🐍Python-3.13-4ecdc4?style=for-the-badge&logo=python&logoColor=white&labelColor=1a1a2e">
-  <!-- <a href="https://pypi.org/project/deepcode-hku/"><img src="https://img.shields.io/pypi/v/deepcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a> -->
+  <!-- <a href="https://pypi.org/project/dfcode-hku/"><img src="https://img.shields.io/pypi/v/dfcode-hku.svg?style=for-the-badge&logo=pypi&logoColor=white&labelColor=1a1a2e&color=ff6b6b"></a> -->
 </p>
 <p>
   <a href="https://github.com/HKUDS/.github/blob/main/profile/README.md"><img src="https://img.shields.io/badge/Feishu-Group-E9DBFC?style=flat&logo=feishu&logoColor=white" alt="Feishu"></a>
@@ -71,7 +71,7 @@
 
 <div align="center">
 
-  <img src="https://github.com/Zongwei9888/Experiment_Images/blob/8882a7313c504ca97ead6e7b36c51aa761b6a4f3/DeepCode_images/CLI.gif" alt="CLI Interface Demo" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
+  <img src="https://github.com/Zongwei9888/Experiment_Images/blob/8882a7313c504ca97ead6e7b36c51aa761b6a4f3/DFcode_images/CLI.gif" alt="CLI Interface Demo" width="100%" style="border-radius: 10px; box-shadow: 0 8px 20px rgba(45,55,72,0.3); margin: 15px 0;"/>
 
   <div style="background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%); border-radius: 12px; padding: 15px; margin: 15px 0; color: white;">
     <strong>🚀 Advanced Terminal Experience</strong><br/>
@@ -95,13 +95,13 @@ See the
 <div style="margin: 20px 0;">
   <a href="https://youtu.be/PRgmP8pOI08" target="_blank">
     <img src="https://img.youtube.com/vi/PRgmP8pOI08/maxresdefault.jpg"
-         alt="DeepCode Introduction Video"
+         alt="DFcode Introduction Video"
          width="75%"
          style="border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.15); transition: transform 0.3s ease;"/>
   </a>
 </div>
 
-*🎯 **Watch our complete introduction** - See how DeepCode transforms research papers and natural language into production-ready code*
+*🎯 **Watch our complete introduction** - See how DFcode transforms research papers and natural language into production-ready code*
 
 <p>
   <a href="https://youtu.be/PRgmP8pOI08" target="_blank">
@@ -153,7 +153,7 @@ See the
 
 **[2026-07-10] Team mode: split a big feature across parallel workers**
 
-- **A team, not just one agent.** Hand DeepCode a larger feature and it breaks the work into pieces, builds them at the same time, and combines the results — each piece checked against your tests as it goes.
+- **A team, not just one agent.** Hand DFcode a larger feature and it breaks the work into pieces, builds them at the same time, and combines the results — each piece checked against your tests as it goes.
 - **Parallel work that never collides.** Every worker builds on its own isolated copy of your project, so simultaneous changes can't corrupt each other; when two pieces touch the same code, the overlap is flagged instead of silently overwritten.
 - **Only ships when the tests pass.** Once everything is combined, the whole feature runs against your test command — the team reports success only when the tests are actually green.
 
@@ -161,7 +161,7 @@ See the
 
 **[2026-07-10] Loop engineering: give it a goal, it works until the tests pass**
 
-- **Autonomous coding loops.** Hand DeepCode a goal and a test command — it works, runs your tests, and keeps fixing until they pass, on its own.
+- **Autonomous coding loops.** Hand DFcode a goal and a test command — it works, runs your tests, and keeps fixing until they pass, on its own.
 - **Self-tidying memory.** The agent periodically cleans up its own notes, so its memory stays sharp across sessions.
 - **Run it on a schedule.** Kick off a loop or a memory tidy-up on an interval, with sensible stop conditions so it never runs away.
 
@@ -169,16 +169,16 @@ See the
 
 **[2026-07-08] Persistent agent sessions and memory**
 
-- **The agent remembers across sessions.** Drop an `AGENTS.md` (or `DEEPCODE.md`) at your project root for standing instructions, and the agent keeps persistent notes under `.deepcode/memory/`.
-- **Sessions survive restarts.** Workspaces, messages, titles, and task references are persisted under `~/.deepcode/sessions/` and can be resumed from the TUI.
+- **The agent remembers across sessions.** Drop an `AGENTS.md` (or `DFCODE.md`) at your project root for standing instructions, and the agent keeps persistent notes under `.dfcode/memory/`.
+- **Sessions survive restarts.** Workspaces, messages, titles, and task references are persisted under `~/.dfcode/sessions/` and can be resumed from the TUI.
 
 ---
 
 **[2026-07-08] General coding agent: interactive CLI and native tools**
 
-- **Talk to DeepCode in your terminal.** `deepcode` opens a free-form, multi-turn coding conversation — describe any task in natural language and watch the agent stream its reply, edit files, and run commands with live progress cards. Steer with `/new`, `/resume`, `/model`, `/clear`, `/help`, and attach files with `@path`. (Replaces the previous menu-driven CLI.)
+- **Talk to DFcode in your terminal.** `dfcode` opens a free-form, multi-turn coding conversation — describe any task in natural language and watch the agent stream its reply, edit files, and run commands with live progress cards. Steer with `/new`, `/resume`, `/model`, `/clear`, `/help`, and attach files with `@path`. (Replaces the previous menu-driven CLI.)
 - **Edits that land on the first try.** First-class `read` / `write` / `edit` / `apply_patch` / `bash` / `grep` / `glob` tools: whitespace-tolerant fuzzy edits, multi-file atomic patches, and automatic post-edit diagnostics the agent fixes on the spot.
-- **Script any task.** `deepcode exec "task" --json` runs one task end-to-end and emits a machine-readable event stream — drop it straight into CI or your own pipelines.
+- **Script any task.** `dfcode exec "task" --json` runs one task end-to-end and emits a machine-readable event stream — drop it straight into CI or your own pipelines.
 - **Long conversations stay fast and stable.** Context windows resolve per model with automatic history compaction, and sessions are SQLite-indexed so listing and resume are instant.
 
 ---
@@ -186,7 +186,7 @@ See the
 **[2026-07-04] V2 foundation: unified agent kernel, security sandbox & event protocol**
 
 - **Every coding phase behaves the same.** All phases now run on one shared agent runtime, with tool definitions sourced straight from the MCP servers as the single source of truth — Paper2Code results unchanged.
-- **Your credentials stay yours.** Every tool call passes a three-valued permission engine (allow / ask / deny) with a non-overridable credential denylist (`.ssh`, `.aws/credentials`, `.env`, `*.pem`, ...), and shell/Python execution runs inside a platform sandbox (macOS seatbelt / Linux bubblewrap) fenced to the workspace. Tune it via `DEEPCODE_SANDBOX` / `DEEPCODE_PERMISSION_MODE` or the `security` block in `deepcode_config.json`.
+- **Your credentials stay yours.** Every tool call passes a three-valued permission engine (allow / ask / deny) with a non-overridable credential denylist (`.ssh`, `.aws/credentials`, `.env`, `*.pem`, ...), and shell/Python execution runs inside a platform sandbox (macOS seatbelt / Linux bubblewrap) fenced to the workspace. Tune it via `DFCODE_SANDBOX` / `DFCODE_PERMISSION_MODE` or the `security` block in `dfcode_config.json`.
 - **Build every client on one contract.** Declarative per-model provider settings, a normalized model-event stream, a structured message model, and an `AgentSession` event protocol back the CLI and headless runs. The desktop application is being rebuilt on the same core.
 
 ---
@@ -196,18 +196,18 @@ See the
 
 🧭 **[2026-05-01] OpenRouter model selector, session cleanup & workflow UX hardening**
 
-- 🧠 **OpenRouter model catalog support.** DeepCode can fetch and cache OpenRouter model metadata and use exact model ids such as `z-ai/glm-5.1`.
-- 🔄 **Runtime model switching.** Model choices in `deepcode_config.json` apply to newly started workflows.
+- 🧠 **OpenRouter model catalog support.** DFcode can fetch and cache OpenRouter model metadata and use exact model ids such as `z-ai/glm-5.1`.
+- 🔄 **Runtime model switching.** Model choices in `dfcode_config.json` apply to newly started workflows.
 - 🛡️ **Workflow robustness fixes.** Uploads now reject Git LFS pointer files, cancelled tasks stop backend work promptly, stale browser session ids recover cleanly, planner retries fall back to a minimal valid plan when a model defers/tool-calls incorrectly, and document segmentation skips an extra validation LLM call that could stall progress.
 
 ---
 
 🗂️ **[2026-04-28] Persistent sessions & dual-layer logging**
 
-- 🆕 **Sessions are now persistent.** Every CLI run can attach to a session under `~/.deepcode/sessions/<id>/` (override with `DEEPCODE_SESSIONS_DIR`). Sessions are JSONL and indexed with SQLite.
+- 🆕 **Sessions are now persistent.** Every CLI run can attach to a session under `~/.dfcode/sessions/<id>/` (override with `DFCODE_SESSIONS_DIR`). Sessions are JSONL and indexed with SQLite.
 - 🔄 **Resume a previous run** from the TUI with `/resume` or start it with `--resume <session_id>`.
 - 💻 **CLI session UX.** The interactive CLI now supports Cursor-style slash commands: `/resume` opens a numbered session picker, `/new [title]` creates and switches sessions, `/session` shows the active session, and `/help` lists commands. You can also paste inline inputs directly at the menu prompt with `@/path/to/paper.pdf`, `@"C:\path with spaces\paper.pdf"`, or `@https://...`.
-- 📜 **Two-layer structured logging.** A global rotating JSONL lives at `logs/server-YYYYMMDD.jsonl`; per-task logs at `deepcode_lab/tasks/<task_id>/logs/{system,llm,mcp}.jsonl`. Every `loguru.logger` call automatically picks up the active `task_id` via a contextvar — business code did not have to change. Configure via the new `logger.{globalFile,taskFile,llm}` block in `deepcode_config.json`.
+- 📜 **Two-layer structured logging.** A global rotating JSONL lives at `logs/server-YYYYMMDD.jsonl`; per-task logs at `dfcode_lab/tasks/<task_id>/logs/{system,llm,mcp}.jsonl`. Every `loguru.logger` call automatically picks up the active `task_id` via a contextvar — business code did not have to change. Configure via the new `logger.{globalFile,taskFile,llm}` block in `dfcode_config.json`.
 - 🧹 **Dead code removed.** Legacy in-memory session code was replaced by `core.sessions.SessionStore`.
 
 ---
@@ -218,19 +218,19 @@ See the
 - 🪟 **Windows: `mkdir -p` / `touch` / `rm -rf` / `cp -r` / `mv` now work natively.** `tools/command_executor.py` translates these common Unix file-tree commands via `pathlib`/`shutil` on every platform, eliminating the bug where `cmd.exe` would create a literal `-p` directory and stall the workflow.
 - 🚀 **Removed Brave Search end-to-end.** All Python code, MCP server config, and docs are scrubbed of `brave`/`BRAVE_API_KEY`/`WebSearchTool`. Web fetching now relies entirely on the built-in `fetch` MCP server.
 - 🔌 **OpenAI-compatible providers documented.** New `Quick Start → Configuration` snippet shows how to point the `openai`/`openrouter` blocks at Poe (`https://api.poe.com/v1`), OpenRouter, or Alibaba DashScope, plus how to set `agents.defaults.model` / `agents.planning.model` / `agents.implementation.model` (e.g. `openai/gpt-5.4`).
-- 🔐 **Secrets hygiene.** All YAML config has been collapsed into a single `deepcode_config.json`, and `.gitignore` now ignores it alongside `secrets.json`, `*credentials*.json`, `.env`, `.env.*` (with `*.env.example` whitelisted).
+- 🔐 **Secrets hygiene.** All YAML config has been collapsed into a single `dfcode_config.json`, and `.gitignore` now ignores it alongside `secrets.json`, `*credentials*.json`, `.env`, `.env.*` (with `*.env.example` whitelisted).
 - 🧹 **Misc:** auto-create `logs/` directory so JSONL logging never fails on a fresh checkout, replace bare `except:` with `except Exception:` in `agent_orchestration_engine.py` (Ruff E722), `command_executor` MCP tool descriptions now embed the host OS so the LLM picks compatible commands.
 
 ---
 
-🎉 **[2025-10-28] DeepCode Achieves SOTA on PaperBench!**
+🎉 **[2025-10-28] DFcode Achieves SOTA on PaperBench!**
 
-DeepCode sets new benchmarks on OpenAI's PaperBench Code-Dev across all categories:
+DFcode sets new benchmarks on OpenAI's PaperBench Code-Dev across all categories:
 
-- 🏆 **Surpasses Human Experts**: **75.9%** (DeepCode) vs Top Machine Learning PhDs 72.4% (+3.5%).
-- 🥇 **Outperforms SOTA Commercial Code Agents**: **84.8%** (DeepCode) vs Leading Commercial Code Agents (+26.1%) (Cursor, Claude Code, and Codex).
-- 🔬 **Advances Scientific Coding**: **73.5%** (DeepCode) vs PaperCoder 51.1% (+22.4%).
-- 🚀 **Beats LLM Agents**: **73.5%** (DeepCode) vs best LLM frameworks 43.3% (+30.2%).
+- 🏆 **Surpasses Human Experts**: **75.9%** (DFcode) vs Top Machine Learning PhDs 72.4% (+3.5%).
+- 🥇 **Outperforms SOTA Commercial Code Agents**: **84.8%** (DFcode) vs Leading Commercial Code Agents (+26.1%) (Cursor, Claude Code, and Codex).
+- 🔬 **Advances Scientific Coding**: **73.5%** (DFcode) vs PaperCoder 51.1% (+22.4%).
+- 🚀 **Beats LLM Agents**: **73.5%** (DFcode) vs best LLM frameworks 43.3% (+30.2%).
 
 </details>
 
@@ -319,43 +319,43 @@ DeepCode sets new benchmarks on OpenAI's PaperBench Code-Dev across all categori
 </div>
 <br/>
 
-We evaluate **DeepCode** on the [*PaperBench*](https://openai.com/index/paperbench/) benchmark (released by OpenAI), a rigorous testbed requiring AI agents to independently reproduce 20 ICML 2024 papers from scratch. The benchmark comprises 8,316 gradable components assessed using SimpleJudge with hierarchical weighting.
+We evaluate **DFcode** on the [*PaperBench*](https://openai.com/index/paperbench/) benchmark (released by OpenAI), a rigorous testbed requiring AI agents to independently reproduce 20 ICML 2024 papers from scratch. The benchmark comprises 8,316 gradable components assessed using SimpleJudge with hierarchical weighting.
 
-Our experiments compare DeepCode against four baseline categories: **(1) Human Experts**, **(2) State-of-the-Art Commercial Code Agents**, **(3) Scientific Code Agents**, and **(4) LLM-Based Agents**.
+Our experiments compare DFcode against four baseline categories: **(1) Human Experts**, **(2) State-of-the-Art Commercial Code Agents**, **(3) Scientific Code Agents**, and **(4) LLM-Based Agents**.
 
 ### ① 🧠 Human Expert Performance (Top Machine Learning PhD)
 
-**DeepCode: 75.9% vs. Top Machine Learning PhD: 72.4% (+3.5%)**
+**DFcode: 75.9% vs. Top Machine Learning PhD: 72.4% (+3.5%)**
 
-DeepCode achieves **75.9%** on the 3-paper human evaluation subset, **surpassing the best-of-3 human expert baseline (72.4%) by +3.5 percentage points**. This demonstrates that our framework not only matches but exceeds expert-level code reproduction capabilities, representing a significant milestone in autonomous scientific software engineering.
+DFcode achieves **75.9%** on the 3-paper human evaluation subset, **surpassing the best-of-3 human expert baseline (72.4%) by +3.5 percentage points**. This demonstrates that our framework not only matches but exceeds expert-level code reproduction capabilities, representing a significant milestone in autonomous scientific software engineering.
 
 ### ② 💼 State-of-the-Art Commercial Code Agents
 
-**DeepCode: 84.8% vs. Best Commercial Agent: 58.7% (+26.1%)**
+**DFcode: 84.8% vs. Best Commercial Agent: 58.7% (+26.1%)**
 
-On the 5-paper subset, DeepCode substantially outperforms leading commercial coding tools:
+On the 5-paper subset, DFcode substantially outperforms leading commercial coding tools:
 - Cursor: 58.4%
 - Claude Code: 58.7%
 - Codex: 40.0%
-- **DeepCode: 84.8%**
+- **DFcode: 84.8%**
 
-This represents a **+26.1% improvement** over the leading commercial code agent. All commercial agents utilize Claude Sonnet 4.5 or GPT-5 Codex-high, highlighting that **DeepCode's superior architecture**—rather than base model capability—drives this performance gap.
+This represents a **+26.1% improvement** over the leading commercial code agent. All commercial agents utilize Claude Sonnet 4.5 or GPT-5 Codex-high, highlighting that **DFcode's superior architecture**—rather than base model capability—drives this performance gap.
 
 ### ③ 🔬 Scientific Code Agents
 
-**DeepCode: 73.5% vs. PaperCoder: 51.1% (+22.4%)**
+**DFcode: 73.5% vs. PaperCoder: 51.1% (+22.4%)**
 
-Compared to PaperCoder (**51.1%**), the state-of-the-art scientific code reproduction framework, DeepCode achieves **73.5%**, demonstrating a **+22.4% relative improvement**. This substantial margin validates our multi-module architecture combining planning, hierarchical task decomposition, code generation, and iterative debugging over simpler pipeline-based approaches.
+Compared to PaperCoder (**51.1%**), the state-of-the-art scientific code reproduction framework, DFcode achieves **73.5%**, demonstrating a **+22.4% relative improvement**. This substantial margin validates our multi-module architecture combining planning, hierarchical task decomposition, code generation, and iterative debugging over simpler pipeline-based approaches.
 
 ### ④ 🤖 LLM-Based Agents
 
-**DeepCode: 73.5% vs. Best LLM Agent: 43.3% (+30.2%)**
+**DFcode: 73.5% vs. Best LLM Agent: 43.3% (+30.2%)**
 
-DeepCode significantly outperforms all tested LLM agents:
+DFcode significantly outperforms all tested LLM agents:
 - Claude 3.5 Sonnet + IterativeAgent: 27.5%
 - o1 + IterativeAgent (36 hours): 42.4%
 - o1 BasicAgent: 43.3%
-- **DeepCode: 73.5%**
+- **DFcode: 73.5%**
 
 The **+30.2% improvement** over the best-performing LLM agent demonstrates that sophisticated agent scaffolding, rather than extended inference time or larger models, is critical for complex code reproduction tasks.
 
@@ -373,13 +373,13 @@ The **+30.2% improvement** over the best-performing LLM agent demonstrates that 
 
 - 🔄 **Repetitive Coding**: Developers repeatedly implement similar patterns and functionality instead of building on existing solutions
 
-**DeepCode** addresses these workflow inefficiencies by providing reliable automation for common development tasks, streamlining your development workflow from concept to code.
+**DFcode** addresses these workflow inefficiencies by providing reliable automation for common development tasks, streamlining your development workflow from concept to code.
 
 <div align="center">
 
 ```mermaid
 flowchart LR
-    A["📄 Research Papers<br/>💬 Text Prompts<br/>🌐 URLs & Document<br/>📎 Files: PDF, DOC, PPTX, TXT, HTML"] --> B["🧠 DeepCode<br/>Multi-Agent Engine"]
+    A["📄 Research Papers<br/>💬 Text Prompts<br/>🌐 URLs & Document<br/>📎 Files: PDF, DOC, PPTX, TXT, HTML"] --> B["🧠 DFcode<br/>Multi-Agent Engine"]
     B --> C["🚀 Algorithm Implementation <br/>🎨 Frontend Development <br/>⚙️ Backend Development"]
 
     style A fill:#ff6b6b,stroke:#c0392b,stroke-width:2px,color:#000
@@ -395,7 +395,7 @@ flowchart LR
 
 ### 📊 **System Overview**
 
-**DeepCode** is an AI-powered development platform that automates code generation and implementation tasks. Our multi-agent system handles the complexity of translating requirements into functional, well-structured code, allowing you to focus on innovation rather than implementation details.
+**DFcode** is an AI-powered development platform that automates code generation and implementation tasks. Our multi-agent system handles the complexity of translating requirements into functional, well-structured code, allowing you to focus on innovation rather than implementation details.
 
 🎯 **Technical Capabilities**:
 
@@ -426,7 +426,7 @@ Advanced retrieval-augmented generation combining semantic vector embeddings wit
 
 ---
 
-### 🤖 **Multi-Agent Architecture of DeepCode**:
+### 🤖 **Multi-Agent Architecture of DFcode**:
 
 - **🎯 Central Orchestrating Agent**: Orchestrates entire workflow execution and makes strategic decisions. Coordinates specialized agents based on input complexity analysis. Implements dynamic task planning and resource allocation algorithms. <br>
 
@@ -448,7 +448,7 @@ Advanced retrieval-augmented generation combining semantic vector embeddings wit
 
 **🔧 Powered by MCP (Model Context Protocol)**
 
-DeepCode leverages the **Model Context Protocol (MCP)** standard to seamlessly integrate with various tools and services. This standardized approach ensures reliable communication between AI agents and external systems, enabling powerful automation capabilities.
+DFcode leverages the **Model Context Protocol (MCP)** standard to seamlessly integrate with various tools and services. This standardized approach ensures reliable communication between AI agents and external systems, enabling powerful automation capabilities.
 
 ##### 📡 **MCP Servers & Tools**
 
@@ -595,38 +595,38 @@ Implementation Generation • Testing • Documentation
 The shortest path from installation to a working coding Session is:
 
 ```bash
-# 1. Install the CLI and create the user-level DeepCode home.
-pip install deepcode-hku
-deepcode init
+# 1. Install the CLI and create the user-level DFcode home.
+pip install dfcode-hku
+dfcode init
 
 # 2. Create one connection shared by CLI and Desktop.
 #    --api-key prompts securely and does not echo the key.
-deepcode provider set personal-openrouter \
+dfcode provider set personal-openrouter \
   --template openrouter \
   --label "OpenRouter · Personal" \
   --api-key
 
 # 3. Verify the connection and inspect exact model IDs.
-deepcode provider test personal-openrouter
-deepcode provider models personal-openrouter --refresh
+dfcode provider test personal-openrouter
+dfcode provider models personal-openrouter --refresh
 
 # 4. Start a Session in the current project.
-deepcode -c personal-openrouter -m moonshotai/kimi-k3
+dfcode -c personal-openrouter -m moonshotai/kimi-k3
 ```
 
-You can run the last command from any project directory. DeepCode keeps the
-Session under `~/.deepcode/sessions/`, while the selected connection and its
-credential remain user-scoped under `~/.deepcode/`.
+You can run the last command from any project directory. DFcode keeps the
+Session under `~/.dfcode/sessions/`, while the selected connection and its
+credential remain user-scoped under `~/.dfcode/`.
 
 | Surface | Start command | Best for |
 |---------|---------------|----------|
-| **Interactive CLI** | `deepcode` | Multi-turn coding and Session resume |
-| **Headless CLI** | `deepcode exec "<task>" --json` | Scripts, CI, and automation |
+| **Interactive CLI** | `dfcode` | Multi-turn coding and Session resume |
+| **Headless CLI** | `dfcode exec "<task>" --json` | Scripts, CI, and automation |
 | **Desktop from source** | `cd desktop && npm run tauri -- dev` | Visual Sessions, settings, review, and terminal |
 
 ### 📋 **Prerequisites**
 
-Before installing DeepCode, ensure you have the following:
+Before installing DFcode, ensure you have the following:
 
 | Requirement | Version | Purpose |
 |-------------|---------|---------|
@@ -661,11 +661,11 @@ Choose one of the following installation methods:
 #### ⚡ **Direct Installation (Recommended)**
 
 ```bash
-# 🚀 Install DeepCode package directly
-pip install deepcode-hku
+# 🚀 Install DFcode package directly
+pip install dfcode-hku
 
-# 🔑 One-time setup: create ~/.deepcode/deepcode_config.json (then add a key)
-deepcode init
+# 🔑 One-time setup: create ~/.dfcode/dfcode_config.json (then add a key)
+dfcode init
 ```
 
 #### 🔧 **Development Installation (From Source)**
@@ -676,8 +676,8 @@ deepcode init
 ##### 🔥 **Using UV (Recommended for Development)**
 
 ```bash
-git clone https://github.com/HKUDS/DeepCode.git
-cd DeepCode/
+git clone https://github.com/HKUDS/DFcode.git
+cd DFcode/
 
 curl -LsSf https://astral.sh/uv/install.sh | sh
 uv venv --python=3.13
@@ -688,27 +688,27 @@ uv pip install -r requirements.txt
 ##### 🐍 **Using Traditional pip**
 
 ```bash
-git clone https://github.com/HKUDS/DeepCode.git
-cd DeepCode/
+git clone https://github.com/HKUDS/DFcode.git
+cd DFcode/
 
 pip install -r requirements.txt
 ```
 
-##### 🧪 **Editable install (lets `deepcode` always run THIS checkout)**
+##### 🧪 **Editable install (lets `dfcode` always run THIS checkout)**
 
-If you want the global `deepcode` command to launch the source tree you are
+If you want the global `dfcode` command to launch the source tree you are
 hacking on, install the project in editable mode after the steps above:
 
 ```bash
 pip install -e .
 ```
 
-This registers a `deepcode-hku` package (current version 1.2.0) and exposes
-the `deepcode` CLI entry point. Any local code change is picked up
+This registers a `dfcode-hku` package (current version 1.2.0) and exposes
+the `dfcode` CLI entry point. Any local code change is picked up
 immediately on next launch — no reinstall needed.
 
-> If you maintain multiple DeepCode checkouts, only one of them can own the
-> `deepcode` command at a time (the most recent `pip install -e .` wins).
+> If you maintain multiple DFcode checkouts, only one of them can own the
+> `dfcode` command at a time (the most recent `pip install -e .` wins).
 > Reinstall in the checkout you currently want to be active.
 
 ##### 🖥️ **Desktop and App Server**
@@ -738,31 +738,31 @@ python -m app_server
 ### 🔧 **Step 2: Configure an LLM Connection**
 
 > The following configuration applies to pip, UV, and source installations.
-> Connection definitions live in `deepcode_config.json`; saved API keys live
+> Connection definitions live in `dfcode_config.json`; saved API keys live
 > separately in the user-only credential store.
 
-#### 🌍 Run `deepcode` from any directory
+#### 🌍 Run `dfcode` from any directory
 
-DeepCode resolves its config in two layers, the same way Codex and Claude Code do:
+DFcode resolves its config in two layers, the same way Codex and Claude Code do:
 
 | Layer | Location | Role |
 |-------|----------|------|
-| **User base** | `~/.deepcode/deepcode_config.json` (or `$DEEPCODE_HOME`) | Read from **any** working directory. Owns LLM connections and defaults. |
-| **Project override** | `deepcode_config.json` in the current directory (or any parent) | Optional project agent/safety overrides. Provider endpoints and named connections remain user-owned. |
+| **User base** | `~/.dfcode/dfcode_config.json` (or `$DFCODE_HOME`) | Read from **any** working directory. Owns LLM connections and defaults. |
+| **Project override** | `dfcode_config.json` in the current directory (or any parent) | Optional project agent/safety overrides. Provider endpoints and named connections remain user-owned. |
 
-Run the one-time setup and you can launch `deepcode` anywhere:
+Run the one-time setup and you can launch `dfcode` anywhere:
 
 ```bash
-deepcode init      # creates ~/.deepcode/deepcode_config.json
+dfcode init      # creates ~/.dfcode/dfcode_config.json
 ```
 
-`deepcode init` is a single cross-platform command (Windows, macOS, Linux). Run
-from a checkout that already has a `deepcode_config.json`, it lifts that config —
+`dfcode init` is a single cross-platform command (Windows, macOS, Linux). Run
+from a checkout that already has a `dfcode_config.json`, it lifts that config —
 keys and all — into the user base; run elsewhere, it drops the template there for
 you to fill in. It never overwrites an existing base (use `--force` to reseed,
 which keeps a `.bak`), and on Unix it locks the file to `600`. To relocate the
-base, set `DEEPCODE_HOME` (`export DEEPCODE_HOME=...` on macOS/Linux,
-`setx DEEPCODE_HOME ...` on Windows).
+base, set `DFCODE_HOME` (`export DFCODE_HOME=...` on macOS/Linux,
+`setx DFCODE_HOME ...` on Windows).
 
 Project files may select a user-owned connection, but cannot replace its
 endpoint, adapter, headers, or credential. This prevents a repository from
@@ -773,16 +773,16 @@ redirecting a key inherited from the user config or environment.
 The recommended path is a named connection shared by CLI and Desktop:
 
 ```bash
-deepcode provider set personal-openrouter \
+dfcode provider set personal-openrouter \
   --template openrouter \
   --label "OpenRouter · Personal" \
   --api-key
-deepcode provider test personal-openrouter
-deepcode provider models personal-openrouter --refresh
+dfcode provider test personal-openrouter
+dfcode provider models personal-openrouter --refresh
 ```
 
 `--api-key` opens a non-echoing prompt. The key is stored separately in
-`~/.deepcode/credentials.json` with user-only permissions and is never returned
+`~/.dfcode/credentials.json` with user-only permissions and is never returned
 through the App Server protocol. In Desktop, the same flow is available under
 **Settings → Connections**; use the model picker below a Session composer to
 change the connection/model for future Turns.
@@ -791,16 +791,16 @@ Common connection commands:
 
 | Command | Purpose |
 |---------|---------|
-| `deepcode provider list` | Show built-in and named connections without exposing keys |
-| `deepcode provider set <id> ...` | Create a connection or update only the supplied fields |
-| `deepcode provider test <id>` | Verify authentication and model discovery |
-| `deepcode provider models <id> --refresh` | Refresh and list exact model IDs |
-| `deepcode provider remove <id>` | Remove a named connection and its saved key |
+| `dfcode provider list` | Show built-in and named connections without exposing keys |
+| `dfcode provider set <id> ...` | Create a connection or update only the supplied fields |
+| `dfcode provider test <id>` | Verify authentication and model discovery |
+| `dfcode provider models <id> --refresh` | Refresh and list exact model IDs |
+| `dfcode provider remove <id>` | Remove a named connection and its saved key |
 
 Use an environment variable instead of the credential store when preferred:
 
 ```bash
-deepcode provider set work-openrouter \
+dfcode provider set work-openrouter \
   --template openrouter \
   --api-key-env OPENROUTER_API_KEY
 ```
@@ -810,7 +810,7 @@ Available templates include `openrouter`, `openai`, `anthropic`, `deepseek`,
 OpenAI-compatible endpoint:
 
 ```bash
-deepcode provider set company-proxy \
+dfcode provider set company-proxy \
   --template custom \
   --adapter openai_compat \
   --api-base https://llm.example.com/v1 \
@@ -820,7 +820,7 @@ deepcode provider set company-proxy \
 
 Passing `--connection` and `--model` selects a model for one launch. To make the
 same selection the default for CLI and Desktop, update the user-level
-`~/.deepcode/deepcode_config.json`:
+`~/.dfcode/dfcode_config.json`:
 
 ```json
 {
@@ -869,11 +869,11 @@ Any OpenAI-compatible endpoint is supported by overriding `apiBase` on the match
 ```
 
 OpenRouter model ids must use the exact `id` returned by its model catalog. Use
-`deepcode provider models <connection> --refresh` or the Desktop Session model
+`dfcode provider models <connection> --refresh` or the Desktop Session model
 picker to search the live catalog. The last successful catalog is cached for
 offline use.
 
-> **🔐 Never commit `deepcode_config.json`.** It is already in `.gitignore`.
+> **🔐 Never commit `dfcode_config.json`.** It is already in `.gitignore`.
 
 </details>
 
@@ -903,7 +903,7 @@ The provider is inferred from the `model` slug (`openai/...`, `anthropic/...`, `
 <details>
 <summary><strong>🪟 Windows Users: Additional MCP Server Configuration</strong></summary>
 
-On Windows you may need to configure MCP servers manually in `deepcode_config.json` (`tools.mcpServers`):
+On Windows you may need to configure MCP servers manually in `dfcode_config.json` (`tools.mcpServers`):
 
 ```bash
 # 1. Install MCP servers globally
@@ -934,7 +934,7 @@ npm -g root
 <details>
 <summary><strong>🔍 Web Search Configuration</strong></summary>
 
-DeepCode performs web content retrieval through the built-in `fetch` MCP server (no API key required) and reads local files via `filesystem`. The auxiliary search server defaults to `filesystem`:
+DFcode performs web content retrieval through the built-in `fetch` MCP server (no API key required) and reads local files via `filesystem`. The auxiliary search server defaults to `filesystem`:
 
 ```json
 {
@@ -942,11 +942,11 @@ DeepCode performs web content retrieval through the built-in `fetch` MCP server 
 }
 ```
 
-> **💡 Tip**: To plug in another search backend, add it under `tools.mcpServers` in `deepcode_config.json` and set `tools.defaultSearchServer` to its name.
+> **💡 Tip**: To plug in another search backend, add it under `tools.mcpServers` in `dfcode_config.json` and set `tools.defaultSearchServer` to its name.
 
 </details>
 
-### ⚡ **Step 3: Launch DeepCode**
+### ⚡ **Step 3: Launch DFcode**
 
 CLI and Desktop use the same Agent kernel, connection profiles, model resolver,
 Skills, and canonical Session store.
@@ -954,14 +954,14 @@ Skills, and canonical Session store.
 **🖥️ Interactive agent.** Start a multi-turn coding Session:
 
 ```bash
-deepcode
-deepcode -w ./my-project -c personal-openrouter -m moonshotai/kimi-k3
+dfcode
+dfcode -w ./my-project -c personal-openrouter -m moonshotai/kimi-k3
 ```
 
 **🤖 Headless agent.** Run one task with machine-readable output:
 
 ```bash
-deepcode exec "fix the failing test in mathlib.py" \
+dfcode exec "fix the failing test in mathlib.py" \
   --connection personal-openrouter \
   --model moonshotai/kimi-k3 \
   --json
@@ -977,16 +977,16 @@ npm run tauri -- dev
 
 #### 💻 **Interactive CLI (multi-turn coding agent)**
 
-`deepcode` opens a Claude Code-style conversation in your terminal:
+`dfcode` opens a Claude Code-style conversation in your terminal:
 describe any coding task in natural language, watch the agent stream its
 reply and tool progress live, and keep the conversation going across turns.
 
 ```bash
-deepcode                                      # current directory
-deepcode -w ./my-project                      # explicit workspace
-deepcode -c personal-openrouter \
+dfcode                                      # current directory
+dfcode -w ./my-project                      # explicit workspace
+dfcode -c personal-openrouter \
   -m moonshotai/kimi-k3                       # explicit connection/model
-deepcode --resume <session_id>                # resume a stored Session
+dfcode --resume <session_id>                # resume a stored Session
 ```
 
 Inside the conversation:
@@ -1003,7 +1003,7 @@ Inside the conversation:
 @src/main.py            # attach a file's content to your message
 ```
 
-Conversations persist under `~/.deepcode/sessions/<id>/` (JSONL, with a SQLite
+Conversations persist under `~/.dfcode/sessions/<id>/` (JSONL, with a SQLite
 index for instant listing) and are titled automatically from your first
 message. Switching models never forks or erases the Session: it rebuilds the
 runtime with the same visible history and applies only to future Turns. Every
@@ -1013,7 +1013,7 @@ retries do not silently drift when defaults change.
 For scripting and CI there is a headless one-shot entry:
 
 ```bash
-deepcode exec "fix the failing test in mathlib.py" \
+dfcode exec "fix the failing test in mathlib.py" \
   --connection personal-openrouter \
   --model moonshotai/kimi-k3 \
   --skill <id-or-name> \
@@ -1025,9 +1025,9 @@ which streams machine-readable events (NDJSON) and exits 0 on completion.
 Manage the same Skill catalog outside a Session:
 
 ```bash
-deepcode skill list
-deepcode skill import ./my-skill --scope project
-deepcode skill show <id-or-name>
+dfcode skill list
+dfcode skill import ./my-skill --scope project
+dfcode skill show <id-or-name>
 ```
 
 ### 🎯 **Step 4: Generate Code**
@@ -1045,8 +1045,8 @@ deepcode skill show <id-or-name>
 
 | Problem | Cause | Fix |
 |---|---|---|
-| `credential needed` in `deepcode provider list` | The connection has no API key or environment variable | Run `deepcode provider set <id> --api-key`, or configure it in **Desktop → Settings → Connections** |
-| Model not listed | The provider catalog is stale or the endpoint has no catalog API | Run `deepcode provider models <id> --refresh`; exact model IDs can still be entered manually |
+| `credential needed` in `dfcode provider list` | The connection has no API key or environment variable | Run `dfcode provider set <id> --api-key`, or configure it in **Desktop → Settings → Connections** |
+| Model not listed | The provider catalog is stale or the endpoint has no catalog API | Run `dfcode provider models <id> --refresh`; exact model IDs can still be entered manually |
 | Model switch is rejected | A Turn is running or queued in the Session | Wait for it to finish or interrupt it, then switch again |
 | Windows: MCP servers not working | Need absolute paths | See [Windows MCP Configuration](#-step-2-configure-an-llm-connection) above |
 | Windows: `UnicodeEncodeError: 'gbk' codec can't encode...` on launch | Default GBK console can't render emoji in startup banner | Set UTF-8 first: `set PYTHONIOENCODING=utf-8 && set PYTHONUTF8=1` (cmd) or `$env:PYTHONIOENCODING="utf-8"; $env:PYTHONUTF8="1"` (PowerShell) |
@@ -1130,7 +1130,7 @@ deepcode skill show <id-or-name>
 
 ### 🚀 **Coming Soon**
 
-We're continuously enhancing DeepCode with exciting new features:
+We're continuously enhancing DFcode with exciting new features:
 
 #### 🔧 **Enhanced Code Reliability & Validation**
 - **Automated Testing**: Comprehensive functionality testing with execution verification and error detection.
@@ -1155,11 +1155,11 @@ We're continuously enhancing DeepCode with exciting new features:
 
 *Community Growth Trajectory*
 
-<a href="https://star-history.com/#HKUDS/DeepCode&Date">
+<a href="https://star-history.com/#HKUDS/DFcode&Date">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/DeepCode&type=Date" style="border-radius: 15px; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);" />
+    <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date&theme=dark" />
+    <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" />
+    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=HKUDS/DFcode&type=Date" style="border-radius: 15px; box-shadow: 0 0 30px rgba(0, 217, 255, 0.3);" />
   </picture>
 </a>
 
@@ -1174,7 +1174,7 @@ We're continuously enhancing DeepCode with exciting new features:
 <p>
   <a href="#-quick-start"><img src="https://img.shields.io/badge/🚀_Get_Started-00d4ff?style=for-the-badge&logo=rocket&logoColor=white" alt="Get Started"></a>
   <a href="https://github.com/HKUDS"><img src="https://img.shields.io/badge/🏛️_View_on_GitHub-00d4ff?style=for-the-badge&logo=github&logoColor=white" alt="View on GitHub"></a>
-  <a href="https://github.com/HKUDS/deepcode-agent"><img src="https://img.shields.io/badge/⭐_Star_Project-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star Project"></a>
+  <a href="https://github.com/HKUDS/dfcode-agent"><img src="https://img.shields.io/badge/⭐_Star_Project-00d4ff?style=for-the-badge&logo=star&logoColor=white" alt="Star Project"></a>
 </p>
 
 ---
@@ -1184,11 +1184,11 @@ We're continuously enhancing DeepCode with exciting new features:
 ### 📖 **Citation**
 
 
-If you find DeepCode useful in your research or applications, please kindly cite:
+If you find DFcode useful in your research or applications, please kindly cite:
 
 ```
-@misc{li2025deepcodeopenagenticcoding,
-      title={DeepCode: Open Agentic Coding},
+@misc{li2025dfcodeopenagenticcoding,
+      title={DFcode: Open Agentic Coding},
       author={Zongwei Li and Zhonghang Li and Zirui Guo and Xubin Ren and Chao Huang},
       year={2025},
       eprint={2512.07921},
@@ -1212,6 +1212,6 @@ If you find DeepCode useful in your research or applications, please kindly cite
 ---
 
 
-<img src="https://visitor-badge.laobi.icu/badge?page_id=deepcode.readme&style=for-the-badge&color=00d4ff" alt="Visitors">
+<img src="https://visitor-badge.laobi.icu/badge?page_id=dfcode.readme&style=for-the-badge&color=00d4ff" alt="Visitors">
 
 </div>

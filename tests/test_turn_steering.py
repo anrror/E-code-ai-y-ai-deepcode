@@ -9,7 +9,7 @@ import time
 import pytest
 
 from core.agent_runtime.injections import UserSteer, runtime_input_to_provider_message
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import (
     DuplicateMessageConflictError,
     EmptyInputError,
@@ -149,7 +149,7 @@ def _wait_for(predicate, timeout: float = 3.0) -> None:
 @pytest.fixture
 def live_input(tmp_path):
     factory = _SteeringFactory()
-    app = DeepCodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
+    app = DFcodeApplication.open(tmp_path / "state.sqlite3", session_factory=factory)
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     project = app.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
@@ -325,7 +325,7 @@ def test_steer_receipt_restart_preserves_only_confirmed_evidence(
     factory.release.set()
     _wait_for(lambda: app.turns.read(turn_id).turn.status.is_terminal)
     app.close()
-    reopened = DeepCodeApplication.open(
+    reopened = DFcodeApplication.open(
         tmp_path / ("rebuilt.sqlite3" if rebuild else "state.sqlite3"),
         session_factory=_SteeringFactory(),
     )
@@ -342,7 +342,7 @@ def test_steer_receipt_restart_preserves_only_confirmed_evidence(
 
 def test_live_steer_is_durable_injected_once_and_visible_in_items(tmp_path) -> None:
     factory = _SteeringFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -415,7 +415,7 @@ def test_control_words_in_plain_text_remain_model_input(
     """Lifecycle commands are explicit APIs, never inferred from user text."""
 
     factory = _SteeringFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -453,7 +453,7 @@ def test_control_words_in_plain_text_remain_model_input(
 
 def test_strict_steer_never_creates_or_queues_a_turn(tmp_path) -> None:
     factory = _SteeringFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -487,7 +487,7 @@ def test_steer_requires_the_exact_executing_turn_and_message_id_is_stable(
     tmp_path,
 ) -> None:
     factory = _SteeringFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -570,7 +570,7 @@ def test_steer_racing_after_final_close_is_rejected_and_never_carried(
     tmp_path,
 ) -> None:
     factory = _ClosingFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )

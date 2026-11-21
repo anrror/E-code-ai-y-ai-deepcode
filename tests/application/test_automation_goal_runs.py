@@ -12,7 +12,7 @@ import pytest
 
 import core.application.goal_extension as goal_extension
 from core.agent_runtime.goal_runtime import GoalRuntimeRouter
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import AutomationNotFoundError, ConflictError
 from core.application.goal_extension import GoalContinueDisposition
 from core.domain import (
@@ -166,7 +166,7 @@ def _application(
 ):
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -198,7 +198,7 @@ def _wait_until(predicate, description: str):
 
 
 def _wait_for_run(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     automation_id: str,
     run_id: str,
     status: AutomationRunStatus,
@@ -213,7 +213,7 @@ def _wait_for_run(
 
 
 def _runs(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     automation_id: str,
 ) -> tuple[AutomationRun, ...]:
     with application.database.read() as connection:
@@ -223,7 +223,7 @@ def _runs(
 
 
 def _turns(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     thread_id: str,
 ) -> tuple[Turn, ...]:
     with application.database.read() as connection:
@@ -231,7 +231,7 @@ def _turns(
 
 
 def _wait_for_turn_count(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     thread_id: str,
     expected: int,
 ) -> tuple[Turn, ...]:
@@ -244,7 +244,7 @@ def _wait_for_turn_count(
 
 
 def _fact_counts(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     automation_id: str,
     thread_id: str,
 ) -> tuple[int, int, int]:
@@ -1359,7 +1359,7 @@ def test_goal_clear_waits_for_atomic_initial_turn_association(
     turn_gate = threading.Event()
     factory = _GoalAwareFactory(_TurnStep(None, gate=turn_gate))
     application, automation = _application(tmp_path, factory)
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         application.database.path,
         session_factory=_GoalAwareFactory(),
         session_store=SessionStore(
@@ -1434,7 +1434,7 @@ def test_goal_continuation_rejects_cross_app_goal_change_before_submission(
     initial_gate = threading.Event()
     factory = _GoalAwareFactory(_TurnStep(None, gate=initial_gate))
     application, automation = _application(tmp_path, factory)
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         application.database.path,
         session_factory=_GoalAwareFactory(),
         session_store=SessionStore(
@@ -1533,7 +1533,7 @@ def test_stale_cross_app_resume_cannot_reopen_a_completed_automation_goal(
     second_factory = _GoalAwareFactory(
         _TurnStep("complete", gate=completion_gate),
     )
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         application.database.path,
         session_factory=second_factory,
         session_store=SessionStore(
@@ -1651,7 +1651,7 @@ def test_restart_does_not_reprovision_a_cleared_pending_automation_goal(
         )
         application.close()
 
-        restarted = DeepCodeApplication.open(
+        restarted = DFcodeApplication.open(
             database_path,
             session_factory=factory,
             session_store=session_store,
@@ -1826,7 +1826,7 @@ def test_application_restart_replays_missing_goal_settlement_before_run_reconcil
         )
         application.close()
 
-        restarted = DeepCodeApplication.open(
+        restarted = DFcodeApplication.open(
             database_path,
             session_factory=factory,
             session_store=session_store,
@@ -2106,7 +2106,7 @@ def test_concurrent_clients_with_one_request_id_converge_on_one_run(
     first_factory = _GoalAwareFactory(_TurnStep("complete", gate=gate))
     second_factory = _GoalAwareFactory(_TurnStep("complete", gate=gate))
     first, automation = _application(tmp_path, first_factory)
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         first.database.path,
         session_factory=second_factory,
         session_store=first.session_store,
@@ -2152,7 +2152,7 @@ def test_concurrent_schedulers_claim_one_due_occurrence_and_one_turn(
     gate = threading.Event()
     first_factory = _GoalAwareFactory(_TurnStep("complete", gate=gate))
     second_factory = _GoalAwareFactory(_TurnStep("complete", gate=gate))
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=first_factory,
     )
@@ -2169,7 +2169,7 @@ def test_concurrent_schedulers_claim_one_due_occurrence_and_one_turn(
     )
     due = created.automation.next_run_at
     assert due is not None
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         first.database.path,
         session_factory=second_factory,
         session_store=first.session_store,

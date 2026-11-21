@@ -1,4 +1,4 @@
-"""Tests for safe, workspace-independent ``deepcode init``."""
+"""Tests for safe, workspace-independent ``dfcode init``."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def isolated(tmp_path, monkeypatch):
     project = tmp_path / "proj"
     home.mkdir()
     project.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(project)
     return home, project
 
@@ -46,7 +46,7 @@ def test_default_init_never_copies_workspace_config(isolated, capsys):
     assert json.loads(dest.read_text()) == {"security": {"accessPreset": "ask"}}
     out = capsys.readouterr().out
     assert "sk-real" not in out
-    assert "deepcode provider set" in out
+    assert "dfcode provider set" in out
 
 
 def test_posix_config_is_user_only(isolated):

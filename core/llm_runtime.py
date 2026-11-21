@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 
 from loguru import logger
 
-from core.compat.runtime import DeepCodeRuntime, get_runtime
+from core.compat.runtime import DFcodeRuntime, get_runtime
 from core.domain.execution_profile import ExecutionProfile
 from core.providers.base import LLMProvider
 
@@ -41,7 +41,7 @@ def get_workflow_provider(
     connection_id: str | None = None,
     model: str | None = None,
     execution_profile: ExecutionProfile | None = None,
-    runtime: DeepCodeRuntime | None = None,
+    runtime: DFcodeRuntime | None = None,
 ) -> tuple[LLMProvider, LLMProfile]:
     """Resolve a provider for non-AgentRunner workflow code.
 

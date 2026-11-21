@@ -1,6 +1,6 @@
-"""Workflow-facing helpers backed by ``deepcode_config.json``.
+"""Workflow-facing helpers backed by ``dfcode_config.json``.
 
-All callers route through the parsed :class:`core.config.DeepCodeConfig`
+All callers route through the parsed :class:`core.config.DFcodeConfig`
 (resolved lazily from the global runtime) so every entry-point — CLI,
 UI, workflows — sees one source of truth instead of re-reading the
 JSON file.
@@ -10,10 +10,10 @@ from __future__ import annotations
 
 from typing import Any, Dict, Tuple
 
-from core.config import DeepCodeConfig
+from core.config import DFcodeConfig
 
 
-def _resolve_config(config: DeepCodeConfig | None = None) -> DeepCodeConfig:
+def _resolve_config(config: DFcodeConfig | None = None) -> DFcodeConfig:
     """Return *config* if supplied, else the process-wide runtime config.
 
     Imports are kept local to avoid pulling the whole runtime on simple
@@ -26,7 +26,7 @@ def _resolve_config(config: DeepCodeConfig | None = None) -> DeepCodeConfig:
     return get_runtime().config
 
 
-def get_default_models(config: DeepCodeConfig | None = None) -> Dict[str, str]:
+def get_default_models(config: DFcodeConfig | None = None) -> Dict[str, str]:
     """Return the model name resolved for each phase.
 
     Always returns the same keys (``"anthropic"``, ``"openai"``, ``"google"``,
@@ -54,7 +54,7 @@ def get_default_models(config: DeepCodeConfig | None = None) -> Dict[str, str]:
     }
 
 
-def get_token_limits(config: DeepCodeConfig | None = None) -> Tuple[int, int]:
+def get_token_limits(config: DFcodeConfig | None = None) -> Tuple[int, int]:
     """Return ``(base_max_tokens, retry_max_tokens)``.
 
     ``base`` defaults to ``agents.defaults.maxTokens`` (or
@@ -69,7 +69,7 @@ def get_token_limits(config: DeepCodeConfig | None = None) -> Tuple[int, int]:
 
 
 def get_document_segmentation_config(
-    config: DeepCodeConfig | None = None,
+    config: DFcodeConfig | None = None,
 ) -> Dict[str, Any]:
     """Return the document-segmentation policy as a plain dict."""
     try:
@@ -88,7 +88,7 @@ def get_document_segmentation_config(
 
 def should_use_document_segmentation(
     document_content: str,
-    config: DeepCodeConfig | None = None,
+    config: DFcodeConfig | None = None,
 ) -> Tuple[bool, str]:
     """Decide whether segmentation is needed for *document_content*."""
     seg = get_document_segmentation_config(config)

@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import (
     ConflictError,
     FileChangedError,
@@ -38,16 +38,16 @@ def _git(workspace: Path, *arguments: str) -> str:
 def _repository(path: Path) -> None:
     path.mkdir()
     _git(path, "init", "-q")
-    _git(path, "config", "user.name", "DeepCode Test")
-    _git(path, "config", "user.email", "deepcode@example.test")
+    _git(path, "config", "user.name", "DFcode Test")
+    _git(path, "config", "user.email", "dfcode@example.test")
     (path / "tracked.txt").write_text("one\ntwo\n", encoding="utf-8")
     (path / "secondary.txt").write_text("secondary\n", encoding="utf-8")
     _git(path, "add", "tracked.txt", "secondary.txt")
     _git(path, "commit", "-q", "-m", "base")
 
 
-def _application(tmp_path: Path, workspace: Path) -> tuple[DeepCodeApplication, str]:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+def _application(tmp_path: Path, workspace: Path) -> tuple[DFcodeApplication, str]:
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)
     thread = application.threads.start(project.id, title="P4 workbench")
     return application, thread.id
@@ -322,7 +322,7 @@ def test_worktree_lifecycle_requires_explicit_dirty_cleanup(tmp_path: Path) -> N
 @pytest.mark.skipif(not Path("/bin/sh").exists(), reason="hooks are shell scripts")
 def test_worktree_and_discard_run_no_repository_hooks(tmp_path: Path) -> None:
     # The agent can write .git/hooks (outside a sandbox, or with no sandbox
-    # backend); DeepCode's own git calls must not run what it planted there.
+    # backend); DFcode's own git calls must not run what it planted there.
     workspace = tmp_path / "repository"
     _repository(workspace)
     ran = tmp_path / "ran"
@@ -421,7 +421,7 @@ def test_worktree_recreates_a_missing_registered_path_only_with_its_manifest(
     try:
         created = application.worktrees.create(thread_id)
         path = Path(created.path)
-        manifest = path.parent / ".deepcode-manifests" / f"{thread_id}.json"
+        manifest = path.parent / ".dfcode-manifests" / f"{thread_id}.json"
         assert manifest.is_file()
 
         shutil.rmtree(path)

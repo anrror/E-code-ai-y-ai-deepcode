@@ -15,7 +15,7 @@ import time
 from pathlib import Path
 from typing import Any
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application import turn_service as turn_service_module
 from core.application.turn_projection import TurnEventProjector
 from core.domain import TrustState
@@ -73,10 +73,10 @@ async def _hang():
     await asyncio.Event().wait()
 
 
-def _application(tmp_path: Path, *scripts) -> tuple[DeepCodeApplication, str]:
+def _application(tmp_path: Path, *scripts) -> tuple[DFcodeApplication, str]:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3", session_factory=_Factory(list(scripts))
     )
     project = application.projects.add(str(workspace), trust_state=TrustState.TRUSTED)

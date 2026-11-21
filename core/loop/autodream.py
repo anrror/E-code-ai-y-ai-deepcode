@@ -1,6 +1,6 @@
 """autodream — background consolidation of the agent's persistent memory (P3).
 
-Over many sessions the memory under ``<workspace>/.deepcode/memory/`` drifts:
+Over many sessions the memory under ``<workspace>/.dfcode/memory/`` drifts:
 duplicate notes, stale facts, a MEMORY.md index that no longer matches the
 files. autodream is a focused, off-the-critical-path agent pass that tidies
 it — merge duplicates, drop the stale, keep MEMORY.md a tight index — using

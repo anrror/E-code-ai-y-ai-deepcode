@@ -24,41 +24,41 @@ def _load_script(name: str, filename: str):
 
 
 release_config = _load_script(
-    "deepcode_test_create_release_config",
+    "dfcode_test_create_release_config",
     "create-release-config.py",
 )
 release_environment = _load_script(
-    "deepcode_test_validate_release_environment",
+    "dfcode_test_validate_release_environment",
     "validate-release-environment.py",
 )
 release_bundle = _load_script(
-    "deepcode_test_verify_release_bundle",
+    "dfcode_test_verify_release_bundle",
     "verify-release-bundle.py",
 )
 license_audit = _load_script(
-    "deepcode_test_audit_licenses",
+    "dfcode_test_audit_licenses",
     "audit-licenses.py",
 )
 sidecar_setup = _load_script(
-    "deepcode_test_setup_sidecar",
+    "dfcode_test_setup_sidecar",
     "setup-sidecar-env.py",
 )
 python_audit = _load_script(
-    "deepcode_test_audit_python_environment",
+    "dfcode_test_audit_python_environment",
     "audit-python-environment.py",
 )
 sidecar_build = _load_script(
-    "deepcode_test_build_sidecar",
+    "dfcode_test_build_sidecar",
     "build-sidecar.py",
 )
 
 
 def test_release_endpoint_defaults_to_the_repository(monkeypatch):
     monkeypatch.delenv("TAURI_UPDATER_ENDPOINT", raising=False)
-    monkeypatch.setenv("GITHUB_REPOSITORY", "example/deepcode")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "example/dfcode")
 
     assert release_config._endpoint() == (
-        "https://github.com/example/deepcode/releases/latest/download/latest.json"
+        "https://github.com/example/dfcode/releases/latest/download/latest.json"
     )
 
 
@@ -103,9 +103,9 @@ def test_bundle_resource_tree_requires_one_runtime_and_notices(
     monkeypatch,
 ):
     binary_name = (
-        "deepcode-app-server.exe"
+        "dfcode-app-server.exe"
         if release_bundle.os.name == "nt"
-        else "deepcode-app-server"
+        else "dfcode-app-server"
     )
     binary = tmp_path / "resources" / "app-server" / binary_name
     binary.parent.mkdir(parents=True)
@@ -126,9 +126,9 @@ def test_bundle_resource_tree_requires_one_runtime_and_notices(
 def test_archive_listing_accepts_platform_sidecar_suffixes():
     listing = "\n".join(
         (
-            "./usr/lib/deepcode/app-server/deepcode-app-server.exe",
-            "./usr/lib/deepcode/THIRD_PARTY_NOTICES.md",
-            "./usr/lib/deepcode/PRIVACY_AND_DIAGNOSTICS.md",
+            "./usr/lib/dfcode/app-server/dfcode-app-server.exe",
+            "./usr/lib/dfcode/THIRD_PARTY_NOTICES.md",
+            "./usr/lib/dfcode/PRIVACY_AND_DIAGNOSTICS.md",
         )
     ).lower()
 
@@ -268,7 +268,7 @@ def test_packaged_startup_failure_reports_service_log_and_cleans_up(
     with pytest.raises(
         RuntimeError, match="Concrete startup failure from the worker"
     ) as error:
-        sidecar_build._verify_bundle(tmp_path / "deepcode-app-server")
+        sidecar_build._verify_bundle(tmp_path / "dfcode-app-server")
     if cleanup_failure:
         assert any("cleanup failed" in note for note in error.value.__notes__)
     assert any("stop" in command for command in calls)
@@ -319,7 +319,7 @@ def test_packaged_protocol_error_survives_cleanup_failure(
     )
     message = "cleanup failed" if valid_response else "invalid RPC responses"
     with pytest.raises(RuntimeError, match=message) as error:
-        sidecar_build._verify_bundle(tmp_path / "deepcode-app-server")
+        sidecar_build._verify_bundle(tmp_path / "dfcode-app-server")
     if not valid_response:
         assert any("cleanup failed" in note for note in error.value.__notes__)
     assert not (tmp_path / "smoke").exists()

@@ -94,7 +94,7 @@ class AutomationSchedulePolicy(Protocol):
 
 @dataclass(frozen=True, slots=True)
 class DefaultAutomationSchedulePolicy:
-    """DeepCode V1 interval semantics.
+    """DFcode V1 interval semantics.
 
     - Interval cadence remains anchored to the persisted nominal deadline.
     - Any number of missed deadlines coalesce into one observed occurrence.

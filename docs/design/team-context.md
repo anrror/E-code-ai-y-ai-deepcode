@@ -1,7 +1,7 @@
 # 团队上下文平台：设计与界面方案
 
 > 状态：设计稿（待确认）
-> 范围：DeepCode 的团队级上下文子系统的领域模型、规则、信息架构、界面与落地分期
+> 范围：DFcode 的团队级上下文子系统的领域模型、规则、信息架构、界面与落地分期
 > 关系：实现《团队级 AI 编码上下文管理平台设计文档》（下称"原文档"）中仓库侧与知识侧的核心，外部系统（Confluence/GitBook、CodeGraph、MCP Aggregator）作为对接点
 
 ---
@@ -346,8 +346,8 @@ draft（草稿） → in-review（评审中） → published（已发布） → 
 
 ### 7.1 存储
 
-- 仓库层（随代码提交）：`<workspace>/.deepcode/team/<kind>/<slug>/`，文件 `entity.yaml`、`knowledge.yaml`、`knowledge/*.yaml`、`AGENTS.md`；
-- 共享层（本机）：`~/.deepcode/team/...`，用于公司/产线级内容；
+- 仓库层（随代码提交）：`<workspace>/.dfcode/team/<kind>/<slug>/`，文件 `entity.yaml`、`knowledge.yaml`、`knowledge/*.yaml`、`AGENTS.md`；
+- 共享层（本机）：`~/.dfcode/team/...`，用于公司/产线级内容；
 - 界面顶部作用域切换决定写入哪一层；共享层默认只读，需显式解锁。
 
 ### 7.2 RPC（项目级，不依赖会话）
@@ -402,9 +402,9 @@ project/files/read         {projectId, path, maxBytes}
 
 ## 9. 与其它能力的映射
 
-| 原文档概念 | DeepCode 落点 |
+| 原文档概念 | DFcode 落点 |
 |---|---|
-| Meta-Repo 逻辑视图 | 多个 workspace 各自 `.deepcode/team`；共享层承载公司/产线；不迁移 Git 历史 |
+| Meta-Repo 逻辑视图 | 多个 workspace 各自 `.dfcode/team`；共享层承载公司/产线；不迁移 Git 历史 |
 | AGENTS.md 分层强制注入 | 每层 `AGENTS.md` 由远及近注入，最近一层最后出现 |
 | CodeGraph 类索引 | `codebases`/`designs` 登记索引位置，工具侧通过现有检索/MCP 接入 |
 | 知识库权限感知检索 | `search` 先按主链+引用裁剪，再匹配文本；外部默认过滤 |
@@ -433,7 +433,7 @@ project/files/read         {projectId, path, maxBytes}
 
 本节记录与初版设计不同、且已在代码中落地的决定；以上各节若与本节冲突，以本节为准。
 
-- **全局库为真源**：团队上下文存在 `~/.deepcode/team`（遵循 `DEEPCODE_HOME`），Team 页默认展示全部；`projectId` 只用于把某个工作区作为覆盖层，可省略。旧的 `<workspace>/.deepcode/team` 已迁移并改名为 `team.migrated-<时间>` 防止遮蔽。
+- **全局库为真源**：团队上下文存在 `~/.dfcode/team`（遵循 `DFCODE_HOME`），Team 页默认展示全部；`projectId` 只用于把某个工作区作为覆盖层，可省略。旧的 `<workspace>/.dfcode/team` 已迁移并改名为 `team.migrated-<时间>` 防止遮蔽。
 - **组织层是策略清单，不是目录**：四个固定分区（安全红线 / 数据合规 / 许可证策略 / 统一工具链），组织层唯一；共享写入需要“解锁”，解锁只影响本机所有项目。
 - **产品可归属也可引用**：业务线可直接拥有产品，项目可挂在产品下（line → product → project）；引用（`references`）只提供一跳上下文，不覆盖本层。
 - **层信息可编辑**：名称、上级、外部标记、关联面板项目、代码路径、文档路径；层可删除（有子层先处理子层，有知识需确认）。
@@ -441,6 +441,6 @@ project/files/read         {projectId, path, maxBytes}
 - **公司任务 ID**：在团队上下文的层 `entity.yaml` 中配置 `task_id`（也接受 `taskId`），按主链最近层取值并进入上下文头（`task-id="…"`）；引用产品不改变归属。
 - **代码/文档查看**：项目与产品层配置的本地路径可在层内浏览（根目录限定、拒绝路径穿越与二进制），编辑器只读。
 - **预览装配包含上下级**：向上走父链（到组织红线），向下广度遍历子层（产品下的项目、项目下的批次/版本/任务），再合并一跳引用；预览文本含每层的代码/文档/工作区指针，并按 chain / sub-layer / referenced 标注。
-- **侧栏项目可见性**：`~/.deepcode/team/visibility.yaml` 记录隐藏项目；Team 页项目节点上的眼睛开关与“侧栏项目”对话框都可修改，侧栏据此过滤。
+- **侧栏项目可见性**：`~/.dfcode/team/visibility.yaml` 记录隐藏项目；Team 页项目节点上的眼睛开关与“侧栏项目”对话框都可修改，侧栏据此过滤。
 - **评审治理**：draft / reviewed 均可编辑和删除；只有 draft 有“启用”，reviewed 可“弃用”，deprecated 只读。
 - **技能**：用户级技能目录为 `~/.agents/skills`；本机已安装 ai-os-harness、security-research、security-review。

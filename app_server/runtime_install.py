@@ -9,7 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from core.config import deepcode_home
+from core.config import dfcode_home
 from core.file_lock import exclusive_file_lock
 from core.private_storage import ensure_private_directory
 from core.version import __version__
@@ -26,7 +26,7 @@ def pinned_service_executable() -> Path:
     digest = hashlib.sha256(executable.read_bytes())
     manifest = source / "_internal" / "app_server" / "web_assets" / "web-build.json"
     digest.update(manifest.read_bytes())
-    root = ensure_private_directory(deepcode_home() / "runtimes")
+    root = ensure_private_directory(dfcode_home() / "runtimes")
     destination = root / f"{__version__}-{digest.hexdigest()[:24]}"
     target = destination / executable.name
     if source.resolve() == destination.resolve():

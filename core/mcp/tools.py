@@ -1,4 +1,4 @@
-"""MCP capabilities adapted to native DeepCode Tool contracts."""
+"""MCP capabilities adapted to native DFcode Tool contracts."""
 
 from __future__ import annotations
 

@@ -1,7 +1,7 @@
 """Lowest-level cross-platform advisory file-lock primitives.
 
 Callers own the file descriptor and decide how long the lock lives.  Keeping
-the operating-system details here ensures every DeepCode lease uses the same
+the operating-system details here ensures every DFcode lease uses the same
 shared/exclusive and contention semantics.
 """
 

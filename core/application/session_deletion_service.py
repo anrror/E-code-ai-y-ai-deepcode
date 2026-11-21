@@ -1,4 +1,4 @@
-"""Permanent Session deletion shared by every DeepCode frontend."""
+"""Permanent Session deletion shared by every DFcode frontend."""
 
 from __future__ import annotations
 
@@ -78,7 +78,7 @@ class SessionDeletionService:
         activity = self.sessions.acquire_deletion_lease(thread_id)
         if activity is None:
             raise ConflictError(
-                "Session is open in another DeepCode surface",
+                "Session is open in another DFcode surface",
                 user_message=(
                     "Close the CLI, terminal, or worktree operation using this "
                     "Session, then try again."
@@ -134,7 +134,7 @@ class SessionDeletionService:
                 f"Session deletion tombstone is corrupt: {guarded.session_id}",
                 user_message=(
                     "This Session has an incomplete deletion record. Run "
-                    "DeepCode diagnostics before modifying it."
+                    "DFcode diagnostics before modifying it."
                 ),
             )
         guarded.ensure_quarantined(ticket)

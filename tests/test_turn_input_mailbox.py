@@ -77,7 +77,7 @@ async def test_mailbox_only_drains_committed_typed_input() -> None:
     provider_message = runtime_input_to_provider_message(drained[0])
     assert provider_message["role"] == "user"
     assert "Use the revised Goal." in provider_message["content"]
-    assert "<deepcode_context" not in provider_message["content"]
+    assert "<dfcode_context" not in provider_message["content"]
 
 
 @pytest.mark.asyncio

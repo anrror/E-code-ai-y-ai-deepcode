@@ -1,19 +1,19 @@
 # Goals, automation, and headless runs
 
 Once you have completed your [first task](getting-started.md), you can ask
-DeepCode to work toward a longer objective, call it from a script, or run a
+DFcode to work toward a longer objective, call it from a script, or run a
 recurring task. Choose the option that fits your work:
 
 | What you want to do | Use |
 |---|---|
-| Keep working toward an objective across several Turns | `/goal` in a conversation, or `deepcode loop` from the shell |
-| Run one task from a script | `deepcode exec` |
+| Keep working toward an objective across several Turns | `/goal` in a conversation, or `dfcode loop` from the shell |
+| Run one task from a script | `dfcode exec` |
 | Run a recurring task after you close the interface | An Automation |
-| Repeat a task while a scheduling command stays open | `deepcode schedule` |
+| Repeat a task while a scheduling command stays open | `dfcode schedule` |
 
 ## Goals — an objective the Session keeps
 
-A Goal keeps an objective attached to your conversation as DeepCode works on it.
+A Goal keeps an objective attached to your conversation as DFcode works on it.
 Describe the outcome you want, including how it should be checked. In the TUI:
 
 ```text
@@ -31,7 +31,7 @@ new objective, so `/goal clear out the unused feature flags` never clears the
 current Goal. A Session holds one Goal at a time: if it already has one, use
 `/goal edit`, or `/goal clear` first.
 
-You can close the conversation and return to the saved Goal later. DeepCode
+You can close the conversation and return to the saved Goal later. DFcode
 reports when it considers the work complete or needs help to proceed. Review
 its changes and test results before accepting the outcome. Additional controls
 include `/goal continue`, `/goal wait`, `/goal reopen`, and `/goal clear`.
@@ -39,7 +39,7 @@ include `/goal continue`, `/goal wait`, `/goal reopen`, and `/goal clear`.
 waiting while the Goal keeps working.
 
 A Goal can have a token budget, a time limit (its active time, set in the
-Desktop Goal editor or with `deepcode loop --time-budget MINUTES`), or both.
+Desktop Goal editor or with `dfcode loop --time-budget MINUTES`), or both.
 A Goal without either continues on its own at most 20 times in a row
 without reporting complete or blocked. It then stops as blocked, so you can
 check its progress, and `/goal resume` lets it continue. Sending a message,
@@ -56,9 +56,9 @@ Goal blocked only from the Goal's third Turn on, unless you declined an
 approval it asked for in that Turn; before that it is told to try another
 approach.
 
-If DeepCode restarts while a Goal is active, the Goal is paused rather than
+If DFcode restarts while a Goal is active, the Goal is paused rather than
 continued, so it does not spend tokens while nobody is watching. Resume it to
-go on, for example with `/goal resume` or `deepcode loop --resume SESSION_ID`.
+go on, for example with `/goal resume` or `dfcode loop --resume SESSION_ID`.
 A Goal that an Automation runs, or one with a message you queued before the
 restart, continues as before.
 
@@ -88,10 +88,10 @@ confirm` uses the list you were shown (if the agent replaced it meanwhile, you
 are shown the new one first), `/goal checks dismiss` drops it, `/goal checks add
 COMMAND` adds a command of your own and `/goal checks clear` removes them all.
 After you dismiss a proposal the agent is not asked for another. With
-`deepcode loop`, `--test-cmd` and each `--check COMMAND` become confirmed checks
+`dfcode loop`, `--test-cmd` and each `--check COMMAND` become confirmed checks
 of the new Goal.
 
-Once confirmed, DeepCode runs each command itself whenever the agent claims
+Once confirmed, DFcode runs each command itself whenever the agent claims
 the Goal complete, in the project folder. A proposed command is an argument
 list run without a shell. A command you type yourself runs the same way unless
 it uses shell syntax (a pipe, `&&`, a glob, a variable); then it runs in
@@ -140,17 +140,17 @@ and, for a review, each requirement with its finding and evidence. The Desktop
 Goal card shows the latest result next to the Goal's status and the full table
 when you open the card; `/goal show` prints the latest one.
 
-## Work on a Goal from the shell: `deepcode loop`
+## Work on a Goal from the shell: `dfcode loop`
 
 For the trusted demo workspace from [Getting started](getting-started.md), replace
 `MODEL_ID` with your configured model. Run this as one line in your shell:
 
 ```console
-deepcode loop "Refactor greet without changing its tested behavior" --workspace ./deepcode-demo --connection my-openrouter --model MODEL_ID --test-cmd "python -m unittest discover -v" --token-budget 200000
+dfcode loop "Refactor greet without changing its tested behavior" --workspace ./dfcode-demo --connection my-openrouter --model MODEL_ID --test-cmd "python -m unittest discover -v" --token-budget 200000
 ```
 
 Use the Python command available in your project. `--test-cmd` tells the agent
-which test command to run before reporting completion, and DeepCode runs it
+which test command to run before reporting completion, and DFcode runs it
 itself before it accepts the claim (see
 [A checklist you confirm](#a-checklist-you-confirm)); `--check COMMAND` adds
 more such commands. `--token-budget` limits how many tokens the Goal may use
@@ -158,16 +158,16 @@ and `--time-budget MINUTES` how long it may work.
 
 When the run finishes, review the changed files and test output.
 For a script, exit code 0 means the Goal was marked complete; other settled
-states return 1. You can resume it with `deepcode loop --resume SESSION_ID`.
+states return 1. You can resume it with `dfcode loop --resume SESSION_ID`.
 
-## One task, scripted: `deepcode exec`
+## One task, scripted: `dfcode exec`
 
 From an already trusted project, select the connection/model explicitly. As in
 the first-task guide, replace `MODEL_ID` with the verified model ID:
 
 ```console
-deepcode exec "Summarize this repository's test structure without changing files" --workspace . --connection my-openrouter --model MODEL_ID --access read-only
-deepcode exec "Summarize this repository's test structure without changing files" --workspace . --connection my-openrouter --model MODEL_ID --access read-only --json | jq -r '.msg.type'
+dfcode exec "Summarize this repository's test structure without changing files" --workspace . --connection my-openrouter --model MODEL_ID --access read-only
+dfcode exec "Summarize this repository's test structure without changing files" --workspace . --connection my-openrouter --model MODEL_ID --access read-only --json | jq -r '.msg.type'
 ```
 
 The second example requires `jq` and starts a separate task; choose one format.
@@ -182,13 +182,13 @@ IDs so you can check its progress later.
 
 ## Persistent interval Automations
 
-Use an Automation for a task you want DeepCode to repeat. In a project you have
+Use an Automation for a task you want DFcode to repeat. In a project you have
 already opened and trusted, create an hourly review of TODO comments. Start it
 paused so you can try it once before turning on the timer:
 
 ```console
-deepcode automation create "Review TODOs" --workspace . --prompt "Summarize TODO comments without modifying files" --schedule interval --interval-seconds 3600 --disabled
-deepcode automation list --workspace .
+dfcode automation create "Review TODOs" --workspace . --prompt "Summarize TODO comments without modifying files" --schedule interval --interval-seconds 3600 --disabled
+dfcode automation list --workspace .
 ```
 
 Each Automation has its own Goal Session. Before its first run, use **Open Session**
@@ -201,33 +201,33 @@ Copy the Automation ID from the output and use it in place of `AUTO_ID` below.
 Run it once, inspect its run history, then enable the hourly schedule:
 
 ```console
-deepcode automation run AUTO_ID
-deepcode automation runs AUTO_ID
-deepcode automation enable AUTO_ID
+dfcode automation run AUTO_ID
+dfcode automation runs AUTO_ID
+dfcode automation enable AUTO_ID
 ```
 
-To pause future runs, use `deepcode automation disable AUTO_ID`. A task already
+To pause future runs, use `dfcode automation disable AUTO_ID`. A task already
 running will keep going; open its Session if you want to stop it. Review the
 Project's permissions before unattended use, since tasks that need approval
 still require your response.
 
 You can close Desktop, Web, and the TUI while an Automation is scheduled. Keep
 the computer awake and the background service running. Use
-`deepcode service status` to check it, or `deepcode service install --at-login`
+`dfcode service status` to check it, or `dfcode service install --at-login`
 to start the service automatically after signing into your computer.
 
 ## Foreground schedules
 
-`deepcode schedule` is a foreground scheduling client. For example, from the
+`dfcode schedule` is a foreground scheduling client. For example, from the
 parent of the trusted demo workspace:
 
 ```console
-deepcode schedule loop "Check greet and fix any regressions" --workspace ./deepcode-demo --connection my-openrouter --model MODEL_ID --test-cmd "python -m unittest discover -v" --every 86400 --max-runs 30
+dfcode schedule loop "Check greet and fix any regressions" --workspace ./dfcode-demo --connection my-openrouter --model MODEL_ID --test-cmd "python -m unittest discover -v" --every 86400 --max-runs 30
 ```
 
 Closing this scheduling client stops future submissions; already accepted work
 continues in the service. Use Automations when the schedule itself must survive
-client exit. As with `deepcode loop`, DeepCode runs the test command itself
+client exit. As with `dfcode loop`, DFcode runs the test command itself
 before it accepts a completion claim.
 See [service operation](../SERVICE_RUNTIME.md) for shutdown and drain semantics.
 
@@ -245,33 +245,33 @@ python -m core.schedule.monitor --job-id releases --url https://example.com/rele
 ```
 
 Exit code 0 with `"changed": true` means "act now"; feed `context_block` to
-`deepcode exec` in the same cron entry. URLs follow the same public-host policy
+`dfcode exec` in the same cron entry. URLs follow the same public-host policy
 as the web tools, scripts pass the destructive-command screen, and state lives
-in `<deepcode home>/state/monitor.sqlite3`.
+in `<dfcode home>/state/monitor.sqlite3`.
 
-## DeepCode as an MCP server
+## DFcode as an MCP server
 
-Expose DeepCode task tools to another agent or editor with:
+Expose DFcode task tools to another agent or editor with:
 
 ```console
-deepcode mcp serve
+dfcode mcp serve
 ```
 
 Use this command as the server entry in your editor's MCP configuration.
-When DeepCode will work in a project, open and trust that folder first.
+When DFcode will work in a project, open and trust that folder first.
 
-To give DeepCode tools from another MCP server, start by browsing the presets
+To give DFcode tools from another MCP server, start by browsing the presets
 and testing a connection:
 
 ```console
-deepcode mcp presets
-deepcode mcp add context7
-deepcode mcp test context7
+dfcode mcp presets
+dfcode mcp add context7
+dfcode mcp test context7
 ```
 
 Added templates start disabled. After reviewing and testing a server, use
-`deepcode mcp enable context7`. Services requiring OAuth have a separate
-`deepcode mcp login SERVER_NAME` flow. The TUI's `/mcp` exposes management too.
+`dfcode mcp enable context7`. Services requiring OAuth have a separate
+`dfcode mcp login SERVER_NAME` flow. The TUI's `/mcp` exposes management too.
 See the [MCP client guide](../integrations/MCP.md) for transports and policy.
 
 ## Hooks
@@ -281,12 +281,12 @@ For example, `PreToolUse` runs before a tool, while `PostToolUse` observes its
 result afterward. See [Headless and Automation](../HEADLESS_AND_AUTOMATION.md)
 for configuration and the actions each hook supports.
 
-Hooks a project declares in `.deepcode/hooks.json` or `.claude/settings.json`
+Hooks a project declares in `.dfcode/hooks.json` or `.claude/settings.json`
 run only while they are approved. Trusting a project approves the hooks it
 declares at that moment. If those declarations change later, for example after
-a `git pull`, DeepCode skips the project's hooks and logs a notice until you
-approve them again: run `deepcode hooks status` in the project to see them,
-then `deepcode hooks approve` to approve exactly what was listed. The approval
+a `git pull`, DFcode skips the project's hooks and logs a notice until you
+approve them again: run `dfcode hooks status` in the project to see them,
+then `dfcode hooks approve` to approve exactly what was listed. The approval
 covers the declarations (events, matchers and commands), not the scripts they
-run, so a hook such as `sh .deepcode/check.sh` keeps its approval when
-`check.sh` changes. Your own hooks in `~/.deepcode/hooks.json` always run.
+run, so a hook such as `sh .dfcode/check.sh` keeps its approval when
+`check.sh` changes. Your own hooks in `~/.dfcode/hooks.json` always run.

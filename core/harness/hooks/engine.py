@@ -189,7 +189,7 @@ class HooksEngine:
         """Session lifecycle end — fires exactly once when the session terminates.
 
         Called from ``AgentSession.submit(Shutdown)``, never per turn. The
-        reason doubles as the matcher input. DeepCode runtime shutdown maps to
+        reason doubles as the matcher input. DFcode runtime shutdown maps to
         the compatible ``other`` reason. The caller logs failures so a hook
         can never crash the session close.
         """

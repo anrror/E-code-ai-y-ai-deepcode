@@ -116,7 +116,7 @@ class PDFConverter:
                 folder_name = f"paper_{timestamp}"
 
                 # Save to workspace instead of temp directory
-                workspace_base = Path(os.getcwd()) / "deepcode_lab" / "papers"
+                workspace_base = Path(os.getcwd()) / "dfcode_lab" / "papers"
                 workspace_base.mkdir(parents=True, exist_ok=True)
                 base_output_dir = workspace_base / folder_name
 
@@ -369,7 +369,7 @@ class PDFConverter:
                 folder_name = f"paper_{timestamp}"
 
                 # Save to workspace instead of temp directory
-                workspace_base = Path(os.getcwd()) / "deepcode_lab" / "papers"
+                workspace_base = Path(os.getcwd()) / "dfcode_lab" / "papers"
                 workspace_base.mkdir(parents=True, exist_ok=True)
                 base_output_dir = workspace_base / folder_name
 

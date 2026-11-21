@@ -1,14 +1,14 @@
 # SWE-bench harness
 
-The P2 exit gate: measure whether the DeepCode agent can resolve a real
+The P2 exit gate: measure whether the DFcode agent can resolve a real
 GitHub issue — produce a patch that flips the hidden `FAIL_TO_PASS` tests to
 passing without breaking `PASS_TO_PASS`.
 
-The harness separates the two jobs so DeepCode owns only what is DeepCode's:
+The harness separates the two jobs so DFcode owns only what is DFcode's:
 
 | Stage | Who does it | Where |
 | --- | --- | --- |
-| **Predict** — check out repo @ `base_commit`, run `deepcode exec` on the issue, capture `git diff` as `model_patch` | DeepCode | `predict.py` |
+| **Predict** — check out repo @ `base_commit`, run `dfcode exec` on the issue, capture `git diff` as `model_patch` | DFcode | `predict.py` |
 | **Score** — apply the patch, run the tests, decide *resolved* | official `swebench` Docker harness (Verified) / local scorer (dev) | `evaluate.py` (local) |
 
 We do **not** reimplement the official scorer — for the Verified set the
@@ -49,7 +49,7 @@ end of the predict run):
 python -m swebench.harness.run_evaluation \
   --dataset_name princeton-nlp/SWE-bench_Verified \
   --predictions_path predictions.jsonl \
-  --max_workers 4 --run_id deepcode-p2
+  --max_workers 4 --run_id dfcode-p2
 ```
 
 Scoring requires a running Docker daemon and the `swebench` package; it is not
@@ -60,7 +60,7 @@ re-run it before each release so the number never silently regresses.
 
 - `instance.py` — `Instance` model + the local benchmark (declarative specs → git repos)
 - `dataset.py` — load Verified + deterministic subset selection + record→`Instance`
-- `predict.py` — clone, drive `deepcode exec`, capture the patch (bytecode/cache excluded)
+- `predict.py` — clone, drive `dfcode exec`, capture the patch (bytecode/cache excluded)
 - `evaluate.py` — local Docker-free scorer (apply to a clean checkout, run the tests)
 - `report.py` — result rows + aggregate resolved rate (JSON + summary line)
 - `run.py` — CLI wiring both modes

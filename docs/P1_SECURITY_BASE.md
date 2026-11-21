@@ -1,6 +1,6 @@
 # P1 · 安全底座(第一增量)
 
-DeepCode 安全层的第一批实现:权限判定、命令沙箱与审批。**机制,非决策**:这些模块只做确定性的判定与包裹,不碰模型、不碰 UI。
+DFcode 安全层的第一批实现:权限判定、命令沙箱与审批。**机制,非决策**:这些模块只做确定性的判定与包裹,不碰模型、不碰 UI。
 
 ## 交付
 
@@ -13,7 +13,7 @@ DeepCode 安全层的第一批实现:权限判定、命令沙箱与审批。**�
 
 ## 权限引擎(提炼自参考项目,非照抄)
 
-- **集中式敏感路径保护**(源自 OpenHarness):`.ssh / .aws/credentials / .env / deepcode_config.json / *.pem / id_rsa*` 等在 legacy、Ask 与 Read only 执行中优先于规则。产品级、经二次确认的 Full Access 会原子地关闭这条保护、命令沙箱与 workspace 写围栏；普通配置规则不能单独绕过保护。
+- **集中式敏感路径保护**(源自 OpenHarness):`.ssh / .aws/credentials / .env / dfcode_config.json / *.pem / id_rsa*` 等在 legacy、Ask 与 Read only 执行中优先于规则。产品级、经二次确认的 Full Access 会原子地关闭这条保护、命令沙箱与 workspace 写围栏；普通配置规则不能单独绕过保护。
 - **二维通配符规则,特异性优先 + last-match-wins**(源自 opencode + 改进):规则同时匹配工具名 × 参数(命令行/路径),`{"execute_bash": {"git push *": "ask", "*": "allow"}}` 按作者直觉工作(具体压过通配)。直接构造的 `PermissionRule` 列表保持纯 last-match-wins。
 - **三模式**:`default`(改动型工具 ask)/ `plan`(改动型 deny,只读探索)/ `full_auto`(仅规则,无隐式 ask,供无人值守工作流)。
 
@@ -40,21 +40,21 @@ fail-closed:checker 或 approver 抛异常 → 一律拒绝。
 
 **b1 · execute_bash/python 真正经沙箱运行**(`tools/code_implementation_server.py`、`tools/command_executor.py`)
 - 两个 MCP server 的 `execute_bash`/`execute_python`(及文件树创建的命令回退)现在经 `core.harness.sandbox.build_exec_command` 包裹:**写围栏到 workspace,读全放行,网络放行**(pip/下载不受影响)。
-- 环境门控 `DEEPCODE_SANDBOX`(默认开;`0/false/off/no` 关闭);后端不可用时降级为裸执行并在结果 `sandbox` 字段标注(`seatbelt`/`bwrap`/`none`/`disabled`)。
+- 环境门控 `DFCODE_SANDBOX`(默认开;`0/false/off/no` 关闭);后端不可用时降级为裸执行并在结果 `sandbox` 字段标注(`seatbelt`/`bwrap`/`none`/`disabled`)。
 - **闭合上一节坦白的 shell 凭据边界**:shell 命令把凭据 copy 到自控文件 → 写围栏拦截。已有真实 seatbelt 测试证明(`test_execute_bash_credential_exfil_write_blocked`、区外写拦截、区内写放行、python 同款)。
 - 权衡说明:沙箱选择**放行网络**(实现阶段常需 pip),FS 写围栏是高价值低风险的那层保护;要严格隔离可用 `allow_network=False`(库支持)。
 
 **b2 · 交互式审批(ask → 人机确认)**(`core/harness/approval.py`)
 - `TerminalApprover`:把 `ask` 变成终端 y/n/always 提示,`always` 按工具名记忆本会话;非交互 stdin → 拒绝(fail-closed);`as_async()` 用线程包裹避免阻塞事件循环。
-- **altitude 决策**:自主实现阶段逐工具确认是糟糕 UX,故**默认仍 FULL_AUTO**;`DEEPCODE_PERMISSION_MODE=default|plan` 可主动切换,此时自动挂上审批器。真正"交互式默认"属于 P2 通用 agent 循环。
+- **altitude 决策**:自主实现阶段逐工具确认是糟糕 UX,故**默认仍 FULL_AUTO**;`DFCODE_PERMISSION_MODE=default|plan` 可主动切换,此时自动挂上审批器。真正"交互式默认"属于 P2 通用 agent 循环。
 
 ## 后续接线状态
 
-- `deepcode_config.json` 的 `permissions` 规则已在 Turn admission 时规范化并
+- `dfcode_config.json` 的 `permissions` 规则已在 Turn admission 时规范化并
   冻结进 `ExecutionSecurityProfile`，worker 不再动态重读可变配置。
 - 通用 Agent 循环、CLI 与 Desktop 已共享 Ask / Read only / Full access 预设
   及同一 Approval 状态机；legacy mode 只保留给兼容调用。
-- 可选风险评估（#245，默认关闭）：`DEEPCODE_RISK_EVALUATOR=1` 时，对模式默认
+- 可选风险评估（#245，默认关闭）：`DFCODE_RISK_EVALUATOR=1` 时，对模式默认
   会放行（步骤 4 的 `allow`）的调用复用 `command_guard.screen_all` 再看一眼，
   命中只会 `allow` → `ask`；评估器异常按 fail-closed 处理。它不能放宽 deny、
   不能覆盖显式规则，属于建议性防御而非安全边界。开关只在

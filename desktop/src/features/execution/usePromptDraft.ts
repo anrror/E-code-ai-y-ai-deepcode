@@ -3,15 +3,15 @@ import { useEffect, useState } from "react";
 const HISTORY_LIMIT = 30;
 
 function draftKey(threadId: string): string {
-  return `deepcode.desktop.draft.${threadId}`;
+  return `dfcode.desktop.draft.${threadId}`;
 }
 
 function historyKey(threadId: string): string {
-  return `deepcode.desktop.promptHistory.${threadId}`;
+  return `dfcode.desktop.promptHistory.${threadId}`;
 }
 
 function attachmentsKey(threadId: string): string {
-  return `deepcode.desktop.attachments.${threadId}`;
+  return `dfcode.desktop.attachments.${threadId}`;
 }
 
 function readValue(key: string): string {

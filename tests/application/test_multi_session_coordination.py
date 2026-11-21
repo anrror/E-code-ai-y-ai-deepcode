@@ -4,7 +4,7 @@ import asyncio
 import time
 from pathlib import Path
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain import TrustState
 from core.domain.turn import TurnStatus
 from core.events import Event, TurnStarted
@@ -28,7 +28,7 @@ class _HangingFactory:
 
 
 def _wait_for_status(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     expected: TurnStatus,
 ) -> None:
@@ -42,7 +42,7 @@ def _wait_for_status(
 
 
 def _trusted_thread(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     workspace: Path,
     *,
     title: str,
@@ -58,7 +58,7 @@ def _trusted_thread(
 def test_canonical_workspaces_from_different_projects_can_run_concurrently(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_HangingFactory(),
         max_concurrent_turns=2,
@@ -92,7 +92,7 @@ def test_canonical_workspaces_from_different_projects_can_run_concurrently(
 def test_threads_sharing_a_canonical_workspace_are_serialized(
     tmp_path: Path,
 ) -> None:
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=_HangingFactory(),
         max_concurrent_turns=2,

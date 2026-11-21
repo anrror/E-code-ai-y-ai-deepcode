@@ -1,6 +1,6 @@
 """Session layer: persistent multi-turn conversation containers.
 
-Sessions are DeepCode's analogue of a Cursor / Codex / Claude Code
+Sessions are DFcode's analogue of a Cursor / Codex / Claude Code
 "chat": a stable, user-visible identifier that owns
 
 * an ordered transcript of user / assistant messages, and
@@ -10,7 +10,7 @@ Sessions are DeepCode's analogue of a Cursor / Codex / Claude Code
 Persistence is JSONL-on-disk (the source of truth: human-readable,
 ``tail -f``-able, survives a corrupt index) with a derived, disposable
 SQLite index (:class:`SessionIndex`) that accelerates list/lookup queries.
-Default root is ``~/.deepcode/sessions/`` with ``index.db`` alongside the
+Default root is ``~/.dfcode/sessions/`` with ``index.db`` alongside the
 per-session ``<session_id>/`` directories.
 
 Public surface:

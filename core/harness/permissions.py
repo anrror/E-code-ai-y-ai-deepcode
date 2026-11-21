@@ -86,8 +86,8 @@ SENSITIVE_PATH_PATTERNS: tuple[str, ...] = (
     "*/.npmrc",
     "*/.pypirc",
     "*/.git-credentials",
-    "*/.deepcode/credentials*",
-    "*/deepcode_config.json",
+    "*/.dfcode/credentials*",
+    "*/dfcode_config.json",
     "*/secrets.json",
     "*/.env",
     "*/.env.*",
@@ -227,7 +227,7 @@ def is_sensitive_path(raw: str, cwd: str | None = None) -> bool:
 # written-in handler runs commands in a later session, so a file-tool write
 # to one of them is surfaced for confirmation (see
 # ``PermissionEngine._evaluate``).
-_HOOK_CONFIG_SUFFIXES = ("/.deepcode/hooks.json", "/.claude/settings.json")
+_HOOK_CONFIG_SUFFIXES = ("/.dfcode/hooks.json", "/.claude/settings.json")
 
 
 def is_hook_config_path(raw: str, cwd: str | None = None) -> bool:
@@ -253,14 +253,14 @@ def is_hook_config_path(raw: str, cwd: str | None = None) -> bool:
 
 def sensitive_locations() -> tuple[str, ...]:
     """The credential stores on this machine a sandboxed command may not read."""
-    from core.config import deepcode_home  # lazy: core.config is heavy
+    from core.config import dfcode_home  # lazy: core.config is heavy
 
     home = Path.home()
-    deepcode = deepcode_home()
+    dfcode = dfcode_home()
     return (
         *(str(home / name) for name in _SENSITIVE_HOME_PATHS),
-        str(deepcode / "credentials.json"),
-        str(deepcode / "deepcode_config.json"),
+        str(dfcode / "credentials.json"),
+        str(dfcode / "dfcode_config.json"),
     )
 
 
@@ -298,7 +298,7 @@ def is_shell_tool(tool_name: str) -> bool:
     return _is_shell_tool(tool_name)
 
 
-# Tools whose only effect is changing files: DeepCode's own, and the names
+# Tools whose only effect is changing files: DFcode's own, and the names
 # file-editing MCP servers commonly use.
 _FILE_EDIT_TOOL_NAMES = ("write", "edit", "apply_patch")
 _FILE_EDIT_TOOL_SUFFIXES = ("write_file", "edit_file", "create_file")
@@ -368,7 +368,7 @@ class PermissionEngine:
         sensitive-path / read-only boundaries. Off by default (``None``); this
         module never reads the environment — the policy layer
         (:func:`core.harness.policy.build_permission_engine`) wires in the
-        built-in evaluator when ``DEEPCODE_RISK_EVALUATOR`` is enabled, except
+        built-in evaluator when ``DFCODE_RISK_EVALUATOR`` is enabled, except
         under Full Access. A raising / misbehaving evaluator is contained and
         fails closed to ``ask``.
     """

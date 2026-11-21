@@ -1,4 +1,4 @@
-"""`deepcode hooks status|approve` over the shared application state."""
+"""`dfcode hooks status|approve` over the shared application state."""
 
 from __future__ import annotations
 
@@ -8,12 +8,12 @@ from pathlib import Path
 import pytest
 
 from cli.hooks_cli import run
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.domain.project import TrustState
 
 
 def _declare(workspace: Path, command: str) -> None:
-    path = workspace / ".deepcode" / "hooks.json"
+    path = workspace / ".dfcode" / "hooks.json"
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(
         json.dumps(
@@ -33,7 +33,7 @@ def _declare(workspace: Path, command: str) -> None:
 
 
 def _set_trust(workspace: Path, trusted: bool) -> None:
-    application = DeepCodeApplication.open(run_automation_scheduler=False)
+    application = DFcodeApplication.open(run_automation_scheduler=False)
     try:
         application.projects.add(
             str(workspace),
@@ -45,7 +45,7 @@ def _set_trust(workspace: Path, trusted: bool) -> None:
 
 @pytest.fixture
 def workspace(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     monkeypatch.setenv("HOME", str(tmp_path / "user-home"))
     folder = tmp_path / "project"
     folder.mkdir()

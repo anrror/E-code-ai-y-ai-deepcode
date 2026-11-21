@@ -85,7 +85,7 @@ class ProviderOAuthManager:
             flow.thread = threading.Thread(
                 target=self._run,
                 args=(flow,),
-                name="deepcode-provider-login",
+                name="dfcode-provider-login",
                 daemon=True,
             )
             flow.thread.start()
@@ -246,7 +246,7 @@ class ProviderOAuthManager:
             nonce = secrets.token_urlsafe(18)
             return web.Response(
                 content_type="text/html",
-                text=f'<!doctype html><meta charset="utf-8"><title>DeepCode</title><p>Authorization processed. Return to DeepCode to check its status.</p><script nonce="{nonce}">history.replaceState(null,"","/auth/provider/complete")</script>',
+                text=f'<!doctype html><meta charset="utf-8"><title>DFcode</title><p>Authorization processed. Return to DFcode to check its status.</p><script nonce="{nonce}">history.replaceState(null,"","/auth/provider/complete")</script>',
                 headers={
                     "Cache-Control": "no-store",
                     "Referrer-Policy": "no-referrer",

@@ -27,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from core.config import ConfigError, DeepCodeConfig, make_llm_provider
+from core.config import ConfigError, DFcodeConfig, make_llm_provider
 from core.domain.execution_profile import ExecutionSelection
 from core.providers.credentials import CredentialStore
 from core.providers.egress import (
@@ -51,14 +51,14 @@ def _clean_egress_env(monkeypatch: pytest.MonkeyPatch) -> None:
     """Every test starts from an unconfigured policy.
 
     Without this, a developer's shell (or a sibling test) that exports
-    ``DEEPCODE_EGRESS_*`` would silently change the meaning of these cases.
+    ``DFCODE_EGRESS_*`` would silently change the meaning of these cases.
     """
 
     for name in (ALLOW_ENV, BLOCK_ENV, MODE_ENV):
         monkeypatch.delenv(name, raising=False)
 
 
-def _config(*, api_base: str | None, egress: dict | None = None) -> DeepCodeConfig:
+def _config(*, api_base: str | None, egress: dict | None = None) -> DFcodeConfig:
     """A minimal deepseek config pointed at ``api_base`` (no network use)."""
 
     raw: dict = {
@@ -69,7 +69,7 @@ def _config(*, api_base: str | None, egress: dict | None = None) -> DeepCodeConf
     }
     if egress is not None:
         raw["providers"]["egress"] = egress
-    return DeepCodeConfig.model_validate(raw)
+    return DFcodeConfig.model_validate(raw)
 
 
 # -- 1. pure decision kernel -------------------------------------------------
@@ -321,7 +321,7 @@ def test_policy_from_plain_dict_and_from_missing_config():
     )
     assert policy.allowed_domains == ("a.example.com",)
 
-    # Anything that is not a DEEPCODE config resolves to the neutral policy.
+    # Anything that is not a DFCODE config resolves to the neutral policy.
     neutral = resolve_egress_policy(None)
     assert neutral.allowed_domains == ()
     assert neutral.blocked_domains == ()
@@ -411,7 +411,7 @@ def test_warn_mode_logs_instead_of_raising(monkeypatch: pytest.MonkeyPatch):
 # -- 5. wiring in ConnectionResolver.build_provider (the session path) -------
 
 
-def _session_provider(config: DeepCodeConfig, tmp_path: Path):
+def _session_provider(config: DFcodeConfig, tmp_path: Path):
     resolver = ConnectionResolver(
         config, CredentialStore(tmp_path / "credentials.json")
     )

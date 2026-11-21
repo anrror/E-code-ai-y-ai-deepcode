@@ -29,7 +29,7 @@ from core.agent_runtime.runner import AgentRunner, AgentRunResult, AgentRunSpec
 from core.agent_runtime.tools.mcp import connect_mcp_servers
 from core.agent_runtime.tools.registry import ToolRegistry
 from core.compat.request_params import RequestParams
-from core.compat.runtime import DeepCodeRuntime, get_runtime
+from core.compat.runtime import DFcodeRuntime, get_runtime
 from core.providers.base import LLMProvider
 
 
@@ -93,7 +93,7 @@ _WARNED_MISSING_FILTER_SERVERS: set[tuple[str, str]] = set()
 
 
 def _mcp_supervisor_close_timeout_s() -> float:
-    raw = os.environ.get("DEEPCODE_MCP_SUPERVISOR_CLOSE_TIMEOUT_S", "12").strip()
+    raw = os.environ.get("DFCODE_MCP_SUPERVISOR_CLOSE_TIMEOUT_S", "12").strip()
     try:
         value = float(raw)
     except ValueError:
@@ -172,7 +172,7 @@ def _apply_tool_filter(
             "Agent '{}' requested MCP server '{}' (in server_names) but no "
             "tools from that server are registered — the server most likely "
             "failed to connect. Check the corresponding tools.mcpServers entry "
-            "in deepcode_config.json. The filter will exclude it for now.",
+            "in dfcode_config.json. The filter will exclude it for now.",
             agent_name,
             srv,
         )
@@ -343,7 +343,7 @@ class Agent:
         self.human_input_callback = human_input_callback
         self.request_params = request_params
 
-        self._runtime: DeepCodeRuntime | None = None
+        self._runtime: DFcodeRuntime | None = None
         self._tool_registry: ToolRegistry = ToolRegistry()
         self._connected: bool = False
         self._supervisor_task: asyncio.Task | None = None
@@ -497,7 +497,7 @@ class Agent:
         if missing:
             available = sorted(configured.keys())
             logger.warning(
-                "Agent '{}': MCP server(s) {} not in deepcode_config.json (tools.mcpServers). "
+                "Agent '{}': MCP server(s) {} not in dfcode_config.json (tools.mcpServers). "
                 "Available: {}. The agent will run without those tools.",
                 self.name,
                 missing,
@@ -511,7 +511,7 @@ class Agent:
             if failed:
                 logger.warning(
                     "Agent '{}': MCP server(s) {} failed to start "
-                    "(check command/args/env in deepcode_config.json).",
+                    "(check command/args/env in dfcode_config.json).",
                     self.name,
                     failed,
                 )

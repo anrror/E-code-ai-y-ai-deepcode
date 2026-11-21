@@ -145,12 +145,12 @@ def clean_switches(monkeypatch):
     monkeypatch.delenv(SCRUB_ENV_VAR, raising=False)
 
 
-def test_child_env_drops_deepcode_provider_keys_by_default(monkeypatch, clean_switches):
-    """DeepCode's own model keys never reach an agent command; the user's
+def test_child_env_drops_dfcode_provider_keys_by_default(monkeypatch, clean_switches):
+    """DFcode's own model keys never reach an agent command; the user's
     tool tokens still do."""
 
-    monkeypatch.setenv("OPENAI_API_KEY", "deepcode-model-key")
-    monkeypatch.setenv("DEEPSEEK_API_KEY", "deepcode-model-key")
+    monkeypatch.setenv("OPENAI_API_KEY", "dfcode-model-key")
+    monkeypatch.setenv("DEEPSEEK_API_KEY", "dfcode-model-key")
     monkeypatch.setenv("GH_TOKEN", "user-tool-token")
     env = child_env()
     assert "OPENAI_API_KEY" not in env
@@ -161,9 +161,9 @@ def test_child_env_drops_deepcode_provider_keys_by_default(monkeypatch, clean_sw
 def test_child_env_drops_a_configured_connection_key_variable(
     monkeypatch, clean_switches
 ):
-    home = Path(os.environ["DEEPCODE_HOME"])
+    home = Path(os.environ["DFCODE_HOME"])
     home.mkdir(parents=True, exist_ok=True)
-    (home / "deepcode_config.json").write_text(
+    (home / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "providers": {
@@ -178,14 +178,14 @@ def test_child_env_drops_a_configured_connection_key_variable(
             }
         )
     )
-    monkeypatch.setenv("MY_RELAY_SECRET_VALUE", "deepcode-model-key")
+    monkeypatch.setenv("MY_RELAY_SECRET_VALUE", "dfcode-model-key")
     assert "MY_RELAY_SECRET_VALUE" not in child_env()
 
 
 def _write_user_config(payload: dict) -> None:
-    home = Path(os.environ["DEEPCODE_HOME"])
+    home = Path(os.environ["DFCODE_HOME"])
     home.mkdir(parents=True, exist_ok=True)
-    (home / "deepcode_config.json").write_text(json.dumps(payload))
+    (home / "dfcode_config.json").write_text(json.dumps(payload))
 
 
 def test_child_env_drops_variables_the_provider_config_references(
@@ -241,15 +241,15 @@ def test_one_unset_reference_does_not_release_the_other_keys(
         }
     )
     monkeypatch.delenv("NOT_SET_ANYWHERE", raising=False)
-    monkeypatch.setenv("MY_RELAY_SECRET_VALUE", "deepcode-model-key")
+    monkeypatch.setenv("MY_RELAY_SECRET_VALUE", "dfcode-model-key")
     assert "MY_RELAY_SECRET_VALUE" not in child_env()
 
 
 def test_child_env_survives_an_unreadable_config(monkeypatch, clean_switches):
-    home = Path(os.environ["DEEPCODE_HOME"])
+    home = Path(os.environ["DFCODE_HOME"])
     home.mkdir(parents=True, exist_ok=True)
-    (home / "deepcode_config.json").write_text("{not json")
-    monkeypatch.setenv("OPENAI_API_KEY", "deepcode-model-key")
+    (home / "dfcode_config.json").write_text("{not json")
+    monkeypatch.setenv("OPENAI_API_KEY", "dfcode-model-key")
     env = child_env()
     assert "OPENAI_API_KEY" not in env
     assert "PATH" in env
@@ -257,15 +257,15 @@ def test_child_env_survives_an_unreadable_config(monkeypatch, clean_switches):
 
 def test_full_env_waiver_still_hands_over_provider_keys(monkeypatch):
     monkeypatch.setenv(FULL_ENV_ENV_VAR, "1")
-    monkeypatch.setenv("OPENAI_API_KEY", "deepcode-model-key")
-    assert child_env()["OPENAI_API_KEY"] == "deepcode-model-key"
+    monkeypatch.setenv("OPENAI_API_KEY", "dfcode-model-key")
+    assert child_env()["OPENAI_API_KEY"] == "dfcode-model-key"
 
 
-def test_child_env_drops_deepcode_own_python_environment(
+def test_child_env_drops_dfcode_own_python_environment(
     monkeypatch, clean_switches, tmp_path
 ):
-    """A service started from DeepCode's checkout or virtualenv must not point
-    the project's Python at DeepCode's packages (it ships top-level ``tools``
+    """A service started from DFcode's checkout or virtualenv must not point
+    the project's Python at DFcode's packages (it ships top-level ``tools``
     and ``utils``)."""
 
     project_lib = tmp_path / "lib"
@@ -285,19 +285,19 @@ def test_child_env_drops_deepcode_own_python_environment(
 _OWN_BIN = os.path.join(sys.prefix, "Scripts" if os.name == "nt" else "bin")
 
 
-def test_activated_deepcode_venv_leaves_path_too(monkeypatch, clean_switches):
-    """With DeepCode's venv activated, ``python`` and ``pip`` in a project
-    command would be DeepCode's interpreter."""
+def test_activated_dfcode_venv_leaves_path_too(monkeypatch, clean_switches):
+    """With DFcode's venv activated, ``python`` and ``pip`` in a project
+    command would be DFcode's interpreter."""
 
     monkeypatch.setenv("VIRTUAL_ENV", sys.prefix)
     monkeypatch.setenv("PATH", os.pathsep.join([_OWN_BIN, "/opt/tools/bin", "/bin"]))
     assert child_env()["PATH"] == os.pathsep.join(["/opt/tools/bin", "/bin"])
 
 
-def test_activated_deepcode_conda_env_leaves_path_too(monkeypatch, clean_switches):
+def test_activated_dfcode_conda_env_leaves_path_too(monkeypatch, clean_switches):
     monkeypatch.delenv("VIRTUAL_ENV", raising=False)
     monkeypatch.setenv("CONDA_PREFIX", sys.prefix)
-    monkeypatch.setenv("CONDA_DEFAULT_ENV", "deepcode")
+    monkeypatch.setenv("CONDA_DEFAULT_ENV", "dfcode")
     monkeypatch.setenv("PATH", os.pathsep.join([_OWN_BIN, "/bin"]))
     env = child_env()
     assert env["PATH"] == "/bin"
@@ -308,13 +308,13 @@ def test_activated_deepcode_conda_env_leaves_path_too(monkeypatch, clean_switche
 @pytest.mark.parametrize(
     "activation",
     [
-        {},  # DeepCode merely runs from that interpreter
+        {},  # DFcode merely runs from that interpreter
         {"VIRTUAL_ENV": "/somewhere/else/.venv"},
-        # The conda base is many users' everyday Python, not DeepCode's own.
+        # The conda base is many users' everyday Python, not DFcode's own.
         {"CONDA_PREFIX": sys.prefix, "CONDA_DEFAULT_ENV": "base"},
     ],
 )
-def test_path_is_untouched_without_deepcode_env_activated(
+def test_path_is_untouched_without_dfcode_env_activated(
     monkeypatch, clean_switches, activation
 ):
     for name in ("VIRTUAL_ENV", "CONDA_PREFIX", "CONDA_DEFAULT_ENV"):
@@ -326,7 +326,7 @@ def test_path_is_untouched_without_deepcode_env_activated(
     assert child_env()["PATH"] == path
 
 
-def test_external_agents_lose_deepcode_python_environment_too(
+def test_external_agents_lose_dfcode_python_environment_too(
     monkeypatch, clean_switches
 ):
     monkeypatch.setenv("PYTHONPATH", str(ROOT))

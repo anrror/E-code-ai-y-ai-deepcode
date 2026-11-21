@@ -169,13 +169,13 @@ def test_unclean_merge_blocks_dependents(monkeypatch, tmp_path):
     class _FakeWorktree:
         def __init__(self, base, worktrees_root=None):
             self.base = Path(base)
-            self.worktrees_root = self.base / ".deepcode-wt"
+            self.worktrees_root = self.base / ".dfcode-wt"
 
         def ensure_base(self):
             pass
 
         def create(self, worker_id):
-            path = self.base / f".deepcode-wt-{worker_id}"
+            path = self.base / f".dfcode-wt-{worker_id}"
             path.mkdir(parents=True, exist_ok=True)
             return str(path)
 

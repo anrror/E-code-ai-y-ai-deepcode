@@ -41,7 +41,7 @@ CLI / TUI / MCP direct adapter       App Server/Desktop adapter
 - Codex App Server 暴露 thread/history/turn 能力给 Desktop；CLI 与 App
   Server 仍然是同一 core 之上的不同入口。
 
-DeepCode 不需要复制 Codex 的存储格式，但应复制这条所有权原则：文件化
+DFcode 不需要复制 Codex 的存储格式，但应复制这条所有权原则：文件化
 会话记录是跨客户端共享历史，SQLite 可用于索引/投影，客户端边界保持独立。
 
 ## 3. CLI 回归审查

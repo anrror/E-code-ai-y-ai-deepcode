@@ -20,7 +20,7 @@ from typing import Any
 
 MAX_OUTPUT_BYTES = 256 * 1024
 MAX_RETAINED = 24
-_OWN_NAMES = {"deepcode-desktop.exe", "deepcode-app-server.exe"}
+_OWN_NAMES = {"dfcode-desktop.exe", "dfcode-app-server.exe"}
 _EXTERNAL_TTL = 5.0
 _LOG_TTL = 2.0
 _external_cache: dict[str, tuple[float, list[dict[str, Any]]]] = {}
@@ -202,7 +202,7 @@ def external_processes(
         threading.Thread(
             target=_scan_external,
             args=(workspace, known_pids, psutil),
-            name="deepcode-process-scan",
+            name="dfcode-process-scan",
             daemon=True,
         ).start()
     return [dict(item) for item in (cached[1] if cached else [])]

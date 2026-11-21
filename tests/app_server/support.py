@@ -14,7 +14,7 @@ from aiohttp.test_utils import TestClient, TestServer
 from app_server.host import ServiceHost
 from app_server.service import ControlServer
 from app_server.service_state import ServiceRecord
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 from core.events import AgentMessage, Event, TaskComplete, TurnStarted
 
 
@@ -23,7 +23,7 @@ async def control_server(
     tmp_path, *, database_name="state.sqlite3", **application_options
 ):
     application = await asyncio.to_thread(
-        DeepCodeApplication.open, tmp_path / database_name, **application_options
+        DFcodeApplication.open, tmp_path / database_name, **application_options
     )
     host = ServiceHost(application)
     host.start()
@@ -46,7 +46,7 @@ async def control_server(
 def auth(control):
     return {
         "Authorization": "Bearer " + "b" * 64,
-        "X-DeepCode-Instance": control.record.instance_id,
+        "X-DFcode-Instance": control.record.instance_id,
     }
 
 

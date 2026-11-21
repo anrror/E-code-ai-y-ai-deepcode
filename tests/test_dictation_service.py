@@ -23,7 +23,7 @@ if str(ROOT) not in sys.path:
 
 from app_server.connection import ConnectionState  # noqa: E402
 from app_server.dispatcher import Dispatcher, InvalidParams, Params  # noqa: E402
-from core.application.application import DeepCodeApplication  # noqa: E402
+from core.application.application import DFcodeApplication  # noqa: E402
 from core.application.config_store import ConfigStore  # noqa: E402
 from core.application.dictation_service import DictationService  # noqa: E402
 from core.application.errors import (  # noqa: E402
@@ -132,7 +132,7 @@ def test_status_defaults_the_audio_cap(tmp_path):
 def test_status_does_not_reveal_whether_a_secret_resolves(tmp_path):
     # A missing bearer token must not make the microphone look disabled: the
     # user finds out on the first clip, with a message that names the variable.
-    payload = _dictation_config(apiKeyEnv="DEEPCODE_TEST_MISSING_KEY")
+    payload = _dictation_config(apiKeyEnv="DFCODE_TEST_MISSING_KEY")
     assert _service(tmp_path, payload).status()["available"] is True
 
 
@@ -222,11 +222,11 @@ def test_transcribe_passes_an_empty_transcript_through(tmp_path):
 def test_transcribe_reads_the_api_key_from_the_named_environment_variable(
     tmp_path, monkeypatch
 ):
-    monkeypatch.setenv("DEEPCODE_TEST_DICTATION_KEY", "s3cret")
+    monkeypatch.setenv("DFCODE_TEST_DICTATION_KEY", "s3cret")
     factory, seen = _transport(lambda request: httpx.Response(200, json={"text": "x"}))
     service = _service(
         tmp_path,
-        _dictation_config(apiKeyEnv="DEEPCODE_TEST_DICTATION_KEY"),
+        _dictation_config(apiKeyEnv="DFCODE_TEST_DICTATION_KEY"),
         client_factory=factory,
     )
 
@@ -238,16 +238,16 @@ def test_transcribe_reads_the_api_key_from_the_named_environment_variable(
 def test_transcribe_fails_when_the_named_environment_variable_is_unset(
     tmp_path, monkeypatch
 ):
-    monkeypatch.delenv("DEEPCODE_TEST_DICTATION_KEY", raising=False)
+    monkeypatch.delenv("DFCODE_TEST_DICTATION_KEY", raising=False)
     factory, seen = _transport(lambda request: httpx.Response(200, json={"text": "x"}))
     service = _service(
         tmp_path,
-        _dictation_config(apiKeyEnv="DEEPCODE_TEST_DICTATION_KEY"),
+        _dictation_config(apiKeyEnv="DFCODE_TEST_DICTATION_KEY"),
         client_factory=factory,
     )
 
     with pytest.raises(
-        DictationNotConfiguredError, match="DEEPCODE_TEST_DICTATION_KEY"
+        DictationNotConfiguredError, match="DFCODE_TEST_DICTATION_KEY"
     ):
         service.transcribe(audio=_clip(), mime_type="audio/webm")
 
@@ -311,7 +311,7 @@ def test_egress_policy_blocks_the_endpoint_before_the_audio_is_sent(tmp_path):
 
 
 def test_egress_warn_mode_records_the_denial_and_continues(tmp_path, monkeypatch):
-    monkeypatch.setenv("DEEPCODE_EGRESS_MODE", "warn")
+    monkeypatch.setenv("DFCODE_EGRESS_MODE", "warn")
     factory, seen = _transport(lambda request: httpx.Response(200, json={"text": "ok"}))
     service = _service(tmp_path, _blocking_config(), client_factory=factory)
 
@@ -358,7 +358,7 @@ def _dispatcher(tmp_path: Path, name: str, *, configured: bool) -> Dispatcher:
         home = home_config_path()
         home.parent.mkdir(parents=True, exist_ok=True)
         home.write_text(json.dumps(_dictation_config()), encoding="utf-8")
-    application = DeepCodeApplication.open(tmp_path / f"{name}.sqlite3")
+    application = DFcodeApplication.open(tmp_path / f"{name}.sqlite3")
     return Dispatcher(application, ConnectionState(application.broker))
 
 

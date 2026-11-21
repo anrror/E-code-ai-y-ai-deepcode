@@ -1,4 +1,4 @@
-"""Top-level ``deepcode`` dispatch."""
+"""Top-level ``dfcode`` dispatch."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-import deepcode
+import dfcode
 
 
 @pytest.mark.parametrize(
@@ -16,29 +16,29 @@ import deepcode
 def test_removed_paper_test_command_points_at_paper2code(
     monkeypatch, capsys, tmp_path, argv
 ):
-    """`deepcode test` ran a test_paper.py that never shipped; it must say so
+    """`dfcode test` ran a test_paper.py that never shipped; it must say so
     instead of failing inside a subprocess."""
 
-    monkeypatch.setattr(deepcode, "_bootstrap_logging", lambda: None)
+    monkeypatch.setattr(dfcode, "_bootstrap_logging", lambda: None)
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setattr(sys, "argv", ["deepcode", *argv])
+    monkeypatch.setattr(sys, "argv", ["dfcode", *argv])
     launched = []
     monkeypatch.setattr(subprocess, "run", lambda *a, **k: launched.append(a))
 
     with pytest.raises(SystemExit) as exit:
-        deepcode.main()
+        dfcode.main()
 
     assert exit.value.code == 1
     assert launched == []
     err = capsys.readouterr().err
     assert "Paper2Code" in err
-    assert "deepcode desktop" in err and "deepcode web" in err
+    assert "dfcode desktop" in err and "dfcode web" in err
 
 
 def test_help_does_not_advertise_the_removed_paper_test(monkeypatch, capsys):
-    monkeypatch.setattr(deepcode, "_bootstrap_logging", lambda: None)
-    monkeypatch.setattr(sys, "argv", ["deepcode", "--help"])
+    monkeypatch.setattr(dfcode, "_bootstrap_logging", lambda: None)
+    monkeypatch.setattr(sys, "argv", ["dfcode", "--help"])
 
-    deepcode.main()
+    dfcode.main()
 
-    assert "deepcode test" not in capsys.readouterr().out
+    assert "dfcode test" not in capsys.readouterr().out

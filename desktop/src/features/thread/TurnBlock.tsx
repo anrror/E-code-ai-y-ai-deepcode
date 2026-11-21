@@ -621,8 +621,8 @@ function AssistantMessage({ item }: { item: Item }) {
     >
       <span className={styles.srOnly}>
         {phase === "commentary"
-          ? t("turn.progressUpdate", "DeepCode progress update")
-          : t("turn.response", "DeepCode response")}
+          ? t("turn.progressUpdate", "DFcode progress update")
+          : t("turn.response", "DFcode response")}
       </span>
       <div
         className={styles.messageBody}

@@ -37,7 +37,7 @@ from core.application.errors import (
 )
 from core.application.project_service import ProjectService
 from core.config import (
-    DeepCodeConfig,
+    DFcodeConfig,
     DictationConfig,
     load_config,
     load_config_for_workspace,
@@ -166,7 +166,7 @@ class DictationService:
 
     # -- config and secrets -------------------------------------------------
 
-    def _config(self, project_id: str | None) -> DeepCodeConfig:
+    def _config(self, project_id: str | None) -> DFcodeConfig:
         """Load the config that applies to this request.
 
         Same precedence as ``LLMConfigurationService._config``: an unscoped
@@ -202,7 +202,7 @@ class DictationService:
     # -- egress -------------------------------------------------------------
 
     def _egress_denial(
-        self, config: DictationConfig, loaded: DeepCodeConfig
+        self, config: DictationConfig, loaded: DFcodeConfig
     ) -> str | None:
         """Return a denial message, or ``None`` when the endpoint may be used.
 

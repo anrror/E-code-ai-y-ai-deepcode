@@ -142,7 +142,7 @@ class ToolRegistry:
 
     @staticmethod
     def _close_timeout_s() -> float:
-        raw = os.environ.get("DEEPCODE_MCP_CLOSE_TIMEOUT_S", "8").strip()
+        raw = os.environ.get("DFCODE_MCP_CLOSE_TIMEOUT_S", "8").strip()
         try:
             value = float(raw)
         except ValueError:

@@ -122,7 +122,7 @@ describe("GoalRail checks and reviews", () => {
         review({
           stage: "checks",
           requirements: [],
-          justification: "DeepCode ran the Goal's 1 confirmed check(s); 1 did not pass:",
+          justification: "DFcode ran the Goal's 1 confirmed check(s); 1 did not pass:",
           checks: [
             {
               requirement: "Cart tests pass",

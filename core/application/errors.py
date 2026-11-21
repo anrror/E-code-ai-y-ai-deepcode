@@ -33,8 +33,8 @@ class UpgradeRequiresExclusiveAccessError(ApplicationError):
             "database schema upgrade requires exclusive application access "
             f"(installed v{installed_version}, required v{required_version})",
             user_message=(
-                "DeepCode needs to upgrade its local database. Close other "
-                "DeepCode CLI/Desktop processes, then try again."
+                "DFcode needs to upgrade its local database. Close other "
+                "DFcode CLI/Desktop processes, then try again."
             ),
             details={
                 "installedSchemaVersion": installed_version,
@@ -107,7 +107,7 @@ class AutomationBootstrapPendingError(ApplicationError):
             "automation was durably created but Session materialization failed",
             user_message=(
                 "The Automation was durably created, but its Session is not "
-                "ready yet. Refresh or reopen DeepCode; do not retry Create."
+                "ready yet. Refresh or reopen DFcode; do not retry Create."
             ),
             details={
                 "automationId": automation_id,
@@ -306,7 +306,7 @@ class DictationNotConfiguredError(ApplicationError):
             message,
             user_message=(
                 "Voice input is not configured. Add a dictation block with the "
-                "Parakeet endpoint to your DeepCode config."
+                "Parakeet endpoint to your DFcode config."
             ),
         )
 

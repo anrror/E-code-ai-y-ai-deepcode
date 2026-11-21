@@ -10,7 +10,7 @@ from collections.abc import Callable
 from typing import Any
 
 from cli.automation_foreground import run_automation_foreground
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ApplicationError, ProjectNotTrustedError
 from core.application.views import (
     automation_run_view,
@@ -20,7 +20,7 @@ from core.application.views import (
 from core.domain.automation import AutomationActivationStatus, AutomationScheduleKind
 
 
-ApplicationFactory = Callable[[], DeepCodeApplication]
+ApplicationFactory = Callable[[], DFcodeApplication]
 
 
 def _add_json_flag(parser: argparse.ArgumentParser) -> None:
@@ -38,7 +38,7 @@ def _add_project_selector(parser: argparse.ArgumentParser) -> None:
         "--project",
         metavar="PROJECT_ID",
         default=argparse.SUPPRESS,
-        help="Use an existing canonical DeepCode Project.",
+        help="Use an existing canonical DFcode Project.",
     )
     selector.add_argument(
         "--workspace",
@@ -66,7 +66,7 @@ def _add_pagination_options(parser: argparse.ArgumentParser) -> None:
 
 def _parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        prog="deepcode automation",
+        prog="dfcode automation",
         description=(
             "Manage durable Automations backed by the same Goal and Turn runtime "
             "as CLI and Desktop."
@@ -174,8 +174,8 @@ def _parser() -> argparse.ArgumentParser:
     return parser
 
 
-def _default_application_factory() -> DeepCodeApplication:
-    return DeepCodeApplication.open(
+def _default_application_factory() -> DFcodeApplication:
+    return DFcodeApplication.open(
         host_surface="automation_cli",
         run_automation_scheduler=False,
     )
@@ -197,7 +197,7 @@ def _confirm_delete(automation_id: str) -> bool:
 
 
 def _resolve_project(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     args: argparse.Namespace,
     *,
     default_to_cwd: bool,
@@ -213,7 +213,7 @@ def _resolve_project(
 
 
 def _dispatch(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     args: argparse.Namespace,
 ) -> dict[str, Any]:
     automations = application.automations
@@ -336,7 +336,7 @@ def _print_result(command: str, result: dict[str, Any], *, as_json: bool) -> Non
                 f"{latest_status:<12} {automation['name']} · {automation['id']}"
             )
         print(
-            "Interval schedules run while the DeepCode background service is running."
+            "Interval schedules run while the DFcode background service is running."
             " Closing a client does not stop the service."
         )
         _print_pagination_hint(result, "Automations")
@@ -352,7 +352,7 @@ def _print_result(command: str, result: dict[str, Any], *, as_json: bool) -> Non
         print(f"session: {automation['threadId']}")
         if command == "create" and automation["scheduleKind"] == "interval":
             print(
-                "Interval schedules run while the DeepCode background service is running."
+                "Interval schedules run while the DFcode background service is running."
                 " Closing a client does not stop the service."
             )
         return
@@ -405,7 +405,7 @@ def _print_error(exc: Exception, *, as_json: bool) -> None:
         message = exc.user_message
         if isinstance(exc, ProjectNotTrustedError):
             message = (
-                f"{message}. Trust the Project explicitly in DeepCode before "
+                f"{message}. Trust the Project explicitly in DFcode before "
                 "creating or enabling Automations; this command never grants trust"
             )
         payload: dict[str, Any] = {
@@ -444,7 +444,7 @@ def run(
             return 2
 
     factory = application_factory or _default_application_factory
-    application: DeepCodeApplication | None = None
+    application: DFcodeApplication | None = None
     try:
         if application_factory is None and args.command == "run":
             from cli.service_automation import run_automation_service

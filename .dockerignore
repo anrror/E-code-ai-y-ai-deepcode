@@ -28,16 +28,16 @@ env
 *.swo
 
 # Runtime data
-deepcode_lab
+dfcode_lab
 uploads
 logs
 *.log
 
 # Docker
-deepcode_docker/Dockerfile
-deepcode_docker/docker-compose.yml
-deepcode_docker/.dockerignore
-deepcode_docker/run_docker.sh
+dfcode_docker/Dockerfile
+dfcode_docker/docker-compose.yml
+dfcode_docker/.dockerignore
+dfcode_docker/run_docker.sh
 
 # Documentation
 assets

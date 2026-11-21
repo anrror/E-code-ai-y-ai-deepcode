@@ -16,8 +16,8 @@ from aiohttp import web
 
 # Browsers cannot set headers on a WebSocket handshake, so the page offers its
 # session as a second subprotocol beside the one the service selects.
-RPC_PROTOCOL = "deepcode.rpc"
-SESSION_PROTOCOL = "deepcode.session."
+RPC_PROTOCOL = "dfcode.rpc"
+SESSION_PROTOCOL = "dfcode.session."
 
 
 def _presented(request: web.Request) -> str:

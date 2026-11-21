@@ -68,7 +68,7 @@ def test_resolver_rejects_literal_secrets_in_native_config(tmp_path: Path) -> No
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    user = home / "deepcode_config.json"
+    user = home / "dfcode_config.json"
     user.write_text(
         json.dumps(
             {
@@ -95,7 +95,7 @@ def test_resolver_uses_only_new_top_level_and_requires_project_trust(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    user = home / "deepcode_config.json"
+    user = home / "dfcode_config.json"
     user.write_text(
         json.dumps(
             {
@@ -107,7 +107,7 @@ def test_resolver_uses_only_new_top_level_and_requires_project_trust(
         ),
         encoding="utf-8",
     )
-    (workspace / "deepcode_config.json").write_text(
+    (workspace / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "mcpServers": {
@@ -137,7 +137,7 @@ def test_project_layer_cannot_request_user_credentials(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    (workspace / "deepcode_config.json").write_text(
+    (workspace / "dfcode_config.json").write_text(
         json.dumps(
             {
                 "mcpServers": {
@@ -156,7 +156,7 @@ def test_project_layer_cannot_request_user_credentials(tmp_path: Path) -> None:
         encoding="utf-8",
     )
     with pytest.raises(McpConfigurationError, match="cannot request"):
-        McpConfigResolver(home / "deepcode_config.json").resolve(
+        McpConfigResolver(home / "dfcode_config.json").resolve(
             workspace,
             project_trusted=True,
         )
@@ -169,7 +169,7 @@ def test_user_policy_can_narrow_and_bind_plugin_without_replacing_transport(
     workspace = tmp_path / "workspace"
     home.mkdir()
     workspace.mkdir()
-    user_config = home / "deepcode_config.json"
+    user_config = home / "dfcode_config.json"
     user_config.write_text(
         json.dumps(
             {

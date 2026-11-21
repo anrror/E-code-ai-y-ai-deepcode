@@ -34,8 +34,8 @@ function project(id: string): Project {
 function inventory(projectId: string): McpInventory {
   return {
     servers: [],
-    userConfigPath: "/home/user/.deepcode/deepcode_config.json",
-    projectConfigPath: `/workspace/${projectId}/deepcode_config.json`,
+    userConfigPath: "/home/user/.dfcode/dfcode_config.json",
+    projectConfigPath: `/workspace/${projectId}/dfcode_config.json`,
   };
 }
 
@@ -87,7 +87,7 @@ describe("useMcpCatalog project ownership", () => {
 
     await waitFor(() => {
       expect(result.current.inventory?.projectConfigPath).toBe(
-        "/workspace/A/deepcode_config.json",
+        "/workspace/A/dfcode_config.json",
       );
     });
 
@@ -126,7 +126,7 @@ describe("useMcpCatalog project ownership", () => {
     await waitFor(() => {
       expect(result.current.loading).toBe(false);
       expect(result.current.inventory?.projectConfigPath).toBe(
-        "/workspace/B/deepcode_config.json",
+        "/workspace/B/dfcode_config.json",
       );
     });
     expect(projectAListCalls).toBe(1);

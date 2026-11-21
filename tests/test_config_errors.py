@@ -22,7 +22,7 @@ def isolated(tmp_path, monkeypatch):
     project = tmp_path / "proj"
     home.mkdir()
     project.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(project)
     return home, project
 
@@ -45,7 +45,7 @@ def test_unconfigured_false_once_home_exists(isolated):
 def test_message_points_at_init_when_unconfigured(isolated):
     msg = format_config_error(ConfigError("Could not match a provider for model 'x'"))
     assert "Could not match a provider" in msg
-    assert "deepcode init" in msg
+    assert "dfcode init" in msg
     assert "not configured yet" in msg
 
 
@@ -56,7 +56,7 @@ def test_message_is_terse_when_config_exists(isolated):
         ConfigError("Provider 'openai' requires providers.openai.apiKey")
     )
     assert "requires providers.openai.apiKey" in msg
-    assert "deepcode init" not in msg  # they have config; init is not the fix
+    assert "dfcode init" not in msg  # they have config; init is not the fix
 
 
 def test_an_invalid_entry_is_a_config_error_naming_file_and_field(isolated):

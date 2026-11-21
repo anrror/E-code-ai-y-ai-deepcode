@@ -47,7 +47,7 @@ export function BrowserShell() {
   return (
     <div className={styles.shell}>
       <header className={styles.bar}>
-        <span>{t("browser.title", "DeepCode · Local service")}</span>
+        <span>{t("browser.title", "DFcode · Local service")}</span>
         <span>{notice}</span>
         <button
           onClick={() =>
@@ -57,7 +57,7 @@ export function BrowserShell() {
                 setNotice(
                   t(
                     "browser.signedOut",
-                    "Signed out · run deepcode web for a fresh link",
+                    "Signed out · run dfcode web for a fresh link",
                   ),
                 ),
               )

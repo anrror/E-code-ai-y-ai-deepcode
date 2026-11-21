@@ -1,4 +1,4 @@
-"""Oversized tool results spilled under the project's .deepcode/tool-results.
+"""Oversized tool results spilled under the project's .dfcode/tool-results.
 
 Every interactive session spills into the same "default" bucket, so the
 retention sweep has to age out files inside it, while keeping whatever a
@@ -34,7 +34,7 @@ def _spill(directory: Path, name: str, *, mtime: float | None = None) -> Path:
 
 
 def test_old_spills_in_the_shared_bucket_are_removed(tmp_path: Path) -> None:
-    bucket = tmp_path / ".deepcode" / "tool-results" / "default"
+    bucket = tmp_path / ".dfcode" / "tool-results" / "default"
     stale = _spill(bucket, "old.txt", mtime=_OLD)
     recent = _spill(bucket, "recent.txt")
 
@@ -51,7 +51,7 @@ def test_the_sweep_runs_again_in_a_long_lived_process(
 ) -> None:
     maybe_persist_tool_result(tmp_path, None, "first", "y" * 50, max_chars=10)
     stale = _spill(
-        tmp_path / ".deepcode" / "tool-results" / "default", "old.txt", mtime=_OLD
+        tmp_path / ".dfcode" / "tool-results" / "default", "old.txt", mtime=_OLD
     )
 
     maybe_persist_tool_result(tmp_path, None, "second", "y" * 50, max_chars=10)
@@ -93,7 +93,7 @@ class _ScriptedProvider:
 
 @pytest.mark.asyncio
 async def test_a_spill_the_history_still_references_is_kept(tmp_path: Path) -> None:
-    bucket = tmp_path / ".deepcode" / "tool-results" / "default"
+    bucket = tmp_path / ".dfcode" / "tool-results" / "default"
     earlier_reference = maybe_persist_tool_result(
         tmp_path, None, "earlier", "x" * 5000, max_chars=2000
     )

@@ -37,7 +37,7 @@ def test_plugin_cli_manages_the_shared_local_registry(
     monkeypatch,
     capsys,
 ) -> None:
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     plugin = _write_plugin(tmp_path / "plugin")
 
     assert run(["--json", "add", str(plugin)]) == 0
@@ -58,7 +58,7 @@ def test_skill_cli_lists_registered_plugin_skills(
 ) -> None:
     from cli.skill_cli import run as skill_run
 
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "home"))
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "home"))
     plugin = _write_plugin(tmp_path / "plugin")
     workspace = tmp_path / "workspace"
     workspace.mkdir()

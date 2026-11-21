@@ -157,7 +157,7 @@ class TerminalService:
             environment = {
                 **os.environ,
                 "TERM": os.environ.get("TERM", "xterm-256color"),
-                "DEEPCODE_THREAD_ID": thread_id,
+                "DFCODE_THREAD_ID": thread_id,
             }
             windows_pty: object | None = None
             pipe_mode = False
@@ -206,7 +206,7 @@ class TerminalService:
             session.reader = threading.Thread(
                 target=self._read_output,
                 args=(session,),
-                name=f"deepcode-terminal-{terminal_id[-8:]}",
+                name=f"dfcode-terminal-{terminal_id[-8:]}",
                 daemon=True,
             )
             try:

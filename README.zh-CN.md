@@ -1,16 +1,16 @@
-# DeepCode 中文说明（代码架构分析 + DeepSeek 接入指南）
+# DFcode 中文说明（代码架构分析 + DeepSeek 接入指南）
 
 > 本文是**第三方中文解读**，不是官方翻译。官方中文版见 [README_ZH.md](README_ZH.md)，英文版见 [README.md](README.md)。
 > 官方版本侧重产品与安装，本文补充两块官方文档没有展开的内容：**DeepSeek 到底支持到什么程度**，以及**这套代码是怎么组织的**。
 
 | 项目 | 值 |
 |---|---|
-| 仓库 | [HKUDS/DeepCode](https://github.com/HKUDS/DeepCode)（香港大学 Data Intelligence Lab） |
+| 仓库 | [HKUDS/DFcode](https://github.com/HKUDS/DFcode)（香港大学 Data Intelligence Lab） |
 | 版本 | `2.3.1`（`core/version.py`） |
 | 分析基线 | commit `aa6ed16`，2026-11-02 |
 | 许可证 | MIT |
 | 语言/运行时 | Python ≥ 3.12；桌面端 Rust + TypeScript |
-| PyPI 包名 | `deepcode-hku` |
+| PyPI 包名 | `dfcode-hku` |
 | 定位 | 开源 Coding Agent：TUI / Desktop / Web / Headless 四端共用一套本地服务 |
 
 ---
@@ -33,7 +33,7 @@
 
 ### 1.1 从 Paper2Code 到 Agent Harness
 
-DeepCode 的前身是 Paper2Code —— 一个把论文/技术文档转成可运行代码的多智能体系统，在 PaperBench 人类专家子集上拿到 **75.9%**，高于当时最好的人类基线 **72.4%**（论文 [arXiv:2512.07921](https://arxiv.org/abs/2512.07921)）。
+DFcode 的前身是 Paper2Code —— 一个把论文/技术文档转成可运行代码的多智能体系统，在 PaperBench 人类专家子集上拿到 **75.9%**，高于当时最好的人类基线 **72.4%**（论文 [arXiv:2512.07921](https://arxiv.org/abs/2512.07921)）。
 
 v2.0 之后项目重心转移：Paper2Code 降级为其中一个功能（`workflows/` + Desktop/Web 的 `/paper`），主线变成通用的 **Coding Agent**。仓库现在的形态更接近「自研 Agent Harness + 本地守护服务 + 多客户端」，而不是一个论文复现脚本。
 
@@ -41,10 +41,10 @@ v2.0 之后项目重心转移：Paper2Code 降级为其中一个功能（`workfl
 
 ```
                   ┌──────────────────────────────┐
-  deepcode        │  TUI (prompt_toolkit)        │
-  deepcode desktop│  Desktop (Tauri 2 + React)   │
-  deepcode web    │  Web (同前端产物 + 浏览器)   │
-  deepcode exec   │  Headless（脚本/CI）         │
+  dfcode        │  TUI (prompt_toolkit)        │
+  dfcode desktop│  Desktop (Tauri 2 + React)   │
+  dfcode web    │  Web (同前端产物 + 浏览器)   │
+  dfcode exec   │  Headless（脚本/CI）         │
                   └──────────────┬───────────────┘
                                  │ JSON-RPC（stdio / WebSocket）
                   ┌──────────────▼───────────────┐
@@ -77,7 +77,7 @@ v2.0 之后项目重心转移：Paper2Code 降级为其中一个功能（`workfl
 
 **原生支持，而且是内置一等公民。** 不是「用 OpenAI 兼容端点凑合」，而是在 Provider 注册表里单独声明了 `deepseek`：
 
-- 有专属模板名 `deepseek`（`deepcode provider set --template deepseek`）
+- 有专属模板名 `deepseek`（`dfcode provider set --template deepseek`）
 - 有自己的默认 API 地址与默认环境变量
 - 有自己的思考开关协议（`thinking: {"type": ...}`，默认开启）
 - 模型目录里预置了 5 个 DeepSeek 模型 ID 及其上下文窗口、输出上限、单价
@@ -120,26 +120,26 @@ v2.0 之后项目重心转移：Paper2Code 降级为其中一个功能（`workfl
 ```console
 # 1. 创建连接（走 DeepSeek 官方端点；协议保持 auto，
 #    实际适配器由模板 backend=openai_compat 解析为 Chat Completions 线格式）
-deepcode provider set my-ds --template deepseek --api-key
+dfcode provider set my-ds --template deepseek --api-key
 
 # 不交互的话，用环境变量（DEEPSEEK_API_KEY 会被自动识别）
-deepcode provider set my-ds --template deepseek --api-key-env DEEPSEEK_API_KEY
+dfcode provider set my-ds --template deepseek --api-key-env DEEPSEEK_API_KEY
 
 # 2. 拉取并核对该连接可用的模型列表
-deepcode provider models my-ds --refresh
+dfcode provider models my-ds --refresh
 
 # 3. 真机验证：不仅测连通，还测流式与工具调用
-deepcode provider test my-ds --model deepseek-v4-pro --agent
+dfcode provider test my-ds --model deepseek-v4-pro --agent
 ```
 
 然后在项目里启动：
 
 ```console
 cd /path/to/your-project
-deepcode --trust --connection my-ds --model deepseek-v4-pro
+dfcode --trust --connection my-ds --model deepseek-v4-pro
 ```
 
-`--trust` 每个项目只需一次。之后直接 `deepcode`，用 `/model` 切换模型。
+`--trust` 每个项目只需一次。之后直接 `dfcode`，用 `/model` 切换模型。
 
 Web/Desktop 里等价操作是 **Settings → Models → Add provider → 选择 DeepSeek → 填入 Key → Save and verify model**。
 
@@ -154,16 +154,16 @@ Web/Desktop 里等价操作是 **Settings → Models → Add provider → 选择
 DeepSeek 只支持 OpenAI Chat Completions 风格，所以任何 OpenAI 兼容中转都能接：
 
 ```console
-deepcode provider set relay --template custom \
+dfcode provider set relay --template custom \
   --api-base https://your-relay.example.com/v1 \
   --protocol openai_chat \
   --api-key-env RELAY_API_KEY
 
-deepcode provider models relay --refresh
-deepcode provider test relay --model deepseek-chat --agent
+dfcode provider models relay --refresh
+dfcode provider test relay --model deepseek-chat --agent
 ```
 
-如果中转模型不在目录里，可在 `~/.deepcode/deepcode_config.json` 的 `providers.profiles.<id>.manualModels` 里手写 `id` / `contextWindow` / `maxOutputTokens`，否则上下文预算按未知模型处理。
+如果中转模型不在目录里，可在 `~/.dfcode/dfcode_config.json` 的 `providers.profiles.<id>.manualModels` 里手写 `id` / `contextWindow` / `maxOutputTokens`，否则上下文预算按未知模型处理。
 
 ---
 
@@ -171,28 +171,28 @@ deepcode provider test relay --model deepseek-chat --agent
 
 ```console
 # 安装（需要 Python 3.12+；Windows 可用 winget install --id astral-sh.uv --exact）
-uv tool install --python 3.12 deepcode-hku
+uv tool install --python 3.12 dfcode-hku
 
-# 初始化：创建 ~/.deepcode，默认访问级别设为 Ask
-deepcode init
+# 初始化：创建 ~/.dfcode，默认访问级别设为 Ask
+dfcode init
 
 # 配置模型（以 DeepSeek 为例，其它模板同理）
-deepcode provider set my-ds --template deepseek --api-key
-deepcode provider test my-ds --model deepseek-v4-pro --agent
+dfcode provider set my-ds --template deepseek --api-key
+dfcode provider test my-ds --model deepseek-v4-pro --agent
 
 # 进入项目
 cd /path/to/your-project
-deepcode --trust --connection my-ds --model deepseek-v4-pro
+dfcode --trust --connection my-ds --model deepseek-v4-pro
 ```
 
 四个入口：
 
 | 客户端 | 启动命令 | 适用场景 |
 |---|---|---|
-| TUI | `deepcode`（或 `deepcode chat`） | 终端里干活，最轻 |
-| Web | `deepcode web` | 浏览器里的完整工作台（diff、文件、终端、Goal 卡片） |
-| Desktop | `deepcode desktop` | 同 Web 的本地应用，目前需从源码构建（Node 22 + Rust + Tauri 2 依赖） |
-| Headless | `deepcode exec "<task>"` / `deepcode loop "<goal>"` | 脚本、CI；`--json` 输出 NDJSON 事件流 |
+| TUI | `dfcode`（或 `dfcode chat`） | 终端里干活，最轻 |
+| Web | `dfcode web` | 浏览器里的完整工作台（diff、文件、终端、Goal 卡片） |
+| Desktop | `dfcode desktop` | 同 Web 的本地应用，目前需从源码构建（Node 22 + Rust + Tauri 2 依赖） |
+| Headless | `dfcode exec "<task>"` / `dfcode loop "<goal>"` | 脚本、CI；`--json` 输出 NDJSON 事件流 |
 
 ---
 
@@ -317,7 +317,7 @@ ProviderSpec(
 这是整个架构里最关键的一个决定：
 
 - **权威数据是 `SessionStore` 的 JSONL**（会话身份、可见对话记录）。CLI 和 Desktop 共用同一个 Session ID。
-- **SQLite 是「可重建投影」**：`$DEEPCODE_HOME/state/deepcode.sqlite3`，包含 `projects / threads / turns / items / approvals / workflow_runs / artifacts / event_log / legacy_imports / schema_migrations`。
+- **SQLite 是「可重建投影」**：`$DFCODE_HOME/state/dfcode.sqlite3`，包含 `projects / threads / turns / items / approvals / workflow_runs / artifacts / event_log / legacy_imports / schema_migrations`。
 - 删掉 SQLite 文件**不能**删掉会话历史；下次 App Server 启动会从 JSONL 重建 Thread 与可见对话。
 - 事件序号在单个 Thread 内单调递增；实时队列有界，溢出时让客户端走 `event/replay` 游标分页补齐。
 - 流式 token 不逐次落盘，只记录 Item 的创建态与完成/中断态，避免写放大。
@@ -333,16 +333,16 @@ ProviderSpec(
 | 访问档位 | `core/domain/execution_permission.py` | `Ask` / `Read only` / `Full access`；`deny` 规则在任何档位都生效 |
 | OS 沙箱 | `core/harness/sandbox.py`、`windows_sandbox.py` | macOS seatbelt、Linux bubblewrap、Windows 独立实现；能力不足时优雅降级 |
 | 审批 | `core/harness/approval.py`、`core/application/approval_service.py` | 持久化审批记录 + 内存 future，精确恢复被挂起的那个工具调用 |
-| Hook 信任 | `core/harness/hooks/` | 仓库声明的 hook 必须人工批准，改动后需重新 `deepcode hooks approve` |
-| 凭证隔离 | `core/providers/credentials.py`、`core/private_storage.py` | Key 存 `~/.deepcode/credentials.json`，仅属主可读，不回传给客户端，Shell 子进程看不到 |
+| Hook 信任 | `core/harness/hooks/` | 仓库声明的 hook 必须人工批准，改动后需重新 `dfcode hooks approve` |
+| 凭证隔离 | `core/providers/credentials.py`、`core/private_storage.py` | Key 存 `~/.dfcode/credentials.json`，仅属主可读，不回传给客户端，Shell 子进程看不到 |
 | 出口限制 | `core/providers/egress.py` | 白名单域名，防止配置被改指到别的端点 |
 
 ### 4.7 Goal：可验证的「完成」
 
-普通 Agent 的「做完了」只是一句话。DeepCode 的做法是：
+普通 Agent 的「做完了」只是一句话。DFcode 的做法是：
 
 1. Agent 先给出**可执行检查清单**，由用户确认；
-2. 声称完成时，DeepCode 自己跑这份清单（`goal_runtime.py` / `goal_checks.py`）；
+2. 声称完成时，DFcode 自己跑这份清单（`goal_runtime.py` / `goal_checks.py`）；
 3. 可选开一个**独立 reviewer**（`goal_reviewer.py`）逐条给出证据；
 4. 缺证据就打回，把「差什么」还给 Agent；
 5. Goal 有时间上限、token 预算、卡死/重复自停、重启可恢复。
@@ -379,7 +379,7 @@ ProviderSpec(
 ## 5. 目录速查
 
 ```text
-deepcode.py             # 单一入口，按 argv[1] 分发到 17 个子命令
+dfcode.py             # 单一入口，按 argv[1] 分发到 17 个子命令
 core/                   # 领域 + 用例 + Agent 内核 + Provider + 持久化
 app_server/             # JSON-RPC 协议、stdio/WS 传输、后台服务宿主
 cli/                    # 子命令实现；cli/tui/ 是终端界面
@@ -396,16 +396,16 @@ tests/                  # 277 个测试文件，含契约与 e2e
 用户数据目录：
 
 ```text
-~/.deepcode/
-├── deepcode_config.json        # 配置（providers、agents、goal、logger…）
+~/.dfcode/
+├── dfcode_config.json        # 配置（providers、agents、goal、logger…）
 ├── credentials.json            # API Key，仅属主可读
-├── state/deepcode.sqlite3      # 可重建的 SQLite 投影
+├── state/dfcode.sqlite3      # 可重建的 SQLite 投影
 ├── sessions/                   # 权威 JSONL 会话记录
 └── logs/
-<project>/.deepcode/memory/     # 项目级长期记忆
+<project>/.dfcode/memory/     # 项目级长期记忆
 ```
 
-也可以用 `DEEPCODE_HOME` 整体改家目录。
+也可以用 `DFCODE_HOME` 整体改家目录。
 
 ---
 
@@ -433,40 +433,40 @@ tests/                  # 277 个测试文件，含契约与 e2e
 
 ```console
 # 初始化与版本
-deepcode init
-deepcode --version
+dfcode init
+dfcode --version
 
 # 模型连接
-deepcode provider list
-deepcode provider set my-ds --template deepseek --api-key
-deepcode provider models my-ds --refresh
-deepcode provider test my-ds --model deepseek-v4-pro --agent
+dfcode provider list
+dfcode provider set my-ds --template deepseek --api-key
+dfcode provider models my-ds --refresh
+dfcode provider test my-ds --model deepseek-v4-pro --agent
 
 # 启动
-deepcode                                  # TUI
-deepcode --trust --connection my-ds --model deepseek-v4-pro
-deepcode web                              # 浏览器工作台
-deepcode desktop                          # 桌面端（需源码构建）
-deepcode exec "跑一遍测试并汇报失败原因" --json
-deepcode loop "把所有 lint 错误修掉"
+dfcode                                  # TUI
+dfcode --trust --connection my-ds --model deepseek-v4-pro
+dfcode web                              # 浏览器工作台
+dfcode desktop                          # 桌面端（需源码构建）
+dfcode exec "跑一遍测试并汇报失败原因" --json
+dfcode loop "把所有 lint 错误修掉"
 
 # 服务
-deepcode service status
-deepcode service logs --lines 100
-deepcode service stop --drain --timeout 60
-deepcode service install --at-login
+dfcode service status
+dfcode service logs --lines 100
+dfcode service stop --drain --timeout 60
+dfcode service install --at-login
 
 # 会话 / 扩展
-deepcode session delete <id>
-deepcode skill list
-deepcode plugin list
-deepcode hooks status
-deepcode mcp list
-deepcode mcp serve
+dfcode session delete <id>
+dfcode skill list
+dfcode plugin list
+dfcode hooks status
+dfcode mcp list
+dfcode mcp serve
 
 # 自动化
-deepcode schedule ...
-deepcode automation ...
+dfcode schedule ...
+dfcode automation ...
 ```
 
 TUI 内常用斜杠命令：`/model`、`/effort`、`/context 64k`、`/goal <objective>`、`/resume`、`/compact`。`/paper`（Paper2Code）在 Desktop / Web 客户端中使用。
@@ -497,7 +497,7 @@ TUI 内常用斜杠命令：`/model`、`/effort`、`/context 64k`、`/goal <obje
 
 ## 9. 子代理编排（本仓库扩展）
 
-> 这一节描述本仓库在上游 2.3.1 基础上新增的能力，不在 HKUDS/DeepCode 的官方文档中。
+> 这一节描述本仓库在上游 2.3.1 基础上新增的能力，不在 HKUDS/DFcode 的官方文档中。
 
 ### 9.1 按类别路由模型
 
@@ -551,8 +551,8 @@ MIT License，Copyright © 2025 Data Intelligence Lab at The University of Hong 
 引用：
 
 ```bibtex
-@misc{li2025deepcodeopenagenticcoding,
-  title         = {DeepCode: Open Agentic Coding},
+@misc{li2025dfcodeopenagenticcoding,
+  title         = {DFcode: Open Agentic Coding},
   author        = {Zongwei Li and Zhonghang Li and Zirui Guo and Xubin Ren and Chao Huang},
   year          = {2025},
   eprint        = {2512.07921},

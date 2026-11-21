@@ -9,7 +9,7 @@ from typing import Any
 
 from app_server.protocol.codec import encode_message
 from app_server.server import AppServer
-from core.application.application import DeepCodeApplication
+from core.application.application import DFcodeApplication
 
 
 def _request(request_id: int, method: str, params: dict[str, Any]) -> bytes:
@@ -40,7 +40,7 @@ def test_preset_roster_selection_and_lock_over_the_wire(tmp_path: Path) -> None:
         "---\nYou may not write files.",
         encoding="utf-8",
     )
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     thread = application.threads.start(project.id, title="Preset wire test")
     # Lock trigger: the conversation "starts" once a message exists.

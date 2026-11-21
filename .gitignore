@@ -64,7 +64,7 @@ inputs/
 rag_storage/
 examples/input/
 examples/output/
-deepcode-mcp/agent_folders
+dfcode-mcp/agent_folders
 
 # Miscellaneous
 .DS_Store
@@ -80,16 +80,16 @@ run_indexer_with_filtering.py
 memory-bank/
 
 # project files
-deepcode_lab/
+dfcode_lab/
 uploads/
 /app_server/web_assets/
 /desktop/test-results/
 /desktop/playwright-report/
 
-# Secrets belong in DeepCode's credential store or environment variables.
+# Secrets belong in DFcode's credential store or environment variables.
 # NEVER commit real API keys or local user configuration.
-deepcode_config.json
-deepcode_config.json.lock
+dfcode_config.json
+dfcode_config.json.lock
 *.secrets.yaml
 *.secrets.yml
 secrets.json

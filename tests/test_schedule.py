@@ -105,7 +105,7 @@ def test_scheduler_sleeps_between_runs_and_hooks():
     assert slept == [5.0]  # slept once, between run 1 and run 2 (not after the last)
 
 
-# -- `deepcode schedule` -----------------------------------------------------
+# -- `dfcode schedule` -----------------------------------------------------
 
 
 @pytest.fixture

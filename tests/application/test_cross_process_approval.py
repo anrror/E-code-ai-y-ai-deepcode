@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import ApprovalAlreadyResolvedError, ConflictError
 from core.domain import TrustState
 from core.domain.approval import ApprovalStatus
@@ -79,7 +79,7 @@ class _ConcurrentApprovalFactory(_ApprovalFactory):
 
 
 def _wait_for_status(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     status: TurnStatus,
 ):
@@ -95,7 +95,7 @@ def _wait_for_status(
 
 
 def _wait_for_approvals(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     turn_id: str,
     count: int,
 ):
@@ -113,12 +113,12 @@ def _wait_for_approvals(
 def _applications(
     tmp_path: Path,
     factory,
-) -> tuple[DeepCodeApplication, DeepCodeApplication, str]:
+) -> tuple[DFcodeApplication, DFcodeApplication, str]:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
-    owner = DeepCodeApplication.open(
+    owner = DFcodeApplication.open(
         database_path,
         session_factory=factory,
         session_store=SessionStore(session_root),
@@ -131,7 +131,7 @@ def _applications(
             trust_state=TrustState.TRUSTED,
         )
         thread = owner.threads.start(project.id, title="Shared approval")
-        responder = DeepCodeApplication.open(
+        responder = DFcodeApplication.open(
             database_path,
             session_factory=factory,
             session_store=SessionStore(session_root),
@@ -306,7 +306,7 @@ def test_pending_compare_and_swap_allows_only_one_responder(
 ) -> None:
     factory = _ApprovalFactory()
     owner, first, thread_id = _applications(tmp_path, factory)
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         owner.database.path,
         session_factory=factory,
         session_store=SessionStore(tmp_path / "sessions"),
@@ -326,7 +326,7 @@ def test_pending_compare_and_swap_allows_only_one_responder(
         errors: list[BaseException] = []
 
         def respond(
-            application: DeepCodeApplication,
+            application: DFcodeApplication,
             decision: ApprovalStatus,
         ) -> None:
             barrier.wait()

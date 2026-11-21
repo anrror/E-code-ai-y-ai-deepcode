@@ -1,10 +1,10 @@
 """Tests for layered config resolution (C: home base + project override).
 
 Mirrors Codex / Claude Code: a cwd-independent user-level base at
-``deepcode_home()`` (``$DEEPCODE_HOME`` or ``~/.deepcode``) is deep-merged with
+``dfcode_home()`` (``$DFCODE_HOME`` or ``~/.dfcode``) is deep-merged with
 an optional project-level file walked up from the cwd, which overrides the base
 key by key. An explicit path bypasses the layering. This is what lets
-``deepcode`` launch in *any* directory while still finding provider keys.
+``dfcode`` launch in *any* directory while still finding provider keys.
 """
 
 from __future__ import annotations
@@ -23,14 +23,14 @@ from core.config import (  # noqa: E402
     _DEFAULT_CONFIG_FILENAME,
     _deep_merge,
     _load_raw,
-    deepcode_home,
+    dfcode_home,
     home_config_path,
     load_config,
     load_config_for_workspace,
     project_config_path,
 )
 from core.compat.runtime import (  # noqa: E402
-    DeepCodeRuntime,
+    DFcodeRuntime,
     get_runtime,
     use_runtime,
 )
@@ -50,16 +50,16 @@ def _write_config(directory: Path, data: dict) -> Path:
 
 @pytest.fixture
 def layered(tmp_path, monkeypatch):
-    """An isolated home + project dir; cwd is the project, DEEPCODE_HOME is home.
+    """An isolated home + project dir; cwd is the project, DFCODE_HOME is home.
 
     Both start empty so a test writes only the layers it exercises — and, in
-    particular, the user's real ``~/.deepcode`` is never read.
+    particular, the user's real ``~/.dfcode`` is never read.
     """
     home = tmp_path / "home"
     project = tmp_path / "proj"
     home.mkdir()
     project.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     monkeypatch.chdir(project)
     return home, project
 
@@ -98,17 +98,17 @@ def test_load_raw_rejects_non_object(tmp_path):
         _load_raw(p)
 
 
-def test_deepcode_home_env_override(tmp_path, monkeypatch):
-    monkeypatch.setenv("DEEPCODE_HOME", str(tmp_path / "custom"))
-    assert deepcode_home() == (tmp_path / "custom").resolve()
+def test_dfcode_home_env_override(tmp_path, monkeypatch):
+    monkeypatch.setenv("DFCODE_HOME", str(tmp_path / "custom"))
+    assert dfcode_home() == (tmp_path / "custom").resolve()
     assert (
         home_config_path() == (tmp_path / "custom" / _DEFAULT_CONFIG_FILENAME).resolve()
     )
 
 
-def test_deepcode_home_defaults_to_dot_deepcode(monkeypatch):
-    monkeypatch.delenv("DEEPCODE_HOME", raising=False)
-    assert deepcode_home() == (Path.home() / ".deepcode").resolve()
+def test_dfcode_home_defaults_to_dot_dfcode(monkeypatch):
+    monkeypatch.delenv("DFCODE_HOME", raising=False)
+    assert dfcode_home() == (Path.home() / ".dfcode").resolve()
 
 
 # -- layered load_config -----------------------------------------------------
@@ -383,8 +383,8 @@ def test_context_runtime_override_restores_process_default(layered, monkeypatch)
     home, project = layered
     _write_config(home, {"agents": {"defaults": {"model": "openai/user"}}})
     _write_config(project, {"agents": {"defaults": {"model": "openai/project"}}})
-    default_runtime = DeepCodeRuntime(load_config(config_path=home_config_path()))
-    project_runtime = DeepCodeRuntime(load_config_for_workspace(project))
+    default_runtime = DFcodeRuntime(load_config(config_path=home_config_path()))
+    project_runtime = DFcodeRuntime(load_config_for_workspace(project))
     monkeypatch.setattr(runtime_module, "_runtime", default_runtime)
 
     assert get_runtime() is default_runtime

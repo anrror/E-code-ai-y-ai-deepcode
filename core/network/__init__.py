@@ -1,4 +1,4 @@
-"""Fail-closed network primitives used by DeepCode's URL reader."""
+"""Fail-closed network primitives used by DFcode's URL reader."""
 
 from core.network.safe_http import (
     HttpStatusError,

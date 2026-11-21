@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from core.application import DeepCodeApplication
+from core.application import DFcodeApplication
 from core.application.errors import (
     AutomationBootstrapPendingError,
     AutomationNotFoundError,
@@ -80,7 +80,7 @@ class AutomationFactory:
 
 
 def _wait_for_run(
-    application: DeepCodeApplication,
+    application: DFcodeApplication,
     automation_id: str,
     status: AutomationRunStatus,
 ):
@@ -101,7 +101,7 @@ def test_automation_creation_requires_trust_and_owns_a_canonical_goal_thread(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(str(workspace))
     try:
         with pytest.raises(ProjectNotTrustedError):
@@ -139,7 +139,7 @@ def test_committed_automation_repairs_session_after_materialization_failure_on_r
     workspace.mkdir()
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
-    owner = DeepCodeApplication.open(
+    owner = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
     )
@@ -196,7 +196,7 @@ def test_committed_automation_repairs_session_after_materialization_failure_on_r
     finally:
         owner.close()
 
-    repaired = DeepCodeApplication.open(
+    repaired = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
     )
@@ -233,7 +233,7 @@ def test_live_joiner_can_run_a_committed_pending_automation_bootstrap(
     workspace.mkdir()
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
-    owner = DeepCodeApplication.open(
+    owner = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
         session_factory=AutomationFactory(),
@@ -243,7 +243,7 @@ def test_live_joiner_can_run_a_committed_pending_automation_bootstrap(
         trust_state=TrustState.TRUSTED,
     )
     joiner_factory = AutomationFactory()
-    joiner = DeepCodeApplication.open(
+    joiner = DFcodeApplication.open(
         database_path,
         session_store=SessionStore(session_root),
         session_factory=joiner_factory,
@@ -304,7 +304,7 @@ def test_derived_session_index_failure_preserves_recoverable_canonical_bootstrap
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -346,7 +346,7 @@ def test_automation_creation_transaction_failure_leaves_no_ghost_thread(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -392,7 +392,7 @@ def test_project_remove_after_session_write_discards_only_new_automation_session
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -446,7 +446,7 @@ def test_incompatible_preexisting_session_is_rejected_and_never_deleted(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -499,7 +499,7 @@ def test_reconcile_never_deletes_an_empty_session_owned_by_another_database(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     session_root = tmp_path / "shared-sessions"
-    first = DeepCodeApplication.open(
+    first = DFcodeApplication.open(
         tmp_path / "first.sqlite3",
         session_store=SessionStore(session_root),
     )
@@ -519,7 +519,7 @@ def test_reconcile_never_deletes_an_empty_session_owned_by_another_database(
     finally:
         first.close()
 
-    second = DeepCodeApplication.open(
+    second = DFcodeApplication.open(
         tmp_path / "second.sqlite3",
         session_store=SessionStore(session_root),
     )
@@ -540,7 +540,7 @@ def test_run_bootstrap_failure_settles_durably_instead_of_staying_queued(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -585,7 +585,7 @@ def test_automation_definitions_and_retired_run_history_are_explicitly_paged(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=AutomationFactory(),
     )
@@ -664,7 +664,7 @@ def test_automation_pagination_rejects_invalid_bounds(
     limit: int,
     offset: int,
 ) -> None:
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     try:
         with pytest.raises(InvalidArgumentError, match="automation page"):
             application.automations.list(limit=limit, offset=offset)
@@ -678,7 +678,7 @@ def test_manual_automation_runs_through_normal_turn_and_session_lifecycle(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     factory = AutomationFactory()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -729,16 +729,16 @@ def test_same_automation_keeps_permission_policy_across_cli_and_app_server_worke
     home = tmp_path / "home"
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    (workspace / "deepcode_config.json").write_text(
+    (workspace / "dfcode_config.json").write_text(
         '{"security":{"permissionMode":"plan"}}',
         encoding="utf-8",
     )
-    monkeypatch.setenv("DEEPCODE_HOME", str(home))
+    monkeypatch.setenv("DFCODE_HOME", str(home))
     database_path = tmp_path / "state.sqlite3"
     session_root = tmp_path / "sessions"
 
     cli_factory = AutomationFactory()
-    cli = DeepCodeApplication.open(
+    cli = DFcodeApplication.open(
         database_path,
         session_factory=cli_factory,
         session_store=SessionStore(session_root),
@@ -774,7 +774,7 @@ def test_same_automation_keeps_permission_policy_across_cli_and_app_server_worke
         cli.close()
 
     server_factory = AutomationFactory()
-    server = DeepCodeApplication.open(
+    server = DFcodeApplication.open(
         database_path,
         session_factory=server_factory,
         session_store=SessionStore(session_root),
@@ -806,7 +806,7 @@ def test_wait_for_run_has_caller_owned_timeout_without_a_runtime_budget(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=AutomationFactory(hang=True),
     )
@@ -857,7 +857,7 @@ def test_interval_automation_coalesces_missed_runs_and_skips_when_busy(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     factory = AutomationFactory(hang=True)
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=factory,
     )
@@ -904,7 +904,7 @@ def test_interval_automation_coalesces_missed_runs_and_skips_when_busy(
 def test_pause_and_resume_recalculate_the_next_occurrence(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(tmp_path / "state.sqlite3")
+    application = DFcodeApplication.open(tmp_path / "state.sqlite3")
     project = application.projects.add(
         str(workspace),
         trust_state=TrustState.TRUSTED,
@@ -947,7 +947,7 @@ def test_activation_status_controls_interval_scheduling_not_manual_run_now(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    application = DeepCodeApplication.open(
+    application = DFcodeApplication.open(
         tmp_path / "state.sqlite3",
         session_factory=AutomationFactory(),
     )

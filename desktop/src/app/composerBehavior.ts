@@ -2,7 +2,7 @@
  * Composer behavior preferences — per-machine, like appearance.
  *
  * One knob so far: what plain Enter does while a Turn is running. dsh ships
- * the same choice (`busyEnter: queue | steer`); DeepCode defaults to steer
+ * the same choice (`busyEnter: queue | steer`); DFcode defaults to steer
  * because that has always been the desktop's behavior, so existing users
  * feel nothing. Cmd/Ctrl+Enter always performs the other behavior, which is
  * why this is a preference and not a mode: both verbs stay one keystroke
@@ -20,7 +20,7 @@ export const BUSY_ENTER_BEHAVIORS: readonly BusyEnterBehavior[] = [
 
 export const BUSY_ENTER_DEFAULT: BusyEnterBehavior = "steer";
 
-const STORAGE_KEY = "deepcode.desktop.composer.v1";
+const STORAGE_KEY = "dfcode.desktop.composer.v1";
 
 interface ComposerBehaviorState {
   busyEnter: BusyEnterBehavior;

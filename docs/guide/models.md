@@ -13,9 +13,9 @@ From the terminal, this example adds OpenRouter under the name `my-openrouter`
 and lists its models:
 
 ```console
-deepcode provider set my-openrouter --template openrouter --api-key
-deepcode provider models my-openrouter --refresh
-deepcode provider list
+dfcode provider set my-openrouter --template openrouter --api-key
+dfcode provider models my-openrouter --refresh
+dfcode provider list
 ```
 
 Enter your API key when prompted; it will stay hidden as you type. If you keep
@@ -26,7 +26,7 @@ projects on this computer.
 Replace `MODEL_ID` with an exact ID in this connection's catalog:
 
 ```console
-deepcode provider test my-openrouter --model MODEL_ID
+dfcode provider test my-openrouter --model MODEL_ID
 ```
 
 This sends a short request to check that the model responds. Desktop/Web offer
@@ -35,7 +35,7 @@ the same check through **Save and verify model**.
 When trying a new model server, you can also check streaming and tool calls:
 
 ```console
-deepcode provider test my-openrouter --model MODEL_ID --agent
+dfcode provider test my-openrouter --model MODEL_ID --agent
 ```
 
 This asks the model to use a small local test tool; it does not run shell commands
@@ -50,7 +50,7 @@ Use `/model` to open the TUI picker or specify both connection and model:
 /model my-openrouter MODEL_ID
 ```
 
-At launch, use `deepcode --connection my-openrouter --model MODEL_ID` with your
+At launch, use `dfcode --connection my-openrouter --model MODEL_ID` with your
 workspace/trust options. Desktop/Web use the composer model picker. Configuring
 or testing a connection does not select it for every Session.
 
@@ -66,14 +66,14 @@ API your server provides. For standard providers, the template's `auto` setting
 usually handles this for you.
 
 When you explicitly select `openai_responses`, your server must support the
-Responses API; DeepCode will keep using that protocol if a request fails.
+Responses API; DFcode will keep using that protocol if a request fails.
 
 For a local OpenAI Chat-compatible service without authentication, replace
 `LOCAL_MODEL_ID` and the example endpoint with your deployment's values:
 
 ```console
-deepcode provider set local-vllm --template vllm --api-base http://127.0.0.1:8000/v1 --protocol openai_chat --auth none --catalog manual --model LOCAL_MODEL_ID
-deepcode provider test local-vllm --model LOCAL_MODEL_ID --agent
+dfcode provider set local-vllm --template vllm --api-base http://127.0.0.1:8000/v1 --protocol openai_chat --auth none --catalog manual --model LOCAL_MODEL_ID
+dfcode provider test local-vllm --model LOCAL_MODEL_ID --agent
 ```
 
 Use `--auth none` only when that endpoint does not require authentication. For
@@ -88,11 +88,11 @@ Bedrock's OpenAI-compatible endpoint is region-specific. Supply its
 `AWS_BEARER_TOKEN_BEDROCK` environment variable:
 
 ```console
-deepcode provider set work-bedrock --template bedrock \
+dfcode provider set work-bedrock --template bedrock \
   --api-base https://bedrock-runtime.us-east-1.amazonaws.com/openai/v1 \
   --api-key-env AWS_BEARER_TOKEN_BEDROCK
-deepcode provider models work-bedrock --refresh
-deepcode provider test work-bedrock --model us.anthropic.claude-sonnet-4-6
+dfcode provider models work-bedrock --refresh
+dfcode provider test work-bedrock --model us.anthropic.claude-sonnet-4-6
 ```
 
 Replace `us-east-1` with the Region that serves your account and choose a model
@@ -110,7 +110,7 @@ SigV4 signing, IAM role/profile discovery, SSO, or the native Converse API.
 If your server's model is missing from the list, add it manually. You can also
 set its context window and output limit to match your deployment.
 
-Open `~/.deepcode/deepcode_config.json` and add the following connection under
+Open `~/.dfcode/dfcode_config.json` and add the following connection under
 `providers.profiles`, keeping your other settings:
 
 ```json
@@ -133,7 +133,7 @@ Open `~/.deepcode/deepcode_config.json` and add the following connection under
 ```
 
 Replace `LOCAL_MODEL_ID` with your server's model ID and the example limits
-with those supported by your deployment. Use these settings to tell DeepCode
+with those supported by your deployment. Use these settings to tell DFcode
 how much context and output the model can handle.
 
 ## Reasoning effort

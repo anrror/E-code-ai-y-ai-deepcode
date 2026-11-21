@@ -79,7 +79,7 @@ async def test_explicit_skill_is_injected_and_narrows_tools(tmp_path: Path) -> N
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     _write_skill(
-        workspace / ".deepcode" / "skills",
+        workspace / ".dfcode" / "skills",
         "review",
         body="PRODUCT-SKILL-MARKER: inspect evidence first.",
         allowed_tools="Read, grep",
@@ -162,7 +162,7 @@ def test_structured_and_text_selection_share_snapshot_and_preserve_order(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    root = workspace / ".deepcode" / "skills"
+    root = workspace / ".dfcode" / "skills"
     _write_skill(root, "alpha", body="ALPHA-INSTRUCTIONS")
     _write_skill(root, "bravo", body="BRAVO-INSTRUCTIONS")
     runtime = SkillRuntime(workspace, include_user=False)
@@ -207,7 +207,7 @@ async def test_skill_policy_denies_unexposed_tool_even_if_model_requests_it(
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     _write_skill(
-        workspace / ".deepcode" / "skills",
+        workspace / ".dfcode" / "skills",
         "readonly",
         allowed_tools="read",
     )
@@ -284,7 +284,7 @@ def test_claude_style_allowed_tools_keep_the_skill_usable(tmp_path: Path) -> Non
         assert runtime.visible_tool_names(registered) == {"bash", "read", "skill"}
     finally:
         runtime.end_turn(token)
-    # A tool DeepCode does not have must not leave the Turn without tools.
+    # A tool DFcode does not have must not leave the Turn without tools.
     _context, token = runtime.begin_turn("$research", available_tools=registered)
     try:
         assert runtime.visible_tool_names(registered) is None
@@ -387,7 +387,7 @@ async def test_catalog_hot_reload_applies_on_next_turn(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
     directory = _write_skill(
-        workspace / ".deepcode" / "skills",
+        workspace / ".dfcode" / "skills",
         "hot",
         body="REVISION-ONE",
     )
@@ -457,7 +457,7 @@ async def test_empty_catalog_keeps_base_tool_surface_until_next_turn(
 
     async for _event in session.run_stream(UserInput("first")):
         pass
-    _write_skill(workspace / ".deepcode" / "skills", "new-skill")
+    _write_skill(workspace / ".dfcode" / "skills", "new-skill")
     async for _event in session.run_stream(UserInput("second")):
         pass
 
@@ -470,7 +470,7 @@ def test_implicit_skill_loads_share_turn_count_and_instruction_budgets(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    root = workspace / ".deepcode" / "skills"
+    root = workspace / ".dfcode" / "skills"
     for index in range(9):
         _write_skill(root, f"skill-{index}")
     runtime = SkillRuntime(workspace, include_user=False)
@@ -504,7 +504,7 @@ async def test_invalid_skill_policy_fails_as_a_protocol_event(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    (workspace / "deepcode_config.json").write_text(
+    (workspace / "dfcode_config.json").write_text(
         '{"skills": {"disabled": "not-an-array"}}',
         encoding="utf-8",
     )
@@ -534,10 +534,10 @@ def test_catalog_retains_duplicate_and_invalid_entries(tmp_path: Path) -> None:
     home = tmp_path / "home"
     workspace.mkdir()
     home.mkdir()
-    _write_skill(workspace / ".deepcode" / "skills", "duplicate")
-    _write_skill(home / ".deepcode" / "skills", "duplicate")
-    alias = workspace / ".deepcode" / "skills" / "alias"
-    alias.symlink_to(workspace / ".deepcode" / "skills" / "duplicate")
+    _write_skill(workspace / ".dfcode" / "skills", "duplicate")
+    _write_skill(home / ".dfcode" / "skills", "duplicate")
+    alias = workspace / ".dfcode" / "skills" / "alias"
+    alias.symlink_to(workspace / ".dfcode" / "skills" / "duplicate")
     invalid = workspace / ".claude" / "skills" / "broken"
     invalid.mkdir(parents=True)
     (invalid / "SKILL.md").write_text("not frontmatter", encoding="utf-8")
@@ -623,7 +623,7 @@ def test_agents_roots_are_layered_inside_the_workspace(tmp_path: Path) -> None:
 def test_legacy_skill_identity_is_preserved(tmp_path: Path) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    directory = _write_skill(workspace / ".deepcode" / "skills", "legacy")
+    directory = _write_skill(workspace / ".dfcode" / "skills", "legacy")
     catalog = discover_skill_catalog(
         workspace,
         include_user=False,
@@ -632,7 +632,7 @@ def test_legacy_skill_identity_is_preserved(tmp_path: Path) -> None:
     record = catalog.get_active("legacy")
     expected = SkillKey(
         scope=SkillScope.PROJECT,
-        source_root=SkillSourceRoot.DEEPCODE,
+        source_root=SkillSourceRoot.DFCODE,
         skill_file=directory / "SKILL.md",
         relative_path="legacy",
     )
@@ -975,7 +975,7 @@ def test_catalog_limit_is_explicit_and_deterministic(
 ) -> None:
     workspace = tmp_path / "workspace"
     workspace.mkdir()
-    root = workspace / ".deepcode" / "skills"
+    root = workspace / ".dfcode" / "skills"
     for name in ("alpha", "bravo", "charlie"):
         _write_skill(root, name)
     monkeypatch.setattr(skill_catalog, "MAX_CATALOG_ENTRIES", 2)
@@ -1024,10 +1024,10 @@ def test_local_manager_import_policy_delete_and_symlink_rejection(
 ) -> None:
     workspace = tmp_path / "workspace"
     source = tmp_path / "source"
-    deepcode_home = tmp_path / "deepcode-home"
+    dfcode_home = tmp_path / "dfcode-home"
     workspace.mkdir()
-    deepcode_home.mkdir()
-    monkeypatch.setenv("DEEPCODE_HOME", str(deepcode_home))
+    dfcode_home.mkdir()
+    monkeypatch.setenv("DFCODE_HOME", str(dfcode_home))
     _write_skill(source, "managed")
     manager = LocalSkillManager(workspace)
 

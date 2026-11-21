@@ -1,6 +1,6 @@
 """AgentControl — the coordination state for model-driven delegation (C2).
 
-Faithful to the reference agent's multi-agent design, adapted to DeepCode:
+Faithful to the reference agent's multi-agent design, adapted to DFcode:
 
 - **spawn is non-blocking** — it starts a sub-agent as a background task and
   returns its id immediately; several run *concurrently*, bounded by a per-session
@@ -12,7 +12,7 @@ Faithful to the reference agent's multi-agent design, adapted to DeepCode:
   than joining a future — so the parent can keep working and collect results as
   they arrive.
 
-Isolation is DeepCode's own guarantee: each sub-agent may run in its own git
+Isolation is DFcode's own guarantee: each sub-agent may run in its own git
 worktree whose result is merged back with 3-way-merge conflict detection; base
 git ops are serialised (``_git_lock``) while the sub-agents build in parallel.
 
@@ -35,7 +35,7 @@ from core.agent_runtime.injections import SubagentMessage, TurnInputSink
 from core.harness.permissions import PermissionMode
 
 if TYPE_CHECKING:
-    from core.compat.runtime import DeepCodeRuntime
+    from core.compat.runtime import DFcodeRuntime
     from core.domain.execution_profile import ExecutionProfile
     from core.domain.execution_security import ExecutionSecurityProfile
 
@@ -181,7 +181,7 @@ class AgentControl:
         permission_mode: PermissionMode = PermissionMode.FULL_AUTO,
         execution_security_profile: ExecutionSecurityProfile | None = None,
         approval_callback: Any | None = None,
-        runtime: DeepCodeRuntime | None = None,
+        runtime: DFcodeRuntime | None = None,
         active_turn_id_provider: Any | None = None,
         runtime_input_sink: TurnInputSink | None = None,
         context_note_sink: Any | None = None,
@@ -256,7 +256,7 @@ class AgentControl:
     def interrupt(self, agent_id: str) -> str:
         """Stop a running sub-agent's CURRENT turn.
 
-        dsh's keepInbox rule, in DeepCode form: a native child is not killed —
+        dsh's keepInbox rule, in DFcode form: a native child is not killed —
         only its in-flight turn is cancelled, and it parks idle with its
         conversation intact, ready for a redirecting ``send_message``. An
         external-CLI child has no turn boundary to stop at, so interrupting it
@@ -734,7 +734,7 @@ class AgentControl:
     async def _converse(self, sub: SubAgent) -> None:
         """A native child's whole life: turns alternating with idle parking.
 
-        dsh's continuable-subagent shape in DeepCode form. Each turn runs
+        dsh's continuable-subagent shape in DFcode form. Each turn runs
         through the single-turn seam (``_run_subagent``), which extends
         ``sub.seed_history`` with the finished conversation so the next turn
         continues it. Between turns the child parks on ``sub.wake`` until the
@@ -982,7 +982,7 @@ class AgentControl:
     def _dump_transcript(self, sub: SubAgent, session: Any) -> None:
         """Report the child's full conversation to the host's transcript sink.
 
-        The autopsy channel (dsh children are session-backed; DeepCode's were
+        The autopsy channel (dsh children are session-backed; DFcode's were
         invisible): every finished or failed turn hands the host the complete
         message list, so a parent Session can keep a per-child transcript its
         user can actually inspect. Absent sink or failure never disturbs the

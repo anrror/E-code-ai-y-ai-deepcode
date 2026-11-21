@@ -1,4 +1,4 @@
-"""Observability layer: unified logging for DeepCode.
+"""Observability layer: unified logging for DFcode.
 
 This module replaces the previous ad-hoc logging surface where
 ``loguru.logger`` ran with the default stderr sink and orphan helpers

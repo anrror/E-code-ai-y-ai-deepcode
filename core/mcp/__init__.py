@@ -2,7 +2,7 @@
 
 The package deliberately owns no CLI, Desktop, Plugin, or paper workflow
 policy.  Those surfaces contribute validated server definitions; this package
-resolves them into one session-scoped runtime and exposes ordinary DeepCode
+resolves them into one session-scoped runtime and exposes ordinary DFcode
 tools.
 """
 

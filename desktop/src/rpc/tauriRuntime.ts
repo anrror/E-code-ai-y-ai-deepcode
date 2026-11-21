@@ -73,7 +73,7 @@ export function normalizeUpdaterError(error: unknown): DesktopRuntimeError {
 export function configureNativeDialogs(): void {
   setConfirmHandler((message, options) =>
     confirm(message, {
-      title: options.title ?? "DeepCode",
+      title: options.title ?? "DFcode",
       kind: options.kind ?? "warning",
       okLabel: options.confirmLabel ?? "Continue",
       cancelLabel: options.cancelLabel ?? "Cancel",
@@ -247,17 +247,17 @@ class TauriDesktopRuntime implements ClientRuntime {
   async onNotification(
     listener: (notification: AnyRpcNotification) => void,
   ): Promise<() => void> {
-    return listenTo("deepcode://rpc-notification", listener);
+    return listenTo("dfcode://rpc-notification", listener);
   }
 
   async onStatus(
     listener: (status: SidecarStatus) => void,
   ): Promise<() => void> {
-    return listenTo("deepcode://sidecar-state", listener);
+    return listenTo("dfcode://sidecar-state", listener);
   }
 
   async onLog(listener: (message: string) => void): Promise<() => void> {
-    return listenTo("deepcode://sidecar-log", listener);
+    return listenTo("dfcode://sidecar-log", listener);
   }
 }
 

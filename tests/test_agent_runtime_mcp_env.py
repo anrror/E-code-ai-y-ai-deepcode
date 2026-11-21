@@ -2,7 +2,7 @@
 
 ``core.agent_runtime.tools.mcp`` (used by the Paper2Code workflows) passes a
 server the user's environment, unlike ``core.mcp`` which passes only the
-launch essentials. Either way a server must not receive the keys DeepCode's
+launch essentials. Either way a server must not receive the keys DFcode's
 own model connections use unless its config passes one on deliberately.
 """
 
@@ -15,14 +15,14 @@ import pytest
 
 from core.agent_runtime.tools.mcp import connect_mcp_servers
 from core.agent_runtime.tools.registry import ToolRegistry
-from core.config import DeepCodeConfig
+from core.config import DFcodeConfig
 
 FIXTURE_SERVER = Path(__file__).parent / "fixtures" / "mcp_runtime_server.py"
 
 
 async def _read_from_server(names: list[str], env: dict[str, str]) -> list[str]:
     registry = ToolRegistry()
-    config = DeepCodeConfig.model_validate(
+    config = DFcodeConfig.model_validate(
         {
             "tools": {
                 "mcpServers": {
@@ -46,13 +46,13 @@ async def _read_from_server(names: list[str], env: dict[str, str]) -> list[str]:
 
 
 @pytest.mark.asyncio
-async def test_stdio_server_never_sees_deepcode_model_keys(monkeypatch):
-    monkeypatch.setenv("OPENAI_API_KEY", "sk-deepcode-own")
-    monkeypatch.setenv("DEEPCODE_TEST_USER_SETTING", "user-value")
+async def test_stdio_server_never_sees_dfcode_model_keys(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-dfcode-own")
+    monkeypatch.setenv("DFCODE_TEST_USER_SETTING", "user-value")
     monkeypatch.setenv("DEEPSEEK_API_KEY", "ambient")
 
     key, setting, forwarded = await _read_from_server(
-        ["OPENAI_API_KEY", "DEEPCODE_TEST_USER_SETTING", "DEEPSEEK_API_KEY"],
+        ["OPENAI_API_KEY", "DFCODE_TEST_USER_SETTING", "DEEPSEEK_API_KEY"],
         # A key the server's own config passes on is a deliberate act.
         env={"DEEPSEEK_API_KEY": "from-server-config"},
     )

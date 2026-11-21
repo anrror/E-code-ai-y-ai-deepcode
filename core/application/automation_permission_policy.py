@@ -6,7 +6,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from core.config import DeepCodeConfig, load_config_for_workspace
+from core.config import DFcodeConfig, load_config_for_workspace
 from core.domain.execution_permission import ExecutionPermissionMode
 
 
@@ -26,7 +26,7 @@ class WorkspaceAutomationPermissionPolicy:
     typed result is persisted, so later workers consume the same decision.
     """
 
-    config_loader: Callable[[str], DeepCodeConfig] = load_config_for_workspace
+    config_loader: Callable[[str], DFcodeConfig] = load_config_for_workspace
     default_mode: ExecutionPermissionMode = ExecutionPermissionMode.DEFAULT
 
     def resolve(self, workspace: str) -> ExecutionPermissionMode:

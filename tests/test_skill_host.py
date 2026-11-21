@@ -176,7 +176,7 @@ def test_contributed_source_is_visible_to_existing_runtimes(tmp_path: Path) -> N
     workspace.mkdir()
     source_workspace.mkdir()
     _write_skill(workspace / ".agents" / "skills", "local-review")
-    _write_skill(source_workspace / ".deepcode" / "skills", "plugin-review")
+    _write_skill(source_workspace / ".dfcode" / "skills", "plugin-review")
     host = SkillCatalogHost(
         workspace,
         include_user=False,
@@ -215,7 +215,7 @@ def test_registry_contribution_seam_publishes_once(tmp_path: Path) -> None:
     source_workspace = tmp_path / "plugin-source"
     workspace.mkdir()
     source_workspace.mkdir()
-    _write_skill(source_workspace / ".deepcode" / "skills", "plugin-review")
+    _write_skill(source_workspace / ".dfcode" / "skills", "plugin-review")
     monitors: list[SkillCatalogMonitor] = []
 
     def host_factory(path: Path) -> SkillCatalogHost:
@@ -262,8 +262,8 @@ def test_registry_keeps_contributors_independent(tmp_path: Path) -> None:
     second_source = tmp_path / "second-source"
     for path in (workspace, first_source, second_source):
         path.mkdir()
-    _write_skill(first_source / ".deepcode" / "skills", "plugin-review")
-    _write_skill(second_source / ".deepcode" / "skills", "plugin-review")
+    _write_skill(first_source / ".dfcode" / "skills", "plugin-review")
+    _write_skill(second_source / ".dfcode" / "skills", "plugin-review")
     first = _ContributedProvider(first_source, "first")
     second = _ContributedProvider(second_source, "second")
     registry = SkillWorkspaceRegistry(

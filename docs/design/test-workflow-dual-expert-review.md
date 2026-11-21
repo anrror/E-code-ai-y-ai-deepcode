@@ -419,7 +419,7 @@ PyYAML is required: pip install pyyaml
 | 单元测试 | **27 passed**（现 34） |
 | 变异测试 | **5/5 杀死** |
 | 脚本编译 | 8/8 |
-| DeepCodeX 识别 | active |
+| DFcodeX 识别 | active |
 
 ## 仍未修复（诚实记录）
 
