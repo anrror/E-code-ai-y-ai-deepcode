@@ -10,7 +10,7 @@ loguru==0.7.3
 mcp==1.30.0
 openai==2.29.0
 prompt-toolkit==3.0.52
-pydantic==2.12.5
+pydantic==2.14.3
 pydantic-settings==2.14.2
 pypdf==6.21.2
 PyYAML==6.0.3
