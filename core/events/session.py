@@ -557,6 +557,28 @@ class AgentSession:
                     write_compaction_summary(self._workspace, summary, anchor)
                 except Exception:  # noqa: BLE001 - memory work never breaks turns
                     logger.debug("compaction summary deposit failed", exc_info=True)
+                # P4: auto-capture — turn the same handoff summary into pending
+                # structured suggestions (layer pointers, environment keys, and
+                # model-extracted knowledge). Fire-and-forget, never breaks a
+                # turn; a model runner is deliberately not wired here, so the
+                # deterministic pass runs and the semantic pass can be enabled
+                # later without touching the summarizer.
+                try:
+                    from core.capture.hooks import capture_from_text
+
+                    capture_from_text(
+                        summary,
+                        workspace=str(self._workspace),
+                        source=(
+                            f"compaction:{anchor.get('session_key', '')}"
+                            if anchor
+                            else "compaction"
+                        ),
+                        allow_model=False,
+                        allow_env_value=True,
+                    )
+                except Exception:  # noqa: BLE001 - capture never breaks turns
+                    logger.debug("compaction capture failed", exc_info=True)
 
             try:
                 thread = threading.Thread(
@@ -752,6 +774,11 @@ class AgentSession:
                 task.cancel()
             await asyncio.gather(task, return_exceptions=True)
         await self._run_end_hook(reason="other")
+        # P4: session-end auto-capture — run the deterministic pass over the
+        # session's own history (layer pointers + environment keys) so a short
+        # session that never compacted still proposes what it surfaced. Fire
+        # and forget on a daemon thread; never blocks teardown.
+        self._run_session_end_capture()
         control = getattr(self, "_agent_control", None)
         if control is not None:
             await control.close()
@@ -761,6 +788,44 @@ class AgentSession:
         if self._provider_cleanup is not None:
             await self._provider_cleanup()
             self._provider_cleanup = None
+
+    def _run_session_end_capture(self) -> None:
+        """P4: deterministic session-end capture (non-blocking, never raises)."""
+        import threading
+
+        if self._workspace is None:
+            return
+
+        def _work() -> None:
+            try:
+                from core.capture.hooks import capture_from_text
+
+                text = "\n".join(
+                    str(message.get("content") or "")
+                    for message in self._history
+                    if str(message.get("content") or "").strip()
+                )
+                if not text.strip():
+                    return
+                capture_from_text(
+                    text,
+                    workspace=str(self._workspace),
+                    source="session-end",
+                    allow_model=False,
+                    allow_env_value=True,
+                )
+            except Exception:  # noqa: BLE001 - capture never breaks teardown
+                logger.debug("session-end capture failed", exc_info=True)
+
+        try:
+            thread = threading.Thread(
+                target=_work,
+                name="capture-session-end",
+                daemon=True,
+            )
+            thread.start()
+        except Exception:  # noqa: BLE001, S110
+            pass
 
     async def _cancel_turn_subagents(self) -> None:
         """Stop delegated work without letting repeated Stop interrupt teardown."""

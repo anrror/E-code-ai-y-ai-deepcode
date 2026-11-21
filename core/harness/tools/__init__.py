@@ -107,6 +107,7 @@ def default_coding_tools(
     )
     from core.harness.tools.team_context import TeamContextTool
     from core.harness.tools.user_input import RequestUserInputTool
+    from core.harness.tools.wiki_codegraph import CodeGraphTool, WikiTool
 
     registry = ToolRegistry()
     if read_only_workspace:
@@ -118,6 +119,10 @@ def default_coding_tools(
             GlobTool(workspace),
             # Reading team context is safe; `add` is refused in this mode.
             TeamContextTool(workspace, allow_write=False),
+            # Retrieval seams over the layer's document/code pointers are
+            # read-only by construction.
+            WikiTool(workspace),
+            CodeGraphTool(workspace),
         ]
         if fences_writes():
             read_only_tools.append(BashTool(workspace, read_only_workspace=True))
@@ -162,6 +167,8 @@ def default_coding_tools(
         BrowserUseTool(workspace),
         ComputerUseTool(),
         TeamContextTool(workspace),
+        WikiTool(workspace),
+        CodeGraphTool(workspace),
     ]
     # Standalone fallback is workspace-hermetic (no ambient ~/.claude scan);
     # build_agent_session passes the full project+user set via `skills`.

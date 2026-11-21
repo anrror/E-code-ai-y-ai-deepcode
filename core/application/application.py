@@ -2,7 +2,10 @@
 
 from __future__ import annotations
 
+import logging
 import os
+
+logger = logging.getLogger(__name__)
 
 from pathlib import Path
 
@@ -335,6 +338,12 @@ class DFcodeApplication:
             application.execution_coordinator.start_background()
             if application.run_automation_scheduler:
                 application.automation_scheduler.start()
+            # P4: startup backfill — capture Sessions whose teardown skipped a
+            # capture pass (hard kill, crash). Idempotent (marker + dedupe),
+            # best-effort, and only the recovery owner runs it so concurrent
+            # processes do not double-scan. Never blocks startup.
+            if lease.recovery_owner:
+                application._backfill_captures()
             return application
         except BaseException:
             if application is not None:
@@ -371,6 +380,22 @@ class DFcodeApplication:
                 self.automations.update(
                     definition.id, status=AutomationActivationStatus.PAUSED
                 )
+
+    def _backfill_captures(self) -> None:
+        """P4: run the startup capture backfill (best-effort, never raises)."""
+        try:
+            from core.capture.backfill import backfill_captures
+
+            captured = backfill_captures(
+                self.session_store.root,
+                home=None,
+                workspace=None,
+                allow_model=False,
+            )
+            if captured:
+                logger.info("capture backfill: %d session(s) captured", captured)
+        except Exception:  # noqa: BLE001 - backfill never blocks startup
+            logger.debug("capture backfill failed", exc_info=True)
 
     def close(self) -> None:
         errors: list[Exception] = []
